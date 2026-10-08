@@ -443,6 +443,7 @@ function renderDash(){
     </div>
 
     ${today ? todayCard(today) : ''}
+    <div id="pushcard"></div>
 
     <div class="glass panel">
       <div class="row-flex between"><h2>This week</h2><span class="chip">${s.weekDone} done</span></div>
@@ -467,6 +468,63 @@ function renderDash(){
   document.getElementById('refresh').onclick = () => { loading(); login(session.name, session.pin); };
   document.getElementById('logout').onclick = () => { store.del('eq_auth'); session = null; loadHome(); };
   app.querySelectorAll('[data-log]').forEach(b => b.onclick = () => openSheet(d.week.find(w => w.date === b.dataset.log)));
+  if (d.push && d.push.key) pushKey = d.push.key;
+  renderPushCard();
+}
+
+// ---------- Reminders (Web Push) ----------
+let pushKey = null, pushSynced = false;
+function keyBytes(b64){
+  const s = atob(b64.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - b64.length % 4) % 4));
+  return Uint8Array.from(s, c => c.charCodeAt(0));
+}
+async function pushState(){
+  if (IN_APPS_SCRIPT || !pushKey || !('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+    return isIos() && !isStandalone() && !IN_APPS_SCRIPT ? { state: 'install' } : { state: 'unsupported' };
+  }
+  if (Notification.permission === 'denied') return { state: 'denied' };
+  const reg = await navigator.serviceWorker.ready;
+  const sub = await reg.pushManager.getSubscription();
+  return sub && Notification.permission === 'granted' ? { state: 'on', sub } : { state: 'off' };
+}
+async function renderPushCard(){
+  const el = document.getElementById('pushcard');
+  if (!el || !session) return;
+  let st;
+  try { st = await pushState(); } catch(e){ return; }
+  if (st.state === 'on') {
+    // Make sure the server knows this device belongs to the kid now signed in (once per app start).
+    if (!pushSynced) { pushSynced = true; call('apiPushSubscribe', session.name, session.pin, st.sub.endpoint, navigator.userAgent, false).catch(() => {}); }
+    return;
+  }
+  if (st.state === 'install') {
+    el.innerHTML = `<div class="soft stat" style="padding:14px 16px"><span class="tile sm t-fire">${icon('bell-ringing', 'duotone')}</span>
+      <div class="sub" style="margin:0;font-size:13px">Want a daily reminder? Install the app first: tap Share, then <b>Add to Home Screen</b>, and open it from there.</div></div>`;
+    return;
+  }
+  if (st.state !== 'off') return;
+  el.innerHTML = `<div class="glass panel">
+    <div class="row-flex" style="gap:12px"><span class="tile t-fire">${icon('bell-ringing', 'duotone')}</span>
+      <div><h2>Daily reminder</h2><div class="sub" style="margin-top:2px;font-size:13px">A nudge on your phone if you haven't practiced yet</div></div></div>
+    <button class="btn btn-primary btn-block mt" id="pushon">${icon('bell')} Turn on reminders</button>
+  </div>`;
+  document.getElementById('pushon').onclick = async e => {
+    const btn = e.currentTarget;
+    btn.disabled = true; btn.innerHTML = '<span class="mini-spin"></span>Turning on…';
+    try {
+      const perm = await Notification.requestPermission();
+      if (perm !== 'granted') { el.innerHTML = ''; toast('Notifications are blocked', true); return; }
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(pushKey) });
+      await call('apiPushSubscribe', session.name, session.pin, sub.endpoint, navigator.userAgent, true);
+      pushSynced = true;
+      el.innerHTML = `<div class="soft stat" style="padding:14px 16px"><span class="tile sm t-listen">${icon('check', 'bold')}</span>
+        <div class="sub" style="margin:0;font-size:13px">Reminders are on — you should get a test notification now.</div></div>`;
+    } catch(err){
+      toast(err.message || 'Could not turn on reminders', true);
+      btn.disabled = false; btn.innerHTML = icon('bell') + ' Turn on reminders';
+    }
+  };
 }
 
 function todayCard(t){
@@ -683,6 +741,12 @@ function renderParent(p, pin){
   });
   if (p.created) window.scrollTo({ top: 0, behavior: 'smooth' });
   if (!p.isAdmin) return;
+  app.querySelectorAll('[data-testpush]').forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try { const r = await call('apiAdminTestPush', pin, b.dataset.testpush); toast('Sent to ' + r.sent + ' device' + (r.sent === 1 ? '' : 's')); }
+    catch(err){ toast(err.message, true); }
+    b.disabled = false;
+  });
   const busy = (btn, on, label) => { btn.disabled = on; if (label) btn.innerHTML = label; };
   document.getElementById('ng-btn').onclick = async e => {
     const btn = e.currentTarget, label = btn.innerHTML;
@@ -713,6 +777,8 @@ function girlCard(g, isAdmin){
       ${isAdmin && g.pin ? `<span class="chip">${icon('key')} ${esc(g.pin)}</span>` : ''}
       <span class="chip">${icon('target')} ${s.avg == null ? '–' : s.avg + '%'}</span>
       <span class="chip">${icon('fire')} ${s.streak}</span>
+      ${isAdmin && g.push ? `<span class="chip ${g.push.devices ? 'teal' : ''}">${icon('bell')} ${g.push.devices}</span>` : ''}
+      ${isAdmin && g.push && g.push.devices ? `<button class="chip" style="cursor:pointer" data-testpush="${esc(g.girl.name)}">${icon('paper-plane-tilt')} Test</button>` : ''}
       <span class="chip">${s.total} tasks total</span>
     </div>
     <div class="strip">${g.week.map(w => {

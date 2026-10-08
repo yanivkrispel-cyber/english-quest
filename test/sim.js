@@ -1,5 +1,8 @@
 // Local simulation of Code.js with in-memory Sheets mocks.
-const fs = require('fs'), vm = require('vm');
+const fs = require('fs'), vm = require('vm'), crypto = require('crypto');
+const toSigned = buf => Array.from(buf).map(b => (b > 127 ? b - 256 : b));
+const pushLog = [];
+let pushStatus = () => 201;
 const sheets = {};
 function mkSheet(name){ const rows = []; return sheets[name] = {
   name, rows,
@@ -9,7 +12,7 @@ function mkSheet(name){ const rows = []; return sheets[name] = {
       setFontWeight(){ return this; }, setValue(x){ rows[a-1] = rows[a-1] || []; rows[a-1][b-1] = x; return this; },
       getValues(){ const w = Math.max(...rows.map(r=>r.length)); return rows.slice(a-1, a-1+nr).map(r => Array.from({length: nc||w}, (_,j)=> r[b-1+j] ?? '')); } }; },
   getDataRange(){ return this.getRange(1, 1, rows.length, this.getLastColumn()); },
-  appendRow(r){ rows.push(r.slice()); }, setFrozenRows(){} }; }
+  appendRow(r){ rows.push(r.slice()); }, deleteRow(i){ rows.splice(i - 1, 1); }, setFrozenRows(){} }; }
 const cacheStore = {};
 const cacheMock = {
   get: k => (k in cacheStore ? cacheStore[k] : null),
@@ -20,12 +23,16 @@ const cacheMock = {
   removeAll: ks => ks.forEach(k => delete cacheStore[k]),
 };
 const ctx = {
-  console, Math, JSON, Date, Number, String, Object, Array,
+  console, Math, JSON, Date, Number, String, Object, Array, BigInt, parseInt,
+  UrlFetchApp: { fetch: (url, o) => { pushLog.push({ url, auth: o.headers.Authorization }); const c = pushStatus(url); return { getResponseCode: () => c }; } },
   SpreadsheetApp: { getActive: () => ({ getSheetByName: n => sheets[n] || null, insertSheet: mkSheet, getSheets: () => Object.values(sheets),
     deleteSheet(){}, setSpreadsheetTimeZone(){}, getUrl: () => 'SHEET' }) },
-  Utilities: { formatDate: d => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jerusalem' }).format(d) },
+  Utilities: { formatDate: d => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jerusalem' }).format(d),
+    DigestAlgorithm: { SHA_256: 'sha256' }, Charset: { UTF_8: 'utf8' }, getUuid: () => crypto.randomUUID(),
+    computeDigest: (alg, str) => toSigned(crypto.createHash('sha256').update(str, 'utf8').digest()),
+    base64EncodeWebSafe: v => (typeof v === 'string' ? Buffer.from(v, 'utf8') : Buffer.from(v.map(b => b & 255))).toString('base64').replace(/\+/g, '-').replace(/\//g, '_') },
   LockService: { getScriptLock: () => ({ waitLock(){}, releaseLock(){} }) },
-  PropertiesService: { getScriptProperties: () => ({ p: {}, getProperty(k){ return this.p[k] || null; }, setProperty(k,v){ this.p[k]=v; } }) },
+  PropertiesService: { getScriptProperties: () => ({ p: {}, getProperty(k){ return this.p[k] || null; }, setProperty(k,v){ this.p[k]=v; }, setProperties(o){ Object.assign(this.p, o); } }) },
   ScriptApp: { getProjectTriggers: () => [], newTrigger: () => { const t = { timeBased: () => t, everyDays: () => t, atHour: () => t, inTimezone: () => t, onWeekDay: () => t, create: () => t }; return t; },
     WeekDay: {}, getService: () => ({ getUrl: () => 'APPURL' }) },
   CacheService: { getScriptCache: () => cacheMock },
@@ -35,7 +42,7 @@ const ctx = {
 };
 const props = ctx.PropertiesService.getScriptProperties(); ctx.PropertiesService.getScriptProperties = () => props;
 vm.createContext(ctx);
-for (const f of ['Catalog.js', 'Code.js']) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
+for (const f of ['Catalog.js', 'Code.js', 'Push.js']) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
 // Each call is a fresh request: per-request table memo resets, CacheService persists.
 const run = s => { if (typeof ctx.TABLES === 'object') vm.runInContext('TABLES = {}', ctx); return vm.runInContext(s, ctx); };
 let day = '2026-10-08';
@@ -99,3 +106,29 @@ console.log('public group:', JSON.stringify(run(`apiPublic('${gid}')`).girls.map
 try { run(`apiPublic('nope')`); } catch (e) { console.log('bad link ok:', e.message); }
 console.log('admin sees', run(`apiParent('1234')`).groups.map(g => g.name + ':' + g.girls.length).join(' '));
 run('weeklySummary()');
+
+// ---- web push ----
+ctx.__day = '2026-10-19';
+const dz = run("apiDashboard('Ziv','4821')");
+console.log('vapid key length:', dz.push.key.length, 'devices:', dz.push.devices);
+let r = run("apiPushSubscribe('Ziv','4821','https://fcm.googleapis.com/fcm/send/abc','Android',true)");
+console.log('subscribe:', JSON.stringify(r), 'auth header ok:', /^vapid t=[\w-]+\.[\w-]+\.[\w-]{86}, k=[\w-]{87}$/.test(pushLog[0].auth));
+console.log('message for endpoint:', JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/abc')")));
+run("apiPushSubscribe('Ziv','4821','https://fcm.googleapis.com/fcm/send/abc','Android',false)");
+run("apiPushSubscribe('Ziv','4821','https://web.push.apple.com/xyz','iPhone',false)");
+console.log('rows after re-subscribe + 2nd device:', sheets.Push.rows.length - 1);
+// verify JWT signature with node crypto
+const vk = run('vapidKeys()');
+const [h, pl, sg] = pushLog[0].auth.split(' ')[1].slice(2, -1).split('.');
+const pub = crypto.createPublicKey({ key: { kty: 'EC', crv: 'P-256', x: Buffer.from(vk.pub, 'base64url').subarray(1, 33).toString('base64url'), y: Buffer.from(vk.pub, 'base64url').subarray(33).toString('base64url') }, format: 'jwk' });
+console.log('JWT verifies:', crypto.verify('sha256', Buffer.from(h + '.' + pl), { key: pub, dsaEncoding: 'ieee-p1363' }, Buffer.from(sg, 'base64url')), JSON.parse(Buffer.from(pl, 'base64url')).aud);
+// reminders: Ziv has not practiced on 10-15 -> both devices; one is gone (410)
+pushLog.length = 0;
+pushStatus = url => (url.includes('apple') ? 410 : 201);
+run('pushReminders(false)');
+console.log('reminder pushes:', pushLog.length, '| rows left:', sheets.Push.rows.length - 1, '| msg:', JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/abc')")));
+run("apiSubmit('Ziv','4821','2026-10-19',9,10,null)");
+pushLog.length = 0; run('lastCallReminder()');
+console.log('last call after practicing:', pushLog.length, '(expect 0)');
+console.log('admin test:', JSON.stringify(run("apiAdminTestPush('1234','Ziv')")));
+try { run("apiPushSubscribe('Ziv','0000','https://x.y/z','',false)"); } catch (e) { console.log('bad pin subscribe ok:', e.message); }

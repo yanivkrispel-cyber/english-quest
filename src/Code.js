@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v3';
+var SETUP_VERSION = 'v4';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
 var LEVEL_LABEL = { a1: 'A1', a2: 'A2', b1: 'B1', 'b1-b2': 'B1+', b2: 'B2', c1: 'C1' };
 var LEVEL_TEST = { section: 'level', level: '', title: 'English Level Test', url: 'https://test-english.com/level-test/' };
@@ -29,7 +29,8 @@ var HEADERS = {
   Log: ['Timestamp', 'Girl', 'Date', 'DoneOn', 'Section', 'Level', 'Title', 'URL', 'Correct', 'Total', 'Percent', 'Points'],
   Rewards: ['Points', 'Reward', 'Group'],
   Settings: ['Key', 'Value'],
-  Groups: ['Id', 'Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email']
+  Groups: ['Id', 'Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email'],
+  Push: ['Girl', 'Endpoint', 'Created', 'Agent']
 };
 
 var WORDS = [
@@ -76,15 +77,20 @@ function doGet() {
 
 // JSON API for the GitHub Pages front end. Called anonymously (no Google cookies), which also
 // avoids Google's under-13 block on Apps Script for signed-in child accounts.
-var API = {
+// Built per request: functions from other files (Push.js) only exist once every file has loaded.
+function api() {
+  return {
   apiPublic: apiPublic, apiWarm: apiWarm, apiDashboard: apiDashboard, apiSubmit: apiSubmit, apiParent: apiParent,
-  apiAdminAddGroup: apiAdminAddGroup, apiAdminAddKid: apiAdminAddKid
-};
+  apiAdminAddGroup: apiAdminAddGroup, apiAdminAddKid: apiAdminAddKid,
+  apiPushSubscribe: apiPushSubscribe, apiPushMessage: apiPushMessage, apiAdminTestPush: apiAdminTestPush
+  };
+}
 
 function doPost(e) {
   var out;
   try {
     var req = JSON.parse(e.postData.contents);
+    var API = api();
     if (!API.hasOwnProperty(req.fn)) throw new Error('Unknown call');
     out = { ok: true, data: API[req.fn].apply(null, req.args || []) };
   } catch (err) {
@@ -371,6 +377,7 @@ function buildDashboard(kid) {
     },
     rewards: rewards,
     nextReward: next,
+    push: { key: vapidPublicKey(), devices: readTable('Push').filter(function (s) { return s.Girl === kid.Name; }).length },
     word: wordOfDay(t)
   };
 }
@@ -475,6 +482,7 @@ function nextExercise(section, level, used) {
 // ---------- Reminders (time-driven triggers) ----------
 
 function dailyReminder() {
+  try { pushReminders(false); } catch (e) { console.error(e); }
   var t = today();
   var logs = readTable('Log');
   readTable('Girls').forEach(function (k) {
@@ -515,10 +523,12 @@ function summaryHtml(g) {
 function installTriggers() {
   ScriptApp.getProjectTriggers().forEach(function (tr) {
     var f = tr.getHandlerFunction();
-    if (f === 'dailyReminder' || f === 'weeklySummary') ScriptApp.deleteTrigger(tr);
+    if (f === 'dailyReminder' || f === 'lastCallReminder' || f === 'weeklySummary') ScriptApp.deleteTrigger(tr);
   });
   var hour = Number(getSetting('ReminderHour')) || 17;
   ScriptApp.newTrigger('dailyReminder').timeBased().everyDays(1).atHour(hour).inTimezone(TZ).create();
+  var last = Number(getSetting('LastCallHour'));
+  if (last) ScriptApp.newTrigger('lastCallReminder').timeBased().everyDays(1).atHour(last).inTimezone(TZ).create();
   ScriptApp.newTrigger('weeklySummary').timeBased().onWeekDay(ScriptApp.WeekDay.FRIDAY).atHour(12).inTimezone(TZ).create();
 }
 
@@ -554,7 +564,7 @@ function ensureSetup() {
     if (stray && ss.getSheets().length > 1) ss.deleteSheet(stray);
     clearCache();
 
-    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: 'https://yanivkrispel-cyber.github.io/english-quest/' };
+    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: 'https://yanivkrispel-cyber.github.io/english-quest/' };
     Object.keys(defaults).forEach(function (k) { if (getSetting(k) === null) setSetting(k, defaults[k]); });
 
     // v3: groups. The existing family becomes the first (default) group.
@@ -597,7 +607,7 @@ function sheet(name) { return SpreadsheetApp.getActive().getSheetByName(name); }
 // Two cache levels: TABLES lives for one request; CacheService survives across requests
 // (sheet reads cost 0.3-1s each). Manual edits in the sheet clear it via onEdit.
 var TABLES = {};
-var CACHE_TTL = { Girls: 21600, Rewards: 21600, Settings: 21600, Groups: 21600, Assignments: 900, Log: 900 };
+var CACHE_TTL = { Girls: 21600, Rewards: 21600, Settings: 21600, Groups: 21600, Push: 21600, Assignments: 900, Log: 900 };
 var CHUNK = 30000;
 
 function readTable(name) {

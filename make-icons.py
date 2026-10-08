@@ -46,3 +46,17 @@ icon(512).save(os.path.join(OUT, "icon-512.png"))
 icon(512, maskable=True).save(os.path.join(OUT, "maskable-512.png"))
 icon(180, rounded=False).convert("RGB").save(os.path.join(OUT, "apple-touch-icon.png"))
 print("icons written to", OUT)
+
+# Android status-bar badge: white glyph on transparent (Android uses only the alpha channel).
+def badge(size):
+    s = size * 4
+    img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    font = ImageFont.truetype(FONT, int(s * 0.52))
+    box = d.textbbox((0, 0), "EQ", font=font)
+    d.text(((s - (box[2] - box[0])) / 2 - box[0], (s - (box[3] - box[1])) / 2 - box[1]), "EQ", font=font, fill=(255, 255, 255, 255))
+    return img.resize((size, size), Image.LANCZOS)
+
+
+badge(96).save(os.path.join(OUT, "badge-96.png"))
+print("badge written")
