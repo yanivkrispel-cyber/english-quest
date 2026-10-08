@@ -1,32 +1,35 @@
-// English Quest — daily English practice tracker for Ziv, Ron and Aviv.
+// English Quest — daily English practice tracker for kids in groups (families, friends).
 // Web app served from a Sheets-bound Apps Script. All data lives in the bound spreadsheet.
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v2';
+var SETUP_VERSION = 'v3';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
 var LEVEL_LABEL = { a1: 'A1', a2: 'A2', b1: 'B1', 'b1-b2': 'B1+', b2: 'B2', c1: 'C1' };
 var LEVEL_TEST = { section: 'level', level: '', title: 'English Level Test', url: 'https://test-english.com/level-test/' };
 var SECTIONS = {
-  level: { label: 'Level Test', icon: '🎯' },
-  grammar: { label: 'Grammar', icon: '📘' },
-  vocabulary: { label: 'Vocabulary', icon: '🔤' },
-  listening: { label: 'Listening', icon: '🎧' },
-  reading: { label: 'Reading', icon: '📖' },
-  writing: { label: 'Writing', icon: '✍️' },
-  'use-of-english': { label: 'Use of English', icon: '🧩' }
+  level: { label: 'Level Test' },
+  grammar: { label: 'Grammar' },
+  vocabulary: { label: 'Vocabulary' },
+  listening: { label: 'Listening' },
+  reading: { label: 'Reading' },
+  writing: { label: 'Writing' },
+  'use-of-english': { label: 'Use of English' }
 };
 // Sunday..Saturday. Friday alternates between Use of English and Writing.
 var ROTATION = ['grammar', 'vocabulary', 'listening', 'grammar', 'reading', 'FRIDAY', 'listening'];
 var DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 var WEEK_BONUS = 20;
+var COLORS = ['#7b7ff7', '#3cc7b6', '#f6a04d', '#e879f9', '#38bdf8', '#f472b6', '#a3e635', '#fb7185', '#facc15', '#818cf8'];
 
+// The sheet tab for kids is still called "Girls" (it predates groups).
 var HEADERS = {
-  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color'],
+  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group'],
   Assignments: ['Girl', 'Date', 'Section', 'Level', 'Title', 'URL'],
   Log: ['Timestamp', 'Girl', 'Date', 'DoneOn', 'Section', 'Level', 'Title', 'URL', 'Correct', 'Total', 'Percent', 'Points'],
-  Rewards: ['Points', 'Reward'],
-  Settings: ['Key', 'Value']
+  Rewards: ['Points', 'Reward', 'Group'],
+  Settings: ['Key', 'Value'],
+  Groups: ['Id', 'Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email']
 };
 
 var WORDS = [
@@ -73,7 +76,10 @@ function doGet() {
 
 // JSON API for the GitHub Pages front end. Called anonymously (no Google cookies), which also
 // avoids Google's under-13 block on Apps Script for signed-in child accounts.
-var API = { apiPublic: apiPublic, apiWarm: apiWarm, apiDashboard: apiDashboard, apiSubmit: apiSubmit, apiParent: apiParent };
+var API = {
+  apiPublic: apiPublic, apiWarm: apiWarm, apiDashboard: apiDashboard, apiSubmit: apiSubmit, apiParent: apiParent,
+  apiAdminAddGroup: apiAdminAddGroup, apiAdminAddKid: apiAdminAddKid
+};
 
 function doPost(e) {
   var out;
@@ -87,12 +93,12 @@ function doPost(e) {
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }
 
-// Link sent to the girls (WhatsApp, reminder emails): the public front end when set.
+// Link sent to the kids (WhatsApp, reminder emails): the public front end when set.
 function publicUrl() {
   return getSetting('PublicUrl') || getSetting('AppUrl');
 }
 
-// Brute-force guard: 8 wrong PINs for the same name locks it for 15 minutes.
+// Brute-force guard: 8 wrong PINs for the same key lock it for 15 minutes.
 function checkPin(key, ok) {
   var c = CacheService.getScriptCache(), k = 'F:' + key;
   var fails = Number(c.get(k)) || 0;
@@ -104,38 +110,64 @@ function checkPin(key, ok) {
   if (fails) c.remove(k);
 }
 
+// ---------- Groups ----------
+
+function groups() { return readTable('Groups'); }
+function defaultGroupId() { return String(groups()[0].Id); }
+function groupOf(kid) { return String(kid.Group || '').trim() || defaultGroupId(); }
+function findGroup(id) { return groups().filter(function (g) { return String(g.Id) === String(id); })[0]; }
+function kidsIn(groupId) { return readTable('Girls').filter(function (k) { return groupOf(k) === groupId; }); }
+
+function groupLink(id) {
+  var base = publicUrl();
+  return id === defaultGroupId() ? base : base + (base.indexOf('?') < 0 ? '?' : '&') + 'g=' + encodeURIComponent(id);
+}
+
+// Rewards rows with a Group apply to that group only; rows without one apply to every group
+// that has no rewards of its own.
+function rewardsFor(groupId) {
+  var rows = readTable('Rewards');
+  var own = rows.filter(function (r) { return String(r.Group || '').trim() === groupId; });
+  var list = own.length ? own : rows.filter(function (r) { return !String(r.Group || '').trim(); });
+  return list.map(function (r) { return { points: Number(r.Points), reward: r.Reward }; })
+    .sort(function (a, b) { return a.points - b.points; });
+}
+
 // ---------- Client API ----------
 
-function apiPublic() {
+function apiPublic(groupId) {
   ensureSetup();
+  var g = groupId ? findGroup(groupId) : groups()[0];
+  if (!g) throw new Error('This link is not valid — ask your parent for the right one.');
   return {
-    girls: readTable('Girls').map(function (g) { return { name: g.Name, color: g.Color, age: g.Age }; }),
+    group: { id: String(g.Id), name: g.Name },
+    girls: kidsIn(String(g.Id)).map(function (k) { return { name: k.Name, color: k.Color, age: k.Age }; }),
     word: wordOfDay(today()),
     today: today()
   };
 }
 
-// Called when a girl taps her name, while she types her PIN: fills the cache.
+// Called when a kid taps her name, while she types her PIN: fills the cache.
 function apiWarm() {
   ensureSetup();
-  ['Girls', 'Assignments', 'Log', 'Rewards'].forEach(readTable);
+  ['Girls', 'Assignments', 'Log', 'Rewards', 'Groups'].forEach(readTable);
   return true;
 }
 
 function apiDashboard(name, pin) {
-  var girl = auth(name, pin);
-  return buildDashboard(girl);
+  var kid = auth(name, pin);
+  return buildDashboard(kid);
 }
 
 function apiSubmit(name, pin, date, correct, total, levelResult) {
-  var girl = auth(name, pin);
+  var kid = auth(name, pin);
   var t = today();
-  if (weekDates(t).indexOf(date) < 0 || date > t || date < START_DATE) throw new Error('You can only log tasks from this week.');
-  var a = ensureAssignments(girl, [date])[date];
+  if (weekDates(t).indexOf(date) < 0 || date > t || date < kidStart(kid)) throw new Error('You can only log tasks from this week.');
+  var a = ensureAssignments(kid, [date])[date];
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
-    var done = readTableUncached('Log').filter(function (l) { return l.Girl === girl.Name && l.Date === date; });
+    var done = readTableUncached('Log').filter(function (l) { return l.Girl === kid.Name && l.Date === date; });
     if (done.length) throw new Error('This task is already marked as done.');
 
     correct = Number(correct) || 0;
@@ -145,13 +177,13 @@ function apiSubmit(name, pin, date, correct, total, levelResult) {
     var points;
     if (a.section === 'level') {
       points = 15 + (onTime ? 3 : 0);
-      if (levelResult && LEVELS.indexOf(levelResult) >= 0) setGirlField(girl.Name, 'Level', levelResult);
+      if (levelResult && LEVELS.indexOf(levelResult) >= 0) setGirlField(kid.Name, 'Level', levelResult);
     } else {
       if (total <= 0) throw new Error('Please enter your score.');
       points = 10 + (pct >= 80 ? 5 : 0) + (onTime ? 3 : 0);
     }
     appendRow('Log', {
-      Timestamp: new Date(), Girl: girl.Name, Date: date, DoneOn: t, Section: a.section,
+      Timestamp: new Date(), Girl: kid.Name, Date: date, DoneOn: t, Section: a.section,
       Level: a.section === 'level' ? (levelResult || '') : a.level, Title: a.title, URL: a.url,
       Correct: a.section === 'level' ? '' : correct, Total: a.section === 'level' ? '' : total,
       Percent: pct, Points: points
@@ -159,63 +191,151 @@ function apiSubmit(name, pin, date, correct, total, levelResult) {
   } finally {
     lock.releaseLock();
   }
-  var fresh = findGirl(girl.Name);
-  var dash = buildDashboard(fresh);
+  var dash = buildDashboard(findGirl(kid.Name));
   dash.justEarned = dash.week.filter(function (d) { return d.date === date; })[0].points;
   return dash;
 }
 
-function apiParent(adminPin) {
+// The admin PIN (Settings) sees every group; a group's ParentPIN sees only that group.
+function apiParent(pin) {
   ensureSetup();
-  checkPin('admin', String(adminPin) === String(getSetting('AdminPIN')));
+  var access = parentAccess(pin);
+  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin);
+}
+
+function parentAccess(pin) {
+  pin = String(pin).trim();
+  var isAdmin = pin === String(getSetting('AdminPIN')).trim();
+  var group = isAdmin ? null : groups().filter(function (g) { return String(g.ParentPIN || '').trim() && String(g.ParentPIN).trim() === pin; })[0];
+  checkPin('parent', isAdmin || !!group);
+  return { isAdmin: isAdmin, group: group };
+}
+
+function parentData(list, isAdmin) {
   var t = today();
-  var girls = readTable('Girls');
   var logs = readTable('Log');
-  var res = girls.map(function (g) {
-    var d = buildDashboard(g);
-    var history = [];
-    for (var w = 5; w >= 0; w--) {
-      var ref = addDays(weekStart(t), -7 * w);
-      if (ref < weekStart(START_DATE)) continue;
-      var dates = weekDates(ref).filter(function (x) { return x >= START_DATE && x <= t; });
-      var wl = logs.filter(function (l) { return l.Girl === g.Name && dates.indexOf(l.Date) >= 0; });
-      history.push({ week: ref, done: wl.length, expected: dates.length, avg: avgPercent(wl) });
-    }
-    d.history = history;
-    d.recent = logs.filter(function (l) { return l.Girl === g.Name; }).slice(-8).reverse().map(function (l) {
-      return { date: l.Date, doneOn: l.DoneOn, section: l.Section, title: l.Title, url: l.URL, correct: l.Correct, total: l.Total, percent: l.Percent, points: l.Points };
+  var out = list.map(function (g) {
+    var id = String(g.Id);
+    var kids = kidsIn(id).map(function (k) {
+      var d = buildDashboard(k);
+      var start = kidStart(k);
+      var history = [];
+      for (var w = 5; w >= 0; w--) {
+        var ref = addDays(weekStart(t), -7 * w);
+        if (ref < weekStart(start)) continue;
+        var dates = weekDates(ref).filter(function (x) { return x >= start && x <= t; });
+        var wl = logs.filter(function (l) { return l.Girl === k.Name && dates.indexOf(l.Date) >= 0; });
+        history.push({ week: ref, done: wl.length, expected: dates.length, avg: avgPercent(wl) });
+      }
+      d.history = history;
+      d.recent = logs.filter(function (l) { return l.Girl === k.Name; }).slice(-8).reverse().map(function (l) {
+        return { date: l.Date, doneOn: l.DoneOn, section: l.Section, title: l.Title, url: l.URL, correct: l.Correct, total: l.Total, percent: l.Percent, points: l.Points };
+      });
+      d.email = k.Email;
+      if (isAdmin) d.pin = String(k.PIN);
+      return d;
     });
-    d.email = g.Email;
-    return d;
+    return {
+      id: id,
+      name: g.Name,
+      link: groupLink(id),
+      parentPin: isAdmin ? String(g.ParentPIN || '') : undefined,
+      email: g.Email,
+      goal: {
+        goal: Number(g.Goal) || 1500,
+        total: kids.reduce(function (a, d) { return a + d.stats.earned; }, 0),
+        reward: g.GoalReward || ''
+      },
+      girls: kids
+    };
   });
   return {
-    girls: res,
-    family: familyGoal(res),
-    sheetUrl: SpreadsheetApp.getActive().getUrl(),
-    appUrl: publicUrl(),
+    isAdmin: !!isAdmin,
+    groups: out,
+    sheetUrl: isAdmin ? SpreadsheetApp.getActive().getUrl() : null,
+    levels: LEVELS.map(function (l) { return { id: l, label: LEVEL_LABEL[l] }; }),
     today: t,
     word: wordOfDay(t)
   };
 }
 
+// ---------- Admin actions ----------
+
+function apiAdminAddGroup(pin, name, email) {
+  ensureSetup();
+  if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can add groups');
+  name = String(name || '').trim();
+  if (!name) throw new Error('Enter a group name');
+  if (groups().some(function (g) { return String(g.Name).toLowerCase() === name.toLowerCase(); })) throw new Error('A group with this name already exists');
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  var id, parentPin;
+  try {
+    var ids = groups().map(function (g) { return String(g.Id); });
+    do { id = Math.random().toString(36).slice(2, 8); } while (ids.indexOf(id) >= 0);
+    parentPin = uniqueParentPin();
+    appendRow('Groups', { Id: id, Name: name, ParentPIN: parentPin, Goal: 1500, GoalReward: 'Pizza party for the group', Email: String(email || '').trim() });
+  } finally {
+    lock.releaseLock();
+  }
+  var data = apiParent(pin);
+  data.created = { type: 'group', name: name, pin: parentPin, link: groupLink(id) };
+  return data;
+}
+
+function apiAdminAddKid(pin, name, age, groupId, level) {
+  ensureSetup();
+  if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can add kids');
+  name = String(name || '').trim();
+  if (!name) throw new Error('Enter a name');
+  if (findGirl(name)) throw new Error('This name is already taken — add a last-name initial');
+  if (!findGroup(groupId)) throw new Error('Choose a group');
+  if (LEVELS.indexOf(level) < 0) level = 'a2';
+  var kidPin = randomPin();
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    var count = readTable('Girls').length;
+    appendRow('Girls', { Name: name, Age: Number(age) || '', PIN: kidPin, Level: level, Email: '', Redeemed: 0, Color: COLORS[count % COLORS.length], Group: groupId });
+  } finally {
+    lock.releaseLock();
+  }
+  var data = apiParent(pin);
+  data.created = { type: 'kid', name: name, pin: kidPin, link: groupLink(groupId), group: findGroup(groupId).Name };
+  return data;
+}
+
+function uniqueParentPin() {
+  var taken = groups().map(function (g) { return String(g.ParentPIN); }).concat([String(getSetting('AdminPIN'))]);
+  var p;
+  do { p = randomPin(); } while (taken.indexOf(p) >= 0);
+  return p;
+}
+
 // ---------- Dashboard ----------
 
-function buildDashboard(girl) {
+// A kid's first day = her first assignment (the level test). New kids start today.
+function kidStart(kid) {
+  var dates = readTable('Assignments').filter(function (a) { return a.Girl === kid.Name; }).map(function (a) { return a.Date; }).sort();
+  return dates.length ? dates[0] : today();
+}
+
+function buildDashboard(kid) {
   var t = today();
+  var start = kidStart(kid);
   var dates = weekDates(t);
-  var active = dates.filter(function (d) { return d >= START_DATE && d <= t; });
-  var assigned = ensureAssignments(girl, active);
-  var logs = readTable('Log').filter(function (l) { return l.Girl === girl.Name; });
+  var active = dates.filter(function (d) { return d >= start && d <= t; });
+  var assigned = ensureAssignments(kid, active);
+  var logs = readTable('Log').filter(function (l) { return l.Girl === kid.Name; });
   var byDate = {};
   logs.forEach(function (l) { byDate[l.Date] = l; });
 
   var week = dates.map(function (d) {
     var wd = parseDate(d).getDay();
-    var item = { date: d, day: DAY_NAMES[wd], isToday: d === t, isFuture: d > t, beforeStart: d < START_DATE };
+    var item = { date: d, day: DAY_NAMES[wd], isToday: d === t, isFuture: d > t, beforeStart: d < start };
     var sec = assigned[d] ? assigned[d].section : sectionFor(d);
     item.section = sec;
     item.label = SECTIONS[sec].label;
-    item.icon = SECTIONS[sec].icon;
     if (assigned[d]) {
       item.title = assigned[d].title;
       item.url = assigned[d].url;
@@ -231,15 +351,14 @@ function buildDashboard(girl) {
     return item;
   });
 
-  var earned = totalPoints(logs, t);
-  var redeemed = Number(girl.Redeemed) || 0;
+  var earned = totalPoints(logs, start);
+  var redeemed = Number(kid.Redeemed) || 0;
   var balance = earned - redeemed;
-  var rewards = readTable('Rewards').map(function (r) { return { points: Number(r.Points), reward: r.Reward }; })
-    .sort(function (a, b) { return a.points - b.points; });
+  var rewards = rewardsFor(groupOf(kid));
   var next = rewards.filter(function (r) { return r.points > balance; })[0] || null;
 
   return {
-    girl: { name: girl.Name, level: girl.Level, levelLabel: LEVEL_LABEL[girl.Level] || girl.Level, color: girl.Color },
+    girl: { name: kid.Name, level: kid.Level, levelLabel: LEVEL_LABEL[kid.Level] || kid.Level, color: kid.Color },
     today: t,
     week: week,
     stats: {
@@ -256,7 +375,7 @@ function buildDashboard(girl) {
   };
 }
 
-function totalPoints(logs, t) {
+function totalPoints(logs, start) {
   var sum = 0;
   var weeks = {};
   logs.forEach(function (l) {
@@ -264,9 +383,9 @@ function totalPoints(logs, t) {
     var ws = weekStart(l.Date);
     (weeks[ws] = weeks[ws] || {})[l.Date] = true;
   });
-  // Full-week bonus: every day of the week (from the start date) done.
+  // Full-week bonus: every day of the week (from the kid's first day) done.
   Object.keys(weeks).forEach(function (ws) {
-    var expected = weekDates(ws).filter(function (d) { return d >= START_DATE; });
+    var expected = weekDates(ws).filter(function (d) { return d >= start; });
     if (expected.every(function (d) { return weeks[ws][d]; })) sum += WEEK_BONUS;
   });
   return sum;
@@ -287,12 +406,6 @@ function avgPercent(logs) {
   return Math.round(s.reduce(function (a, l) { return a + Number(l.Percent); }, 0) / s.length);
 }
 
-function familyGoal(girlDashes) {
-  var goal = Number(getSetting('FamilyGoal')) || 1500;
-  var total = girlDashes.reduce(function (a, d) { return a + d.stats.earned; }, 0);
-  return { goal: goal, total: total, reward: getSetting('FamilyReward') };
-}
-
 function wordOfDay(d) {
   var i = Math.abs(daysBetween(START_DATE, d)) % WORDS.length;
   return { word: WORDS[i][0], meaning: WORDS[i][1] };
@@ -301,7 +414,6 @@ function wordOfDay(d) {
 // ---------- Assignments ----------
 
 function sectionFor(d) {
-  if (d === START_DATE) return 'level';
   var wd = parseDate(d).getDay();
   var s = ROTATION[wd];
   if (s === 'FRIDAY') {
@@ -312,33 +424,32 @@ function sectionFor(d) {
 }
 
 // Returns {date: assignment} for the requested dates, creating missing ones.
-function ensureAssignments(girl, dates) {
-  var all = readTable('Assignments');
-  var mine = all.filter(function (a) { return a.Girl === girl.Name; });
+// A kid's very first assignment is always the level test.
+function ensureAssignments(kid, dates) {
   var out = {};
   var used = {};
-  mine.forEach(function (a) {
-    used[a.URL] = true;
-    out[a.Date] = { section: a.Section, level: a.Level, title: a.Title, url: a.URL };
-  });
+  var collect = function (rows) {
+    rows.forEach(function (a) {
+      if (a.Girl !== kid.Name) return;
+      used[a.URL] = true;
+      out[a.Date] = { section: a.Section, level: a.Level, title: a.Title, url: a.URL };
+    });
+  };
+  collect(readTable('Assignments'));
   var missing = dates.filter(function (d) { return !out[d]; }).sort();
   if (!missing.length) return out;
 
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
-    readTableUncached('Assignments').forEach(function (a) {
-      if (a.Girl !== girl.Name) return;
-      used[a.URL] = true;
-      out[a.Date] = { section: a.Section, level: a.Level, title: a.Title, url: a.URL };
-    });
+    collect(readTableUncached('Assignments'));
     missing = missing.filter(function (d) { return !out[d]; });
-    missing.forEach(function (d) {
-      var sec = sectionFor(d);
-      var a = sec === 'level' ? LEVEL_TEST : nextExercise(sec, girl.Level, used);
+    var first = Object.keys(out).length === 0;
+    missing.forEach(function (d, i) {
+      var a = first && i === 0 ? LEVEL_TEST : nextExercise(sectionFor(d), kid.Level, used);
       used[a.url] = true;
       out[d] = a;
-      appendRow('Assignments', { Girl: girl.Name, Date: d, Section: a.section, Level: a.level, Title: a.title, URL: a.url });
+      appendRow('Assignments', { Girl: kid.Name, Date: d, Section: a.section, Level: a.level, Title: a.title, URL: a.url });
     });
   } finally {
     lock.releaseLock();
@@ -355,7 +466,7 @@ function nextExercise(section, level, used) {
       if (!used[list[j].u]) return { section: section, level: LEVELS[i], title: list[j].t, url: list[j].u };
     }
   }
-  // Everything done: repeat from the girl's level.
+  // Everything done: repeat from the kid's level.
   var lv = byLevel[LEVELS[start]] ? LEVELS[start] : Object.keys(byLevel)[0];
   var pick = byLevel[lv][Math.floor(Math.random() * byLevel[lv].length)];
   return { section: section, level: lv, title: pick.t, url: pick.u };
@@ -365,37 +476,40 @@ function nextExercise(section, level, used) {
 
 function dailyReminder() {
   var t = today();
-  var url = publicUrl();
   var logs = readTable('Log');
-  readTable('Girls').forEach(function (g) {
-    if (!g.Email) return;
-    var done = logs.some(function (l) { return l.Girl === g.Name && l.Date === t; });
+  readTable('Girls').forEach(function (k) {
+    if (!k.Email) return;
+    var done = logs.some(function (l) { return l.Girl === k.Name && l.Date === t; });
     if (done) return;
-    var a = ensureAssignments(g, [t])[t];
-    var s = SECTIONS[a.section];
+    var a = ensureAssignments(k, [t])[t];
     MailApp.sendEmail({
-      to: g.Email,
-      subject: g.Name + ', your 10 minutes of English are waiting!',
-      htmlBody: '<p>Hi ' + g.Name + ' 👋</p><p>Today: <b>' + s.label + '</b> — ' + a.title + '</p>' +
-        '<p><a href="' + url + '">Open English Quest</a> and keep your streak going 🔥</p>'
+      to: k.Email,
+      subject: k.Name + ', your 10 minutes of English are waiting!',
+      htmlBody: '<p>Hi ' + k.Name + ',</p><p>Today: <b>' + SECTIONS[a.section].label + '</b> — ' + a.title + '</p>' +
+        '<p><a href="' + groupLink(groupOf(k)) + '">Open English Quest</a> and keep your streak going.</p>'
     });
   });
 }
 
+// Fridays: the owner gets every group; each group with an Email gets its own summary.
 function weeklySummary() {
-  var to = Session.getEffectiveUser().getEmail();
-  if (!to) return;
-  var data = apiParent(getSetting('AdminPIN'));
-  var rows = data.girls.map(function (d) {
+  var data = parentData(groups(), true);
+  var owner = Session.getEffectiveUser().getEmail();
+  if (owner) {
+    MailApp.sendEmail({ to: owner, subject: 'English Quest — weekly summary ' + data.today, htmlBody: data.groups.map(summaryHtml).join('<hr>') });
+  }
+  data.groups.forEach(function (g) {
+    if (g.email) MailApp.sendEmail({ to: g.email, subject: 'English Quest — ' + g.name + ' weekly summary', htmlBody: summaryHtml(g) });
+  });
+}
+
+function summaryHtml(g) {
+  var rows = g.girls.map(function (d) {
     return '<tr><td><b>' + d.girl.name + '</b></td><td>' + d.stats.weekDone + '/' + d.stats.weekTotal + '</td><td>' +
       (d.stats.avg === null ? '–' : d.stats.avg + '%') + '</td><td>' + d.stats.streak + '</td><td>' + d.stats.balance + '</td><td>' + d.girl.levelLabel + '</td></tr>';
   }).join('');
-  MailApp.sendEmail({
-    to: to,
-    subject: 'English Quest — weekly summary ' + data.today,
-    htmlBody: '<table cellpadding="6" border="1" style="border-collapse:collapse"><tr><th>Girl</th><th>Week</th><th>Avg</th><th>Streak</th><th>Points</th><th>Level</th></tr>' +
-      rows + '</table><p>Family goal: ' + data.family.total + ' / ' + data.family.goal + '</p><p><a href="' + data.appUrl + '">Open English Quest</a></p>'
-  });
+  return '<h3>' + g.name + '</h3><table cellpadding="6" border="1" style="border-collapse:collapse"><tr><th>Name</th><th>Week</th><th>Avg</th><th>Streak</th><th>Points</th><th>Level</th></tr>' +
+    rows + '</table><p>Group goal: ' + g.goal.total + ' / ' + g.goal.goal + '</p><p><a href="' + g.link + '">Open English Quest</a></p>';
 }
 
 function installTriggers() {
@@ -408,7 +522,7 @@ function installTriggers() {
   ScriptApp.newTrigger('weeklySummary').timeBased().onWeekDay(ScriptApp.WeekDay.FRIDAY).atHour(12).inTimezone(TZ).create();
 }
 
-// ---------- Setup ----------
+// ---------- Setup & migrations ----------
 
 function ensureSetup() {
   var props = PropertiesService.getScriptProperties();
@@ -424,32 +538,49 @@ function ensureSetup() {
       if (sh.getLastRow() === 0) {
         sh.getRange(1, 1, 1, HEADERS[name].length).setValues([HEADERS[name]]).setFontWeight('bold');
         sh.setFrozenRows(1);
+      } else {
+        // Add columns introduced by later versions.
+        var head = sh.getRange(1, 1, 1, Math.max(1, sh.getLastColumn())).getValues()[0];
+        HEADERS[name].forEach(function (h) {
+          if (head.indexOf(h) < 0) {
+            head.push(h);
+            sh.getRange(1, head.length).setValue(h).setFontWeight('bold');
+          }
+        });
       }
       sh.getRange('A:Z').setNumberFormat('@');
     });
     var stray = ss.getSheetByName('Sheet1') || ss.getSheetByName('גיליון1');
     if (stray && ss.getSheets().length > 1) ss.deleteSheet(stray);
+    clearCache();
 
-    if (readTable('Girls').length === 0) {
-      [['Ziv', 15, randomPin(), 'b1', '', 0, '#7b7ff7'],
-       ['Ron', 14, randomPin(), 'b1', '', 0, '#3cc7b6'],
-       ['Aviv', 12, randomPin(), 'a2', '', 0, '#f6a04d']].forEach(function (r) {
-        ss.getSheetByName('Girls').appendRow(r);
-      });
-    }
-    if (readTable('Rewards').length === 0) {
-      [[60, 'Choose the Friday dessert 🍰'],
-       [120, '30 extra minutes of screen time 📱'],
-       [200, 'Skip one chore of your choice 🧹'],
-       [300, 'Ice cream / coffee date with Dad 🍦'],
-       [450, 'Pick the family movie night + snacks 🍿'],
-       [650, '₪75 gift card 🎁'],
-       [1000, 'Outing of your choice — escape room, bowling… 🎳']].forEach(function (r) {
-        ss.getSheetByName('Rewards').appendRow(r);
-      });
-    }
-    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out 🍕', AppUrl: '', PublicUrl: 'https://yanivkrispel-cyber.github.io/english-quest/' };
+    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: 'https://yanivkrispel-cyber.github.io/english-quest/' };
     Object.keys(defaults).forEach(function (k) { if (getSetting(k) === null) setSetting(k, defaults[k]); });
+
+    // v3: groups. The existing family becomes the first (default) group.
+    if (readTableUncached('Groups').length === 0) {
+      appendRow('Groups', { Id: 'family', Name: 'Family', ParentPIN: '', Goal: getSetting('FamilyGoal') || 1500, GoalReward: getSetting('FamilyReward') || '', Email: '' });
+    }
+    var firstId = String(readTableUncached('Groups')[0].Id);
+    var gs = sheet('Girls');
+    if (readTableUncached('Girls').length === 0) {
+      [['Ziv', 15, 'b1', '#7b7ff7'], ['Ron', 14, 'b1', '#3cc7b6'], ['Aviv', 12, 'a2', '#f6a04d']].forEach(function (r) {
+        appendRow('Girls', { Name: r[0], Age: r[1], PIN: randomPin(), Level: r[2], Redeemed: 0, Color: r[3], Group: firstId });
+      });
+    } else {
+      var values = gs.getDataRange().getValues();
+      var col = values[0].indexOf('Group');
+      for (var i = 1; i < values.length; i++) {
+        if (values[i].join('') !== '' && !String(values[i][col]).trim()) gs.getRange(i + 1, col + 1).setValue(firstId);
+      }
+    }
+    if (readTableUncached('Rewards').length === 0) {
+      [[60, 'Choose the Friday dessert'], [120, '30 extra minutes of screen time'], [200, 'Skip one chore of your choice'],
+       [300, 'Ice cream / coffee date with Dad'], [450, 'Pick the family movie night + snacks'], [650, '₪75 gift card'],
+       [1000, 'Outing of your choice — escape room, bowling…']].forEach(function (r) {
+        appendRow('Rewards', { Points: r[0], Reward: r[1] });
+      });
+    }
 
     clearCache();
     installTriggers();
@@ -466,7 +597,7 @@ function sheet(name) { return SpreadsheetApp.getActive().getSheetByName(name); }
 // Two cache levels: TABLES lives for one request; CacheService survives across requests
 // (sheet reads cost 0.3-1s each). Manual edits in the sheet clear it via onEdit.
 var TABLES = {};
-var CACHE_TTL = { Girls: 21600, Rewards: 21600, Settings: 21600, Assignments: 900, Log: 900 };
+var CACHE_TTL = { Girls: 21600, Rewards: 21600, Settings: 21600, Groups: 21600, Assignments: 900, Log: 900 };
 var CHUNK = 30000;
 
 function readTable(name) {
@@ -524,15 +655,18 @@ function readTableUncached(name) {
   var head = values[0];
   return values.slice(1).filter(function (r) { return r.join('') !== ''; }).map(function (r) {
     var o = {};
-    head.forEach(function (h, i) { o[h] = r[i] instanceof Date && h !== 'Timestamp' ? fmt(r[i]) : r[i]; });
-    if (o.Name !== undefined) o.Name = String(o.Name).trim();
+    head.forEach(function (h, i) { if (h) o[h] = r[i] instanceof Date && h !== 'Timestamp' ? fmt(r[i]) : r[i]; });
+    ['Name', 'Group', 'Id'].forEach(function (k) { if (o[k] !== undefined) o[k] = String(o[k]).trim(); });
     if (o.Level !== undefined) o.Level = String(o.Level).trim().toLowerCase().replace('b1+', 'b1-b2');
     return o;
   });
 }
 
+// Writes by header name, so it works whatever the column order in the sheet is.
 function appendRow(name, obj) {
-  sheet(name).appendRow(HEADERS[name].map(function (h) { return obj[h] === undefined ? '' : obj[h]; }));
+  var sh = sheet(name);
+  var head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  sh.appendRow(head.map(function (h) { return obj[h] === undefined ? '' : obj[h]; }));
   invalidate(name);
 }
 
@@ -572,6 +706,8 @@ function auth(name, pin) {
   return g;
 }
 
+function randomPin() { return String(1000 + Math.floor(Math.random() * 9000)); }
+
 // ---------- Date helpers (yyyy-MM-dd strings, Asia/Jerusalem) ----------
 
 function fmt(d) { return Utilities.formatDate(d, TZ, 'yyyy-MM-dd'); }
@@ -581,6 +717,3 @@ function addDays(s, n) { var d = parseDate(s); d.setDate(d.getDate() + n); retur
 function daysBetween(a, b) { return Math.round((parseDate(b) - parseDate(a)) / 86400000); }
 function weekStart(s) { return addDays(s, -parseDate(s).getDay()); }
 function weekDates(s) { var ws = weekStart(s), out = []; for (var i = 0; i < 7; i++) out.push(addDays(ws, i)); return out; }
-
-
-function randomPin() { return String(1000 + Math.floor(Math.random() * 9000)); }

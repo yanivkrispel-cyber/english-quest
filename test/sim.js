@@ -6,7 +6,7 @@ function mkSheet(name){ const rows = []; return sheets[name] = {
   getLastRow: () => rows.length, getLastColumn: () => Math.max(0, ...rows.map(r => r.length)),
   getRange(a, b, nr, nc){ if (typeof a === 'string') return { setNumberFormat(){ return this; } };
     return { setValues(v){ v.forEach((r,i)=>{ rows[a-1+i] = rows[a-1+i]||[]; r.forEach((x,j)=> rows[a-1+i][b-1+j]=x); }); return this; },
-      setFontWeight(){ return this; }, setValue(x){ rows[a-1][b-1] = x; },
+      setFontWeight(){ return this; }, setValue(x){ rows[a-1] = rows[a-1] || []; rows[a-1][b-1] = x; return this; },
       getValues(){ const w = Math.max(...rows.map(r=>r.length)); return rows.slice(a-1, a-1+nr).map(r => Array.from({length: nc||w}, (_,j)=> r[b-1+j] ?? '')); } }; },
   getDataRange(){ return this.getRange(1, 1, rows.length, this.getLastColumn()); },
   appendRow(r){ rows.push(r.slice()); }, setFrozenRows(){} }; }
@@ -68,8 +68,34 @@ console.log('Ziv level', d.girl.levelLabel, d.stats, '\n', d.week.map(w => w.day
 d = run(`apiDashboard('Aviv','2694')`); console.log('Aviv', d.stats, d.nextReward);
 // catch-up of Ziv's missed Monday 12 is last week -> should fail
 try { run(`apiSubmit('Ziv','4821','2026-10-12',5,10,null)`); } catch(e){ console.log('old week ok:', e.message); }
-const p = run(`apiParent('1234')`); console.log('family', p.family, p.girls.map(g => g.girl.name + ' hist ' + JSON.stringify(g.history)).join('\n'));
+const p = run(`apiParent('1234')`); console.log('family', p.groups[0].goal, p.groups[0].girls.map(g => g.girl.name + ' hist ' + JSON.stringify(g.history)).join('\n'));
 run('dailyReminder()'); run('weeklySummary()');
 console.log('Ron untouched dash:', run(`apiDashboard('Ron','7356')`).week.filter(w=>!w.isFuture).length);
 const keys = sheets.Assignments.rows.slice(1).map(r => r[0] + '|' + r[1]);
 console.log('assignments', keys.length, 'duplicates', keys.length - new Set(keys).size);
+
+// ---- groups ----
+ctx.__day = '2026-10-14';
+let P = run(`apiParent('1234')`);
+console.log('admin groups:', P.isAdmin, P.groups.map(g => g.name + ':' + g.girls.length + ':' + g.link).join(' '));
+P = run(`apiAdminAddGroup('1234', 'Cohen family', 'cohen@x')`);
+const gid = P.created.link.split('g=')[1];
+console.log('created group:', P.created.name, 'pin', P.created.pin.length, 'link', P.created.link);
+try { run(`apiAdminAddGroup('1234', 'cohen FAMILY', '')`); } catch (e) { console.log('dup group ok:', e.message); }
+P = run(`apiAdminAddKid('1234', 'Noa', '13', '${gid}', 'b1')`);
+console.log('created kid:', P.created.name, 'in', P.created.group, 'pin len', P.created.pin.length);
+try { run(`apiAdminAddKid('1234', 'aviv', '9', '${gid}', 'a1')`); } catch (e) { console.log('dup kid ok:', e.message); }
+try { run(`apiAdminAddKid('${P.created.pin}', 'X', '9', '${gid}', 'a1')`); } catch (e) { console.log('non-admin add ok:', e.message); }
+const noaPin = P.created.pin;
+let D = run(`apiDashboard('Noa', '${noaPin}')`);
+console.log('Noa week:', D.week.map(w => w.day + (w.beforeStart ? '(pre)' : '') + ':' + w.section).join(' '), '| total', D.stats.weekTotal, '| rewards', D.rewards.length);
+ctx.__day = '2026-10-15';
+D = run(`apiDashboard('Noa', '${noaPin}')`);
+console.log('Noa next day:', D.week.filter(w => !w.beforeStart && !w.isFuture).map(w => w.day + ':' + w.section + ':' + w.level).join(' '));
+const gp = run(`apiParent('1234')`).groups.find(g => g.id === gid).parentPin;
+P = run(`apiParent('${gp}')`);
+console.log('group parent:', P.isAdmin, P.groups.length, P.groups[0].name, P.groups[0].girls.map(k => k.girl.name), 'pins hidden:', P.groups[0].girls.every(k => k.pin === undefined), 'sheet hidden:', P.sheetUrl === null);
+console.log('public group:', JSON.stringify(run(`apiPublic('${gid}')`).girls.map(k => k.name)), 'default:', JSON.stringify(run(`apiPublic('')`).girls.map(k => k.name)));
+try { run(`apiPublic('nope')`); } catch (e) { console.log('bad link ok:', e.message); }
+console.log('admin sees', run(`apiParent('1234')`).groups.map(g => g.name + ':' + g.girls.length).join(' '));
+run('weeklySummary()');

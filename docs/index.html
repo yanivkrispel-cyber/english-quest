@@ -193,6 +193,12 @@ h2{font-size:18px;font-weight:700;margin:0}
 .recent div{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.5)}
 .recent div span:nth-child(2){flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 details summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--muted);margin-top:12px;list-style:none}
+.input{width:100%;min-width:0;height:50px;border-radius:18px;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.65);
+  font:inherit;font-size:15px;font-weight:600;padding:0 16px;color:var(--ink);outline:none;-webkit-appearance:none;appearance:none}
+.input:focus{border-color:#a5b4fc;box-shadow:0 0 0 4px rgba(165,180,252,.35)}
+select.input{cursor:pointer;padding-right:40px;background-repeat:no-repeat;background-size:6px 6px,6px 6px;
+  background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 22px) 22px,calc(100% - 16px) 22px}
 textarea{width:100%;min-height:150px;border-radius:20px;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.65);
   font:inherit;font-size:14px;padding:14px;color:var(--ink);resize:vertical;outline:none}
 
@@ -223,6 +229,8 @@ const LEVELS = [['a1','A1'],['a2','A2'],['b1','B1'],['b1-b2','B1+'],['b2','B2'],
 const CHECK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const BIG_CHECK = CHECK.replace('width="18" height="18"', 'width="30" height="30"');
 let pub = null, session = null, dash = null;
+// Group from the link (?g=...); empty means the default group. Not available inside Apps Script's iframe.
+const GROUP = (window.google && google.script) ? '' : (new URLSearchParams(location.search).get('g') || '');
 const SEC = { level: ['target', 't-level'], grammar: ['book-open-text', 't-grammar'], vocabulary: ['text-aa', 't-vocab'],
   listening: ['headphones', 't-listen'], reading: ['article', 't-read'], writing: ['pen-nib', 't-write'], 'use-of-english': ['puzzle-piece', 't-uoe'] };
 const REWARD_ICONS = ['cake', 'device-mobile', 'broom', 'ice-cream', 'popcorn', 'gift', 'ticket', 'trophy'];
@@ -270,7 +278,7 @@ async function start(){
 async function loadHome(){
   loading();
   const slow = setTimeout(() => app.insertAdjacentHTML('beforeend', '<div class="glass panel" style="text-align:center">Still loading… if this stays, sign out of other Google accounts or open in an incognito window.</div>'), 12000);
-  try { pub = pub || await call('apiPublic'); clearTimeout(slow); }
+  try { pub = pub || await call('apiPublic', GROUP); clearTimeout(slow); }
   catch(e){ clearTimeout(slow); app.innerHTML = '<div class="glass panel">Could not load: ' + esc(e.message) + '</div>'; return; }
   home();
 }
@@ -279,7 +287,7 @@ function home(){
   app.innerHTML = `
   <div class="glass panel">
     <div class="row-flex between">
-      <div><h1>English Quest</h1><div class="sub">10 minutes a day</div></div>
+      <div><h1>English Quest</h1><div class="sub">${esc(pub.group.name)} · 10 minutes a day</div></div>
       <button class="btn btn-glass icon-btn" id="pbtn" title="Parent">${icon('lock-simple')}</button>
     </div>
     <div class="word-card mt">
@@ -537,56 +545,130 @@ async function parent(pin, silent, remember){
   }
 }
 
+async function copyText(text){
+  try { await navigator.clipboard.writeText(text); }
+  catch(e){ const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
+  toast('Copied');
+}
+const waLink = text => 'https:' + '/' + '/api.whatsapp.com/send?text=' + encodeURIComponent(text);
+
+function groupMessage(g, word){
+  return `Good morning! ☀️ English Quest is waiting for you 💜\n10 minutes a day — open the link, pick your name, do today's task and log your score.\n\n🔗 ${g.link}\n\n📝 Word of the day: ${word.word} — ${word.meaning}\n` +
+    g.girls.map(k => `🔥 ${k.girl.name}: ${k.stats.weekDone}/${k.stats.weekTotal} this week, ${k.stats.balance} pts`).join('\n');
+}
+
+function createdCard(c){
+  if (!c) return '';
+  const text = c.type === 'group'
+    ? `English Quest — ${c.name}\nLink for the kids: ${c.link}\nParent PIN (tap the lock on the home screen): ${c.pin}`
+    : `Hi ${c.name}! 👋 Your English Quest link: ${c.link}\nTap your name and enter your PIN: ${c.pin}\nYour first task is a level test.`;
+  return `<div class="today iri" id="created">
+    <div class="label" style="color:#3b3f55">${c.type === 'group' ? 'Group created' : 'Kid added to ' + esc(c.group)}</div>
+    <h2>${esc(c.name)}</h2>
+    <div class="row-flex mt-s" style="flex-wrap:wrap;gap:8px">
+      <span class="chip purple">${icon('key')} ${c.type === 'group' ? 'Parent PIN' : 'PIN'} ${esc(c.pin)}</span>
+    </div>
+    <div class="sub mt-s" style="color:#3b3f55;word-break:break-all">${esc(c.link)}</div>
+    <div class="row-flex mt-s">
+      <button class="btn btn-glass btn-sm" data-copy="${esc(text)}">${icon('copy')} Copy details</button>
+      <a class="btn btn-teal btn-sm" target="_blank" rel="noopener" href="${esc(waLink(text))}">${icon('whatsapp-logo')} WhatsApp</a>
+    </div>
+  </div>`;
+}
+
+function groupBlock(g, p, i){
+  const goal = g.goal, pct = Math.min(100, Math.round(goal.total / goal.goal * 100));
+  return `
+    <div class="row-flex between" style="margin-top:${i ? 18 : 0}px;padding:0 4px">
+      <div><div class="label">${p.isAdmin ? 'Group' : fmtDate(p.today) + ' · weekly overview'}</div><h1 style="font-size:26px">${esc(g.name)}</h1></div>
+      ${p.isAdmin && g.parentPin ? `<span class="chip purple">${icon('key')} ${esc(g.parentPin)}</span>` : ''}
+      ${p.isAdmin && !g.parentPin ? `<span class="chip">${icon('crown-simple')} Admin only</span>` : ''}
+    </div>
+    <div class="today">
+      <div class="label" style="color:#3b3f55">Group goal</div>
+      <h2>${rtext(goal.reward)}</h2>
+      <div class="bar mt-s"><i style="width:${Math.max(3, pct)}%"></i></div>
+      <div class="sub mt-s" style="color:#3b3f55"><b>${goal.total}</b> / ${goal.goal} points together</div>
+    </div>
+    ${g.girls.length ? g.girls.map(k => girlCard(k, p.isAdmin)).join('') : '<div class="glass panel sub" style="text-align:center">No kids in this group yet</div>'}
+    <div class="glass panel">
+      <h2>Share with the kids</h2>
+      <div class="row-flex mt-s" style="gap:8px">
+        <input class="input" readonly value="${esc(g.link)}">
+        <button class="btn btn-glass icon-btn" data-copy="${esc(g.link)}" title="Copy link">${icon('link-simple')}</button>
+      </div>
+      <textarea class="mt-s" data-msg="${i}">${esc(groupMessage(g, p.word))}</textarea>
+      <div class="row-flex mt-s">
+        <button class="btn btn-glass btn-sm" data-copymsg="${i}">${icon('copy')} Copy</button>
+        <a class="btn btn-teal btn-sm" target="_blank" rel="noopener" data-wa="${i}" href="#">${icon('whatsapp-logo')} WhatsApp</a>
+      </div>
+    </div>`;
+}
+
+function manageCard(p){
+  return `<div class="glass panel" style="margin-top:18px">
+    <div class="row-flex between"><h2>Manage</h2><span class="chip">${icon('crown-simple')} Admin</span></div>
+    <div class="label mt">New group</div>
+    <input class="input mt-s" id="ng-name" placeholder="Group name, e.g. Cohen family">
+    <input class="input mt-s" id="ng-email" type="email" placeholder="Parent email for weekly summary (optional)">
+    <button class="btn btn-primary btn-block mt-s" id="ng-btn">${icon('users-three')} Create group</button>
+    <div class="label mt">New kid</div>
+    <input class="input mt-s" id="nk-name" placeholder="Name (must be unique)">
+    <div class="row-flex mt-s" style="gap:10px">
+      <input class="input" id="nk-age" type="number" inputmode="numeric" placeholder="Age">
+      <select class="input" id="nk-level">${p.levels.map(l => `<option value="${l.id}" ${l.id === 'a2' ? 'selected' : ''}>Start ${l.label}</option>`).join('')}</select>
+    </div>
+    <select class="input mt-s" id="nk-group">${p.groups.map(g => `<option value="${esc(g.id)}">${esc(g.name)}</option>`).join('')}</select>
+    <button class="btn btn-primary btn-block mt-s" id="nk-btn">${icon('user-plus')} Add kid</button>
+    <div class="sub mt-s" style="font-size:12px">A PIN is created automatically. New kids start with the level test on their first day.</div>
+    <a class="btn btn-glass btn-block mt" href="${esc(p.sheetUrl)}" target="_blank" rel="noopener">Open Google Sheet ${icon('arrow-up-right')}</a>
+    <div class="sub mt-s" style="font-size:12px">Edit PINs, levels, reminder emails, redeemed points, goals and rewards in the sheet.</div>
+  </div>`;
+}
+
 function renderParent(p, pin){
-  const fam = p.family, famPct = Math.min(100, Math.round(fam.total / fam.goal * 100));
-  const msg = `Good morning girls! ☀️ English Quest is waiting for you 💜\n10 minutes a day — open the link, pick your name, do today's task and log your score.\n\n🔗 ${p.appUrl}\n\n📝 Word of the day: ${p.word.word} — ${p.word.meaning}\n` +
-    p.girls.map(g => `🔥 ${g.girl.name}: ${g.stats.weekDone}/${g.stats.weekTotal} this week, ${g.stats.balance} pts`).join('\n');
   app.innerHTML = `
   <div class="stack">
     <div class="row-flex between">
-      <div><h1>Parent view</h1><div class="sub">${fmtDate(p.today)} · weekly overview</div></div>
+      <div><h1>${p.isAdmin ? 'Admin view' : 'Parent view'}</h1><div class="sub">${p.isAdmin ? p.groups.length + ' groups · ' + fmtDate(p.today) : 'English Quest'}</div></div>
       <div class="row-flex" style="gap:8px">
         <button class="btn btn-glass icon-btn" id="refresh">${icon('arrows-clockwise')}</button>
         <button class="btn btn-glass icon-btn" id="logout" title="Exit">${icon('sign-out')}</button>
       </div>
     </div>
-
-    <div class="today">
-      <div class="label" style="color:#3b3f55">Family goal</div>
-      <h2>${rtext(fam.reward)}</h2>
-      <div class="bar mt-s"><i style="width:${Math.max(3, famPct)}%"></i></div>
-      <div class="sub mt-s" style="color:#3b3f55"><b>${fam.total}</b> / ${fam.goal} points together</div>
-    </div>
-
-    ${p.girls.map(girlCard).join('')}
-
-    <div class="glass panel">
-      <h2>Message for WhatsApp</h2>
-      <textarea id="msg" class="mt-s">${esc(msg)}</textarea>
-      <div class="row-flex mt-s">
-        <button class="btn btn-glass btn-sm" id="copy">${icon('copy')} Copy</button>
-        <a class="btn btn-teal btn-sm" target="_blank" rel="noopener" id="wa" href="#">${icon('whatsapp-logo')} WhatsApp</a>
-      </div>
-    </div>
-
-    <div class="glass panel">
-      <h2>Settings</h2>
-      <div class="sub mt-s">PINs, levels, emails for reminders, redeemed points and rewards are edited in the Google Sheet.</div>
-      <a class="btn btn-primary btn-block mt" href="${esc(p.sheetUrl)}" target="_blank" rel="noopener">Open Google Sheet ${icon('arrow-up-right')}</a>
-    </div>
+    ${createdCard(p.created)}
+    ${p.groups.map((g, i) => groupBlock(g, p, i)).join('')}
+    ${p.isAdmin ? manageCard(p) : ''}
   </div>`;
   document.getElementById('refresh').onclick = () => parent(pin, true);
   document.getElementById('logout').onclick = () => { store.del('eq_admin'); loadHome(); };
-  const ta = document.getElementById('msg'), wa = document.getElementById('wa');
-  const syncWa = () => wa.href = 'https:' + '/' + '/api.whatsapp.com/send?text=' + encodeURIComponent(ta.value);
-  ta.oninput = syncWa; syncWa();
-  document.getElementById('copy').onclick = async () => {
-    try { await navigator.clipboard.writeText(ta.value); toast('Copied'); }
-    catch(e){ ta.select(); document.execCommand('copy'); toast('Copied'); }
+  app.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(b.dataset.copy));
+  app.querySelectorAll('[data-msg]').forEach(ta => {
+    const i = ta.dataset.msg, wa = app.querySelector(`[data-wa="${i}"]`);
+    const sync = () => wa.href = waLink(ta.value);
+    ta.oninput = sync; sync();
+    app.querySelector(`[data-copymsg="${i}"]`).onclick = () => copyText(ta.value);
+  });
+  if (p.created) window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (!p.isAdmin) return;
+  const busy = (btn, on, label) => { btn.disabled = on; if (label) btn.innerHTML = label; };
+  document.getElementById('ng-btn').onclick = async e => {
+    const btn = e.currentTarget, label = btn.innerHTML;
+    busy(btn, true, '<span class="mini-spin"></span>Creating…');
+    try { renderParent(await call('apiAdminAddGroup', pin, document.getElementById('ng-name').value, document.getElementById('ng-email').value), pin); }
+    catch(err){ toast(err.message, true); busy(btn, false, label); }
+  };
+  document.getElementById('nk-btn').onclick = async e => {
+    const btn = e.currentTarget, label = btn.innerHTML;
+    busy(btn, true, '<span class="mini-spin"></span>Adding…');
+    try {
+      renderParent(await call('apiAdminAddKid', pin, document.getElementById('nk-name').value, document.getElementById('nk-age').value,
+        document.getElementById('nk-group').value, document.getElementById('nk-level').value), pin);
+    } catch(err){ toast(err.message, true); busy(btn, false, label); }
   };
 }
 
-function girlCard(g){
+function girlCard(g, isAdmin){
   const s = g.stats;
   return `<div class="glass panel">
     <div class="row-flex between">
@@ -596,6 +678,7 @@ function girlCard(g){
     </div>
     <div class="row-flex mt-s" style="flex-wrap:wrap;gap:8px">
       <span class="chip purple">${s.weekDone}/${s.weekTotal} this week</span>
+      ${isAdmin && g.pin ? `<span class="chip">${icon('key')} ${esc(g.pin)}</span>` : ''}
       <span class="chip">${icon('target')} ${s.avg == null ? '–' : s.avg + '%'}</span>
       <span class="chip">${icon('fire')} ${s.streak}</span>
       <span class="chip">${s.total} tasks total</span>
