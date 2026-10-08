@@ -3,7 +3,9 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v4';
+var SETUP_VERSION = 'v5';
+// The production web app (Apps Script deployment) that the Pages front end calls.
+var APP_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
 var LEVEL_LABEL = { a1: 'A1', a2: 'A2', b1: 'B1', 'b1-b2': 'B1+', b2: 'B2', c1: 'C1' };
 var LEVEL_TEST = { section: 'level', level: '', title: 'English Level Test', url: 'https://test-english.com/level-test/' };
@@ -67,8 +69,6 @@ var WORDS = [
 
 function doGet() {
   ensureSetup();
-  var url = ScriptApp.getService().getUrl();
-  if (url && getSetting('AppUrl') !== url) setSetting('AppUrl', url);
   return HtmlService.createHtmlOutputFromFile('Index')
     .setTitle('English Quest')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')
@@ -81,7 +81,7 @@ function doGet() {
 function api() {
   return {
   apiPublic: apiPublic, apiWarm: apiWarm, apiDashboard: apiDashboard, apiSubmit: apiSubmit, apiParent: apiParent,
-  apiAdminAddGroup: apiAdminAddGroup, apiAdminAddKid: apiAdminAddKid,
+  apiAdminAddGroup: apiAdminAddGroup, apiAdminAddKid: apiAdminAddKid, apiAdminSettings: apiAdminSettings,
   apiPushSubscribe: apiPushSubscribe, apiPushMessage: apiPushMessage, apiAdminTestPush: apiAdminTestPush
   };
 }
@@ -259,6 +259,7 @@ function parentData(list, isAdmin) {
     isAdmin: !!isAdmin,
     groups: out,
     sheetUrl: isAdmin ? SpreadsheetApp.getActive().getUrl() : null,
+    settings: isAdmin ? { reminderHour: Number(getSetting('ReminderHour')) || 17, lastCallHour: Number(getSetting('LastCallHour')) || null } : null,
     levels: LEVELS.map(function (l) { return { id: l, label: LEVEL_LABEL[l] }; }),
     today: t,
     word: wordOfDay(t)
@@ -309,6 +310,20 @@ function apiAdminAddKid(pin, name, age, groupId, level) {
   var data = apiParent(pin);
   data.created = { type: 'kid', name: name, pin: kidPin, link: groupLink(groupId), group: findGroup(groupId).Name };
   return data;
+}
+
+// Reminder times (hours, Asia/Jerusalem). An empty last call turns it off.
+function apiAdminSettings(pin, reminderHour, lastCallHour) {
+  ensureSetup();
+  if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can change settings');
+  var r = Number(reminderHour), l = lastCallHour === '' || lastCallHour === null ? '' : Number(lastCallHour);
+  if (!(r >= 0 && r <= 23)) throw new Error('Choose a reminder hour');
+  if (l !== '' && !(l >= 0 && l <= 23)) throw new Error('Choose a last-call hour');
+  if (l !== '' && l <= r) throw new Error('Last call must be later than the daily reminder');
+  setSetting('ReminderHour', String(r));
+  setSetting('LastCallHour', String(l));
+  installTriggers();
+  return apiParent(pin);
 }
 
 function uniqueParentPin() {
@@ -566,6 +581,7 @@ function ensureSetup() {
 
     var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: 'https://yanivkrispel-cyber.github.io/english-quest/' };
     Object.keys(defaults).forEach(function (k) { if (getSetting(k) === null) setSetting(k, defaults[k]); });
+    if (getSetting('AppUrl') !== APP_URL) setSetting('AppUrl', APP_URL);
 
     // v3: groups. The existing family becomes the first (default) group.
     if (readTableUncached('Groups').length === 0) {

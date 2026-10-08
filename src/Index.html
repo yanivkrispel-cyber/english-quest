@@ -189,6 +189,14 @@ h2{font-size:18px;font-weight:700;margin:0}
 .recent div{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.5)}
 .recent div span:nth-child(2){flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 details summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--muted);margin-top:12px;list-style:none}
+summary::-webkit-details-marker{display:none}
+.acc>summary.acc-head{margin:0;padding:14px 16px;border-radius:24px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  color:var(--ink);font-size:inherit;font-weight:inherit;user-select:none}
+.acc>summary.acc-head .sub i{font-size:12px;vertical-align:-1px}
+.acc-chev{display:inline-flex;font-size:20px;color:var(--muted);transition:transform .25s;flex:none}
+.acc[open]>summary .acc-chev{transform:rotate(180deg)}
+.acc-body{margin-top:14px}
+.acc[open]>.acc-body{animation:fade .25s}
 .input{width:100%;min-width:0;height:50px;border-radius:18px;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.65);
   font:inherit;font-size:15px;font-weight:600;padding:0 16px;color:var(--ink);outline:none;-webkit-appearance:none;appearance:none}
 .input:focus{border-color:#a5b4fc;box-shadow:0 0 0 4px rgba(165,180,252,.35)}
@@ -659,14 +667,30 @@ function createdCard(c){
   </div>`;
 }
 
+// Collapsible sections; each one's open/closed state is remembered on the device.
+function accOpen(key, dflt){ const v = store.get('eq_acc_' + key); return v === null ? dflt : v; }
+function accordion(key, open, head, body){
+  return `<details class="acc" data-acc="${esc(key)}" ${open ? 'open' : ''}>
+    <summary class="glass acc-head">${head}<span class="acc-chev">${icon('caret-down')}</span></summary>
+    <div class="acc-body stack">${body}</div>
+  </details>`;
+}
+function accHead(tileCls, ic, title, sub){
+  return `<div class="row-flex" style="gap:12px;min-width:0"><span class="tile ${tileCls}">${icon(ic, 'duotone')}</span>
+    <div style="min-width:0"><h2>${title}</h2><div class="sub" style="margin-top:2px;font-size:13px">${sub}</div></div></div>`;
+}
+
 function groupBlock(g, p, i){
+  const done = g.girls.reduce((a, k) => a + k.stats.weekDone, 0), total = g.girls.reduce((a, k) => a + k.stats.weekTotal, 0);
+  const sub = `${g.girls.length} ${g.girls.length === 1 ? 'kid' : 'kids'} · ${done}/${total} this week` +
+    (p.isAdmin ? (g.parentPin ? ` · ${icon('key')} ${esc(g.parentPin)}` : ' · admin only') : '');
+  return accordion('g:' + g.id, accOpen('g:' + g.id, p.groups.length === 1),
+    accHead('t-grammar', 'users-three', esc(g.name), sub), groupBody(g, p, i));
+}
+
+function groupBody(g, p, i){
   const goal = g.goal, pct = Math.min(100, Math.round(goal.total / goal.goal * 100));
   return `
-    <div class="row-flex between" style="margin-top:${i ? 18 : 0}px;padding:0 4px">
-      <div><div class="label">${p.isAdmin ? 'Group' : fmtDate(p.today) + ' · weekly overview'}</div><h1 style="font-size:26px">${esc(g.name)}</h1></div>
-      ${p.isAdmin && g.parentPin ? `<span class="chip purple">${icon('key')} ${esc(g.parentPin)}</span>` : ''}
-      ${p.isAdmin && !g.parentPin ? `<span class="chip">${icon('crown-simple')} Admin only</span>` : ''}
-    </div>
     <div class="today">
       <div class="label" style="color:#3b3f55">Group goal</div>
       <h2>${rtext(goal.reward)}</h2>
@@ -688,10 +712,30 @@ function groupBlock(g, p, i){
     </div>`;
 }
 
+const hourLabel = h => String(h).padStart(2, '0') + ':00';
+function settingsCard(p){
+  const s = p.settings, hours = Array.from({ length: 17 }, (_, i) => i + 6);
+  const opts = (sel, withOff) => (withOff ? `<option value="" ${!sel ? 'selected' : ''}>Off</option>` : '') +
+    hours.map(h => `<option value="${h}" ${Number(sel) === h ? 'selected' : ''}>${hourLabel(h)}</option>`).join('');
+  const sub = `Daily at ${hourLabel(s.reminderHour)}` + (s.lastCallHour ? ` · last call ${hourLabel(s.lastCallHour)}` : ' · no last call');
+  return accordion('settings', accOpen('settings', false), accHead('t-fire', 'bell-ringing', 'Reminders', sub), `
+    <div class="glass panel">
+      <div class="label">Daily reminder</div>
+      <select class="input mt-s" id="st-rem">${opts(s.reminderHour, false)}</select>
+      <div class="label mt">Last call</div>
+      <select class="input mt-s" id="st-last">${opts(s.lastCallHour, true)}</select>
+      <div class="sub mt-s" style="font-size:12px">Phone notifications (and emails, where set) go only to kids who haven't practiced that day.</div>
+      <button class="btn btn-primary btn-block mt" id="st-save">${icon('check')} Save</button>
+    </div>`);
+}
+
 function manageCard(p){
-  return `<div class="glass panel" style="margin-top:18px">
-    <div class="row-flex between"><h2>Manage</h2><span class="chip">${icon('crown-simple')} Admin</span></div>
-    <div class="label mt">New group</div>
+  return accordion('manage', accOpen('manage', false), accHead('t-vocab', 'crown-simple', 'Manage', 'Add groups and kids · open the sheet'), manageBody(p));
+}
+
+function manageBody(p){
+  return `<div class="glass panel">
+    <div class="label">New group</div>
     <input class="input mt-s" id="ng-name" placeholder="Group name, e.g. Cohen family">
     <input class="input mt-s" id="ng-email" type="email" placeholder="Parent email for weekly summary (optional)">
     <button class="btn btn-primary btn-block mt-s" id="ng-btn">${icon('users-three')} Create group</button>
@@ -721,8 +765,9 @@ function renderParent(p, pin){
     </div>
     ${createdCard(p.created)}
     ${p.groups.map((g, i) => groupBlock(g, p, i)).join('')}
-    ${p.isAdmin ? manageCard(p) : ''}
+    ${p.isAdmin ? settingsCard(p) + manageCard(p) : ''}
   </div>`;
+  app.querySelectorAll('details.acc').forEach(d => d.addEventListener('toggle', () => store.set('eq_acc_' + d.dataset.acc, d.open)));
   document.getElementById('refresh').onclick = () => parent(pin, true);
   document.getElementById('logout').onclick = () => { store.del('eq_admin'); loadHome(); };
   app.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(b.dataset.copy));
@@ -741,6 +786,14 @@ function renderParent(p, pin){
     b.disabled = false;
   });
   const busy = (btn, on, label) => { btn.disabled = on; if (label) btn.innerHTML = label; };
+  document.getElementById('st-save').onclick = async e => {
+    const btn = e.currentTarget, label = btn.innerHTML;
+    busy(btn, true, '<span class="mini-spin"></span>Saving…');
+    try {
+      renderParent(await call('apiAdminSettings', pin, document.getElementById('st-rem').value, document.getElementById('st-last').value), pin);
+      toast('Reminder times saved');
+    } catch(err){ toast(err.message, true); busy(btn, false, label); }
+  };
   document.getElementById('ng-btn').onclick = async e => {
     const btn = e.currentTarget, label = btn.innerHTML;
     busy(btn, true, '<span class="mini-spin"></span>Creating…');

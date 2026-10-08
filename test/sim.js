@@ -132,3 +132,11 @@ pushLog.length = 0; run('lastCallReminder()');
 console.log('last call after practicing:', pushLog.length, '(expect 0)');
 console.log('admin test:', JSON.stringify(run("apiAdminTestPush('1234','Ziv')")));
 try { run("apiPushSubscribe('Ziv','0000','https://x.y/z','',false)"); } catch (e) { console.log('bad pin subscribe ok:', e.message); }
+
+// ---- settings ----
+let S = run("apiParent('1234')");
+console.log('settings:', JSON.stringify(S.settings));
+S = run("apiAdminSettings('1234','16','')"); console.log('after save:', JSON.stringify(S.settings));
+try { run("apiAdminSettings('1234','18','17')"); } catch (e) { console.log('order check ok:', e.message); }
+try { run("apiAdminSettings('" + run("apiParent('1234')").groups[1].parentPin + "','18','')"); } catch (e) { console.log('non-admin ok:', e.message); }
+console.log('AppUrl fixed:', run("getSetting('AppUrl')").includes('AKfycbzN95'));
