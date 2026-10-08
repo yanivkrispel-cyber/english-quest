@@ -155,52 +155,167 @@ function vapidJwt(endpoint) {
   return jwt;
 }
 
-// Sends an empty push; returns the HTTP status (201 ok, 404/410 = subscription gone).
-function sendPush(endpoint) {
-  var res = UrlFetchApp.fetch(endpoint, {
-    method: 'post',
-    headers: { TTL: String(PUSH_TTL), Urgency: 'normal', Authorization: 'vapid t=' + vapidJwt(endpoint) + ', k=' + vapidKeys().pub },
-    payload: '',
-    muteHttpExceptions: true
-  });
-  return res.getResponseCode();
+// Sends empty pushes in parallel; returns the HTTP statuses (201 ok, 404/410 = subscription gone).
+function sendPushes(endpoints) {
+  var k = vapidKeys().pub;
+  return UrlFetchApp.fetchAll(endpoints.map(function (e) {
+    return {
+      url: e, method: 'post', payload: '', muteHttpExceptions: true,
+      headers: { TTL: String(PUSH_TTL), Urgency: 'normal', Authorization: 'vapid t=' + vapidJwt(e) + ', k=' + k }
+    };
+  })).map(function (r) { return r.getResponseCode(); });
 }
 
 // ---------- Subscriptions & messages ----------
 
 function endpointKey(endpoint) { return 'PM:' + b64url(sha256(endpoint)).slice(0, 40); }
 
-// Sends one notification to every device of a kid. The message waits in the cache for
-// the service worker to pick up via apiPushMessage.
-function pushToKid(name, message) {
-  var subs = readTable('Push').filter(function (s) { return s.Girl === name; });
-  var cache = CacheService.getScriptCache();
-  var sent = 0, gone = [];
-  subs.forEach(function (s) {
-    cache.put(endpointKey(s.Endpoint), JSON.stringify(message), PUSH_TTL);
-    var code = sendPush(s.Endpoint);
-    if (code === 404 || code === 410) gone.push(s.Endpoint);
+// Notifies a list of devices. Each message waits in the cache for the service worker to
+// pick up via apiPushMessage. Dead subscriptions are removed from sheetName.
+function deliver(endpoints, message, sheetName) {
+  if (!endpoints.length) return { sent: 0, devices: 0 };
+  var msgs = {};
+  endpoints.forEach(function (e) { msgs[endpointKey(e)] = JSON.stringify(message); });
+  CacheService.getScriptCache().putAll(msgs, PUSH_TTL);
+  var codes = sendPushes(endpoints), sent = 0, gone = [];
+  codes.forEach(function (code, i) {
+    if (code === 404 || code === 410) gone.push(endpoints[i]);
     else if (code >= 200 && code < 300) sent++;
-    else console.warn('push ' + code + ' for ' + name);
+    else console.warn('push ' + code + ' to ' + endpoints[i].slice(0, 40));
   });
-  if (gone.length) removeSubscriptions(gone);
-  return { sent: sent, devices: subs.length - gone.length };
+  if (gone.length) removeSubscriptions(gone, sheetName);
+  return { sent: sent, devices: endpoints.length - gone.length };
 }
 
-function removeSubscriptions(endpoints) {
+function pushToKid(name, message) {
+  return deliver(readTable('Push').filter(function (s) { return s.Girl === name; }).map(function (s) { return s.Endpoint; }), message, 'Push');
+}
+
+function removeSubscriptions(endpoints, sheetName) {
+  sheetName = sheetName || 'Push';
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
-    var sh = sheet('Push');
+    var sh = sheet(sheetName);
     var values = sh.getDataRange().getValues();
     var col = values[0].indexOf('Endpoint');
     for (var i = values.length - 1; i >= 1; i--) {
       if (endpoints.indexOf(String(values[i][col])) >= 0) sh.deleteRow(i + 1);
     }
-    invalidate('Push');
+    invalidate(sheetName);
   } finally {
     lock.releaseLock();
   }
+}
+
+// ---------- Parent notifications ----------
+// ParentPush rows: Who = 'admin' (every group) or a group id; Instant = 'yes' / 'no'.
+
+function parentDevices(groupId) {
+  return readTable('ParentPush').filter(function (r) { return r.Who === 'admin' || r.Who === groupId; });
+}
+
+// Instant update to the kid's parents after she logs a task.
+function notifyCompletion(kid, entry) {
+  var endpoints = parentDevices(groupOf(kid)).filter(function (r) { return r.Instant !== 'no'; }).map(function (r) { return r.Endpoint; });
+  if (!endpoints.length) return;
+  var msg = entry.Section === 'level'
+    ? { title: kid.Name + ' finished the level test', body: 'Level ' + (LEVEL_LABEL[entry.Level] || '?') + ' · +' + entry.Points + ' pts' }
+    : { title: kid.Name + ' finished ' + SECTIONS[entry.Section].label,
+        body: entry.Title + ' — ' + entry.Correct + '/' + entry.Total + ' (' + entry.Percent + '%) · +' + entry.Points + ' pts' +
+          (entry.Date !== entry.DoneOn ? ' · catch-up' : '') };
+  deliver(endpoints, msg, 'ParentPush');
+}
+
+// Time-driven (21:00): who practiced today, per parent.
+function parentSummary() {
+  var t = today();
+  var done = {};
+  readTable('Log').forEach(function (l) { if (l.Date === t) done[l.Girl] = l; });
+  var byWho = {};
+  readTable('ParentPush').forEach(function (r) { (byWho[r.Who] = byWho[r.Who] || []).push(r.Endpoint); });
+  Object.keys(byWho).forEach(function (who) {
+    var kids = who === 'admin' ? readTable('Girls') : kidsIn(who);
+    if (!kids.length) return;
+    var n = kids.filter(function (k) { return done[k.Name]; }).length;
+    var body = kids.map(function (k) {
+      var l = done[k.Name];
+      if (!l) return k.Name + ' —';
+      return k.Name + ' ✓' + (l.Section === 'level' ? ' level test' : (l.Percent !== '' ? ' ' + l.Percent + '%' : ''));
+    }).join(' · ');
+    try { deliver(byWho[who], { title: 'Today: ' + n + '/' + kids.length + ' practiced', body: body }, 'ParentPush'); } catch (e) { console.error(e); }
+  });
+}
+
+function parentWho(pin) {
+  var a = parentAccess(pin);
+  return a.isAdmin ? 'admin' : String(a.group.Id);
+}
+
+function validEndpoint(endpoint) {
+  endpoint = String(endpoint || '');
+  if (!/^https:\/\/[^\s]+$/.test(endpoint) || endpoint.length > 1000) throw new Error('Invalid subscription');
+  return endpoint;
+}
+
+function findParentDevice(who, endpoint) {
+  return readTableUncached('ParentPush').filter(function (r) { return r.Who === who && r.Endpoint === endpoint; })[0];
+}
+
+// Sets one column of the ParentPush row(s) matching endpoint.
+function setParentDevice(endpoint, field, value) {
+  var sh = sheet('ParentPush');
+  var values = sh.getDataRange().getValues();
+  var ec = values[0].indexOf('Endpoint'), fc = values[0].indexOf(field);
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][ec]) === endpoint) sh.getRange(i + 1, fc + 1).setValue(value);
+  }
+  invalidate('ParentPush');
+}
+
+function apiParentPushSubscribe(pin, endpoint, agent, welcome) {
+  ensureSetup();
+  var who = parentWho(pin);
+  endpoint = validEndpoint(endpoint);
+  var instant = 'yes';
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    var row = readTableUncached('ParentPush').filter(function (r) { return r.Endpoint === endpoint; })[0];
+    if (row) {
+      instant = row.Instant === 'no' ? 'no' : 'yes';
+      if (row.Who !== who) setParentDevice(endpoint, 'Who', who);
+    } else {
+      appendRow('ParentPush', { Who: who, Endpoint: endpoint, Created: today(), Agent: String(agent || '').slice(0, 120), Instant: 'yes' });
+    }
+  } finally {
+    lock.releaseLock();
+  }
+  var res = { instant: instant === 'yes' };
+  if (welcome) {
+    res.sent = deliver([endpoint], {
+      title: 'Parent notifications are on',
+      body: 'Daily summary at ' + (Number(getSetting('ParentSummaryHour')) || 21) + ':00' + (res.instant ? ', plus an update whenever a task is done.' : '.')
+    }, 'ParentPush').sent;
+  }
+  return res;
+}
+
+function apiParentPushPrefs(pin, endpoint, instant) {
+  ensureSetup();
+  var who = parentWho(pin);
+  endpoint = validEndpoint(endpoint);
+  if (!findParentDevice(who, endpoint)) throw new Error('Turn on notifications first');
+  setParentDevice(endpoint, 'Instant', instant ? 'yes' : 'no');
+  return { instant: !!instant };
+}
+
+function apiParentPushTest(pin, endpoint) {
+  ensureSetup();
+  var who = parentWho(pin);
+  endpoint = validEndpoint(endpoint);
+  if (!findParentDevice(who, endpoint)) throw new Error('Turn on notifications first');
+  return deliver([endpoint], { title: 'Test notification', body: 'Parent notifications are working.' }, 'ParentPush');
 }
 
 function reminderMessage(kid, lastCall) {
@@ -237,8 +352,7 @@ function lastCallReminder() { pushReminders(true); }
 
 function apiPushSubscribe(name, pin, endpoint, agent, welcome) {
   var kid = auth(name, pin);
-  endpoint = String(endpoint || '');
-  if (!/^https:\/\/[^\s]+$/.test(endpoint) || endpoint.length > 1000) throw new Error('Invalid subscription');
+  endpoint = validEndpoint(endpoint);
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {

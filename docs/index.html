@@ -720,6 +720,74 @@ function groupBody(g, p, i){
 }
 
 const hourLabel = h => String(h).padStart(2, '0') + ':00';
+
+// ---------- Parent notifications ----------
+function notifyCard(p){
+  return accordion('notify', accOpen('notify', !p.push.devices.length), accHead('t-star', 'bell-simple-ringing', 'Notifications',
+    `Daily summary at ${hourLabel(p.push.summaryHour)} · task updates`), '<div class="glass panel" id="parentpush"><div class="sub" style="margin:0">Checking this device…</div></div>');
+}
+
+async function subscribeDevice(){
+  const perm = await Notification.requestPermission();
+  if (perm !== 'granted') throw new Error('Notifications are blocked');
+  const reg = await navigator.serviceWorker.ready;
+  return (await reg.pushManager.getSubscription()) || reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(pushKey) });
+}
+
+async function renderParentPush(p, pin){
+  const el = document.getElementById('parentpush');
+  if (!el) return;
+  pushKey = p.push.key;
+  let st;
+  try { st = await pushState(); } catch(e){ st = { state: 'unsupported' }; }
+  const note = text => el.innerHTML = `<div class="sub" style="margin:0;font-size:13px">${text}</div>`;
+  if (st.state === 'install') return note(`On iPhone, notifications work from the installed app: tap Share, then <b>Add to Home Screen</b>, and open it from there.`);
+  if (st.state === 'unsupported') return note('This browser can’t receive notifications. Open the installed app on your phone.');
+  if (st.state === 'denied') return note('Notifications are blocked for this app. Allow them in the phone’s settings for English Quest, then come back.');
+  const device = st.state === 'on' ? p.push.devices.find(d => d.e === st.sub.endpoint) : null;
+
+  if (!device) {
+    el.innerHTML = `<div class="sub" style="margin:0;font-size:13px">Get a summary every evening at ${hourLabel(p.push.summaryHour)} and an update whenever a kid finishes a task.</div>
+      <button class="btn btn-primary btn-block mt" id="pp-on">${icon('bell')} Turn on on this phone</button>`;
+    document.getElementById('pp-on').onclick = async e => {
+      const btn = e.currentTarget;
+      btn.disabled = true; btn.innerHTML = '<span class="mini-spin"></span>Turning on…';
+      try {
+        const sub = await subscribeDevice();
+        const r = await call('apiParentPushSubscribe', pin, sub.endpoint, navigator.userAgent, true);
+        p.push.devices.push({ e: sub.endpoint, instant: r.instant });
+        toast('On — a test notification is on its way');
+        renderParentPush(p, pin);
+      } catch(err){ toast(err.message || 'Could not turn on notifications', true); btn.disabled = false; btn.innerHTML = icon('bell') + ' Turn on on this phone'; }
+    };
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="row-flex between">
+      <div><b style="font-size:15px">Task updates</b><div class="sub" style="margin-top:2px;font-size:12px">A notification whenever a kid finishes a task</div></div>
+      <div class="toggle ${device.instant ? '' : 'off'}" id="pp-instant" role="switch" aria-checked="${device.instant}"></div>
+    </div>
+    <div class="row-flex between mt">
+      <div><b style="font-size:15px">Evening summary</b><div class="sub" style="margin-top:2px;font-size:12px">Every day at ${hourLabel(p.push.summaryHour)}</div></div>
+      <span class="chip teal">${icon('check')} On</span>
+    </div>
+    <button class="btn btn-glass btn-block mt" id="pp-test">${icon('paper-plane-tilt')} Send a test notification</button>`;
+  const tg = document.getElementById('pp-instant');
+  tg.onclick = async () => {
+    const next = !device.instant;
+    tg.classList.toggle('off', !next);
+    try { await call('apiParentPushPrefs', pin, device.e, next); device.instant = next; toast(next ? 'Task updates on' : 'Task updates off'); }
+    catch(err){ tg.classList.toggle('off', !device.instant); toast(err.message, true); }
+  };
+  document.getElementById('pp-test').onclick = async e => {
+    const btn = e.currentTarget, label = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = '<span class="mini-spin"></span>Sending…';
+    try { const r = await call('apiParentPushTest', pin, device.e); toast(r.sent ? 'Sent — check your notifications' : 'This device is no longer registered', !r.sent); }
+    catch(err){ toast(err.message, true); }
+    btn.disabled = false; btn.innerHTML = label;
+  };
+}
 function settingsCard(p){
   const s = p.settings, hours = Array.from({ length: 17 }, (_, i) => i + 6);
   const opts = (sel, withOff) => (withOff ? `<option value="" ${!sel ? 'selected' : ''}>Off</option>` : '') +
@@ -772,9 +840,11 @@ function renderParent(p, pin){
     </div>
     ${createdCard(p.created)}
     ${p.groups.map((g, i) => groupBlock(g, p, i)).join('')}
+    ${notifyCard(p)}
     ${p.isAdmin ? settingsCard(p) + manageCard(p) : ''}
   </div>`;
   app.querySelectorAll('details.acc').forEach(d => d.addEventListener('toggle', () => store.set('eq_acc_' + d.dataset.acc, d.open)));
+  renderParentPush(p, pin);
   document.getElementById('refresh').onclick = () => parent(pin, true);
   document.getElementById('logout').onclick = () => { store.del('eq_admin'); loadHome(); };
   app.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(b.dataset.copy));

@@ -24,7 +24,7 @@ const cacheMock = {
 };
 const ctx = {
   console, Math, JSON, Date, Number, String, Object, Array, BigInt, parseInt,
-  UrlFetchApp: { fetch: (url, o) => { pushLog.push({ url, auth: o.headers.Authorization }); const c = pushStatus(url); return { getResponseCode: () => c }; } },
+  UrlFetchApp: { fetchAll: reqs => reqs.map(o => { pushLog.push({ url: o.url, auth: o.headers.Authorization }); const c = pushStatus(o.url); return { getResponseCode: () => c }; }) },
   SpreadsheetApp: { getActive: () => ({ getSheetByName: n => sheets[n] || null, insertSheet: mkSheet, getSheets: () => Object.values(sheets),
     deleteSheet(){}, setSpreadsheetTimeZone(){}, getUrl: () => 'SHEET' }) },
   Utilities: { formatDate: d => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jerusalem' }).format(d),
@@ -140,3 +140,30 @@ S = run("apiAdminSettings('1234','16','')"); console.log('after save:', JSON.str
 try { run("apiAdminSettings('1234','18','17')"); } catch (e) { console.log('order check ok:', e.message); }
 try { run("apiAdminSettings('" + run("apiParent('1234')").groups[1].parentPin + "','18','')"); } catch (e) { console.log('non-admin ok:', e.message); }
 console.log('AppUrl fixed:', run("getSetting('AppUrl')").includes('AKfycbzN95'));
+
+// ---- parent notifications ----
+ctx.__day = '2026-10-20';
+pushStatus = () => 201;
+const gartId = run("apiParent('1234')").groups[1].id, gartPin = run("apiParent('1234')").groups[1].parentPin;
+let pp = run("apiParentPushSubscribe('1234','https://fcm.googleapis.com/fcm/send/dad','Android',true)");
+console.log('admin subscribe:', JSON.stringify(pp), JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/dad')")));
+run("apiParentPushSubscribe('" + gartPin + "','https://web.push.apple.com/mom','iPhone',false)");
+console.log('admin sees own devices only:', JSON.stringify(run("apiParent('1234')").push.devices.map(d => d.e.slice(-3))));
+pushLog.length = 0;
+run("apiSubmit('Aviv','2694','2026-10-20',9,10,null)");
+console.log('instant after Aviv (family):', pushLog.map(x => x.url.slice(-3)), JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/dad')")));
+pushLog.length = 0;
+run("apiSubmit('Noa','" + sheets.Girls.rows.find(r => r[0] === 'Noa')[2] + "','2026-10-20',7,10,null)");
+console.log('instant after Noa (other group):', pushLog.map(x => x.url.slice(-3)));
+run("apiParentPushPrefs('1234','https://fcm.googleapis.com/fcm/send/dad',false)");
+pushLog.length = 0;
+run("apiSubmit('Ron','7356','2026-10-20',10,10,null)");
+console.log('instant with toggle off:', pushLog.length, '(expect 0)');
+pushLog.length = 0;
+run('parentSummary()');
+console.log('summary pushes:', pushLog.map(x => x.url.slice(-3)));
+console.log('admin summary:', JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/dad')")));
+console.log('group summary:', JSON.stringify(run("apiPushMessage('https://web.push.apple.com/mom')")));
+try { run("apiParentPushTest('" + gartPin + "','https://fcm.googleapis.com/fcm/send/dad')"); } catch (e) { console.log('test on other parent device blocked:', e.message); }
+pushStatus = () => 410; run("apiParentPushTest('1234','https://fcm.googleapis.com/fcm/send/dad')");
+console.log('gone device removed:', sheets.ParentPush.rows.length - 1, '(expect 1)');

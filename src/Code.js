@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v5';
+var SETUP_VERSION = 'v6';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
@@ -32,7 +32,8 @@ var HEADERS = {
   Rewards: ['Points', 'Reward', 'Group'],
   Settings: ['Key', 'Value'],
   Groups: ['Id', 'Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email'],
-  Push: ['Girl', 'Endpoint', 'Created', 'Agent']
+  Push: ['Girl', 'Endpoint', 'Created', 'Agent'],
+  ParentPush: ['Who', 'Endpoint', 'Created', 'Agent', 'Instant']
 };
 
 var WORDS = [
@@ -82,7 +83,8 @@ function api() {
   return {
   apiPublic: apiPublic, apiWarm: apiWarm, apiDashboard: apiDashboard, apiSubmit: apiSubmit, apiParent: apiParent,
   apiAdminAddGroup: apiAdminAddGroup, apiAdminAddKid: apiAdminAddKid, apiAdminSettings: apiAdminSettings,
-  apiPushSubscribe: apiPushSubscribe, apiPushMessage: apiPushMessage, apiAdminTestPush: apiAdminTestPush
+  apiPushSubscribe: apiPushSubscribe, apiPushMessage: apiPushMessage, apiAdminTestPush: apiAdminTestPush,
+  apiParentPushSubscribe: apiParentPushSubscribe, apiParentPushPrefs: apiParentPushPrefs, apiParentPushTest: apiParentPushTest
   };
 }
 
@@ -188,15 +190,17 @@ function apiSubmit(name, pin, date, correct, total, levelResult) {
       if (total <= 0) throw new Error('Please enter your score.');
       points = 10 + (pct >= 80 ? 5 : 0) + (onTime ? 3 : 0);
     }
-    appendRow('Log', {
+    var entry = {
       Timestamp: new Date(), Girl: kid.Name, Date: date, DoneOn: t, Section: a.section,
       Level: a.section === 'level' ? (levelResult || '') : a.level, Title: a.title, URL: a.url,
       Correct: a.section === 'level' ? '' : correct, Total: a.section === 'level' ? '' : total,
       Percent: pct, Points: points
-    });
+    };
+    appendRow('Log', entry);
   } finally {
     lock.releaseLock();
   }
+  try { notifyCompletion(kid, entry); } catch (e) { console.error(e); }
   var dash = buildDashboard(findGirl(kid.Name));
   dash.justEarned = dash.week.filter(function (d) { return d.date === date; })[0].points;
   return dash;
@@ -206,7 +210,7 @@ function apiSubmit(name, pin, date, correct, total, levelResult) {
 function apiParent(pin) {
   ensureSetup();
   var access = parentAccess(pin);
-  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin);
+  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
 }
 
 function parentAccess(pin) {
@@ -217,7 +221,7 @@ function parentAccess(pin) {
   return { isAdmin: isAdmin, group: group };
 }
 
-function parentData(list, isAdmin) {
+function parentData(list, isAdmin, who) {
   var t = today();
   var logs = readTable('Log');
   var out = list.map(function (g) {
@@ -260,6 +264,11 @@ function parentData(list, isAdmin) {
     groups: out,
     sheetUrl: isAdmin ? SpreadsheetApp.getActive().getUrl() : null,
     settings: isAdmin ? { reminderHour: Number(getSetting('ReminderHour')) || 17, lastCallHour: Number(getSetting('LastCallHour')) || null } : null,
+    push: {
+      key: vapidPublicKey(),
+      summaryHour: Number(getSetting('ParentSummaryHour')) || 21,
+      devices: readTable('ParentPush').filter(function (r) { return r.Who === who; }).map(function (r) { return { e: r.Endpoint, instant: r.Instant !== 'no' }; })
+    },
     levels: LEVELS.map(function (l) { return { id: l, label: LEVEL_LABEL[l] }; }),
     today: t,
     word: wordOfDay(t)
@@ -516,7 +525,7 @@ function dailyReminder() {
 
 // Fridays: the owner gets every group; each group with an Email gets its own summary.
 function weeklySummary() {
-  var data = parentData(groups(), true);
+  var data = parentData(groups(), true, 'admin');
   var owner = Session.getEffectiveUser().getEmail();
   if (owner) {
     MailApp.sendEmail({ to: owner, subject: 'English Quest — weekly summary ' + data.today, htmlBody: data.groups.map(summaryHtml).join('<hr>') });
@@ -538,12 +547,14 @@ function summaryHtml(g) {
 function installTriggers() {
   ScriptApp.getProjectTriggers().forEach(function (tr) {
     var f = tr.getHandlerFunction();
-    if (f === 'dailyReminder' || f === 'lastCallReminder' || f === 'weeklySummary') ScriptApp.deleteTrigger(tr);
+    if (f === 'dailyReminder' || f === 'lastCallReminder' || f === 'parentSummary' || f === 'weeklySummary') ScriptApp.deleteTrigger(tr);
   });
   var hour = Number(getSetting('ReminderHour')) || 17;
   ScriptApp.newTrigger('dailyReminder').timeBased().everyDays(1).atHour(hour).inTimezone(TZ).create();
   var last = Number(getSetting('LastCallHour'));
   if (last) ScriptApp.newTrigger('lastCallReminder').timeBased().everyDays(1).atHour(last).inTimezone(TZ).create();
+  var summary = Number(getSetting('ParentSummaryHour'));
+  if (summary) ScriptApp.newTrigger('parentSummary').timeBased().everyDays(1).atHour(summary).inTimezone(TZ).create();
   ScriptApp.newTrigger('weeklySummary').timeBased().onWeekDay(ScriptApp.WeekDay.FRIDAY).atHour(12).inTimezone(TZ).create();
 }
 
@@ -579,7 +590,7 @@ function ensureSetup() {
     if (stray && ss.getSheets().length > 1) ss.deleteSheet(stray);
     clearCache();
 
-    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: 'https://yanivkrispel-cyber.github.io/english-quest/' };
+    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: 'https://yanivkrispel-cyber.github.io/english-quest/' };
     Object.keys(defaults).forEach(function (k) { if (getSetting(k) === null) setSetting(k, defaults[k]); });
     if (getSetting('AppUrl') !== APP_URL) setSetting('AppUrl', APP_URL);
 
@@ -623,7 +634,7 @@ function sheet(name) { return SpreadsheetApp.getActive().getSheetByName(name); }
 // Two cache levels: TABLES lives for one request; CacheService survives across requests
 // (sheet reads cost 0.3-1s each). Manual edits in the sheet clear it via onEdit.
 var TABLES = {};
-var CACHE_TTL = { Girls: 21600, Rewards: 21600, Settings: 21600, Groups: 21600, Push: 21600, Assignments: 900, Log: 900 };
+var CACHE_TTL = { Girls: 21600, Rewards: 21600, Settings: 21600, Groups: 21600, Push: 21600, ParentPush: 21600, Assignments: 900, Log: 900 };
 var CHUNK = 30000;
 
 function readTable(name) {

@@ -24,7 +24,7 @@ const mock = `<script>window.google={script:{run:new Proxy({},{get(t,k){
   let ok=()=>{},fail=()=>{};const D=${JSON.stringify(DATA)};
   const r={withSuccessHandler(f){ok=f;return r},withFailureHandler(f){fail=f;return r}};
   if(k==='withSuccessHandler')return f=>{ok=f;return new Proxy({},{get(_,kk){if(kk==='withFailureHandler')return g=>new Proxy({},{get(_,fn){return (...a)=>setTimeout(()=>{
-    if(fn==='apiPublic')ok(D.pub);else if(fn==='apiParent')ok(D.parent);else if(fn.indexOf('apiAdmin')===0)ok(D.created);else if(fn==='apiSubmit')ok(Object.assign({},D.dash,{justEarned:18}));else ok(D.dash);},150)}})}})};
+    if(fn==='apiPublic')ok(D.pub);else if(fn==='apiParent')ok(D.parent);else if(fn.indexOf('apiParentPush')===0)ok({instant:true,sent:1});else if(fn.indexOf('apiAdmin')===0)ok(D.created);else if(fn==='apiSubmit')ok(Object.assign({},D.dash,{justEarned:18}));else ok(D.dash);},150)}})}})};
 }})}};</script>`;
 fs.writeFileSync('test/preview.html', fs.readFileSync('src/Index.html', 'utf8').replace('<base target="_top">', mock));
 console.log('ok');
