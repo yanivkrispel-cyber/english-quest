@@ -393,3 +393,10 @@ function apiAdminTestPush(pin, name) {
   if (!kid) throw new Error('Unknown kid');
   return pushToKid(kid.Name, { title: 'Test reminder', body: 'Hi ' + kid.Name + ', notifications are working.' });
 }
+
+// Run once from the Apps Script editor to grant the "connect to an external service"
+// permission that sending notifications needs (web requests can't show the consent screen).
+function authorizeNotifications() {
+  UrlFetchApp.fetch('https://www.google.com', { muteHttpExceptions: true });
+  return 'Notifications are authorized';
+}
