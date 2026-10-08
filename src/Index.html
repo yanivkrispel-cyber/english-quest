@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+<style>
+:root{
+  --ink:#1c1e2b; --muted:#6b7083; --faint:#9aa0b2;
+  --primary:#6366f1; --primary-2:#8b8ffb; --teal:#3cc7b6; --teal-2:#b9f5ec; --orange:#f6a04d;
+  --danger:#e8687a;
+  --glass:linear-gradient(140deg,rgba(255,255,255,.52),rgba(255,255,255,.2));
+  --glass-soft:linear-gradient(140deg,rgba(255,255,255,.42),rgba(255,255,255,.14));
+  --stroke:rgba(255,255,255,.72);
+  --shadow:0 26px 50px -18px rgba(38,40,80,.28);
+  --inner:inset 0 1px 1px rgba(255,255,255,.95), inset 0 -1px 1px rgba(255,255,255,.3);
+  --iri:conic-gradient(from 200deg,#a5b4fc,#99f6e4,#f9a8d4,#fde68a,#c4b5fd,#a5b4fc);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);
+  background:linear-gradient(135deg,#f4ede5 0%,#e9e3dd 38%,#b8c2cf 78%,#7d8a9c 100%);
+  background-attachment:fixed;min-height:100vh;overflow-x:hidden;
+}
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.75;animation:float 18s ease-in-out infinite alternate}
+.b1{width:340px;height:340px;background:#a5a8ff;top:-80px;left:-90px}
+.b2{width:300px;height:300px;background:#8ff0e2;top:32%;right:-110px;animation-delay:-6s}
+.b3{width:280px;height:280px;background:#ffc79a;bottom:-60px;left:-40px;animation-delay:-11s;opacity:.6}
+.b4{width:220px;height:220px;background:#f5b8e8;bottom:22%;right:12%;animation-delay:-3s;opacity:.5}
+@keyframes float{to{transform:translate(40px,60px) scale(1.12)}}
+
+#app{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:20px 16px 48px}
+.glass{background:var(--glass);backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);
+  border:1px solid var(--stroke);box-shadow:var(--shadow),var(--inner);border-radius:30px}
+.soft{background:var(--glass-soft);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
+  border:1px solid rgba(255,255,255,.62);box-shadow:0 14px 28px -16px rgba(38,40,80,.3),var(--inner);border-radius:22px}
+.panel{padding:24px 20px}
+.iri{position:relative}
+.iri::before{content:'';position:absolute;inset:0;padding:2px;border-radius:inherit;background:var(--iri);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+
+h1{font-size:30px;font-weight:800;letter-spacing:-.6px;margin:0}
+h2{font-size:18px;font-weight:700;margin:0}
+.sub{color:var(--muted);font-size:15px;margin-top:4px}
+.label{font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
+.row-flex{display:flex;align-items:center;gap:12px}
+.between{justify-content:space-between}
+.stack{display:flex;flex-direction:column;gap:14px}
+.mt{margin-top:18px}.mt-s{margin-top:10px}
+
+.btn{border:0;font:inherit;font-weight:700;font-size:16px;height:52px;padding:0 24px;border-radius:999px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:transform .15s ease,filter .15s}
+.btn:active{transform:scale(.97)}
+.btn[disabled]{opacity:.55;pointer-events:none}
+.btn-primary{color:#fff;background:linear-gradient(180deg,var(--primary-2),var(--primary));
+  box-shadow:0 16px 30px -12px rgba(99,102,241,.75),inset 0 1px 0 rgba(255,255,255,.45)}
+.btn-teal{color:#0e4440;background:linear-gradient(180deg,var(--teal-2),#86e0d4);
+  box-shadow:0 16px 30px -12px rgba(60,199,182,.7),inset 0 1px 0 rgba(255,255,255,.8)}
+.btn-glass{color:var(--ink);background:var(--glass);border:1px solid var(--stroke);box-shadow:0 10px 24px -14px rgba(38,40,80,.4),var(--inner)}
+.btn-block{width:100%}
+.btn-sm{height:38px;font-size:14px;padding:0 16px}
+.icon-btn{width:46px;height:46px;border-radius:50%;padding:0;font-size:18px}
+
+.chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700;
+  background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.8);color:var(--ink)}
+.chip.purple{background:rgba(99,102,241,.14);color:#4338ca;border-color:rgba(99,102,241,.25)}
+.chip.teal{background:rgba(60,199,182,.16);color:#0f766e;border-color:rgba(60,199,182,.3)}
+.chip.orange{background:rgba(246,160,77,.18);color:#b45309;border-color:rgba(246,160,77,.35)}
+.chip.red{background:rgba(232,104,122,.15);color:#be123c;border-color:rgba(232,104,122,.3)}
+
+[class^="ph-"],[class*=" ph-"]{line-height:1}
+.icon-btn i{font-size:20px}
+.btn i{font-size:18px}
+.tile{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;flex:none;color:#fff;font-size:22px;
+  box-shadow:0 10px 18px -10px var(--tc),inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.08)}
+.tile.sm{width:32px;height:32px;border-radius:11px;font-size:18px}
+.t-level{background:linear-gradient(145deg,#fda4af,#e11d48);--tc:#e11d48}
+.t-grammar{background:linear-gradient(145deg,#a5b4fc,#4f46e5);--tc:#4f46e5}
+.t-vocab{background:linear-gradient(145deg,#d8b4fe,#9333ea);--tc:#9333ea}
+.t-listen{background:linear-gradient(145deg,#5eead4,#0d9488);--tc:#0d9488}
+.t-read{background:linear-gradient(145deg,#7dd3fc,#0284c7);--tc:#0284c7}
+.t-write{background:linear-gradient(145deg,#fcd34d,#d97706);--tc:#d97706}
+.t-uoe{background:linear-gradient(145deg,#f9a8d4,#db2777);--tc:#db2777}
+.t-fire{background:linear-gradient(145deg,#fdba74,#ea580c);--tc:#ea580c}
+.t-star{background:linear-gradient(145deg,#fde68a,#d97706);--tc:#d97706}
+.t-target{background:linear-gradient(145deg,#a5b4fc,#4f46e5);--tc:#4f46e5}
+.tile.ghost{background:rgba(255,255,255,.7);color:var(--faint);--tc:transparent;border:1px solid rgba(255,255,255,.9)}
+.tile.ghost.on{color:#4f46e5;--tc:rgba(99,102,241,.6)}
+.box i{font-size:15px;color:var(--faint)}
+.cell i{font-size:17px}
+/* Home */
+.word-card{padding:18px 20px;border-radius:26px;background:linear-gradient(155deg,rgba(196,181,253,.78),rgba(165,180,252,.55) 45%,rgba(153,246,228,.72));
+  border:1px solid rgba(255,255,255,.75);box-shadow:var(--shadow),var(--inner)}
+.word{font-size:28px;font-weight:800;letter-spacing:-.4px;margin-top:4px}
+.who{display:grid;gap:14px}
+.who button{height:72px;border-radius:999px;justify-content:flex-start;padding:0 12px;font-size:20px}
+.avatar{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:20px;flex:none;
+  box-shadow:0 10px 20px -8px currentColor,inset 0 1px 0 rgba(255,255,255,.5)}
+.who .age{margin-left:auto;margin-right:10px;color:var(--muted);font-size:14px;font-weight:600}
+
+/* PIN */
+.dots{display:flex;gap:14px;justify-content:center;margin:22px 0}
+.dot{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.9);transition:.2s}
+.dot.on{background:linear-gradient(180deg,var(--primary-2),var(--primary));box-shadow:0 6px 14px -4px rgba(99,102,241,.8)}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:300px;margin:0 auto}
+.pad button{height:68px;border-radius:24px;font-size:24px;font-weight:700}
+.shake{animation:shake .4s}
+.pad.busy{opacity:.4;pointer-events:none;transition:opacity .2s}
+.dots.pulse .dot{animation:pulse 1s ease-in-out infinite}
+.dots.pulse .dot:nth-child(2){animation-delay:.15s}.dots.pulse .dot:nth-child(3){animation-delay:.3s}.dots.pulse .dot:nth-child(4){animation-delay:.45s}
+@keyframes pulse{50%{transform:scale(1.4);opacity:.55}}
+.mini-spin{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid rgba(99,102,241,.25);border-top-color:var(--primary);
+  animation:spin .8s linear infinite;vertical-align:-2px;margin-right:8px}
+#app>*{animation:fade .25s}
+@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)}}
+.toggle{width:58px;height:32px;border-radius:999px;position:relative;cursor:pointer;flex:none;
+  background:linear-gradient(90deg,#8b8ffb,#a5b4fc);box-shadow:inset 0 1px 3px rgba(0,0,0,.15)}
+.toggle.off{background:rgba(255,255,255,.55)}
+.toggle::after{content:'';position:absolute;top:3px;left:29px;width:26px;height:26px;border-radius:50%;background:var(--orange);
+  box-shadow:0 4px 10px -2px rgba(246,160,77,.8);transition:.2s}
+.toggle.off::after{left:3px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+
+/* Dashboard */
+.hero{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center}
+.ring-wrap{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;position:relative}
+.ring-wrap svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ring-center{width:92px;height:92px;border-radius:30px;display:grid;place-items:center;text-align:center}
+.ring-num{font-size:26px;font-weight:800;line-height:1}
+.ring-cap{font-size:11px;color:var(--muted);font-weight:700;margin-top:3px}
+.stat{padding:10px 14px;display:flex;align-items:center;gap:10px}
+.stat b{font-size:20px}
+.stat span{color:var(--muted);font-size:13px;font-weight:600}
+.stat .tile{color:#fff}
+.today{padding:22px 20px;border-radius:30px;background:linear-gradient(155deg,rgba(196,181,253,.8),rgba(165,180,252,.55) 45%,rgba(153,246,228,.75));
+  border:1px solid rgba(255,255,255,.75);box-shadow:var(--shadow),var(--inner)}
+.today h2{font-size:21px;line-height:1.25;margin-top:8px}
+.today .btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.done-badge{display:flex;align-items:center;gap:14px;margin-top:16px}
+.big-check{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:rgba(255,255,255,.75);box-shadow:var(--inner),0 10px 20px -10px rgba(99,102,241,.6)}
+.task{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:default}
+.task.clickable{cursor:pointer}
+.box{width:32px;height:32px;border-radius:10px;flex:none;display:grid;place-items:center;background:rgba(255,255,255,.75);
+  border:1px solid rgba(255,255,255,.95);box-shadow:inset 0 1px 2px rgba(0,0,0,.06)}
+.task-main{flex:1;min-width:0}
+.task-top{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.3px}
+.task-title{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task.future{opacity:.5}
+.task.missed .task-title{color:var(--muted)}
+.bar{height:12px;border-radius:999px;background:rgba(255,255,255,.55);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.08)}
+.bar>i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--primary-2),#7dd3fc,var(--teal))}
+.reward{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:14px;border-bottom:1px solid rgba(255,255,255,.5)}
+.reward:last-child{border:0}
+.reward .pts{margin-left:auto;font-weight:800;font-size:13px;color:var(--muted);white-space:nowrap}
+.reward.got .pts{color:#4338ca}
+
+/* Sheet */
+.overlay{position:fixed;inset:0;z-index:20;background:rgba(40,44,70,.28);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
+.sheet{background:linear-gradient(140deg,rgba(255,255,255,.9),rgba(255,255,255,.72));width:100%;max-width:480px;margin:0 8px 8px;padding:24px 20px calc(24px + env(safe-area-inset-bottom));animation:up .28s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes fade{from{opacity:0}}@keyframes up{from{transform:translateY(60px);opacity:0}}
+.score-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:end;margin-top:16px}
+.field label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:0 0 6px 6px}
+.field input{width:100%;height:64px;border-radius:22px;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.7);
+  font:inherit;font-size:28px;font-weight:800;text-align:center;color:var(--ink);box-shadow:inset 0 2px 4px rgba(0,0,0,.06);outline:none}
+.field input:focus{border-color:#a5b4fc;box-shadow:0 0 0 4px rgba(165,180,252,.35)}
+.slash{font-size:28px;font-weight:300;color:var(--faint);padding-bottom:14px}
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.levels button{height:50px;border-radius:18px;font-size:17px}
+.levels button.sel{color:#fff;background:linear-gradient(180deg,var(--primary-2),var(--primary));border-color:transparent}
+
+/* Parent */
+.strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:14px}
+.cell{border-radius:14px;padding:8px 0 6px;text-align:center;font-size:11px;font-weight:700;color:var(--muted);background:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.7)}
+.cell .v{font-size:13px;margin-top:4px;color:var(--ink);height:18px}
+.cell.done{background:linear-gradient(180deg,rgba(139,143,251,.9),rgba(99,102,241,.9));color:rgba(255,255,255,.85)}
+.cell.done .v{color:#fff}
+.cell.missed{background:rgba(232,104,122,.14);border-color:rgba(232,104,122,.35)}
+.cell.pending{border:2px dashed rgba(99,102,241,.5)}
+.cell.future{opacity:.45}
+.hist{display:flex;gap:6px;align-items:flex-end;height:50px;margin-top:8px}
+.hist div{flex:1;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,#a5b4fc,#6366f1);min-height:4px}
+.recent{font-size:13px;margin-top:10px}
+.recent div{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.5)}
+.recent div span:nth-child(2){flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+details summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--muted);margin-top:12px;list-style:none}
+textarea{width:100%;min-height:150px;border-radius:20px;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.65);
+  font:inherit;font-size:14px;padding:14px;color:var(--ink);resize:vertical;outline:none}
+
+.toast{position:fixed;left:50%;top:22px;transform:translateX(-50%);z-index:40;padding:12px 20px;font-weight:700;border-radius:999px;
+  animation:fade .2s;white-space:nowrap}
+.toast.err{color:#be123c}
+.spinner{width:42px;height:42px;border-radius:50%;margin:80px auto;border:4px solid rgba(255,255,255,.6);border-top-color:var(--primary);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.confetti{position:fixed;top:-20px;z-index:50;width:9px;height:14px;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:.6}}
+.celebrate{position:fixed;inset:0;z-index:45;display:grid;place-items:center;pointer-events:none}
+.celebrate .glass{padding:26px 34px;text-align:center;animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+.celebrate .pts{font-size:44px;font-weight:800;background:linear-gradient(90deg,#6366f1,#3cc7b6);-webkit-background-clip:text;background-clip:text;color:transparent}
+a{color:inherit}
+</style>
+</head>
+<body>
+<div class="bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div></div>
+<div id="app"><div class="spinner"></div></div>
+
+<script>
+window.onerror = (m, src, l, c) => { document.getElementById('app').insertAdjacentHTML('beforeend', '<div class="glass panel" style="margin-top:12px;color:#be123c">Error: ' + m + ' @' + l + ':' + c + '</div>'); };
+</script>
+<script>
+const app = document.getElementById('app');
+const LEVELS = [['a1','A1'],['a2','A2'],['b1','B1'],['b1-b2','B1+'],['b2','B2'],['c1','C1']];
+const CHECK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const BIG_CHECK = CHECK.replace('width="18" height="18"', 'width="30" height="30"');
+let pub = null, session = null, dash = null;
+const SEC = { level: ['target', 't-level'], grammar: ['book-open-text', 't-grammar'], vocabulary: ['text-aa', 't-vocab'],
+  listening: ['headphones', 't-listen'], reading: ['article', 't-read'], writing: ['pen-nib', 't-write'], 'use-of-english': ['puzzle-piece', 't-uoe'] };
+const REWARD_ICONS = ['cake', 'device-mobile', 'broom', 'ice-cream', 'popcorn', 'gift', 'ticket', 'trophy'];
+const icon = (n, w) => '<i class="ph-' + (w || 'bold') + ' ph-' + n + '"></i>';
+const tile = (sec, sm) => { const x = SEC[sec] || SEC.grammar; return '<span class="tile ' + (sm ? 'sm ' : '') + x[1] + '">' + icon(x[0], 'duotone') + '</span>'; };
+const noEmoji = s => String(s ?? '').replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}]/gu, '').replace(/\s+/g, ' ').trim();
+const rtext = s => esc(noEmoji(s)).replace(/₪/g, '<span style="font-family:Arial,sans-serif">₪</span>');
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = {
+  get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } },
+  set(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
+  del(k){ try { localStorage.removeItem(k); } catch(e){} }
+};
+// Served by Apps Script: google.script.run. Served from GitHub Pages: anonymous JSON API
+// (no Google cookies, so child accounts under 13 are not blocked).
+const API_URL = 'https:' + '/' + '/script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
+function call(fn, ...args){
+  if (window.google && google.script && google.script.run) {
+    return new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(e => rej(e))[fn](...args));
+  }
+  return fetch(API_URL, { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args }) })
+    .then(r => r.json())
+    .then(r => { if (!r.ok) throw new Error(r.error); return r.data; });
+}
+function toast(msg, err){
+  const t = document.createElement('div');
+  t.className = 'toast glass' + (err ? ' err' : '');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2600);
+}
+function loading(){ app.innerHTML = '<div class="spinner"></div>'; }
+function colorOf(name){ const g = (pub?.girls || []).find(x => x.name === name); return g?.color || '#6366f1'; }
+function fmtDate(d){ const [y,m,dd] = d.split('-'); return dd + '/' + m; }
+
+// ---------- Home ----------
+async function start(){
+  const saved = store.get('eq_auth'), admin = store.get('eq_admin');
+  if (saved && await login(saved.name, saved.pin, true)) return;
+  if (!saved && admin && await parent(admin, true)) return;
+  await loadHome();
+}
+
+async function loadHome(){
+  loading();
+  const slow = setTimeout(() => app.insertAdjacentHTML('beforeend', '<div class="glass panel" style="text-align:center">Still loading… if this stays, sign out of other Google accounts or open in an incognito window.</div>'), 12000);
+  try { pub = pub || await call('apiPublic'); clearTimeout(slow); }
+  catch(e){ clearTimeout(slow); app.innerHTML = '<div class="glass panel">Could not load: ' + esc(e.message) + '</div>'; return; }
+  home();
+}
+
+function home(){
+  app.innerHTML = `
+  <div class="glass panel">
+    <div class="row-flex between">
+      <div><h1>English Quest</h1><div class="sub">10 minutes a day</div></div>
+      <button class="btn btn-glass icon-btn" id="pbtn" title="Parent">${icon('lock-simple')}</button>
+    </div>
+    <div class="word-card mt">
+      <div class="label">Word of the day</div>
+      <div class="word">${esc(pub.word.word)}</div>
+      <div class="sub" style="color:#3b3f55">${esc(pub.word.meaning)}</div>
+    </div>
+    <div class="label mt" style="margin-left:6px">Who's practicing?</div>
+    <div class="who mt-s">
+      ${pub.girls.map(g => `
+        <button class="btn btn-glass iri" data-name="${esc(g.name)}">
+          <span class="avatar" style="background:${esc(g.color)};color:${esc(g.color)}"><span style="color:#fff">${esc(g.name[0])}</span></span>
+          <span style="margin-left:6px">${esc(g.name)}</span><span class="age">${esc(g.age)}</span>
+        </button>`).join('')}
+    </div>
+  </div>`;
+  app.querySelectorAll('.who button').forEach(b => b.onclick = () => { call('apiWarm').catch(() => {}); pinPad(b.dataset.name); });
+  document.getElementById('pbtn').onclick = () => { call('apiWarm').catch(() => {}); pinPad(null); };
+}
+
+// ---------- PIN ----------
+function pinPad(name){
+  let pin = '', remember = true;
+  const isParent = !name;
+  app.innerHTML = `
+  <div class="glass panel">
+    <div class="row-flex between">
+      <button class="btn btn-glass icon-btn" id="back">${icon('arrow-left')}</button>
+      ${isParent ? '' : `<span class="avatar" style="background:${esc(colorOf(name))};color:${esc(colorOf(name))}"><span style="color:#fff">${esc(name[0])}</span></span>`}
+      <span style="width:46px"></span>
+    </div>
+    <div style="text-align:center" class="mt">
+      <h1>${isParent ? 'Parent' : 'Hi ' + esc(name)}</h1>
+      <div class="sub" id="pinsub">Enter your 4-digit PIN</div>
+    </div>
+    <div class="dots" id="dots">${'<div class="dot"></div>'.repeat(4)}</div>
+    <div class="pad">
+      ${[1,2,3,4,5,6,7,8,9].map(n => `<button class="btn btn-glass" data-k="${n}">${n}</button>`).join('')}
+      <span></span><button class="btn btn-glass" data-k="0">0</button><button class="btn btn-glass" data-k="del">${icon('backspace')}</button>
+    </div>
+    <div class="row-flex between mt" style="padding:0 6px">
+      <span class="sub" style="margin:0">Remember me on this phone</span>
+      <div class="toggle" id="rem"></div>
+    </div>
+  </div>`;
+  const dots = document.getElementById('dots'), pad = app.querySelector('.pad'), sub = document.getElementById('pinsub');
+  const paint = () => dots.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('on', i < pin.length));
+  document.getElementById('back').onclick = home;
+  document.getElementById('rem').onclick = e => { remember = !remember; e.currentTarget.classList.toggle('off', !remember); };
+  app.querySelectorAll('.pad button').forEach(b => b.onclick = async () => {
+    const k = b.dataset.k;
+    if (k === 'del') pin = pin.slice(0,-1); else if (pin.length < 4) pin += k;
+    paint();
+    if (pin.length === 4) {
+      pad.classList.add('busy'); dots.classList.add('pulse');
+      sub.innerHTML = '<span class="mini-spin"></span>Checking…';
+      const ok = isParent ? await parent(pin, false, remember) : await login(name, pin, false, remember);
+      if (!ok) { pad.classList.remove('busy'); dots.classList.remove('pulse'); sub.textContent = 'Enter your 4-digit PIN'; dots.classList.remove('shake'); void dots.offsetWidth; dots.classList.add('shake'); pin = ''; paint(); }
+    }
+  });
+}
+
+async function login(name, pin, silent, remember){
+  try {
+    const d = await call('apiDashboard', name, pin);
+    session = { name, pin };
+    if (remember) store.set('eq_auth', session);
+    dash = d; renderDash();
+    return true;
+  } catch(e){
+    if (silent) store.del('eq_auth');
+    else toast(e.message.includes('PIN') ? 'Wrong PIN, try again' : e.message, true);
+    return false;
+  }
+}
+
+// ---------- Dashboard ----------
+function ring(done, total){
+  const r = 62, c = 2 * Math.PI * r, p = total ? done / total : 0;
+  return `<div class="ring-wrap glass">
+    <svg viewBox="0 0 150 150"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b8ffb"/><stop offset=".5" stop-color="#7dd3fc"/><stop offset="1" stop-color="#f9a8d4"/></linearGradient></defs>
+      <circle cx="75" cy="75" r="${r}" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="10"/>
+      <circle cx="75" cy="75" r="${r}" fill="none" stroke="url(#rg)" stroke-width="10" stroke-linecap="round"
+        stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - p)}" style="transition:stroke-dashoffset 1s"/></svg>
+    <div class="ring-center soft"><div><div class="ring-num">${done}/${total}</div><div class="ring-cap">THIS WEEK</div></div></div>
+  </div>`;
+}
+
+function scoreText(d){
+  if (d.section === 'level') return d.levelResult ? 'Level ' + d.levelResult : 'Done';
+  return (d.correct !== '' && d.total !== '') ? d.correct + '/' + d.total : (d.percent !== '' ? d.percent + '%' : '');
+}
+
+function renderDash(){
+  const d = dash, s = d.stats;
+  const today = d.week.find(w => w.isToday);
+  const next = d.nextReward;
+  const prevPts = d.rewards.filter(r => r.points <= s.balance).map(r => r.points).pop() || 0;
+  const prog = next ? Math.round((s.balance - prevPts) / (next.points - prevPts) * 100) : 100;
+  app.innerHTML = `
+  <div class="stack">
+    <div class="row-flex between">
+      <div class="row-flex">
+        <span class="avatar" style="background:${esc(d.girl.color)};color:${esc(d.girl.color)}"><span style="color:#fff">${esc(d.girl.name[0])}</span></span>
+        <div><h2 style="font-size:22px">Hi ${esc(d.girl.name)}</h2><span class="chip purple" style="margin-top:4px">Level ${esc(d.girl.levelLabel)}</span></div>
+      </div>
+      <div class="row-flex" style="gap:8px">
+        <button class="btn btn-glass icon-btn" id="refresh" title="Refresh">${icon('arrows-clockwise')}</button>
+        <button class="btn btn-glass icon-btn" id="logout" title="Switch user">${icon('sign-out')}</button>
+      </div>
+    </div>
+
+    <div class="hero">
+      ${ring(s.weekDone, s.weekTotal)}
+      <div class="stack" style="gap:10px">
+        <div class="soft stat"><span class="tile sm t-fire">${icon('fire', 'duotone')}</span><div><b>${s.streak}</b> <span>day streak</span></div></div>
+        <div class="soft stat"><span class="tile sm t-star">${icon('star', 'duotone')}</span><div><b>${s.balance}</b> <span>points</span></div></div>
+        <div class="soft stat"><span class="tile sm t-target">${icon('target', 'duotone')}</span><div><b>${s.avg == null ? '–' : s.avg + '%'}</b> <span>avg score</span></div></div>
+      </div>
+    </div>
+
+    ${today ? todayCard(today) : ''}
+
+    <div class="glass panel">
+      <div class="row-flex between"><h2>This week</h2><span class="chip">${s.weekDone} done</span></div>
+      <div class="stack mt" style="gap:10px">${d.week.filter(w => !w.beforeStart).map(taskRow).join('')}</div>
+    </div>
+
+    <div class="glass panel">
+      <div class="row-flex between"><h2>Rewards</h2><span class="chip orange">${icon('star')} ${s.balance}</span></div>
+      ${next ? `<div class="sub mt-s">${next.points - s.balance} points to <b style="color:var(--ink)">${rtext(next.reward)}</b></div>
+        <div class="bar mt-s"><i style="width:${Math.max(3, prog)}%"></i></div>` : '<div class="sub mt-s">You unlocked everything!</div>'}
+      <div class="mt">${d.rewards.map((r, i) => `<div class="reward ${r.points <= s.balance ? 'got' : ''}">
+        <span class="tile sm ghost ${r.points <= s.balance ? 'on' : ''}">${icon(r.points <= s.balance ? REWARD_ICONS[i % REWARD_ICONS.length] : 'lock-simple', 'duotone')}</span><span>${rtext(r.reward)}</span><span class="pts">${r.points} pts</span></div>`).join('')}</div>
+      <div class="sub mt-s" style="font-size:12px">10 pts per task · +5 for 80%+ · +3 if done on the day · +20 for a full week</div>
+    </div>
+
+    <div class="word-card">
+      <div class="label">Word of the day</div>
+      <div class="word">${esc(d.word.word)}</div>
+      <div class="sub" style="color:#3b3f55">${esc(d.word.meaning)}</div>
+    </div>
+  </div>`;
+  document.getElementById('refresh').onclick = () => { loading(); login(session.name, session.pin); };
+  document.getElementById('logout').onclick = () => { store.del('eq_auth'); session = null; loadHome(); };
+  app.querySelectorAll('[data-log]').forEach(b => b.onclick = () => openSheet(d.week.find(w => w.date === b.dataset.log)));
+}
+
+function todayCard(t){
+  return `<div class="today iri">
+    <div class="row-flex between"><span class="label" style="color:#3b3f55">Today · ${t.day}</span>
+      ${t.level ? `<span class="chip">${esc(t.level)}</span>` : ''}</div>
+    <div class="row-flex mt-s" style="gap:10px">${tile(t.section)}<b>${esc(t.label)}</b></div>
+    <h2>${esc(t.title)}</h2>
+    ${t.section === 'level' ? '<div class="sub" style="color:#3b3f55">Takes about 20–30 minutes. At the end you will see your level — remember it!</div>' : ''}
+    ${t.done ? `<div class="done-badge"><div class="big-check">${BIG_CHECK}</div>
+        <div><b style="font-size:20px">${esc(scoreText(t))}</b><div class="sub" style="color:#3b3f55">+${esc(t.points)} points · great job!</div></div></div>`
+      : `<div class="btns"><a class="btn btn-teal" href="${esc(t.url)}" target="_blank" rel="noopener">Open ${icon('arrow-up-right')}</a>
+         <button class="btn btn-primary" data-log="${t.date}">I'm done ${icon('check')}</button></div>`}
+  </div>`;
+}
+
+function taskRow(w){
+  const state = w.done ? 'done' : w.isFuture ? 'future' : w.isToday ? 'today' : 'missed';
+  const box = w.done ? CHECK : w.isFuture ? icon('lock-simple') : '';
+  const end = w.done ? `<span class="chip purple">${esc(scoreText(w))}</span>`
+    : state === 'missed' ? '<span class="chip red">Catch up</span>'
+    : state === 'today' ? '<span class="chip teal">Today</span>' : '';
+  const click = (state === 'missed' || state === 'today') ? `data-log="${w.date}"` : '';
+  return `<div class="soft task ${state} ${click ? 'clickable' : ''}" ${click}>
+    <div class="box">${box}</div>
+    ${tile(w.section, true)}
+    <div class="task-main"><div class="task-top">${w.day} · ${esc(w.label)}</div>
+      <div class="task-title">${w.title ? esc(w.title) : 'Coming soon'}</div></div>
+    ${end}
+  </div>`;
+}
+
+// ---------- Log result sheet ----------
+function openSheet(w){
+  if (!w) return;
+  const isLevel = w.section === 'level';
+  let level = null;
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="sheet glass">
+    <div class="row-flex between"><span class="row-flex" style="gap:10px">${tile(w.section, true)}<span class="label">${w.day} ${fmtDate(w.date)} · ${esc(w.label)}</span></span>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
+    <h2 style="margin-top:8px;font-size:20px">${esc(w.title)}</h2>
+    <a class="btn btn-teal btn-block mt" href="${esc(w.url)}" target="_blank" rel="noopener">Open exercise ${icon('arrow-up-right')}</a>
+    <div class="label mt">${isLevel ? 'Which level did you get?' : 'Your score'}</div>
+    ${isLevel ? `<div class="levels">${LEVELS.map(([k,l]) => `<button class="btn btn-glass" data-lv="${k}">${l}</button>`).join('')}</div>`
+      : `<div class="score-grid">
+          <div class="field"><label>Correct</label><input id="c" type="number" inputmode="numeric" min="0" placeholder="8"></div>
+          <div class="slash">/</div>
+          <div class="field"><label>Out of</label><input id="t" type="number" inputmode="numeric" min="1" placeholder="10"></div>
+        </div>`}
+    <button class="btn btn-primary btn-block mt" id="save">Save</button>
+  </div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  ov.onclick = e => { if (e.target === ov) close(); };
+  ov.querySelector('#x').onclick = close;
+  ov.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => {
+    level = b.dataset.lv;
+    ov.querySelectorAll('[data-lv]').forEach(x => x.classList.toggle('sel', x === b));
+  });
+  ov.querySelector('#save').onclick = async e => {
+    let c = '', t = '';
+    if (isLevel) { if (!level) return toast('Choose your level', true); }
+    else {
+      c = Number(ov.querySelector('#c').value); t = Number(ov.querySelector('#t').value);
+      if (!t || t < 1 || ov.querySelector('#c').value === '' || c < 0 || c > t) return toast('Enter a valid score', true);
+    }
+    e.currentTarget.disabled = true; e.currentTarget.textContent = 'Saving…';
+    try {
+      dash = await call('apiSubmit', session.name, session.pin, w.date, c, t, level);
+      close(); renderDash(); celebrate(dash.justEarned);
+    } catch(err){ toast(err.message, true); e.currentTarget.disabled = false; e.currentTarget.textContent = 'Save'; }
+  };
+}
+
+function celebrate(pts){
+  const em = ['#8b8ffb', '#5eead4', '#f9a8d4', '#fdba74', '#c4b5fd', '#7dd3fc'];
+  for (let i = 0; i < 34; i++) {
+    const s = document.createElement('span');
+    s.className = 'confetti';
+    s.style.background = em[i % em.length]; s.style.borderRadius = i % 3 ? '3px' : '50%';
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.animationDuration = 1.6 + Math.random() * 1.6 + 's';
+    s.style.animationDelay = Math.random() * .4 + 's';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 3800);
+  }
+  const c = document.createElement('div');
+  c.className = 'celebrate';
+  c.innerHTML = `<div class="glass"><div class="pts">+${esc(pts)}</div><div style="font-weight:700">points · keep going</div></div>`;
+  document.body.appendChild(c);
+  setTimeout(() => c.remove(), 2200);
+}
+
+// ---------- Parent ----------
+async function parent(pin, silent, remember){
+  try {
+    if (silent) loading();
+    const p = await call('apiParent', pin);
+    if (remember) store.set('eq_admin', pin);
+    renderParent(p, pin);
+    return true;
+  } catch(e){
+    if (silent) store.del('eq_admin');
+    else toast(e.message.includes('PIN') ? 'Wrong PIN' : e.message, true);
+    return false;
+  }
+}
+
+function renderParent(p, pin){
+  const fam = p.family, famPct = Math.min(100, Math.round(fam.total / fam.goal * 100));
+  const msg = `Good morning girls! ☀️ English Quest is waiting for you 💜\n10 minutes a day — open the link, pick your name, do today's task and log your score.\n\n🔗 ${p.appUrl}\n\n📝 Word of the day: ${p.word.word} — ${p.word.meaning}\n` +
+    p.girls.map(g => `🔥 ${g.girl.name}: ${g.stats.weekDone}/${g.stats.weekTotal} this week, ${g.stats.balance} pts`).join('\n');
+  app.innerHTML = `
+  <div class="stack">
+    <div class="row-flex between">
+      <div><h1>Parent view</h1><div class="sub">${fmtDate(p.today)} · weekly overview</div></div>
+      <div class="row-flex" style="gap:8px">
+        <button class="btn btn-glass icon-btn" id="refresh">${icon('arrows-clockwise')}</button>
+        <button class="btn btn-glass icon-btn" id="logout" title="Exit">${icon('sign-out')}</button>
+      </div>
+    </div>
+
+    <div class="today">
+      <div class="label" style="color:#3b3f55">Family goal</div>
+      <h2>${rtext(fam.reward)}</h2>
+      <div class="bar mt-s"><i style="width:${Math.max(3, famPct)}%"></i></div>
+      <div class="sub mt-s" style="color:#3b3f55"><b>${fam.total}</b> / ${fam.goal} points together</div>
+    </div>
+
+    ${p.girls.map(girlCard).join('')}
+
+    <div class="glass panel">
+      <h2>Message for WhatsApp</h2>
+      <textarea id="msg" class="mt-s">${esc(msg)}</textarea>
+      <div class="row-flex mt-s">
+        <button class="btn btn-glass btn-sm" id="copy">${icon('copy')} Copy</button>
+        <a class="btn btn-teal btn-sm" target="_blank" rel="noopener" id="wa" href="#">${icon('whatsapp-logo')} WhatsApp</a>
+      </div>
+    </div>
+
+    <div class="glass panel">
+      <h2>Settings</h2>
+      <div class="sub mt-s">PINs, levels, emails for reminders, redeemed points and rewards are edited in the Google Sheet.</div>
+      <a class="btn btn-primary btn-block mt" href="${esc(p.sheetUrl)}" target="_blank" rel="noopener">Open Google Sheet ${icon('arrow-up-right')}</a>
+    </div>
+  </div>`;
+  document.getElementById('refresh').onclick = () => parent(pin, true);
+  document.getElementById('logout').onclick = () => { store.del('eq_admin'); loadHome(); };
+  const ta = document.getElementById('msg'), wa = document.getElementById('wa');
+  const syncWa = () => wa.href = 'https:' + '/' + '/api.whatsapp.com/send?text=' + encodeURIComponent(ta.value);
+  ta.oninput = syncWa; syncWa();
+  document.getElementById('copy').onclick = async () => {
+    try { await navigator.clipboard.writeText(ta.value); toast('Copied'); }
+    catch(e){ ta.select(); document.execCommand('copy'); toast('Copied'); }
+  };
+}
+
+function girlCard(g){
+  const s = g.stats;
+  return `<div class="glass panel">
+    <div class="row-flex between">
+      <div class="row-flex"><span class="avatar" style="background:${esc(g.girl.color)};color:${esc(g.girl.color)}"><span style="color:#fff">${esc(g.girl.name[0])}</span></span>
+        <div><h2>${esc(g.girl.name)}</h2><span class="sub" style="font-size:13px">Level ${esc(g.girl.levelLabel)}${g.email ? ' · reminders on' : ''}</span></div></div>
+      <span class="chip orange">${icon('star')} ${s.balance}</span>
+    </div>
+    <div class="row-flex mt-s" style="flex-wrap:wrap;gap:8px">
+      <span class="chip purple">${s.weekDone}/${s.weekTotal} this week</span>
+      <span class="chip">${icon('target')} ${s.avg == null ? '–' : s.avg + '%'}</span>
+      <span class="chip">${icon('fire')} ${s.streak}</span>
+      <span class="chip">${s.total} tasks total</span>
+    </div>
+    <div class="strip">${g.week.map(w => {
+      const st = w.beforeStart ? 'future' : w.done ? 'done' : w.isFuture ? 'future' : w.isToday ? 'pending' : 'missed';
+      const v = w.done ? (w.section === 'level' ? (w.levelResult || '✓') : (w.percent !== '' ? w.percent + '%' : '✓')) : st === 'missed' ? '✕' : '';
+      return `<div class="cell ${st}" title="${esc(w.title || w.label)}"><div>${w.day}</div><div>${icon((SEC[w.section] || SEC.grammar)[0], 'duotone')}</div><div class="v">${esc(v)}</div></div>`;
+    }).join('')}</div>
+    ${g.history.length > 1 ? `<div class="label mt">Weekly completion</div>
+      <div class="hist">${g.history.map(h => `<div title="${fmtDate(h.week)}: ${h.done}/${h.expected}" style="height:${4 + Math.round(h.done / Math.max(1, h.expected) * 42)}px"></div>`).join('')}</div>
+      <div class="row-flex" style="gap:6px;font-size:11px;color:var(--muted);font-weight:700">${g.history.map(h => `<span style="flex:1;text-align:center">${h.done}/${h.expected}</span>`).join('')}</div>` : ''}
+    <details><summary>Recent activity ▾</summary>
+      <div class="recent">${g.recent.length ? g.recent.map(r => `<div><span>${fmtDate(r.doneOn)}</span>
+        <span><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title)}</a></span>
+        <b>${r.section === 'level' ? 'Level' : esc(r.correct) + '/' + esc(r.total)}</b><span>+${esc(r.points)}</span></div>`).join('') : '<div>No activity yet</div>'}</div>
+    </details>
+  </div>`;
+}
+
+start();
+</script>
+</body>
+</html>
