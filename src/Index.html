@@ -20,6 +20,7 @@
   --iri:conic-gradient(from 200deg,#a5b4fc,#99f6e4,#f9a8d4,#fde68a,#c4b5fd,#a5b4fc);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
 html,body{margin:0;min-height:100%}
 body{
   font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);
@@ -224,8 +225,6 @@ const LEVELS = [['a1','A1'],['a2','A2'],['b1','B1'],['b1-b2','B1+'],['b2','B2'],
 const CHECK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const BIG_CHECK = CHECK.replace('width="18" height="18"', 'width="30" height="30"');
 let pub = null, session = null, dash = null;
-// Group from the link (?g=...); empty means the default group. Not available inside Apps Script's iframe.
-const GROUP = (window.google && google.script) ? '' : (new URLSearchParams(location.search).get('g') || '');
 const SEC = { level: ['target', 't-level'], grammar: ['book-open-text', 't-grammar'], vocabulary: ['text-aa', 't-vocab'],
   listening: ['headphones', 't-listen'], reading: ['article', 't-read'], writing: ['pen-nib', 't-write'], 'use-of-english': ['puzzle-piece', 't-uoe'] };
 const REWARD_ICONS = ['cake', 'device-mobile', 'broom', 'ice-cream', 'popcorn', 'gift', 'ticket', 'trophy'];
@@ -258,6 +257,31 @@ function toast(msg, err){
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 2600);
 }
+// Group from the link (?g=...), remembered on the device so the installed app (which always
+// starts at the base URL) opens the right group. Empty means the default group.
+const IN_APPS_SCRIPT = !!(window.google && google.script);
+function groupId(){
+  if (IN_APPS_SCRIPT) return '';
+  const g = new URLSearchParams(location.search).get('g');
+  if (g) store.set('eq_group', g);
+  return g || store.get('eq_group') || '';
+}
+
+// Install as an app: Android/desktop Chrome fire beforeinstallprompt; iOS needs Share > Add to Home Screen.
+let installPrompt = null;
+const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent);
+if (!IN_APPS_SCRIPT) {
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; const b = document.getElementById('install'); if (b) b.hidden = false; });
+  window.addEventListener('appinstalled', () => { installPrompt = null; const b = document.getElementById('install'); if (b) b.hidden = true; toast('Installed'); });
+}
+function installCard(){
+  if (IN_APPS_SCRIPT || isStandalone()) return '';
+  if (isIos()) return '<div class="sub mt" style="text-align:center;font-size:13px">' + icon('export') + ' Install: tap Share, then <b>Add to Home Screen</b></div>';
+  return '<button class="btn btn-glass btn-block mt" id="install"' + (installPrompt ? '' : ' hidden') + '>' + icon('download-simple') + ' Install app</button>';
+}
+
 function loading(){ app.innerHTML = '<div class="spinner"></div>'; }
 function colorOf(name){ const g = (pub?.girls || []).find(x => x.name === name); return g?.color || '#6366f1'; }
 function fmtDate(d){ const [y,m,dd] = d.split('-'); return dd + '/' + m; }
@@ -273,8 +297,11 @@ async function start(){
 async function loadHome(){
   loading();
   const slow = setTimeout(() => app.insertAdjacentHTML('beforeend', '<div class="glass panel" style="text-align:center">Still loading… if this stays, sign out of other Google accounts or open in an incognito window.</div>'), 12000);
-  try { pub = pub || await call('apiPublic', GROUP); clearTimeout(slow); }
-  catch(e){ clearTimeout(slow); app.innerHTML = '<div class="glass panel">Could not load: ' + esc(e.message) + '</div>'; return; }
+  try { pub = pub || await call('apiPublic', groupId()); clearTimeout(slow); }
+  catch(e){
+    clearTimeout(slow);
+    // A remembered group that no longer exists: forget it and fall back to the default group.
+    if (!new URLSearchParams(location.search).get('g') && store.get('eq_group')) { store.del('eq_group'); return loadHome(); } app.innerHTML = '<div class="glass panel">Could not load: ' + esc(e.message) + '</div>'; return; }
   home();
 }
 
@@ -298,7 +325,10 @@ function home(){
           <span style="margin-left:6px">${esc(g.name)}</span><span class="age">${esc(g.age)}</span>
         </button>`).join('')}
     </div>
+    ${installCard()}
   </div>`;
+  const ib = document.getElementById('install');
+  if (ib) ib.onclick = async () => { if (!installPrompt) return; installPrompt.prompt(); await installPrompt.userChoice; installPrompt = null; ib.hidden = true; };
   app.querySelectorAll('.who button').forEach(b => b.onclick = () => { call('apiWarm').catch(() => {}); pinPad(b.dataset.name); });
   document.getElementById('pbtn').onclick = () => { call('apiWarm').catch(() => {}); pinPad(null); };
 }
