@@ -252,7 +252,7 @@ function parentSummary() {
   readTable('Log').forEach(function (l) { if (l.Date === t) done[l.Girl] = l; });
   readTable('Games').forEach(function (g) {
     if (g.Date !== t || !(Number(g.Total) > 0)) return;
-    if (['duel', 'boss', 'tug'].indexOf(g.Game) >= 0) duels[g.Girl] = (duels[g.Girl] || 0) + 1; else played[g.Girl] = (played[g.Girl] || 0) + 1;
+    if (DUEL_TOGETHER.indexOf(g.Game) >= 0) duels[g.Girl] = (duels[g.Girl] || 0) + 1; else played[g.Girl] = (played[g.Girl] || 0) + 1;
   });
   readTable('Gates').forEach(function (g) { if (g.Date === t) gated[g.Girl] = g; });
   var byWho = {};

@@ -6,6 +6,7 @@
 //   listen: [spoken text, question ('' = "Which word do you hear?"), answer, wrong, wrong, wrong]
 //   build:  a sentence to put back in order
 //   spot:   [sentence with the wrong word in *stars*, correction ('' = delete it), short tip]
+//   talk:   Talk & Tap words by level and topic: [word, don't say, don't say]; starters: help per topic
 window.EQ_GAMES = {
 pics: {
   food: ['apple', 'banana', 'orange', 'lemon', 'grapes', 'strawberry', 'watermelon', 'tomato', 'carrot', 'bread', 'cheese', 'egg', 'milk', 'cake', 'cookie', 'pizza', 'ice cream', 'chocolate'],
@@ -507,5 +508,124 @@ spot: {
     ['Notwithstanding *of* the cost, they went ahead.', '', 'notwithstanding + noun'],
     ['The book, *that* I read last year, was brilliant.', 'which', 'non-defining clause: which']
   ]
+},
+
+talk: {
+  // Talk & Tap: one kid describes, the other picks the word from four of the same topic.
+  // [word, don't say, don't say]. Only Match it words (A1 also the picture words), so a missed one comes
+  // back in Match it. Every topic has sentence starters below and at least 4 words.
+  a1: {
+    animals: [['cat', 'meow', 'pet'], ['dog', 'bark', 'bone'], ['bird', 'fly', 'wings'], ['fish', 'water', 'swim'],
+      ['cow', 'milk', 'moo'], ['horse', 'ride', 'farm'], ['rabbit', 'carrot', 'ears'], ['duck', 'quack', 'water'],
+      ['frog', 'green', 'jump'], ['bee', 'honey', 'flower'], ['mouse', 'cheese', 'cat'], ['pig', 'pink', 'farm'],
+      ['monkey', 'banana', 'tree'], ['elephant', 'nose', 'grey'], ['lion', 'king', 'roar'], ['bear', 'brown', 'honey'],
+      ['penguin', 'ice', 'cold'], ['owl', 'night', 'bird'], ['butterfly', 'wings', 'colours'], ['snail', 'slow', 'shell'],
+      ['turtle', 'shell', 'sea'], ['whale', 'sea', 'fish']],
+    food: [['apple', 'red', 'tree'], ['banana', 'yellow', 'monkey'], ['orange', 'juice', 'colour'], ['lemon', 'yellow', 'sour'],
+      ['grapes', 'purple', 'green'], ['strawberry', 'red', 'sweet'], ['watermelon', 'green', 'summer'], ['tomato', 'red', 'salad'],
+      ['carrot', 'orange', 'rabbit'], ['bread', 'sandwich', 'white'], ['cheese', 'mouse', 'yellow'], ['egg', 'chicken', 'breakfast'],
+      ['milk', 'cow', 'white'], ['cake', 'birthday', 'sweet'], ['cookie', 'sweet', 'chocolate'], ['pizza', 'Italy', 'cheese'],
+      ['ice cream', 'cold', 'summer'], ['chocolate', 'sweet', 'brown']],
+    transport: [['car', 'drive', 'road'], ['bus', 'stop', 'driver'], ['bike', 'wheels', 'ride'], ['train', 'station', 'long'],
+      ['plane', 'fly', 'sky'], ['boat', 'water', 'sea'], ['rocket', 'space', 'moon']],
+    home: [['chair', 'sit', 'table'], ['bed', 'sleep', 'night'], ['door', 'open', 'close'], ['key', 'door', 'open'],
+      ['clock', 'time', 'wall'], ['spoon', 'eat', 'soup'], ['TV', 'watch', 'cartoons'], ['phone', 'call', 'talk'],
+      ['computer', 'games', 'screen'], ['pencil', 'write', 'draw'], ['book', 'read', 'story'], ['bell', 'ring', 'sound']],
+    fun: [['ball', 'football', 'round'], ['kite', 'wind', 'fly'], ['teddy bear', 'toy', 'soft'], ['balloon', 'party', 'air'],
+      ['present', 'birthday', 'gift'], ['guitar', 'music', 'play'], ['camera', 'photo', 'picture'], ['tent', 'camping', 'sleep'],
+      ['crown', 'king', 'queen']],
+    wear: [['cap', 'head', 'sun'], ['shoe', 'foot', 'feet'], ['T-shirt', 'summer', 'clothes'], ['dress', 'party', 'skirt'],
+      ['socks', 'feet', 'shoes'], ['glasses', 'eyes', 'see'], ['bag', 'carry', 'school'], ['umbrella', 'rain', 'wet']],
+    nature: [['sun', 'hot', 'yellow'], ['moon', 'night', 'sky'], ['star', 'night', 'shine'], ['rain', 'wet', 'umbrella'],
+      ['tree', 'green', 'leaves'], ['flower', 'garden', 'smell'], ['rainbow', 'colours', 'rain'], ['snowman', 'snow', 'winter']],
+    places: [['house', 'live', 'home'], ['school', 'teacher', 'learn'], ['kitchen', 'cook', 'food'], ['bathroom', 'wash', 'shower'],
+      ['bedroom', 'sleep', 'bed']],
+    people: [['mother', 'mum', 'mom'], ['father', 'dad', 'man'], ['sister', 'girl', 'family'], ['brother', 'boy', 'family'],
+      ['grandmother', 'grandma', 'old'], ['friend', 'play', 'best'], ['teacher', 'school', 'class'], ['doctor', 'sick', 'hospital']],
+    colours: [['red', 'strawberry', 'fire'], ['blue', 'sky', 'sea'], ['green', 'grass', 'frog'], ['yellow', 'banana', 'sun']],
+    feelings: [['happy', 'smile', 'laugh'], ['sad', 'cry', 'tears'], ['tired', 'sleep', 'bed'], ['hungry', 'eat', 'food'],
+      ['thirsty', 'drink', 'water']],
+    actions: [['read', 'book', 'story'], ['swim', 'water', 'pool'], ['sing', 'song', 'music'], ['run', 'fast', 'legs'],
+      ['eat', 'food', 'mouth'], ['drink', 'water', 'juice'], ['sleep', 'bed', 'night'], ['write', 'pen', 'pencil']],
+    time: [['breakfast', 'morning', 'eat'], ['dinner', 'evening', 'eat'], ['summer', 'hot', 'beach'], ['winter', 'cold', 'snow'],
+      ['morning', 'early', 'wake'], ['night', 'dark', 'sleep'], ['Monday', 'Sunday', 'week'], ['Friday', 'Saturday', 'weekend']]
+  },
+  a2: {
+    places: [['library', 'books', 'borrow'], ['bakery', 'bread', 'cakes'], ['island', 'sea', 'water'], ['mountain', 'high', 'climb'],
+      ['beach', 'sand', 'sea']],
+    people: [['pilot', 'plane', 'fly'], ['nurse', 'hospital', 'doctor'], ['neighbour', 'next', 'house'], ['cousin', 'aunt', 'uncle'],
+      ['uncle', 'aunt', 'brother'], ['guest', 'visit', 'party']],
+    things: [['passport', 'travel', 'airport'], ['ticket', 'cinema', 'bus'], ['wallet', 'money', 'pocket'], ['menu', 'restaurant', 'food'],
+      ['map', 'city', 'find'], ['luggage', 'suitcase', 'bags'], ['competition', 'win', 'prize']],
+    time: [['lunch', 'meal', 'noon'], ['weekend', 'Saturday', 'Sunday'], ['holiday', 'vacation', 'school'], ['yesterday', 'today', 'past'],
+      ['tomorrow', 'today', 'future'], ['always', 'every', 'never'], ['never', 'always', 'zero']],
+    describing: [['cheap', 'money', 'expensive'], ['expensive', 'money', 'cheap'], ['dangerous', 'safe', 'hurt'], ['quiet', 'noisy', 'sound'],
+      ['noisy', 'loud', 'quiet'], ['delicious', 'tasty', 'yummy'], ['healthy', 'fruit', 'strong'], ['angry', 'mad', 'shout'],
+      ['bored', 'boring', 'nothing'], ['scared', 'afraid', 'fear']],
+    actions: [['borrow', 'give', 'return'], ['forget', 'remember', 'memory'], ['arrive', 'come', 'reach'], ['invite', 'party', 'come'],
+      ['practise', 'again', 'better'], ['wait', 'patient', 'queue'], ['carry', 'hold', 'bag']]
+  },
+  b1: {
+    feelings: [['anxious', 'worried', 'nervous'], ['jealous', 'envy', 'unfair'], ['embarrassed', 'shy', 'red'], ['exhausted', 'tired', 'sleep'],
+      ['disappointed', 'sad', 'expected'], ['curious', 'questions', 'interested']],
+    people: [['generous', 'give', 'share'], ['confident', 'sure', 'believe'], ['independent', 'alone', 'yourself'], ['reliable', 'trust', 'depend'],
+      ['commuter', 'train', 'work'], ['volunteer', 'free', 'help']],
+    actions: [['cancel', 'stop', 'plan'], ['achieve', 'goal', 'succeed'], ['avoid', 'away', 'keep'], ['complain', 'unhappy', 'problem'],
+      ['recommend', 'suggest', 'advise'], ['improve', 'better', 'practice'], ['persuade', 'convince', 'agree'], ['refuse', 'no', 'accept'],
+      ['apologise', 'sorry', 'mistake']],
+    things: [['deadline', 'finish', 'date'], ['advice', 'help', 'suggestion'], ['experience', 'years', 'learn'], ['opportunity', 'chance', 'possibility'],
+      ['environment', 'nature', 'world'], ['pollution', 'dirty', 'air'], ['equipment', 'tools', 'sport'], ['ingredient', 'recipe', 'cook'],
+      ['receipt', 'paper', 'shop'], ['refund', 'money', 'return'], ['temperature', 'hot', 'cold']],
+    describing: [['crowded', 'people', 'full'], ['convenient', 'easy', 'near'], ['ordinary', 'normal', 'special'], ['impressive', 'amazing', 'great']],
+    how: [['nearly', 'almost', 'close'], ['suddenly', 'quickly', 'surprise'], ['eventually', 'finally', 'end'], ['rarely', 'often', 'seldom']]
+  },
+  b2: {
+    feelings: [['reluctant', 'unwilling', 'hesitant'], ['eager', 'excited', 'keen'], ['thrilled', 'happy', 'excited'], ['furious', 'angry', 'mad'],
+      ['overwhelmed', 'stress', 'pressure']],
+    people: [['frank', 'honest', 'direct'], ['ambitious', 'goals', 'success'], ['cautious', 'careful', 'danger'], ['stubborn', 'change', 'mind']],
+    actions: [['recover', 'better', 'sick'], ['hesitate', 'pause', 'sure'], ['postpone', 'later', 'delay'], ['acknowledge', 'accept', 'admit'],
+      ['estimate', 'guess', 'number'], ['emphasise', 'important', 'stress'], ['interrupt', 'stop', 'talking'], ['predict', 'future', 'guess'],
+      ['resist', 'fight', 'against']],
+    describing: [['tedious', 'boring', 'long'], ['vivid', 'bright', 'clear'], ['fragile', 'break', 'glass'], ['sustainable', 'environment', 'future'],
+      ['inevitable', 'happen', 'avoid'], ['controversial', 'argue', 'disagree'], ['genuine', 'real', 'fake'], ['obvious', 'clear', 'see'],
+      ['temporary', 'short', 'permanent'], ['gradually', 'slowly', 'step'], ['deliberately', 'purpose', 'accident']],
+    ideas: [['consequence', 'result', 'because'], ['drawback', 'disadvantage', 'problem'], ['outskirts', 'edge', 'city'], ['priority', 'important', 'first'],
+      ['threat', 'danger', 'warn'], ['evidence', 'proof', 'crime'], ['household', 'family', 'home'], ['compromise', 'agree', 'both'],
+      ['bargain', 'cheap', 'price']]
+  },
+  c1: {
+    people: [['meticulous', 'careful', 'detail'], ['tenacious', 'determined', 'quit'], ['eloquent', 'speak', 'words'], ['pragmatic', 'practical', 'realistic'],
+      ['candid', 'honest', 'frank'], ['complacent', 'satisfied', 'lazy'], ['diligent', 'hard', 'work'], ['resilient', 'recover', 'strong']],
+    actions: [['mitigate', 'reduce', 'less'], ['scrutinise', 'examine', 'closely'], ['undermine', 'weaken', 'damage'], ['exacerbate', 'worse', 'serious'],
+      ['advocate', 'support', 'publicly'], ['perpetuate', 'continue', 'keep']],
+    describing: [['ephemeral', 'short', 'temporary'], ['ubiquitous', 'everywhere', 'common'], ['ambiguous', 'unclear', 'meanings'],
+      ['superfluous', 'unnecessary', 'extra'], ['comprehensive', 'complete', 'everything'], ['feasible', 'possible', 'practical'],
+      ['inherent', 'natural', 'basic'], ['plausible', 'believable', 'likely'], ['profound', 'deep', 'strong'], ['subtle', 'small', 'notice'],
+      ['arbitrary', 'random', 'reason'], ['coherent', 'clear', 'logical'], ['detrimental', 'harmful', 'bad'], ['unprecedented', 'never', 'first'],
+      ['notorious', 'famous', 'bad'], ['meagre', 'little', 'enough']],
+    ideas: [['dilemma', 'choice', 'difficult'], ['hindsight', 'later', 'past'], ['nuance', 'small', 'difference'], ['paradox', 'contradiction', 'true'],
+      ['catalyst', 'speed', 'cause'], ['consensus', 'agree', 'everyone'], ['incentive', 'reward', 'motivate'], ['scepticism', 'doubt', 'believe']]
+  }
+},
+
+// Help for the one describing a Talk & Tap word, by topic.
+starters: {
+  animals: ["It's an animal that…", 'It lives in…', 'It eats…'],
+  food: ['You eat it when…', 'It tastes…', 'Its colour is…'],
+  transport: ['You travel in it to…', 'It goes on…', "It's faster than…"],
+  home: ['You use it to…', 'You can find it in the…', "It's made of…"],
+  fun: ['Kids play with it…', 'You use it to…', 'You get it when…'],
+  wear: ['You wear it on your…', 'You wear it when…', "It's made of…"],
+  nature: ['You can see it…', 'It comes when…', 'Its colour is…'],
+  places: ["It's a place where…", 'You go there to…', 'In this place there are…'],
+  people: ["It's a person who…", 'This person…', "It's the opposite of…"],
+  colours: ["It's the colour of…", 'Many … are this colour.', 'You can see it on…'],
+  feelings: ['You feel like this when…', 'A person who feels this…', "It's the opposite of…"],
+  actions: ['You do this when…', 'You do it with your…', "It's the opposite of…"],
+  time: ['It comes after…', 'It comes before…', "It's the time when…"],
+  things: ["It's something you…", 'You need it when…', 'You can find it…'],
+  describing: ['It describes something that…', "It's the opposite of…", 'For example, …'],
+  how: ['It tells you how or when…', "It's the opposite of…", 'For example, …'],
+  ideas: ["It's when…", "It's something that…", 'For example, …']
 }
 };

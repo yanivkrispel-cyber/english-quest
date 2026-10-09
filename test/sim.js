@@ -604,3 +604,66 @@ T = run("apiTugSave('Aviv','2694','','',{correct:3,total:4},null)");
 console.log('tug as a guest:', T.xp, T.mateXp, '(expect 6 and null) | rows', rowsOf('Aviv', 'tug').length);
 console.log('tug counts for the duo streak:', run("practiceDays('Ziv')['" + ctx.__day + "']") === true);
 }
+
+// ---- play together, phase 4: Talk & Tap ----
+{ // a block, so these names do not clash with the sections above
+const tp = { Aviv: '2694', Ziv: '4821', Ron: '7356' };
+const call_ = (fn, who, ...args) => run(fn + '(' + [who, tp[who]].concat(args).map(a => JSON.stringify(a)).join(',') + ')');
+const fails = (label, f) => { try { f(); console.log('NOT REJECTED:', label); } catch (e) { console.log(label + ' ok:', e.message); } };
+const rowsOf = (who, game) => sheets.Games.rows.filter(r => r[1] === who && r[3] === game && r[2] === ctx.__day).map(r => r[5] + '/' + r[6] + ':' + r[7] + 'xp');
+const progress = p => ({ n: 0, s: 0, ms: 0, p });
+pushStatus = () => 201;
+nextDay();
+
+// A game where the team wins: Aviv (host) picks words 2, 4, 6, 8; Ziv (guest) picks words 1, 3, 5, 7.
+pushLog.length = 0;
+let V = call_('apiDuelInvite', 'Aviv', 'Ziv', 'talk');
+console.log('talk invite:', V.mode, V.state, '| words', V.items, '| time', V.maxMs, '| push', JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/abc')")));
+let J = call_('apiDuelJoin', 'Ziv', V.code);
+console.log('joined:', J.state, J.mode, '| home shows the live game:', call_('apiDuelHome', 'Aviv').playing.map(x => x.code).join() === V.code);
+const zivPicks = '1:9000:2,0:40000:1,1:80000:0,1:120000:3', avivPicks = '1:25000:1,1:60000:2,0:100000:0,1:140000:3';
+call_('apiDuelPoll', 'Ziv', V.code, progress('1:9000:2,0:40000:1'));
+let P = call_('apiDuelPoll', 'Aviv', V.code, progress('1:25000:1'));
+console.log('Aviv sees Ziv\'s picks:', P.them.p, '| her own:', P.mine.p);
+P = call_('apiDuelPoll', 'Ziv', V.code, progress(''));
+console.log('a reloaded phone keeps its picks:', P.mine.p, '(expect 1:9000:2,0:40000:1)');
+call_('apiDuelPoll', 'Ziv', V.code, progress('1:9000:2,0:40000:1,1:80000:0,1:120000:3,1:1:1'));
+console.log('five picks are ignored:', call_('apiDuelPoll', 'Ziv', V.code, null).mine.p);
+call_('apiDuelPoll', 'Ziv', V.code, progress('1:9000'));
+console.log('a pick without the option is ignored:', call_('apiDuelPoll', 'Ziv', V.code, null).mine.p);
+call_('apiDuelPoll', 'Ziv', V.code, progress(zivPicks));
+fails('talk result with 5 picks', () => call_('apiDuelFinish', 'Aviv', V.code, { correct: 5, total: 5, ms: 1, track: avivPicks + ',1:150000:0' }));
+fails('talk result in the duel format', () => call_('apiDuelFinish', 'Aviv', V.code, { correct: 1, total: 1, ms: 1, track: '1:25000' }));
+let F1 = call_('apiDuelFinish', 'Aviv', V.code, { correct: 3, total: 4, ms: 140000, track: avivPicks, missed: ['p:cat'], right: ['p:dog', 'p:cow', 'p:owl'] });
+console.log('Aviv finished:', F1.state, '| xp', F1.xp, '(expect 32: 6 team words x2 + together 10 + team win 10)');
+console.log('the home banner is gone for the kid who finished:', call_('apiDuelHome', 'Aviv').playing.length === 0, '| still there for the other:', call_('apiDuelHome', 'Ziv').playing.length === 1);
+let F2 = call_('apiDuelFinish', 'Ziv', V.code, { correct: 3, total: 4, ms: 141000, track: zivPicks, missed: ['m:a1:red'], right: [] });
+console.log('Ziv finished:', F2.state, '| winner', F2.winner, '| team', F2.team, '| xp', F2.xp, '| tracks visible', !!F2.host.track && !!F2.guest.track);
+console.log('rows:', rowsOf('Aviv', 'talk').join(' '), '|', rowsOf('Ziv', 'talk').join(' '), '| review', /p:cat\|1/.test((sheets.Review.rows.find(r => r[0] === 'Aviv') || [])[1]));
+
+// A game below the team-win line, the second game together that day (no together bonus)
+V = call_('apiDuelInvite', 'Ziv', 'Aviv', 'talk');
+call_('apiDuelJoin', 'Aviv', V.code);
+call_('apiDuelPoll', 'Aviv', V.code, progress('1:9000:0,0:30000:1,1:50000:2,0:70000:3'));
+P = call_('apiDuelFinish', 'Ziv', V.code, { correct: 2, total: 4, ms: 80000, track: '1:20000:1,0:40000:2,0:60000:3,1:80000:0' });
+console.log('team of 4: xp', P.xp, '(expect 8)');
+P = call_('apiDuelFinish', 'Aviv', V.code, { correct: 2, total: 4, ms: 81000, track: '1:9000:0,0:30000:1,1:50000:2,0:70000:3' });
+console.log('closed:', P.state, P.winner, '| team', P.team);
+
+// One kid leaves: the time limit closes the game with what was played
+V = call_('apiDuelInvite', 'Ron', 'Ziv', 'talk');
+call_('apiDuelJoin', 'Ziv', V.code);
+call_('apiDuelFinish', 'Ron', V.code, { correct: 2, total: 2, ms: 60000, track: '1:30000:1,1:60000:2' });
+clockShift += 400000;
+P = call_('apiDuelPoll', 'Ron', V.code, null);
+console.log('partner left:', P.state, P.winner, '| team', P.team, '| live games on the home screen:', call_('apiDuelHome', 'Ron').playing.length);
+console.log('talk counts for the duo streak:', run("practiceDays('Ziv')['" + ctx.__day + "']") === true);
+
+// A kid who stops before picking anything gets the team's words, but no together bonus
+nextDay();
+V = call_('apiDuelInvite', 'Aviv', 'Ron', 'talk');
+call_('apiDuelJoin', 'Ron', V.code);
+call_('apiDuelPoll', 'Ron', V.code, progress('1:9000:1'));
+P = call_('apiDuelFinish', 'Aviv', V.code, { correct: 0, total: 0, ms: 20000, track: '' });
+console.log('stopped before picking: xp', P.xp, '(expect 2: one team word, no together bonus)');
+}
