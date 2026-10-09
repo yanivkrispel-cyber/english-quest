@@ -257,6 +257,45 @@ a{color:inherit}
 .game-tile span.sub{margin:0;font-size:12.5px;line-height:1.3}
 .game-tile .chip{position:absolute;top:10px;right:10px;height:24px;font-size:11px;padding:0 9px}
 .game-tile.rec{border:2px solid rgba(99,102,241,.55)}
+.game-tile.locked{cursor:default;opacity:.6;filter:saturate(.6)}
+
+/* Opening animation */
+#app{transition:opacity .45s ease}
+body.splashing #app{opacity:0}
+.splash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:16px;cursor:pointer;-webkit-user-select:none;user-select:none;
+  background:radial-gradient(circle at 50% 46%,rgba(255,255,255,.6),rgba(255,255,255,0) 62%);transition:opacity .45s ease,transform .45s ease}
+.splash.out{opacity:0;transform:scale(1.12);pointer-events:none}
+.splash-stage{position:relative;width:min(88vw,400px);aspect-ratio:1}
+.splash img{display:block;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .25s;filter:drop-shadow(0 8px 8px rgba(38,40,80,.25))}
+.splash img.ok{opacity:1}
+.orbit{position:absolute;inset:0;animation:spin 18s linear infinite;transition:opacity .4s}
+.orbit .slot{position:absolute;left:40.5%;top:40.5%;width:19%;height:19%;transform:rotate(var(--a)) translateX(205%) rotate(calc(-1 * var(--a)))}
+.orbit .up{width:100%;height:100%;animation:spin 18s linear infinite reverse}
+.orbit .pop{width:100%;height:100%;animation:petIn .55s cubic-bezier(.3,1.7,.5,1) both;animation-delay:var(--d)}
+.orbit img.hop{animation:hop .5s ease}
+@keyframes petIn{from{transform:scale(0) rotate(-25deg);opacity:0}}
+@keyframes hop{50%{transform:translateY(-30%) scale(1.12)}}
+.portal{position:absolute;inset:23%;border-radius:50%;display:grid;place-items:center;text-align:center;
+  background:linear-gradient(140deg,rgba(255,255,255,.72),rgba(255,255,255,.32));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.85);box-shadow:0 30px 60px -24px rgba(38,40,80,.4),inset 0 1px 1px rgba(255,255,255,.95);
+  animation:portalIn .65s cubic-bezier(.2,1.5,.4,1) both}
+.portal::before{content:'';position:absolute;inset:-4px;border-radius:50%;padding:4px;background:var(--iri);pointer-events:none;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin 5s linear infinite}
+@keyframes portalIn{from{transform:scale(.3);opacity:0}}
+.portal-in{display:grid;justify-items:center;gap:3px;padding:10px}
+.ptitle{font-size:clamp(17px,5.2vw,23px);font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.psub{font-size:12px;font-weight:700;color:var(--muted)}
+.splash .me{display:none;width:46%;height:auto}
+.splash.hello .me{display:block;animation:petIn .6s cubic-bezier(.3,1.7,.5,1) both}
+.splash.hello .orbit{opacity:.3}
+.splash.shine .ptitle{background:linear-gradient(90deg,var(--ink) 25%,#8b8ffb 42%,#3cc7b6 52%,var(--ink) 70%);background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 1.1s ease forwards}
+@keyframes shine{from{background-position:100% 0}to{background-position:0 0}}
+.spark{position:absolute;left:var(--x);top:var(--y);width:6px;height:6px;border-radius:50%;background:#fff;opacity:0;pointer-events:none;
+  box-shadow:0 0 10px 3px rgba(253,230,138,.85);animation:twinkle 1.7s ease-in-out infinite;animation-delay:var(--t)}
+@keyframes twinkle{50%{opacity:1;transform:scale(1.4)}}
+.splash.still *{animation:none!important}
+.splash.still img{opacity:1}
 .gscreen{display:flex;flex-direction:column;gap:14px;min-height:calc(100vh - 68px)}
 .gtop{display:flex;align-items:center;gap:12px}
 .gtop h2{flex:1;font-size:20px}
@@ -435,12 +474,12 @@ function petMood(d){
 const petLine = (d, mood) => pick(PET_LINES[mood]).replace('{streak}', d.stats.streak);
 
 function petCard(d){
-  const p = d.pet, rec = warmupGame(d);
+  const p = d.pet, rec = warmupGame(d), lt = d.levelTest;
   if (!p) return `<div class="today iri">
     <div class="row-flex" style="gap:14px"><img src="${petSrc('cat', 1, 'happy')}" alt="" style="width:92px;height:92px;object-fit:contain;flex:none">
       <div><h2 style="margin:0">Adopt a pet</h2><div class="sub" style="color:#3b3f55">A friend who grows every time you practice English.</div></div></div>
     <button class="btn btn-primary btn-block mt" id="adopt">${icon('paw-print')} Choose your pet</button></div>`;
-  const mood = petMood(d);
+  const mood = lt ? 'happy' : petMood(d);
   const span = p.to ? p.to - p.from : 0, pct = p.to ? Math.round((p.xp - p.from) / span * 100) : 100;
   return `<div class="glass pet-card iri">
     <img class="pet-img" id="petimg" src="${petSrc(p.id, p.stage, mood)}" alt="${esc(p.name)}">
@@ -448,12 +487,85 @@ function petCard(d){
       <div class="row-flex between" style="gap:8px"><div class="pet-name">${esc(p.name)}</div>
         <button class="btn btn-glass icon-btn" id="petedit" style="width:34px;height:34px;font-size:14px;flex:none" title="Change pet">${icon('pencil-simple')}</button></div>
       <span class="chip purple">${STAGES[p.stage - 1]}</span>
-      <div class="bubble" id="petline">${esc(petLine(d, mood))}</div>
+      <div class="bubble" id="petline">${esc(lt ? 'Hi! First, let\'s find your English level. Then we can play together!' : petLine(d, mood))}</div>
       <div class="bar mt-s" style="height:10px"><i style="width:${Math.max(3, pct)}%"></i></div>
       <div class="xp-row"><span>${p.to ? (p.xp - p.from) + ' / ' + span + ' XP' : p.xp + ' XP'}</span><span>${p.to ? 'to ' + STAGES[p.stage] : 'Fully grown!'}</span></div>
     </div>
-    <button class="btn btn-primary btn-block" data-game="${rec}" style="grid-column:1 / -1">${icon('play')} Play ${GAME_INFO[rec].name}</button>
+    ${lt ? `<a class="btn btn-teal btn-block" href="${esc(lt.url)}" target="_blank" rel="noopener" style="grid-column:1 / -1">${icon('target')} Start the level test</a>`
+      : `<button class="btn btn-primary btn-block" data-game="${rec}" style="grid-column:1 / -1">${icon('play')} Play ${GAME_INFO[rec].name}</button>`}
   </div>`;
+}
+
+// Tapping the pet: a happy jump and a new line.
+function bindPet(d){
+  const pi = document.getElementById('petimg');
+  if (!pi || !d.pet) return;
+  pi.onclick = () => {
+    pi.src = petSrc(d.pet.id, d.pet.stage, 'celebrate');
+    pi.classList.remove('bounce'); void pi.offsetWidth; pi.classList.add('bounce');
+    document.getElementById('petline').textContent = pick(PET_LINES.celebrate);
+    clearTimeout(pi.t);
+    pi.t = setTimeout(() => {
+      const m = d.levelTest ? 'happy' : petMood(d);
+      pi.src = petSrc(d.pet.id, d.pet.stage, m);
+      document.getElementById('petline').textContent = d.levelTest ? 'The level test first, then we play!' : petLine(d, m);
+    }, 1600);
+  };
+}
+
+function dashHeader(d){
+  return `<div class="row-flex between">
+      <div class="row-flex">
+        ${petFace(d.pet, d.girl.color, d.girl.name)}
+        <div><h2 style="font-size:22px">Hi ${esc(d.girl.name)}</h2>${d.levelTest ? '<span class="chip orange" style="margin-top:4px">New</span>'
+          : `<span class="chip purple" style="margin-top:4px">Level ${esc(d.girl.levelLabel)}</span>`}</div>
+      </div>
+      <div class="row-flex" style="gap:8px">
+        <button class="btn btn-glass icon-btn" id="refresh" title="Refresh">${icon('arrows-clockwise')}</button>
+        <button class="btn btn-glass icon-btn" id="logout" title="Switch user">${icon('sign-out')}</button>
+      </div>
+    </div>`;
+}
+
+// A new kid sees only the level test: the daily task, the games and the rewards open after it.
+function renderOnboarding(d){
+  const lt = d.levelTest;
+  const w = { section: 'level', date: lt.date, day: 'Step 1', label: 'Level Test', title: lt.title, url: lt.url };
+  app.innerHTML = `
+  <div class="stack">
+    ${dashHeader(d)}
+    ${petCard(d)}
+    <div class="today iri">
+      <div class="row-flex between"><span class="label" style="color:#3b3f55">Step 1 · Your level</span><span class="chip">20–30 min</span></div>
+      <div class="row-flex mt-s" style="gap:10px">${tile('level')}<b>${esc(lt.title)}</b></div>
+      <h2>Let's find your English level</h2>
+      <div class="sub" style="color:#3b3f55">Answer the questions on test-english.com. At the end you will see your level (A1, A2, B1…). Come back here and tap <b>I got my level</b>.</div>
+      <div class="btns"><a class="btn btn-teal" href="${esc(lt.url)}" target="_blank" rel="noopener">Start ${icon('arrow-up-right')}</a>
+        <button class="btn btn-primary" id="gotlevel">I got my level ${icon('check')}</button></div>
+    </div>
+    <div class="glass panel">
+      <div class="row-flex between"><h2>Opens after the test</h2><span class="chip">${icon('lock-simple')} Locked</span></div>
+      <div class="sub mt-s" style="font-size:13px">Your daily task, the four games and the rewards open as soon as we know your level.</div>
+      <div class="game-grid mt">${Object.keys(GAME_INFO).map(k => `<div class="soft game-tile locked">
+        <span class="chip">${icon('lock-simple')}</span>
+        <span class="tile ${GAME_INFO[k].tile}">${icon(GAME_INFO[k].icon, 'duotone')}</span>
+        <b>${GAME_INFO[k].name}</b><span class="sub">${GAME_INFO[k].desc}</span></div>`).join('')}</div>
+    </div>
+    <div id="pushcard"></div>
+    <div class="word-card">
+      <div class="label">Word of the day</div>
+      <div class="word">${esc(d.word.word)}</div>
+      <div class="sub" style="color:#3b3f55">${esc(d.word.meaning)}</div>
+    </div>
+  </div>`;
+  document.getElementById('refresh').onclick = () => { loading(); login(session.name, session.pin); };
+  document.getElementById('logout').onclick = () => { store.del('eq_auth'); session = null; loadHome(); };
+  document.getElementById('gotlevel').onclick = () => openSheet(w);
+  ['adopt', 'petedit'].forEach(id => { const b = document.getElementById(id); if (b) b.onclick = petPicker; });
+  bindPet(d);
+  if (d.push && d.push.key) pushKey = d.push.key;
+  renderPushCard();
+  checkGrowth();
 }
 
 function petPicker(){
@@ -648,6 +760,7 @@ const fixedSentence = it => it.tokens.map((w, k) => k === it.wrong ? fixedWord(i
 
 async function startGame(game){
   if (!dash) return;
+  if (dash.levelTest) { toast('Do the level test first, then the games open', true); return renderDash(); }
   if (!dash.games) dash.games = Object.assign({}, GAMES_DEFAULT);
   app.innerHTML = '<div class="spinner"></div>';
   let B;
@@ -868,6 +981,65 @@ function sayIt(slow){
 }
 function speechStop(){ try { speechSynthesis.cancel(); } catch(e){} }
 
+// ---------- Opening animation ----------
+// The ten pets pop in around a glass portal, orbit it and do a wave; on a phone where a kid is
+// remembered, her own pet then jumps into the middle and says hi. A tap skips it; with reduced
+// motion it is a short still picture. The app loads underneath meanwhile.
+function splashScreen(){
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const saved = store.get('eq_auth'), mine = saved ? store.get('eq_pet_' + saved.name) : null;
+  const me = mine && PET_ART[mine.id] ? mine : null;
+  const el = document.createElement('div');
+  el.className = 'splash' + (reduce ? ' still' : '');
+  el.innerHTML = `<div class="splash-stage">
+      <div class="orbit">${PETS.map(([id], i) => `<div class="slot" style="--a:${Math.round(i * 360 / PETS.length - 90)}deg">
+        <div class="up"><div class="pop" style="--d:${150 + i * 75}ms"><img src="${petSrc(id, 1, 'happy')}" data-id="${id}" alt="" onload="this.classList.add('ok')"></div></div></div>`).join('')}</div>
+      <div class="portal"><div class="portal-in">
+        ${me ? `<img class="me" src="${petSrc(me.id, me.stage, 'celebrate')}" alt="" onload="this.classList.add('ok')">` : ''}
+        <div class="ptitle">English Quest</div><div class="psub">10 minutes a day</div></div></div>
+      ${Array.from({ length: 14 }, () => `<i class="spark" style="--x:${Math.round(Math.random() * 100)}%;--y:${Math.round(Math.random() * 100)}%;--t:${(Math.random() * 1.7).toFixed(2)}s"></i>`).join('')}
+    </div>`;
+  document.body.appendChild(el);
+  document.body.classList.add('splashing');
+  let gone = false, minDone;
+  const done = new Promise(r => { minDone = r; });
+  const later = (ms, f) => setTimeout(() => { if (!gone) f(); }, ms);
+  if (reduce) later(700, minDone);
+  else {
+    PETS.forEach(([id]) => { new Image().src = petSrc(id, 1, 'celebrate'); });
+    // The wave: each pet cheers and hops in turn.
+    el.querySelectorAll('.orbit img').forEach((img, i) => later(1350 + i * 60, () => {
+      img.src = petSrc(img.dataset.id, 1, 'celebrate');
+      img.classList.add('hop');
+      later(520, () => { img.src = petSrc(img.dataset.id, 1, 'happy'); img.classList.remove('hop'); });
+    }));
+    later(1950, () => {
+      if (!me) return el.classList.add('shine');
+      el.classList.add('hello');
+      el.querySelector('.ptitle').textContent = 'Hi ' + saved.name + '!';
+      el.querySelector('.psub').textContent = 'Ready to play?';
+    });
+    setTimeout(minDone, me ? 2800 : 2450);
+  }
+  const close = () => {
+    if (gone) return;
+    gone = true;
+    el.classList.add('out');
+    document.body.classList.remove('splashing');
+    setTimeout(() => el.remove(), 500);
+  };
+  el.onclick = close;
+  return { done, close };
+}
+
+// Starts the app behind the opening animation and lifts it when both are ready (at most 9 s).
+async function boot(){
+  const s = splashScreen();
+  const ready = start().catch(() => {});
+  await Promise.race([Promise.all([s.done, ready]), new Promise(r => setTimeout(r, 9000))]);
+  s.close();
+}
+
 // ---------- Home ----------
 async function start(){
   const saved = store.get('eq_auth'), admin = store.get('eq_admin');
@@ -994,22 +1166,14 @@ function renderDash(){
   G = null; speechStop();
   const d = dash, s = d.stats;
   if (!d.games) d.games = Object.assign({}, GAMES_DEFAULT);
+  if (d.levelTest) return renderOnboarding(d);
   const today = d.week.find(w => w.isToday);
   const next = d.nextReward;
   const prevPts = d.rewards.filter(r => r.points <= s.balance).map(r => r.points).pop() || 0;
   const prog = next ? Math.round((s.balance - prevPts) / (next.points - prevPts) * 100) : 100;
   app.innerHTML = `
   <div class="stack">
-    <div class="row-flex between">
-      <div class="row-flex">
-        ${petFace(d.pet, d.girl.color, d.girl.name)}
-        <div><h2 style="font-size:22px">Hi ${esc(d.girl.name)}</h2><span class="chip purple" style="margin-top:4px">Level ${esc(d.girl.levelLabel)}</span></div>
-      </div>
-      <div class="row-flex" style="gap:8px">
-        <button class="btn btn-glass icon-btn" id="refresh" title="Refresh">${icon('arrows-clockwise')}</button>
-        <button class="btn btn-glass icon-btn" id="logout" title="Switch user">${icon('sign-out')}</button>
-      </div>
-    </div>
+    ${dashHeader(d)}
 
     ${petCard(d)}
 
@@ -1051,14 +1215,7 @@ function renderDash(){
   app.querySelectorAll('[data-log]').forEach(b => b.onclick = () => openSheet(d.week.find(w => w.date === b.dataset.log)));
   app.querySelectorAll('[data-game]').forEach(b => b.onclick = () => startGame(b.dataset.game));
   ['adopt', 'petedit'].forEach(id => { const b = document.getElementById(id); if (b) b.onclick = petPicker; });
-  const pi = document.getElementById('petimg');
-  if (pi) pi.onclick = () => {
-    pi.src = petSrc(d.pet.id, d.pet.stage, 'celebrate');
-    pi.classList.remove('bounce'); void pi.offsetWidth; pi.classList.add('bounce');
-    document.getElementById('petline').textContent = pick(PET_LINES.celebrate);
-    clearTimeout(pi.t);
-    pi.t = setTimeout(() => { const m = petMood(d); pi.src = petSrc(d.pet.id, d.pet.stage, m); document.getElementById('petline').textContent = petLine(d, m); }, 1600);
-  };
+  bindPet(d);
   if (d.push && d.push.key) pushKey = d.push.key;
   renderPushCard();
   checkGrowth();
@@ -1157,7 +1314,7 @@ function openSheet(w){
   const ov = document.createElement('div');
   ov.className = 'overlay';
   ov.innerHTML = `<div class="sheet glass">
-    <div class="row-flex between"><span class="row-flex" style="gap:10px">${tile(w.section, true)}<span class="label">${w.day} ${fmtDate(w.date)} · ${esc(w.label)}</span></span>
+    <div class="row-flex between"><span class="row-flex" style="gap:10px">${tile(w.section, true)}<span class="label">${isLevel ? esc(w.label) : w.day + ' ' + fmtDate(w.date) + ' · ' + esc(w.label)}</span></span>
       <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
     <h2 style="margin-top:8px;font-size:20px">${esc(w.title)}</h2>
     <a class="btn btn-teal btn-block mt" href="${esc(w.url)}" target="_blank" rel="noopener">Open exercise ${icon('arrow-up-right')}</a>
@@ -1187,8 +1344,10 @@ function openSheet(w){
     }
     e.currentTarget.disabled = true; e.currentTarget.textContent = 'Saving…';
     try {
+      const first = !!dash.levelTest;
       dash = await call('apiSubmit', session.name, session.pin, w.date, c, t, level);
       close(); renderDash(); celebrate(dash.justEarned);
+      if (first) setTimeout(() => toast('Level ' + LEVELS.find(x => x[0] === level)[1] + ' saved. Your daily task and the games are open!'), 1200);
     } catch(err){ toast(err.message, true); e.currentTarget.disabled = false; e.currentTarget.textContent = 'Save'; }
   };
 }
@@ -1247,7 +1406,7 @@ function createdCard(c){
   if (!c) return '';
   const text = c.type === 'group'
     ? `English Quest — ${c.name}\nLink for the kids: ${c.link}\nParent PIN (tap the lock on the home screen): ${c.pin}`
-    : `Hi ${c.name}! 👋 Your English Quest link: ${c.link}\nTap your name and enter your PIN: ${c.pin}\nYour first task is a level test.`;
+    : `Hi ${c.name}! 👋 Your English Quest link: ${c.link}\nTap your name and enter your PIN: ${c.pin}\nStart with the level test (about 20 minutes), then your daily tasks and the games open.`;
   return `<div class="today iri" id="created">
     <div class="label" style="color:#3b3f55">${c.type === 'group' ? 'Group created' : 'Kid added to ' + esc(c.group)}</div>
     <h2>${esc(c.name)}</h2>
@@ -1410,7 +1569,7 @@ function manageBody(p){
     </div>
     <select class="input mt-s" id="nk-group">${p.groups.map(g => `<option value="${esc(g.id)}">${esc(g.name)}</option>`).join('')}</select>
     <button class="btn btn-primary btn-block mt-s" id="nk-btn">${icon('user-plus')} Add kid</button>
-    <div class="sub mt-s" style="font-size:12px">A PIN is created automatically. New kids start with the level test on their first day.</div>
+    <div class="sub mt-s" style="font-size:12px">A PIN is created automatically. New kids take the level test first; their daily tasks and the games open after it.</div>
     <a class="btn btn-glass btn-block mt" href="${esc(p.sheetUrl)}" target="_blank" rel="noopener">Open Google Sheet ${icon('arrow-up-right')}</a>
     <div class="sub mt-s" style="font-size:12px">Edit PINs, levels, reminder emails, redeemed points, goals and rewards in the sheet.</div>
   </div>`;
@@ -1484,7 +1643,7 @@ function girlCard(g, isAdmin){
       <span class="chip orange">${icon('star')} ${s.balance}</span>
     </div>
     <div class="row-flex mt-s" style="flex-wrap:wrap;gap:8px">
-      <span class="chip purple">${s.weekDone}/${s.weekTotal} this week</span>
+      ${g.levelTest ? `<span class="chip orange">${icon('target')} Level test pending</span>` : `<span class="chip purple">${s.weekDone}/${s.weekTotal} this week</span>`}
       ${isAdmin && g.pin ? `<span class="chip">${icon('key')} ${esc(g.pin)}</span>` : ''}
       <span class="chip">${icon('target')} ${s.avg == null ? '–' : s.avg + '%'}</span>
       <span class="chip">${icon('fire')} ${s.streak}</span>
@@ -1509,7 +1668,7 @@ function girlCard(g, isAdmin){
   </div>`;
 }
 
-start();
+boot();
 </script>
 </body>
 </html>

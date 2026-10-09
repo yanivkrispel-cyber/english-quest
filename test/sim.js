@@ -153,11 +153,11 @@ pushLog.length = 0;
 run("apiSubmit('Aviv','2694','2026-10-20',9,10,null)");
 console.log('instant after Aviv (family):', pushLog.map(x => x.url.slice(-3)), JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/dad')")));
 pushLog.length = 0;
-run("apiSubmit('Noa','" + sheets.Girls.rows.find(r => r[0] === 'Noa')[2] + "','2026-10-20',7,10,null)");
+run("apiSubmit('Noa','" + sheets.Girls.rows.find(r => r[0] === 'Noa')[2] + "','2026-10-14','','','b1')"); // new kid: level test first
 console.log('instant after Noa (other group):', pushLog.map(x => x.url.slice(-3)));
 run("apiParentPushPrefs('1234','https://fcm.googleapis.com/fcm/send/dad',false)");
 pushLog.length = 0;
-run("apiSubmit('Ron','7356','2026-10-20',10,10,null)");
+run("apiSubmit('Ron','7356','" + run("apiDashboard('Ron','7356')").levelTest.date + "','','','b1')"); // Ron never logged anything: level test first
 console.log('instant with toggle off:', pushLog.length, '(expect 0)');
 pushLog.length = 0;
 run('parentSummary()');
@@ -206,3 +206,36 @@ run("apiGameResult('Aviv','2694','listen','a2',3,5,[],[])");
 run('parentSummary()');
 console.log('summary with games:', JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/dad2')")));
 run('weeklySummary()');
+
+// ---- new kids: the level test comes first ----
+ctx.__day = '2026-10-26';
+const famId = run("apiParent('1234')").groups[0].id;
+const talPin = run("apiAdminAddKid('1234','Tal','10','" + famId + "','a2')").created.pin;
+let T = run("apiDashboard('Tal','" + talPin + "')");
+console.log('new kid:', JSON.stringify(T.levelTest), '| active days', T.week.filter(w => !w.beforeStart).map(w => w.date).join(','), '| aviv gated:', !!run("apiDashboard('Aviv','2694')").levelTest);
+try { run("apiGameResult('Tal','" + talPin + "','match','a2',3,5,[],[])"); } catch (e) { console.log('games locked ok:', e.message); }
+try { run("apiSubmit('Tal','" + talPin + "','2026-10-26','','',null)"); } catch (e) { console.log('level required ok:', e.message); }
+ctx.__day = '2026-10-28';
+T = run("apiDashboard('Tal','" + talPin + "')");
+console.log('two days later still pending:', T.levelTest.date, '| assignments', sheets.Assignments.rows.filter(r => r[0] === 'Tal').length);
+console.log('reminder text:', JSON.stringify(run("reminderMessage(findGirl('Tal'), false)")), '| assignments', sheets.Assignments.rows.filter(r => r[0] === 'Tal').length);
+try { run("apiSubmit('Tal','" + talPin + "','2026-10-28',5,10,null)"); } catch (e) { console.log('regular task blocked ok:', e.message); }
+T = run("apiSubmit('Tal','" + talPin + "','2026-10-26','','','b1')");
+console.log('test logged:', T.justEarned, 'pts | level', T.girl.levelLabel, '| pending', T.levelTest, '| moved to', sheets.Assignments.rows.filter(r => r[0] === 'Tal').map(r => r[1]).join(','),
+  '| week', T.week.filter(w => !w.beforeStart).map(w => w.date + (w.done ? ':done' : '')).join(','));
+ctx.__day = '2026-10-29';
+T = run("apiDashboard('Tal','" + talPin + "')");
+const td = T.week.find(w => w.isToday);
+console.log('next day task:', td.section, td.level, td.title ? 'ok' : 'none', '| catch-up days', T.week.filter(w => !w.beforeStart && !w.done && !w.isToday && !w.isFuture).length);
+console.log('games open:', run("apiGameResult('Tal','" + talPin + "','match','b1',4,5,[],[])").gameXp, 'xp');
+// A kid with nothing logged who already got a regular exercise before the level-test rule existed.
+ctx.__day = '2026-11-02';
+const danaPin = run("apiAdminAddKid('1234','Dana','11','" + famId + "','a2')").created.pin;
+run("apiDashboard('Dana','" + danaPin + "')");
+sheets.Assignments.rows.push(['Dana', '2026-11-03', 'grammar', 'a2', 'Old exercise', 'https://x/old']);
+run('clearCache()');
+ctx.__day = '2026-11-03';
+T = run("apiDashboard('Dana','" + danaPin + "')");
+console.log('dana pending:', T.levelTest.date, '| her rows', sheets.Assignments.rows.filter(r => r[0] === 'Dana').map(r => r[1] + ':' + r[2]).join(','));
+T = run("apiSubmit('Dana','" + danaPin + "','2026-11-02','','','a2')");
+console.log('dana logged:', T.justEarned, 'pts | rows', sheets.Assignments.rows.filter(r => r[0] === 'Dana').map(r => r[1] + ':' + r[2]).join(','), '| today', T.week.find(w => w.isToday).section, T.week.find(w => w.isToday).done);

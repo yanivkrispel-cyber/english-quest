@@ -15,7 +15,12 @@ notifications, and reward points.
 - One exercise a day, at the kid's level (A1 → C1), picked from a catalog of 714 test-english.com
   exercises without repeats. Weekly rotation (Sun–Sat): Grammar, Vocabulary, Listening, Grammar,
   Reading, Use of English / Writing (alternating weeks), Listening.
-- A kid's first day is always the **level test**; the level she reports becomes her level.
+- New kids start with the **level test** and nothing else: the daily task and the games stay locked
+  until they log the level they got (the test can be done any day and counts as done that day).
+  "New" = nothing logged yet, so existing kids are never locked.
+- **Opening animation**: the ten pets pop in around a glass portal, orbit it and do a wave; on a phone
+  where a kid is remembered, her own pet jumps into the middle and says hi (tap to skip; a short still
+  version with reduced motion). The app loads underneath meanwhile.
 - Log a score (correct / out of). Points: 10 per task, +5 for 80%+, +3 if done on the day,
   +20 for a full week. Missed days of the current week can be caught up.
 - Streak, weekly ring, average score, rewards ladder, word of the day.

@@ -322,7 +322,7 @@ function apiParentPushTest(pin, endpoint) {
 
 function reminderMessage(kid, lastCall) {
   var t = today();
-  var a = ensureAssignments(kid, [t])[t];
+  var a = todayTask(kid);
   var logs = readTable('Log').filter(function (l) { return l.Girl === kid.Name; });
   var label = SECTIONS[a.section].label;
   if (lastCall) {

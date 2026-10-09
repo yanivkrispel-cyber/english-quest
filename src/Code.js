@@ -187,7 +187,17 @@ function apiDashboard(name, pin) {
 function apiSubmit(name, pin, date, correct, total, levelResult) {
   var kid = auth(name, pin);
   var t = today();
-  if (weekDates(t).indexOf(date) < 0 || date > t || date < kidStart(kid)) throw new Error('You can only log tasks from this week.');
+  var pending = pendingLevelTest(kid);
+  if (pending) {
+    // A new kid's level test can be done any day; it counts as done today.
+    if (date !== pending.date) throw new Error('Take the level test first.');
+    if (!levelResult || LEVELS.indexOf(levelResult) < 0) throw new Error('Choose your level');
+    // Exercises handed out before the level test was required (nothing logged, so nothing is lost).
+    dropAssignmentsExcept(kid.Name, date);
+    if (date !== t) { moveAssignment(kid.Name, date, t); date = t; }
+  } else if (weekDates(t).indexOf(date) < 0 || date > t || date < kidStart(kid)) {
+    throw new Error('You can only log tasks from this week.');
+  }
   var a = ensureAssignments(kid, [date])[date];
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
@@ -230,6 +240,7 @@ function apiSubmit(name, pin, date, correct, total, levelResult) {
 function apiGameResult(name, pin, game, level, correct, total, missed, right) {
   var kid = auth(name, pin);
   if (GAMES.indexOf(game) < 0) throw new Error('Unknown game');
+  if (pendingLevelTest(kid)) throw new Error('Take the level test first.');
   correct = Math.round(Number(correct));
   total = Math.round(Number(total));
   if (!(total >= 1 && total <= 10 && correct >= 0 && correct <= total)) throw new Error('Invalid score');
@@ -486,11 +497,29 @@ function kidStart(kid) {
   return dates.length ? dates[0] : today();
 }
 
+// New kids (nothing logged yet) do the level test before anything else: no daily tasks and no
+// games until it is logged. Returns the pending test ({date, title, url}) or null.
+function pendingLevelTest(kid) {
+  if (readTable('Log').some(function (l) { return l.Girl === kid.Name; })) return null;
+  var start = kidStart(kid);
+  var a = ensureAssignments(kid, [start])[start];
+  return a && a.section === 'level' ? { date: start, title: a.title, url: a.url } : null;
+}
+
+// Today's task for reminders: the pending level test, otherwise today's assignment.
+function todayTask(kid) {
+  var lt = pendingLevelTest(kid);
+  if (lt) return { section: 'level', level: '', title: lt.title, url: lt.url };
+  var t = today();
+  return ensureAssignments(kid, [t])[t];
+}
+
 function buildDashboard(kid) {
   var t = today();
+  var pending = pendingLevelTest(kid);
   var start = kidStart(kid);
   var dates = weekDates(t);
-  var active = dates.filter(function (d) { return d >= start && d <= t; });
+  var active = pending ? [] : dates.filter(function (d) { return d >= start && d <= t; });
   var assigned = ensureAssignments(kid, active);
   var logs = readTable('Log').filter(function (l) { return l.Girl === kid.Name; });
   var byDate = {};
@@ -498,7 +527,8 @@ function buildDashboard(kid) {
 
   var week = dates.map(function (d) {
     var wd = parseDate(d).getDay();
-    var item = { date: d, day: DAY_NAMES[wd], isToday: d === t, isFuture: d > t, beforeStart: d < start };
+    var item = { date: d, day: DAY_NAMES[wd], isToday: d === t, isFuture: d > t,
+      beforeStart: d < start || (!!pending && d !== pending.date) };
     var sec = assigned[d] ? assigned[d].section : sectionFor(d);
     item.section = sec;
     item.label = SECTIONS[sec].label;
@@ -537,6 +567,7 @@ function buildDashboard(kid) {
     },
     rewards: rewards,
     nextReward: next,
+    levelTest: pending,
     pet: petInfo(kid),
     games: gameStats(kid, t),
     push: { key: vapidPublicKey(), devices: readTable('Push').filter(function (s) { return s.Girl === kid.Name; }).length },
@@ -651,7 +682,7 @@ function dailyReminder() {
     if (!k.Email) return;
     var done = logs.some(function (l) { return l.Girl === k.Name && l.Date === t; });
     if (done) return;
-    var a = ensureAssignments(k, [t])[t];
+    var a = todayTask(k);
     MailApp.sendEmail({
       to: k.Email,
       subject: k.Name + ', your 10 minutes of English are waiting!',
@@ -866,6 +897,30 @@ function setGirlFields(name, fields) {
       var col = values[0].indexOf(f);
       if (col >= 0) sh.getRange(i + 1, col + 1).setValue(fields[f]);
     });
+  }
+}
+
+// Moves a kid's assignment to another date (used for a level test done after the day it was given).
+function moveAssignment(name, from, to) {
+  invalidate('Assignments');
+  var sh = sheet('Assignments');
+  var values = sh.getDataRange().getValues();
+  var head = values[0], g = head.indexOf('Girl'), d = head.indexOf('Date');
+  for (var i = 1; i < values.length; i++) {
+    var date = values[i][d] instanceof Date ? fmt(values[i][d]) : String(values[i][d]);
+    if (String(values[i][g]).trim() === name && date === from) { sh.getRange(i + 1, d + 1).setValue(to); return; }
+  }
+}
+
+// Removes a kid's assignments except the one on keepDate.
+function dropAssignmentsExcept(name, keepDate) {
+  invalidate('Assignments');
+  var sh = sheet('Assignments');
+  var values = sh.getDataRange().getValues();
+  var head = values[0], g = head.indexOf('Girl'), d = head.indexOf('Date');
+  for (var i = values.length - 1; i >= 1; i--) {
+    var date = values[i][d] instanceof Date ? fmt(values[i][d]) : String(values[i][d]);
+    if (String(values[i][g]).trim() === name && date !== keepDate) sh.deleteRow(i + 1);
   }
 }
 
