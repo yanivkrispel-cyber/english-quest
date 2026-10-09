@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v8';
+var SETUP_VERSION = 'v9';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
@@ -51,9 +51,12 @@ var HEADERS = {
   Log: ['Timestamp', 'Girl', 'Date', 'DoneOn', 'Section', 'Level', 'Title', 'URL', 'Correct', 'Total', 'Percent', 'Points'],
   Rewards: ['Points', 'Reward', 'Group'],
   Settings: ['Key', 'Value'],
-  Groups: ['Id', 'Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email'],
+  Groups: ['Id', 'Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email', 'Friends'],
   Push: ['Girl', 'Endpoint', 'Created', 'Agent'],
-  ParentPush: ['Who', 'Endpoint', 'Created', 'Agent', 'Instant']
+  ParentPush: ['Who', 'Endpoint', 'Created', 'Agent', 'Instant'],
+  // Play together (Duels.js): one row per duel or challenge.
+  Duels: ['Id', 'Created', 'Date', 'Mode', 'State', 'Host', 'Guest', 'HostLevel', 'GuestLevel', 'Seed', 'Start', 'Expires', 'Reply',
+    'HostScore', 'HostMs', 'HostTrack', 'GuestScore', 'GuestMs', 'GuestTrack', 'Winner', 'Ended', 'Helped']
 };
 
 var WORDS = [
@@ -105,7 +108,9 @@ function api() {
   apiAdminAddGroup: apiAdminAddGroup, apiAdminAddKid: apiAdminAddKid, apiAdminSettings: apiAdminSettings,
   apiPushSubscribe: apiPushSubscribe, apiPushMessage: apiPushMessage, apiAdminTestPush: apiAdminTestPush,
   apiParentPushSubscribe: apiParentPushSubscribe, apiParentPushPrefs: apiParentPushPrefs, apiParentPushTest: apiParentPushTest,
-  apiGameResult: apiGameResult, apiSetPet: apiSetPet, apiGateResult: apiGateResult
+  apiGameResult: apiGameResult, apiSetPet: apiSetPet, apiGateResult: apiGateResult,
+  apiDuelHome: apiDuelHome, apiDuelInvite: apiDuelInvite, apiDuelJoin: apiDuelJoin, apiDuelReply: apiDuelReply,
+  apiDuelCancel: apiDuelCancel, apiDuelSolo: apiDuelSolo, apiDuelPoll: apiDuelPoll, apiDuelFinish: apiDuelFinish, apiDuelHelped: apiDuelHelped
   };
 }
 
@@ -188,7 +193,10 @@ function apiWarm() {
 
 function apiDashboard(name, pin) {
   var kid = auth(name, pin);
-  return buildDashboard(kid);
+  var dash = buildDashboard(kid);
+  // Play together card (Duels.js); only here, so parent views and other calls stay fast.
+  if (!dash.levelTest) dash.duels = duelHome(kid);
+  return dash;
 }
 
 function apiSubmit(name, pin, date, correct, total, levelResult) {
@@ -311,6 +319,8 @@ function gameStats(kid, t) {
     list.forEach(function (g) { c += Number(g.Correct) || 0; n += Number(g.Total) || 0; });
     return n ? Math.round(c / n * 100) : null;
   };
+  // Rows with questions; a duel's win bonus is a row without any.
+  var played = function (g) { return Number(g.Total) > 0; };
   var recent = {};
   GAMES.forEach(function (name) {
     recent[name] = rows.filter(function (g) { return g.Game === name; }).slice(-3).map(function (g) {
@@ -318,12 +328,12 @@ function gameStats(kid, t) {
     });
   });
   return {
-    todayRounds: todayRows.length,
+    todayRounds: todayRows.filter(played).length,
     todayXp: todayRows.reduce(function (a, g) { return a + (Number(g.XP) || 0); }, 0),
     dayCap: GAME_XP.dayCap,
-    weekRounds: weekRows.length,
+    weekRounds: weekRows.filter(played).length,
     weekAvg: pct(weekRows),
-    total: rows.length,
+    total: rows.filter(played).length,
     recent: recent,
     review: dueReview(kid.Name, t)
   };
@@ -809,8 +819,11 @@ function installTriggers() {
 // ---------- Setup & migrations ----------
 
 function ensureSetup() {
+  // A cache flag first: duels poll often, and Script Properties reads have a daily quota.
+  var cache = CacheService.getScriptCache();
+  if (cache.get('SETUP') === SETUP_VERSION) return;
   var props = PropertiesService.getScriptProperties();
-  if (props.getProperty('setup') === SETUP_VERSION) return;
+  if (props.getProperty('setup') === SETUP_VERSION) { cache.put('SETUP', SETUP_VERSION, 21600); return; }
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);
   try {
@@ -870,6 +883,7 @@ function ensureSetup() {
     clearCache();
     installTriggers();
     props.setProperty('setup', SETUP_VERSION);
+    cache.put('SETUP', SETUP_VERSION, 21600);
   } finally {
     lock.releaseLock();
   }
@@ -882,7 +896,7 @@ function sheet(name) { return SpreadsheetApp.getActive().getSheetByName(name); }
 // Two cache levels: TABLES lives for one request; CacheService survives across requests
 // (sheet reads cost 0.3-1s each). Manual edits in the sheet clear it via onEdit.
 var TABLES = {};
-var CACHE_TTL = { Girls: 21600, Rewards: 21600, Settings: 21600, Groups: 21600, Push: 21600, ParentPush: 21600, Assignments: 900, Log: 900, Games: 900, Review: 900, Gates: 900 };
+var CACHE_TTL = { Girls: 21600, Rewards: 21600, Settings: 21600, Groups: 21600, Push: 21600, ParentPush: 21600, Assignments: 900, Log: 900, Games: 900, Review: 900, Gates: 900, Duels: 900 };
 var CHUNK = 30000;
 
 function readTable(name) {
@@ -1041,6 +1055,7 @@ function auth(name, pin) {
   ensureSetup();
   var g = findGirl(name);
   checkPin('girl:' + String(name).toLowerCase(), !!g && String(g.PIN).trim() === String(pin).trim());
+  duelSeen(g.Name);
   return g;
 }
 

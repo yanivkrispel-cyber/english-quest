@@ -248,9 +248,12 @@ function notifyGate(kid, row) {
 // Time-driven (21:00): who practiced today, per parent.
 function parentSummary() {
   var t = today();
-  var done = {}, played = {}, gated = {};
+  var done = {}, played = {}, gated = {}, duels = {};
   readTable('Log').forEach(function (l) { if (l.Date === t) done[l.Girl] = l; });
-  readTable('Games').forEach(function (g) { if (g.Date === t) played[g.Girl] = (played[g.Girl] || 0) + 1; });
+  readTable('Games').forEach(function (g) {
+    if (g.Date !== t || !(Number(g.Total) > 0)) return;
+    if (g.Game === 'duel') duels[g.Girl] = (duels[g.Girl] || 0) + 1; else played[g.Girl] = (played[g.Girl] || 0) + 1;
+  });
   readTable('Gates').forEach(function (g) { if (g.Date === t) gated[g.Girl] = g; });
   var byWho = {};
   readTable('ParentPush').forEach(function (r) { (byWho[r.Who] = byWho[r.Who] || []).push(r.Endpoint); });
@@ -259,8 +262,8 @@ function parentSummary() {
     if (!kids.length) return;
     var n = kids.filter(function (k) { return done[k.Name]; }).length;
     var body = kids.map(function (k) {
-      var l = done[k.Name], n = played[k.Name], g = gated[k.Name];
-      var games = n ? ' +' + n + (n === 1 ? ' game' : ' games') : '';
+      var l = done[k.Name], n = played[k.Name], du = duels[k.Name], g = gated[k.Name];
+      var games = (n ? ' +' + n + (n === 1 ? ' game' : ' games') : '') + (du ? ' +' + du + (du === 1 ? ' duel' : ' duels') : '');
       var gate = g ? (g.Passed === 'yes' ? 'reached ' + LEVEL_LABEL[g.To] + '!' : 'gate ' + g.Correct + '/' + g.Total) : '';
       if (!l) return k.Name + ' ' + (gate || '—') + games;
       return k.Name + ' ✓' + (l.Section === 'level' ? ' level test' : (l.Percent !== '' ? ' ' + l.Percent + '%' : '')) + games + (gate ? ' · ' + gate : '');
