@@ -17,7 +17,8 @@ working rules and the traps learned while building it.
 2. `node test/sim.js` (extend it for new server behaviour) and, for crypto, `node test/push-crypto.js`.
 3. Visual check: `node test/preview.js`, serve `app/` (`python -m http.server 8765`), open
    `http://localhost:8765/test/preview.html` with the Chrome tools (served from app/ so it can load
-   `docs/games.js` and the pet art). Mock data; any PIN works; Aviv has a pet, Ziv has none.
+   `docs/games.js` and the pet art). Mock data; any PIN works; Aviv has a pet and an open gate (finishing
+   the challenge with under 12/15 fails, 12+ passes and plays the ceremony), Ziv has no pet, Ron is new.
    Use a fresh port for real-server tests so stored mock PINs aren't sent to the live API.
 4. `node build-pages.js && clasp push --force && clasp update-deployment <id from README>`.
 5. Commit and `git push` (Pages rebuild). Commit trailer lines per the session's attribution rules.
@@ -46,6 +47,8 @@ working rules and the traps learned while building it.
   columns/tabs and runs migrations once. `appendRow` writes by header name, so column order is free.
 - `docs/games.js` must stay out of `src/`: clasp pushes every .js in src/ to Apps Script, and its
   `window.EQ_GAMES = ...` would break the whole server project.
+- The gate challenge size lives in two places: `GATE_MIX` in `Index.html` must add up to `JOURNEY.items`
+  in `Code.js` (15). The server rejects any other total.
 - Pet art is made in the Gemini web app (free, about 20 images a day): one new chat per sheet,
   otherwise characters bleed into each other. Recipe and prompts: `tools/PETS.md`.
 - Default PINs are random; the real PINs live only in the private sheet. The repo is public:
@@ -64,7 +67,10 @@ Phase 1 of the game plan (built 2026-10-09): mini-games (Match it, Hear it, Buil
 content for A1–C1 in `docs/games.js`, auto-saved scores, spaced review, and 10 pets that grow
 through 5 stages. Art: all 10 pets at stage 1; stage 2 for some (see `PET_ART` in Index.html).
 The remaining stages are made in the Gemini web app, about 20 images a day (`tools/PETS.md`).
-Next in the plan (owner approved): journey map with a world per level, and a level-up ceremony
-with a gate (level test) at the end of each world.
+Phase 2 (built 2026-10-09): journey map (a world per level, 30 stations = daily tasks), a gate at the
+end of each world and a level-up ceremony with a shareable certificate. The owner chose an in-app gate
+challenge (15 questions from the next level, 12 to pass) over the self-reported test-english level test;
+before this, a kid's level never changed after her first test. Worlds are drawn in code; illustrated
+backgrounds from Gemini are an option for later.
 Ideas not built yet: per-group reminder times, rewards redemption from the app (now via the
 `Redeemed` column), editing groups/kids from the app (now via the sheet).

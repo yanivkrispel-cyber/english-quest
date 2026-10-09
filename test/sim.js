@@ -239,3 +239,65 @@ T = run("apiDashboard('Dana','" + danaPin + "')");
 console.log('dana pending:', T.levelTest.date, '| her rows', sheets.Assignments.rows.filter(r => r[0] === 'Dana').map(r => r[1] + ':' + r[2]).join(','));
 T = run("apiSubmit('Dana','" + danaPin + "','2026-11-02','','','a2')");
 console.log('dana logged:', T.justEarned, 'pts | rows', sheets.Assignments.rows.filter(r => r[0] === 'Dana').map(r => r[1] + ':' + r[2]).join(','), '| today', T.week.find(w => w.isToday).section, T.week.find(w => w.isToday).done);
+
+// ---- journey: stations, the gate challenge, level up ----
+ctx.__day = '2026-11-04';
+const jd = (who, pin) => run("apiDashboard('" + (who || 'Aviv') + "','" + (pin || '2694') + "')").journey;
+const nextDay = () => { ctx.__day = run("addDays('" + ctx.__day + "', 1)"); };
+let J = jd();
+console.log('journey:', 'world', J.world, J.name, '| stations', J.stations + '/' + J.goal, '| gate', J.gate.state, 'to', J.gate.nextLabel, J.gate.nextName, '| icons', J.done.length, '| worlds', J.worlds.length);
+try { run("apiGateResult('Aviv','2694',15,15,[],[])"); } catch (e) { console.log('closed gate ok:', e.message); }
+// A task a day at 70% (too low for the early gate) until the 30th station.
+while (J.stations < 30) {
+  run("apiSubmit('Aviv','2694','" + ctx.__day + "',7,10,null)");
+  J = jd();
+  if (J.stations === 29) console.log('station 29:', J.gate.state, '(expect locked)');
+  if (J.stations < 30) nextDay();
+}
+console.log('station 30 on', ctx.__day + ':', J.gate.state, '(expect open) | avg', J.avg, '| icons', J.done.length);
+try { run("apiGateResult('Aviv','2694',12,14,[],[])"); } catch (e) { console.log('wrong item count ok:', e.message); }
+pushStatus = () => 201;
+pushLog.length = 0;
+let GR = run("apiGateResult('Aviv','2694',10,15,['m:b1:anxious','l:b1:0','s:b1:2','b:b1:4','m:b1:cancel'],['b:b1:1'])");
+console.log('gate missed:', JSON.stringify(GR.gateResult), '| state', GR.journey.gate.state, 'until', GR.journey.gate.until, '| tries', GR.journey.gate.tries, '| level', GR.girl.level);
+console.log('missed items in review:', (sheets.Review.rows.find(r => r[0] === 'Aviv') || [])[1].split(' ').filter(x => x.indexOf(':b1:') > 0).length, '(expect 5) | parent push', pushLog.length, JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/dad2')")));
+try { run("apiGateResult('Aviv','2694',15,15,[],[])"); } catch (e) { console.log('wait ok:', e.message); }
+const missDay = ctx.__day;
+nextDay(); nextDay();
+console.log('2 days later:', jd().gate.state, '(expect wait)');
+run("apiSubmit('Aviv','2694','" + ctx.__day + "',9,10,null)");
+console.log('extra station while waiting:', jd().stations, '(expect 31) | icons', jd().done.length, '(expect 30)');
+nextDay();
+console.log('3 days after', missDay + ':', jd().gate.state, '(expect open)');
+const xpBefore = run("apiDashboard('Aviv','2694')").pet.xp;
+pushLog.length = 0;
+GR = run("apiGateResult('Aviv','2694',13,15,[],['m:b1:anxious'])");
+console.log('gate passed:', JSON.stringify(GR.gateResult), '| level', GR.girl.levelLabel, '| world', GR.journey.world, GR.journey.name,
+  GR.journey.stations + '/' + GR.journey.goal, GR.journey.gate.state, '| next', GR.journey.gate.nextLabel, GR.journey.gate.nextName,
+  '| pet xp +' + (GR.pet.xp - xpBefore), '| passed', JSON.stringify(GR.journey.passed));
+console.log('parent push:', pushLog.length, JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/dad2')")));
+try { run("apiGateResult('Aviv','2694',15,15,[],[])"); } catch (e) { console.log('new world gate closed ok:', e.message); }
+run('parentSummary()');
+console.log('summary:', JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/dad2')")));
+nextDay();
+const tk = run("apiDashboard('Aviv','2694')").week.find(w => w.isToday);
+console.log('next day task level:', tk.level, '(expect B1)');
+run("apiSubmit('Aviv','2694','" + ctx.__day + "',9,10,null)");
+console.log('first station in the new world:', jd().stations, '(expect 1) | parent card', JSON.stringify(run("apiParent('1234')").groups[0].girls.find(k => k.girl.name === 'Aviv').journey.name));
+// Early gate: 20 stations with an average of 85%+. A new kid starts at B2; passing leads to the last world.
+const liaPin = run("apiAdminAddKid('1234','Lia','15','" + famId + "','b2')").created.pin;
+console.log('new kid journey before the level test:', jd('Lia', liaPin), '(expect null)');
+run("apiSubmit('Lia','" + liaPin + "','" + ctx.__day + "','','','b2')");
+nextDay();
+let L2 = jd('Lia', liaPin);
+for (let k = 0; k < 20; k++) {
+  run("apiSubmit('Lia','" + liaPin + "','" + ctx.__day + "',9,10,null)");
+  L2 = jd('Lia', liaPin);
+  if (L2.stations === 19) console.log('lia station 19:', L2.gate.state, '(expect locked)');
+  if (k < 19) nextDay();
+}
+console.log('lia station 20:', L2.gate.state, '(expect open, early) | avg', L2.avg, '| world', L2.name);
+L2 = run("apiGateResult('Lia','" + liaPin + "',12,15,[],[])").journey;
+console.log('lia passed 12/15:', L2.label, L2.name, L2.gate.state, '(expect top) | next', L2.gate.next);
+try { run("apiGateResult('Lia','" + liaPin + "',15,15,[],[])"); } catch (e) { console.log('no gate after the last world ok:', e.message); }
+console.log('gates rows:', sheets.Gates.rows.slice(1).map(r => r.slice(1).join(' ')).join(' / '));

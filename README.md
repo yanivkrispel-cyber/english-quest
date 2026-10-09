@@ -34,6 +34,13 @@ notifications, and reward points.
   stages (Baby 0, Kid 150, Explorer 500, Hero 1100, Legend 2000 XP) with a celebration at each step.
   Six moods: happy, celebrating, thinking, oops, sleepy (not practiced yet today), cool (7-day streak).
   How the art is made: `tools/PETS.md`.
+- **Journey map**: a world per level (A1 Sunny Meadow, A2 Whisper Woods, B1 Crystal Caves, B1+ Misty Peaks,
+  B2 Sky Islands, C1 Star Summit), drawn in code. Every daily task is a station on a winding road, and the pet
+  stands at the kid's station. After 30 stations (or 20 with an average of 85%+) the gate to the next level opens.
+- **Gate challenge**: 15 questions from the next level (4 Match it, 4 Hear it, 4 Spot it, 3 Build it), scored in
+  the app. 12 right raises the kid's level (daily tasks and games move up), gives the pet 100 XP and plays the
+  level-up ceremony with a certificate picture to share; parents get a notification. After a miss the gate opens
+  again 3 days later and the missed questions come back in the games. The last world (C1) ends at a summit.
 - Installable app (PWA) on Android / iOS; **phone reminders** at 17:00 and a last call at 20:00
   on days she hasn't practiced.
 
@@ -81,6 +88,7 @@ Phone / browser                     GitHub Pages (docs/)            Google
 | Girls | Name, Age, PIN, Level, Email, Redeemed, Color, Group, Pet, PetName, PetSince | One row per kid (name kept for history). Names must be unique. `Redeemed` = points spent on rewards. Pet = pet id; task points count toward its growth from PetSince on. |
 | Games | Timestamp, Girl, Date, Game, Level, Correct, Total, XP, Missed | One row per finished mini-game round. |
 | Review | Girl, Items | Spaced review: `itemId\|box\|due` entries for items a kid missed. |
+| Gates | Timestamp, Girl, Date, From, To, Correct, Total, Passed, Tasks, XP | One row per gate challenge. `Tasks` = tasks the kid had logged by then; the stations of her current world are the tasks after the last passed gate. |
 | Groups | Id, Name, ParentPIN, Goal, GoalReward, Email | First row is the default group (link without `?g=`). Empty ParentPIN = admin only. |
 | Assignments | Girl, Date, Section, Level, Title, URL | One exercise per kid per day, created lazily. |
 | Log | Timestamp, Girl, Date, DoneOn, Section, Level, Title, URL, Correct, Total, Percent, Points | One row per completed task. |
@@ -121,6 +129,7 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | apiSubmit(name, pin, date, correct, total, level) | kid | Log a task (notifies parents) |
 | apiGameResult(name, pin, game, level, correct, total, missed, right) | kid | Record a mini-game round, update XP and the review list |
 | apiSetPet(name, pin, petId, petName) | kid | Adopt or change the pet (XP stays) |
+| apiGateResult(name, pin, correct, total, missed, right) | kid | Record a gate challenge (only while the gate is open); 12/15 raises the level |
 | apiPushSubscribe / apiPushMessage | kid / service worker | Register a device / text of the pending notification |
 | apiParent(pin) | parent / admin | Overview of the groups this PIN may see |
 | apiParentPushSubscribe / Prefs / Test | parent / admin | Parent notifications on this phone |
@@ -142,7 +151,7 @@ Always update the **existing** deployment id above: the front end and service wo
 ## Test
 
 ```bash
-node test/sim.js          # server scenarios (scoring, groups, PIN lockout, push, settings, games, pets)
+node test/sim.js          # server scenarios (scoring, groups, PIN lockout, push, settings, games, pets, journey)
 node test/games-check.js  # mini-game content
 node test/push-crypto.js  # ES256 signatures verified by Node crypto
 node test/preview.js      # then serve app/ and open /test/preview.html (mock data, any 4-digit PIN)

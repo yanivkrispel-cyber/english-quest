@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v7';
+var SETUP_VERSION = 'v8';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
@@ -34,12 +34,19 @@ var PETS = ['turtle', 'monster', 'cat', 'cow', 'fawn', 'donkey', 'sheep', 'giraf
 var PET_STAGES = [0, 150, 500, 1100, 2000];
 // Spaced review: a missed item comes back after 1 day, then 3, 7 and 21 days while it is answered right.
 var REVIEW_DAYS = [1, 3, 7, 21];
+// Journey map: a world per level. Every daily task done is a station. After `stations` of them
+// (or `early` with an average of `earlyAvg`% or more) the gate to the next level opens: an in-app
+// challenge of `items` questions from that level. `pass`% raises the kid's level and gives the pet
+// `xp`; after a miss the gate opens again `waitDays` later.
+var JOURNEY = { stations: 30, early: 20, earlyAvg: 85, items: 15, pass: 80, waitDays: 3, xp: 100 };
+var WORLDS = { a1: 'Sunny Meadow', a2: 'Whisper Woods', b1: 'Crystal Caves', 'b1-b2': 'Misty Peaks', b2: 'Sky Islands', c1: 'Star Summit' };
 
 // The sheet tab for kids is still called "Girls" (it predates groups).
 var HEADERS = {
   Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince'],
   Games: ['Timestamp', 'Girl', 'Date', 'Game', 'Level', 'Correct', 'Total', 'XP', 'Missed'],
   Review: ['Girl', 'Items'],
+  Gates: ['Timestamp', 'Girl', 'Date', 'From', 'To', 'Correct', 'Total', 'Passed', 'Tasks', 'XP'],
   Assignments: ['Girl', 'Date', 'Section', 'Level', 'Title', 'URL'],
   Log: ['Timestamp', 'Girl', 'Date', 'DoneOn', 'Section', 'Level', 'Title', 'URL', 'Correct', 'Total', 'Percent', 'Points'],
   Rewards: ['Points', 'Reward', 'Group'],
@@ -98,7 +105,7 @@ function api() {
   apiAdminAddGroup: apiAdminAddGroup, apiAdminAddKid: apiAdminAddKid, apiAdminSettings: apiAdminSettings,
   apiPushSubscribe: apiPushSubscribe, apiPushMessage: apiPushMessage, apiAdminTestPush: apiAdminTestPush,
   apiParentPushSubscribe: apiParentPushSubscribe, apiParentPushPrefs: apiParentPushPrefs, apiParentPushTest: apiParentPushTest,
-  apiGameResult: apiGameResult, apiSetPet: apiSetPet
+  apiGameResult: apiGameResult, apiSetPet: apiSetPet, apiGateResult: apiGateResult
   };
 }
 
@@ -175,7 +182,7 @@ function apiPublic(groupId) {
 // Called when a kid taps her name, while she types her PIN: fills the cache.
 function apiWarm() {
   ensureSetup();
-  ['Girls', 'Assignments', 'Log', 'Rewards', 'Groups', 'Games', 'Review'].forEach(readTable);
+  ['Girls', 'Assignments', 'Log', 'Rewards', 'Groups', 'Games', 'Review', 'Gates'].forEach(readTable);
   return true;
 }
 
@@ -277,17 +284,18 @@ function apiSetPet(name, pin, petId, petName) {
   return buildDashboard(findGirl(kid.Name));
 }
 
-function cleanIds(list) {
-  return (Array.isArray(list) ? list : []).map(String).filter(function (s) { return /^[A-Za-z0-9:_-]{1,40}$/.test(s); }).slice(0, 10);
+function cleanIds(list, max) {
+  return (Array.isArray(list) ? list : []).map(String).filter(function (s) { return /^[A-Za-z0-9:_-]{1,40}$/.test(s); }).slice(0, max || 10);
 }
 
-// Pet growth: game XP plus task points since adoption (tasks done before adopting don't count).
+// Pet growth: game and gate XP plus task points since adoption (tasks done before adopting don't count).
 function petInfo(kid) {
   if (PETS.indexOf(kid.Pet) < 0) return null;
   var since = String(kid.PetSince || '');
   var xp = 0;
   readTable('Log').forEach(function (l) { if (l.Girl === kid.Name && String(l.DoneOn) >= since) xp += Number(l.Points) || 0; });
   readTable('Games').forEach(function (g) { if (g.Girl === kid.Name) xp += Number(g.XP) || 0; });
+  readTable('Gates').forEach(function (g) { if (g.Girl === kid.Name) xp += Number(g.XP) || 0; });
   var stage = 1;
   PET_STAGES.forEach(function (min, i) { if (xp >= min) stage = i + 1; });
   return { id: kid.Pet, name: kid.PetName || '', xp: xp, stage: stage, from: PET_STAGES[stage - 1], to: PET_STAGES[stage] || null, since: since };
@@ -351,6 +359,74 @@ function dueReview(name, t) {
   var map = readReview(name);
   return Object.keys(map).filter(function (id) { return map[id].due <= t; })
     .sort(function (a, b) { return map[a].due < map[b].due ? -1 : 1; }).slice(0, 30);
+}
+
+// ---------- Journey ----------
+
+// Where a kid is on the map. Her stations are the tasks logged since she entered this world:
+// each passed gate (Gates tab) stores how many tasks she had logged by then.
+function journeyInfo(kid, t) {
+  var lv = LEVELS.indexOf(kid.Level) >= 0 ? kid.Level : 'a2';
+  var next = LEVELS[LEVELS.indexOf(lv) + 1] || null;
+  var tasks = readTable('Log').filter(function (l) { return l.Girl === kid.Name && l.Section !== 'level'; });
+  var gates = readTable('Gates').filter(function (g) { return g.Girl === kid.Name; });
+  var lastPass = -1;
+  gates.forEach(function (g, i) { if (g.Passed === 'yes') lastPass = i; });
+  var mine = tasks.slice(lastPass >= 0 ? Number(gates[lastPass].Tasks) || 0 : 0);
+  var tries = gates.slice(lastPass + 1), last = tries[tries.length - 1];
+  var n = mine.length, avg = avgPercent(mine);
+  var ready = n >= JOURNEY.stations || (n >= JOURNEY.early && avg !== null && avg >= JOURNEY.earlyAvg);
+  var until = last ? addDays(last.Date, JOURNEY.waitDays) : null;
+  var state = !next ? 'top' : !ready ? 'locked' : until && until > t ? 'wait' : 'open';
+  return {
+    level: lv, label: LEVEL_LABEL[lv], world: LEVELS.indexOf(lv) + 1, name: WORLDS[lv],
+    stations: n, goal: JOURNEY.stations, early: JOURNEY.early, earlyAvg: JOURNEY.earlyAvg, avg: avg, tasks: tasks.length,
+    done: mine.slice(0, JOURNEY.stations).map(function (l) {
+      return { s: l.Section, p: l.Percent === '' || l.Percent === null ? null : Number(l.Percent) };
+    }),
+    gate: {
+      state: state, next: next, nextLabel: next ? LEVEL_LABEL[next] : null, nextName: next ? WORLDS[next] : null,
+      items: JOURNEY.items, need: gateNeed(), until: state === 'wait' ? until : null, tries: tries.length,
+      last: last ? { correct: Number(last.Correct), total: Number(last.Total), date: last.Date } : null
+    },
+    worlds: LEVELS.map(function (l) { return { level: l, label: LEVEL_LABEL[l], name: WORLDS[l] }; }),
+    passed: gates.filter(function (g) { return g.Passed === 'yes'; }).map(function (g) { return { from: g.From, to: g.To, date: g.Date }; })
+  };
+}
+
+function gateNeed() { return Math.ceil(JOURNEY.items * JOURNEY.pass / 100); }
+
+// One gate challenge, scored in the app like the games. Passing raises the kid's level: her next
+// daily tasks and games come from the new level, and the map starts the next world.
+function apiGateResult(name, pin, correct, total, missed, right) {
+  var kid = auth(name, pin);
+  if (pendingLevelTest(kid)) throw new Error('Take the level test first.');
+  correct = Math.round(Number(correct));
+  total = Math.round(Number(total));
+  if (!(total === JOURNEY.items && correct >= 0 && correct <= total)) throw new Error('Invalid score');
+  missed = cleanIds(missed, JOURNEY.items);
+  right = cleanIds(right, JOURNEY.items);
+  var t = today(), row;
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    invalidate('Gates');
+    var j = journeyInfo(kid, t);
+    if (j.gate.state === 'wait') throw new Error('The gate opens again on ' + j.gate.until + '.');
+    if (j.gate.state !== 'open') throw new Error('The gate is not open yet.');
+    var passed = correct >= j.gate.need;
+    row = { Timestamp: new Date(), Girl: kid.Name, Date: t, From: j.level, To: j.gate.next, Correct: correct, Total: total,
+      Passed: passed ? 'yes' : 'no', Tasks: j.tasks, XP: passed ? JOURNEY.xp : correct * GAME_XP.right };
+    appendRow('Gates', row);
+    if (passed) setGirlField(kid.Name, 'Level', j.gate.next);
+    updateReview(kid.Name, missed, right, t);
+  } finally {
+    lock.releaseLock();
+  }
+  try { notifyGate(kid, row); } catch (e) { console.error(e); }
+  var dash = buildDashboard(findGirl(kid.Name));
+  dash.gateResult = { passed: row.Passed === 'yes', correct: correct, total: total, from: row.From, to: row.To, xp: row.XP };
+  return dash;
 }
 
 // The admin PIN (Settings) sees every group; a group's ParentPIN sees only that group.
@@ -568,6 +644,7 @@ function buildDashboard(kid) {
     rewards: rewards,
     nextReward: next,
     levelTest: pending,
+    journey: pending ? null : journeyInfo(kid, t),
     pet: petInfo(kid),
     games: gameStats(kid, t),
     push: { key: vapidPublicKey(), devices: readTable('Push').filter(function (s) { return s.Girl === kid.Name; }).length },
@@ -707,7 +784,8 @@ function weeklySummary() {
 function summaryHtml(g) {
   var rows = g.girls.map(function (d) {
     return '<tr><td><b>' + d.girl.name + '</b></td><td>' + d.stats.weekDone + '/' + d.stats.weekTotal + '</td><td>' +
-      (d.stats.avg === null ? '–' : d.stats.avg + '%') + '</td><td>' + d.stats.streak + '</td><td>' + d.stats.balance + '</td><td>' + d.girl.levelLabel + '</td><td>' +
+      (d.stats.avg === null ? '–' : d.stats.avg + '%') + '</td><td>' + d.stats.streak + '</td><td>' + d.stats.balance + '</td><td>' + d.girl.levelLabel +
+      (d.journey ? ' · ' + Math.min(d.journey.stations, d.journey.goal) + '/' + d.journey.goal + (d.journey.gate.state === 'open' ? ' (gate open)' : '') : '') + '</td><td>' +
       d.games.weekRounds + (d.games.weekAvg === null ? '' : ' (' + d.games.weekAvg + '%)') + '</td></tr>';
   }).join('');
   return '<h3>' + g.name + '</h3><table cellpadding="6" border="1" style="border-collapse:collapse"><tr><th>Name</th><th>Week</th><th>Avg</th><th>Streak</th><th>Points</th><th>Level</th><th>Games</th></tr>' +
@@ -804,7 +882,7 @@ function sheet(name) { return SpreadsheetApp.getActive().getSheetByName(name); }
 // Two cache levels: TABLES lives for one request; CacheService survives across requests
 // (sheet reads cost 0.3-1s each). Manual edits in the sheet clear it via onEdit.
 var TABLES = {};
-var CACHE_TTL = { Girls: 21600, Rewards: 21600, Settings: 21600, Groups: 21600, Push: 21600, ParentPush: 21600, Assignments: 900, Log: 900, Games: 900, Review: 900 };
+var CACHE_TTL = { Girls: 21600, Rewards: 21600, Settings: 21600, Groups: 21600, Push: 21600, ParentPush: 21600, Assignments: 900, Log: 900, Games: 900, Review: 900, Gates: 900 };
 var CHUNK = 30000;
 
 function readTable(name) {

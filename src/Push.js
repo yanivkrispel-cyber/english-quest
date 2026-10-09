@@ -215,9 +215,14 @@ function parentDevices(groupId) {
   return readTable('ParentPush').filter(function (r) { return r.Who === 'admin' || r.Who === groupId; });
 }
 
+// Parents' phones that want an update as soon as this kid does something.
+function instantDevices(kid) {
+  return parentDevices(groupOf(kid)).filter(function (r) { return r.Instant !== 'no'; }).map(function (r) { return r.Endpoint; });
+}
+
 // Instant update to the kid's parents after she logs a task.
 function notifyCompletion(kid, entry) {
-  var endpoints = parentDevices(groupOf(kid)).filter(function (r) { return r.Instant !== 'no'; }).map(function (r) { return r.Endpoint; });
+  var endpoints = instantDevices(kid);
   if (!endpoints.length) return;
   var msg = entry.Section === 'level'
     ? { title: kid.Name + ' finished the level test', body: 'Level ' + (LEVEL_LABEL[entry.Level] || '?') + ' · +' + entry.Points + ' pts' }
@@ -227,12 +232,26 @@ function notifyCompletion(kid, entry) {
   deliver(endpoints, msg, 'ParentPush');
 }
 
+// Instant update after a gate challenge: the new level, or how close she got.
+function notifyGate(kid, row) {
+  var endpoints = instantDevices(kid);
+  if (!endpoints.length) return;
+  var to = LEVEL_LABEL[row.To];
+  var msg = row.Passed === 'yes'
+    ? { title: kid.Name + ' reached level ' + to + '!',
+        body: 'Passed the gate challenge ' + row.Correct + '/' + row.Total + ' · World ' + (LEVELS.indexOf(row.To) + 1) + ', ' + WORLDS[row.To] + ', is open' }
+    : { title: kid.Name + ' tried the gate to level ' + to,
+        body: row.Correct + '/' + row.Total + ' (' + gateNeed() + ' to pass) · the next try opens in ' + JOURNEY.waitDays + ' days' };
+  deliver(endpoints, msg, 'ParentPush');
+}
+
 // Time-driven (21:00): who practiced today, per parent.
 function parentSummary() {
   var t = today();
-  var done = {}, played = {};
+  var done = {}, played = {}, gated = {};
   readTable('Log').forEach(function (l) { if (l.Date === t) done[l.Girl] = l; });
   readTable('Games').forEach(function (g) { if (g.Date === t) played[g.Girl] = (played[g.Girl] || 0) + 1; });
+  readTable('Gates').forEach(function (g) { if (g.Date === t) gated[g.Girl] = g; });
   var byWho = {};
   readTable('ParentPush').forEach(function (r) { (byWho[r.Who] = byWho[r.Who] || []).push(r.Endpoint); });
   Object.keys(byWho).forEach(function (who) {
@@ -240,10 +259,11 @@ function parentSummary() {
     if (!kids.length) return;
     var n = kids.filter(function (k) { return done[k.Name]; }).length;
     var body = kids.map(function (k) {
-      var l = done[k.Name], n = played[k.Name];
+      var l = done[k.Name], n = played[k.Name], g = gated[k.Name];
       var games = n ? ' +' + n + (n === 1 ? ' game' : ' games') : '';
-      if (!l) return k.Name + ' —' + games;
-      return k.Name + ' ✓' + (l.Section === 'level' ? ' level test' : (l.Percent !== '' ? ' ' + l.Percent + '%' : '')) + games;
+      var gate = g ? (g.Passed === 'yes' ? 'reached ' + LEVEL_LABEL[g.To] + '!' : 'gate ' + g.Correct + '/' + g.Total) : '';
+      if (!l) return k.Name + ' ' + (gate || '—') + games;
+      return k.Name + ' ✓' + (l.Section === 'level' ? ' level test' : (l.Percent !== '' ? ' ' + l.Percent + '%' : '')) + games + (gate ? ' · ' + gate : '');
     }).join(' · ');
     try { deliver(byWho[who], { title: 'Today: ' + n + '/' + kids.length + ' practiced', body: body }, 'ParentPush'); } catch (e) { console.error(e); }
   });
