@@ -86,6 +86,9 @@ before this, a kid's level never changed after her first test. Worlds are drawn 
 backgrounds from Gemini are an option for later.
 Play together, phase 1 (built 2026-10-09, spec `specs/play-together.md`): invites to any kid in the app, Word Duel
 (live), Challenge (24 h, ghost), Learn together results with Helper stars, rematch, duel notifications. Later
-phases from the options page: Duo Streak, Team Quest, Boss Battle, Tug of War, Pet Arena, Talk & Tap.
+phases from the options page: Boss Battle, Tug of War, Pet Arena, Talk & Tap.
+Duo Streak and Team Quest (phase 2, spec `specs/duo-streak.md`): streaks and quests are computed from Log/Games on
+every read (nothing to keep in sync); rewards are given in `duoAfterPractice()` after tasks, games and duels, once
+per Bonus `Ref`. The dev server seeds 13 days of history so the duo screens have something to show.
 Ideas not built yet: per-group reminder times, rewards redemption from the app (now via the
 `Redeemed` column), editing groups/kids from the app (now via the sheet).

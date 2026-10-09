@@ -48,6 +48,11 @@ notifications, and reward points.
   code (or a WhatsApp link) invites anyone. The result screen ("Learn together") lists the missed questions with the
   answers; the stronger player gets a Helper star for explaining one. XP: 2 per right answer, +5 for the winner, +10
   for the first duel of the day, inside the daily 60 XP cap. A group can opt out of playing with other groups.
+- **Duo Streak and Team Quest** (spec: `specs/duo-streak.md`): two kids (any groups) agree on a duo streak that grows on
+  every day both practiced (a task, a game or a duel); the first missed day of a week is saved, badges at 7/30/100 days
+  (+20/+60/+150 XP each), a Nudge button, and reminders that mention a partner who already practiced. Every duo gets a
+  weekly Team Quest from the pair's weakest game last week ("40 right answers in Hear it as a team", each kid at least a
+  tenth) or, without data, practising on the same day 5 times; +40 XP each. Celebrations once per phone.
 - Installable app (PWA) on Android / iOS; **phone reminders** at 17:00 and a last call at 20:00
   on days she hasn't practiced.
 
@@ -97,6 +102,8 @@ Phone / browser                     GitHub Pages (docs/)            Google
 | Review | Girl, Items | Spaced review: `itemId\|box\|due` entries for items a kid missed. |
 | Gates | Timestamp, Girl, Date, From, To, Correct, Total, Passed, Tasks, XP | One row per gate challenge. `Tasks` = tasks the kid had logged by then; the stations of her current world are the tasks after the last passed gate. |
 | Groups | Id, Name, ParentPIN, Goal, GoalReward, Email, Friends | First row is the default group (link without `?g=`). Empty ParentPIN = admin only. `Friends` = `no` keeps the group's kids out of play with other groups. |
+| Duos | Id, Created, A, B, State, Since, Ended, Nudges, Milestones, QuestDone | One row per duo streak (`invited` / `active` / `declined` / `ended`). The streak and the quest are computed from Log and Games; only nudges, reached badges and rewarded weeks are stored. |
+| Bonus | Timestamp, Girl, Date, Kind, XP, Ref | One-off XP outside the daily game cap (duo badges, team quests); `Ref` keeps each award single. Pet growth counts it. |
 | Duels | Id, Created, Date, Mode, State, Host, Guest, HostLevel, GuestLevel, Seed, Start, Expires, Reply, HostScore, HostMs, HostTrack, GuestScore, GuestMs, GuestTrack, Winner, Ended, Helped | One row per duel or challenge (Id = the 4-letter code). Tracks: `1:4210,0:9800,…` (right/wrong and ms since the start, `-` unanswered). Each player's XP is a `Games` row with Game = `duel`. |
 | Assignments | Girl, Date, Section, Level, Title, URL | One exercise per kid per day, created lazily. |
 | Log | Timestamp, Girl, Date, DoneOn, Section, Level, Title, URL, Correct, Total, Percent, Points | One row per completed task. |
@@ -114,6 +121,7 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | `src/Code.js` | Server: API, groups, assignments/rotation, scoring, cache layer, triggers, setup migrations |
 | `src/Push.js` | Web Push: P-256/ES256, VAPID JWT, kid reminders, parent notifications |
 | `src/Duels.js` | Play together: invites, live duels synced by polling, challenges, results, Helper stars |
+| `src/Duos.js` | Duo Streak and Team Quest: requests, streak counting, quests, rewards after practice |
 | `src/Index.html` | Whole UI (Liquid Glass design, Phosphor icons), works in Pages and Apps Script |
 | `src/Catalog.js` | Generated exercise catalog (`node gen-catalog.js` from `catalog.tsv`) |
 | `src/appsscript.json` | Manifest: V8, Asia/Jerusalem, web app = execute as owner, anyone anonymous |
@@ -141,6 +149,7 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | apiGameResult(name, pin, game, level, correct, total, missed, right) | kid | Record a mini-game round, update XP and the review list |
 | apiSetPet(name, pin, petId, petName) | kid | Adopt or change the pet (XP stays) |
 | apiGateResult(name, pin, correct, total, missed, right) | kid | Record a gate challenge (only while the gate is open); 12/15 raises the level |
+| apiDuoInvite / Answer / Nudge / End | kid | Duo streaks (see `specs/duo-streak.md`); the duo data comes with `apiDuelHome` and `apiDashboard` |
 | apiDuelHome / Invite / Join / Reply / Cancel / Solo / Poll / Finish / Helped | kid | Play together (see `specs/play-together.md`); `apiDuelPoll` is the hot path, every ~2 s during a duel |
 | apiPushSubscribe / apiPushMessage | kid / service worker | Register a device / text of the pending notification |
 | apiParent(pin) | parent / admin | Overview of the groups this PIN may see |
@@ -167,5 +176,5 @@ node test/sim.js          # server scenarios (scoring, groups, PIN lockout, push
 node test/games-check.js  # mini-game content
 node test/push-crypto.js  # ES256 signatures verified by Node crypto
 node test/preview.js      # then serve app/ and open /test/preview.html (mock data, any 4-digit PIN)
-node test/dev-server.js   # two players locally: open /test/dev.html on localhost:8787 and on 127.0.0.1:8787
+node test/dev-server.js   # two players locally (seeded duo history): /test/dev.html on localhost:8787 and 127.0.0.1:8787
 ```

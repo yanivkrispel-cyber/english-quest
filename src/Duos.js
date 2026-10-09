@@ -133,7 +133,7 @@ function duoAfterPractice(name) {
         weeks.push(q.week); changed = true;
         duoBonus([d.A, d.B], 'quest', DUO.questXp, d.Id + ':q:' + q.week);
         notes.push({ to: [d.A, d.B], msg: { title: 'Team quest complete!', url: './', tag: 'eq-duo',
-          body: d.A + ' and ' + d.B + ': ' + q.goal.toLowerCase() + '. +' + DUO.questXp + ' XP each!' } });
+          body: d.A + ' and ' + d.B + ' did it: ' + q.goal + '. +' + DUO.questXp + ' XP each!' } });
       }
       if (changed) { d.Milestones = reached.join(' '); d.QuestDone = weeks.slice(-12).join(' '); duoSave(d); }
     });
@@ -190,13 +190,17 @@ function duoStreak(d, t) {
 }
 
 // This week's quest, chosen from both kids' games last week: their weakest game type, or (no data)
-// practising on the same day.
+// practising on the same day. A duo that started this week counts from its first day, with a smaller
+// goal. It is a team quest: each kid brings at least a tenth of a game goal.
 function duoQuest(d, t) {
-  var ws = weekStart(t), last = addDays(ws, -7), names = [d.A, d.B], games = readTable('Games'), acc = {};
+  var ws = weekStart(t), last = addDays(ws, -7), names = [d.A, d.B], games = readTable('Games'), acc = {}, had = {};
+  var from = d.Since && String(d.Since) > ws ? String(d.Since) : ws;
+  var share = (daysBetween(from, addDays(ws, 6)) + 1) / 7;
   games.forEach(function (g) {
     if (names.indexOf(g.Girl) < 0 || DUO_GAMES.indexOf(g.Game) < 0 || !(Number(g.Total) > 0) || g.Date < last || g.Date >= ws) return;
     var s = acc[g.Game] = acc[g.Game] || { c: 0, n: 0 };
     s.c += Number(g.Correct) || 0; s.n += Number(g.Total) || 0;
+    had[g.Girl] = true;
   });
   var weak = null;
   DUO_GAMES.forEach(function (k) {
@@ -205,22 +209,23 @@ function duoQuest(d, t) {
   });
   var q;
   if (weak) {
-    var per = {};
+    var target = Math.max(10, Math.round(DUO.questGameTarget * share / 5) * 5), per = {};
     names.forEach(function (n) { per[n] = 0; });
     games.forEach(function (g) {
-      if (g.Game === weak && names.indexOf(g.Girl) >= 0 && g.Date >= ws && g.Date <= t && Number(g.Total) > 0) per[g.Girl] += Number(g.Correct) || 0;
+      if (g.Game === weak && names.indexOf(g.Girl) >= 0 && g.Date >= from && g.Date <= t && Number(g.Total) > 0) per[g.Girl] += Number(g.Correct) || 0;
     });
-    q = { kind: 'game', game: weak, title: DUO_GAME_NAMES[weak] + ' together', target: DUO.questGameTarget,
-      goal: DUO.questGameTarget + ' right answers in ' + DUO_GAME_NAMES[weak] + ' as a team',
-      a: per[d.A], b: per[d.B], reason: DUO_GAME_NAMES[weak] + ' was the hardest game for you two last week (' + Math.round(acc[weak].c / acc[weak].n * 100) + '% right).' };
+    q = { kind: 'game', game: weak, title: DUO_GAME_NAMES[weak] + ' together', target: target, minEach: Math.ceil(target / 10),
+      goal: target + ' right answers in ' + DUO_GAME_NAMES[weak] + ' as a team', a: per[d.A], b: per[d.B],
+      reason: DUO_GAME_NAMES[weak] + ' was the hardest game ' + (had[d.A] && had[d.B] ? 'for you two ' : '') + 'last week (' + Math.round(acc[weak].c / acc[weak].n * 100) + '% right).' };
     q.total = q.a + q.b;
+    q.done = q.total >= q.target && q.a >= q.minEach && q.b >= q.minEach;
   } else {
-    var A = practiceDays(d.A), B = practiceDays(d.B);
-    var n = weekDates(t).filter(function (x) { return x <= t && A[x] && B[x]; }).length;
-    q = { kind: 'days', title: 'Practice buddies', target: DUO.questDaysTarget, goal: 'Practice on the same day ' + DUO.questDaysTarget + ' times',
+    var A = practiceDays(d.A), B = practiceDays(d.B), goal = Math.max(1, Math.min(DUO.questDaysTarget, Math.round(DUO.questDaysTarget * share)));
+    var n = weekDates(t).filter(function (x) { return x >= from && x <= t && A[x] && B[x]; }).length;
+    q = { kind: 'days', title: 'Practice buddies', target: goal, minEach: null, goal: 'Practice on the same day ' + (goal === 1 ? 'once' : goal + ' times'),
       a: null, b: null, total: n, reason: 'A habit you build together lasts longer.' };
+    q.done = q.total >= q.target;
   }
-  q.done = q.total >= q.target;
   q.week = ws;
   q.daysLeft = daysBetween(t, addDays(ws, 6)) + 1;
   q.xp = DUO.questXp;
@@ -251,7 +256,7 @@ function duoView(d, me, t) {
     milestones: reached, next: DUO.milestones.filter(function (m) { return m > s.days; })[0] || null, nudged: duoNudges(d)[me] === t,
     quest: { kind: q.kind, game: q.game || null, title: q.title, goal: q.goal, target: q.target, total: q.total, reason: q.reason,
       me: q.a === null ? null : (first ? q.a : q.b), them: q.b === null ? null : (first ? q.b : q.a),
-      done: q.done, claimed: duoList(d.QuestDone).indexOf(q.week) >= 0, week: q.week, daysLeft: q.daysLeft, xp: q.xp }
+      minEach: q.minEach, done: q.done, claimed: duoList(d.QuestDone).indexOf(q.week) >= 0, week: q.week, daysLeft: q.daysLeft, xp: q.xp }
   };
 }
 

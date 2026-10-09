@@ -27,6 +27,10 @@ their practice to what is hardest for them. Phase 1 (duels): `specs/play-togethe
   - no game data last week: "Practice on the same day 5 times".
 - Progress is the sum of both kids (the bar shows who did what); a duel's answers don't count for a game
   type (rounds of that game only).
+- It is a team quest: a game quest needs each kid to bring at least a tenth of the goal.
+- A duo that started during the week counts from its first day, with a goal scaled to the days left (at
+  least 10 answers, or fewer same-day practices). Found in testing: otherwise a new duo could "finish"
+  with one kid's answers from before the duo existed.
 - Done: +40 XP for both, once a week per duo, a celebration and a notification.
 - The quest is a pure function of last week's rows and this week's rows: nothing about it is stored except
   that its reward was given.

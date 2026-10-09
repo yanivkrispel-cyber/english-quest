@@ -526,6 +526,14 @@ console.log('quest done:', A.quest.total + '/' + A.quest.target, A.quest.done, A
 // Limits, decline, end
 duo('apiDuoInvite', 'Aviv', 'Noa');
 duo('apiDuoAnswer', 'Noa', duo('apiDuelHome', 'Noa').duos.incoming[0].id, true);
+let N = with_('Aviv', 'Noa');
+console.log('mid-week duo quest:', N.quest.kind, N.quest.game, N.quest.total + '/' + N.quest.target, '| each', N.quest.minEach, '|', N.quest.reason);
+play('Aviv', N.quest.game, 5); play('Aviv', N.quest.game, 5); play('Aviv', N.quest.game, 5);
+N = with_('Aviv', 'Noa');
+console.log('only Aviv played:', N.quest.me + '+' + N.quest.them + '=' + N.quest.total + '/' + N.quest.target, '| done', N.quest.done, '(expect false)');
+play('Noa', N.quest.game, 4);
+N = with_('Aviv', 'Noa');
+console.log('Noa helped:', N.quest.total + '/' + N.quest.target, '| done', N.quest.done, N.quest.claimed, '| Noa reward', bonus('Noa', 'quest').join());
 duo('apiDuoInvite', 'Aviv', 'Tal');
 duo('apiDuoAnswer', 'Tal', duo('apiDuelHome', 'Tal').duos.incoming[0].id, true);
 console.log('Aviv duos:', duo('apiDuelHome', 'Aviv').duos.active.map(x => x.partner.name).join());

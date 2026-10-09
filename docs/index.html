@@ -510,6 +510,62 @@ body.splashing #app{opacity:0}
 .lrow .lt{flex:1;min-width:0;font-size:13.5px;line-height:1.35}
 .lrow .lt b{color:var(--ink)}
 .lrow .btn-sm{height:32px;font-size:12.5px;padding:0 12px;flex:none}
+/* Duo Streak and Team Quest */
+.duocard{padding:16px;border-radius:30px;display:grid;gap:12px;border:1px solid rgba(255,255,255,.82);
+  background:linear-gradient(155deg,rgba(254,215,170,.88),rgba(251,207,232,.72) 52%,rgba(221,214,254,.85));box-shadow:0 26px 50px -22px rgba(234,88,12,.4),var(--inner)}
+.duo-more{width:34px;height:34px;font-size:16px}
+.flamerow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:end}
+.flamerow .duopet{display:block;justify-self:center;width:100px;height:100px;object-fit:contain;filter:drop-shadow(0 10px 10px rgba(38,40,80,.2))}
+.flamerow .duel-av.duopet{width:76px;height:76px;font-size:30px;margin-bottom:8px}
+.flame{position:relative;width:98px;height:114px;display:grid;place-items:center}
+.flame svg{position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 100%;animation:flick 1.8s ease-in-out infinite;filter:drop-shadow(0 10px 14px rgba(234,88,12,.45))}
+.flame.cold svg{filter:grayscale(.85) opacity(.45);animation:none}
+.flame b{position:relative;margin-top:38px;font-size:30px;font-weight:800;color:#fff;text-shadow:0 2px 6px rgba(194,65,12,.6);line-height:1}
+.flame.cold b{color:#9a3412;text-shadow:none}
+.flame small{position:absolute;bottom:-17px;font-size:11px;font-weight:800;letter-spacing:1px;color:#9a3412}
+@keyframes flick{0%,100%{transform:scale(1) rotate(0)}30%{transform:scale(1.04,1.07) rotate(-2deg)}60%{transform:scale(.98,1.02) rotate(2deg)}}
+.names{display:grid;grid-template-columns:1fr 1fr;text-align:center;font-size:12.5px;font-weight:700;margin-top:8px}
+.names .ok{color:#047857}
+.names .wait{color:#b45309}
+.weeks{display:grid;grid-template-columns:46px repeat(7,minmax(0,1fr));gap:5px;align-items:center;font-size:11px;font-weight:800;color:var(--muted)}
+.weeks span{text-align:center}
+.weeks span.now{color:#9a3412}
+.weeks .rl{text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wd{height:20px;border-radius:7px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.9);display:grid;place-items:center;font-style:normal;font-size:12px}
+.wd.me{background:linear-gradient(180deg,#a5b4fc,#6366f1);border-color:transparent}
+.wd.them{background:linear-gradient(180deg,#fdba74,#f97316);border-color:transparent}
+.wd.wait{background:rgba(255,255,255,.3);border:2px dashed rgba(234,88,12,.6)}
+.wd.off{opacity:.45}
+.wd.saved{background:rgba(255,255,255,.8);color:#0d9488}
+.mile{display:grid;gap:6px;font-size:12.5px;font-weight:700;color:#3b3f55}
+.mile i{color:#d97706;font-size:16px}
+.mbadge{display:inline-grid;place-items:center;min-width:26px;height:20px;padding:0 6px;margin-left:3px;border-radius:999px;font-size:11px;font-weight:800;color:#fff;
+  background:linear-gradient(180deg,#fbbf24,#f97316)}
+.mbar{height:8px;border-radius:9px;background:rgba(255,255,255,.65);overflow:hidden}
+.mbar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#fbbf24,#f97316)}
+.quest .qnum{font-size:44px;font-weight:800;letter-spacing:-1.5px;line-height:1}
+.quest .qnum span{font-size:18px;color:var(--muted);font-weight:700;letter-spacing:0;margin-left:6px}
+.quest.won{background:linear-gradient(150deg,rgba(209,250,229,.8),rgba(255,255,255,.4))}
+.qbar{position:relative;display:flex;height:14px;border-radius:9px;background:rgba(255,255,255,.62);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.08)}
+.qbar i{display:block;height:100%;transition:width .8s}
+.qbar .a{background:linear-gradient(90deg,#8b8ffb,#6366f1)}
+.qbar .b{background:linear-gradient(90deg,#fdba74,#f6a04d)}
+.qbar .ab{background:linear-gradient(90deg,#8b8ffb,#f6a04d)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;font-weight:700}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend small{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:600}
+.legend .pet-face,.legend .avatar{width:24px;height:24px;font-size:11px;box-shadow:none}
+.legend .pet-face img{width:46px;height:46px}
+.qreward{display:flex;align-items:center;gap:11px;padding:10px 12px}
+.qreward b{display:block;font-size:14.5px}
+.qreward small{display:block;font-size:12px;color:var(--muted);font-weight:600}
+.duoparty{position:relative;height:190px;display:flex;align-items:flex-end;justify-content:center;gap:2px}
+.duoparty img,.duoparty .duel-av{width:118px;height:118px;object-fit:contain}
+.dp-mid{width:104px;height:124px;position:relative;display:grid;place-items:center}
+.dp-mid svg{position:absolute;inset:0;width:100%;height:100%}
+.dp-mid b{position:relative;margin-top:42px;font-size:32px;font-weight:800;color:#fff}
+.dp-mid.chest{font-size:96px;color:#fde68a;height:120px}
+@media (prefers-reduced-motion:reduce){.flame svg{animation:none}}
 @media (prefers-reduced-motion:reduce){.count::before{animation:none}.runner{transition:none}}
 @media (prefers-reduced-motion:reduce){.pet-img.bounce,.speak.talk,.xp-pop,.evolve .flash.go,.mnode.cur::after,.mpet,.mgate.open{animation:none}}
 </style>
@@ -1095,6 +1151,7 @@ async function saveRound(R){
   const status = (cls, html) => { const el = document.getElementById('savest'); if (el) { el.className = 'saved ' + cls; el.innerHTML = html; } };
   try {
     dash = await call('apiGameResult', session.name, session.pin, R.game, R.level, R.correct, R.total, R.missed, R.right);
+    homeStale = true;
     status('', icon('check') + (dash.gameXp ? ' Saved · +' + dash.gameXp + ' XP for ' + esc(dash.pet ? dash.pet.name : 'you') : ' Saved · XP is full for today'));
     checkGrowth();
   } catch(e){
@@ -1272,6 +1329,7 @@ function refreshTogether(){
   if (b) b.outerHTML = duelBanner();
   if (c) c.outerHTML = togetherCard();
   bindTogether();
+  refreshDuos();
 }
 
 // The home screen asks for invites every 20 s while it is open (this also keeps the online dot).
@@ -1310,6 +1368,7 @@ function inviteSheet(name){
         <span class="drow-main"><b>Word Duel</b><small>Race now · ${DUEL_ITEMS} questions each</small></span><span class="radio">${icon('check')}</span></button>
       <button class="mrow" data-mode="challenge"><span class="tile t-read">${icon('ghost', 'duotone')}</span>
         <span class="drow-main"><b>Challenge</b><small>You play now, ${esc(name)} plays later</small></span><span class="radio">${icon('check')}</span></button>
+      ${duoOption(name)}
     </div>
     <button class="btn btn-primary btn-block mt" id="go">${icon('paper-plane-tilt')} Send</button>
   </div>`;
@@ -1323,9 +1382,23 @@ function inviteSheet(name){
   ov.querySelector('#go').onclick = async e => {
     const btn = e.currentTarget;
     btn.disabled = true; btn.innerHTML = '<span class="mini-spin"></span>Sending…';
+    if (mode === 'duo') {
+      try { duelsHome.duos = await call('apiDuoInvite', session.name, session.pin, name); close(); refreshDuos(); toast('Duo streak request sent to ' + name); }
+      catch(err){ toast(err.message, true); btn.disabled = false; btn.innerHTML = icon('paper-plane-tilt') + ' Send'; }
+      return;
+    }
     try { const v = await dcall('apiDuelInvite', name, mode); close(); routeDuel(v); }
     catch(err){ toast(err.message, true); btn.disabled = false; btn.innerHTML = icon('paper-plane-tilt') + ' Send'; }
   };
+}
+
+// The friend sheet's duo option: start one, or show the one that already exists.
+function duoOption(name){
+  const D = duelsHome && duelsHome.duos, act = D && D.active.find(x => x.partner.name === name), out = D && D.outgoing.find(x => x.partner.name === name);
+  const head = `<span class="tile t-fire">${icon('fire', 'duotone')}</span><span class="drow-main"><b>Duo streak</b>`;
+  if (act) return `<div class="mrow" style="cursor:default">${head}<small>You have a ${act.days}-day duo streak with ${esc(name)}</small></span></div>`;
+  if (out) return `<div class="mrow" style="cursor:default">${head}<small>Asked. Waiting for ${esc(name)} to answer</small></span></div>`;
+  return `<button class="mrow" data-mode="duo">${head}<small>Practice on the same days and grow a streak together</small></span><span class="radio">${icon('check')}</span></button>`;
 }
 
 function codeSheet(){
@@ -1925,6 +1998,185 @@ if (!IN_APPS_SCRIPT && 'serviceWorker' in navigator) {
   });
 }
 
+// ---------- Duo Streak and Team Quest ----------
+// Spec: specs/duo-streak.md. The data comes with the Play together data (duelsHome.duos).
+let featuredDuo = null;
+const FLAME = `<svg viewBox="0 0 100 120" aria-hidden="true"><defs><linearGradient id="dfl1" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ea580c"/><stop offset="1" stop-color="#fbbf24"/></linearGradient>
+  <linearGradient id="dfl2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#f59e0b"/><stop offset="1" stop-color="#fde68a"/></linearGradient></defs>
+  <path d="M50 4C58 26 86 40 86 76c0 24-17 40-36 40S14 100 14 76c0-16 8-27 15-33 1 10 6 16 12 18C39 41 43 21 50 4z" fill="url(#dfl1)"/>
+  <path d="M51 50c6 12 19 19 19 36 0 13-9 23-20 23s-19-10-19-23c0-8 4-14 8-17 1 6 4 9 7 10-1-10 1-19 5-29z" fill="url(#dfl2)"/></svg>`;
+const duoMood = (did, both) => both ? 'celebrate' : did ? 'happy' : 'sleepy';
+
+function duoBanner(){
+  const r = duelsHome && duelsHome.duos && duelsHome.duos.incoming[0];
+  return `<div id="duobanner">${r ? `<div class="today iri duel-banner">
+      <div class="row-flex" style="gap:12px">${faceOf(r.partner)}<div style="min-width:0"><span class="label" style="color:#3b3f55">Duo streak</span>
+        <h2 style="margin-top:2px">${esc(r.partner.name)} wants a duo streak with you</h2></div></div>
+      <div class="sub" style="color:#3b3f55;font-size:13px;margin-top:8px">Practice on the same days and grow a streak together. One missed day a week is forgiven.</div>
+      <div class="btns"><button class="btn btn-glass" data-duono="${esc(r.id)}">Not now</button><button class="btn btn-teal" data-duoyes="${esc(r.id)}">${icon('fire')} Yes!</button></div></div>` : ''}</div>`;
+}
+
+function duoSection(){
+  const D = duelsHome && duelsHome.duos;
+  if (!D || !D.active.length) return '<div id="duos"></div>';
+  const list = D.active.slice(), i = list.findIndex(x => x.id === featuredDuo);
+  if (i > 0) list.unshift(list.splice(i, 1)[0]);
+  const v = list[0], others = list.slice(1);
+  return `<div id="duos" class="stack">${duoCard(v)}${questCard(v)}
+    ${others.length ? `<div class="stack" style="gap:8px">${others.map(o => `<button class="soft drow" data-duofocus="${esc(o.id)}">${faceOf(o.partner)}
+      <span class="drow-main"><b>Duo streak with ${esc(o.partner.name)}</b><small>${o.todayMe && o.todayThem ? 'You both practiced today' : o.todayThem ? esc(o.partner.name) + ' practiced today. Your turn!' : o.todayMe ? 'Waiting for ' + esc(o.partner.name) : 'Practice today, both of you'}</small></span>
+      <span class="chip orange">${icon('fire')} ${o.days}</span></button>`).join('')}</div>` : ''}</div>`;
+}
+
+function duoCard(v){
+  const p = v.partner, me = meAsPlayer(), both = v.todayMe && v.todayThem;
+  const status = both ? `You both practiced today. ${v.days === 1 ? 'Day 1!' : 'Day ' + v.days + '!'}`
+    : v.todayMe ? `Waiting for ${esc(p.name)}. A nudge might help!`
+    : v.todayThem ? `${esc(p.name)} practiced today. Your turn!` : 'Practice today, both of you.';
+  const cell = (w, who) => w.saved ? `<i class="wd saved">${icon('shield-check', 'bold')}</i>`
+    : `<i class="wd ${w[who] ? who : w.future || w.before ? 'off' : w.date === dash.today ? 'wait' : ''}"></i>`;
+  const action = !v.todayMe ? `<button class="btn btn-primary btn-block" data-duoplay="1">${icon('play')} Practice now</button>`
+    : !v.todayThem ? `<button class="btn btn-teal btn-block" data-duonudge="${esc(v.id)}" ${v.nudged ? 'disabled' : ''}>${icon('bell-ringing')} ${v.nudged ? 'Nudge sent' : 'Nudge ' + esc(p.name)}</button>` : '';
+  const prev = v.next ? [0].concat(duelsHome.duos.milestones).filter(m => m < v.next).pop() : 0;
+  return `<div class="duocard iri" data-duo="${esc(v.id)}">
+    <div class="row-flex between"><span class="label" style="color:#9a3412">Duo streak</span>
+      <span class="row-flex" style="gap:6px"><span class="chip">with ${esc(p.name)}</span><button class="btn btn-glass icon-btn duo-more" data-duomenu="${esc(v.id)}" title="More">${icon('dots-three')}</button></span></div>
+    <div class="flamerow">
+      ${petPic(me, duoMood(v.todayMe, both), 'duopet')}
+      <div class="flame ${v.days ? '' : 'cold'}">${FLAME}<b>${v.days}</b><small>${v.days === 1 ? 'DAY' : 'DAYS'}</small></div>
+      ${petPic(p, duoMood(v.todayThem, both), 'duopet flip')}
+    </div>
+    <div class="names"><span class="${v.todayMe ? 'ok' : 'wait'}">You · ${v.todayMe ? 'done today' : 'not yet'}</span><span class="${v.todayThem ? 'ok' : 'wait'}">${esc(p.name)} · ${v.todayThem ? 'done today' : 'not yet'}</span></div>
+    <div class="weeks">
+      <span></span>${v.week.map(w => `<span class="${w.date === dash.today ? 'now' : ''}">${['S', 'M', 'T', 'W', 'T', 'F', 'S'][dateOf(w.date).getDay()]}</span>`).join('')}
+      <span class="rl">You</span>${v.week.map(w => cell(w, 'me')).join('')}
+      <span class="rl">${esc(p.name)}</span>${v.week.map(w => cell(w, 'them')).join('')}
+    </div>
+    <div class="sub" style="color:#3b3f55;font-size:13px;margin:0;text-align:center">${status}</div>
+    ${action}
+    ${v.next ? `<div class="mile"><div class="row-flex" style="gap:6px">${icon('medal', 'duotone')} ${plural(v.next - v.days, 'day')} to the ${v.next}-day badge
+        <span style="margin-left:auto">${v.milestones.map(m => `<span class="mbadge">${m}</span>`).join('')}</span></div>
+      <div class="mbar"><i style="width:${Math.round((v.days - prev) / (v.next - prev) * 100)}%"></i></div></div>`
+      : `<div class="mile"><div class="row-flex" style="gap:6px">${icon('crown-simple', 'duotone')} Every badge! ${v.milestones.map(m => `<span class="mbadge">${m}</span>`).join('')}</div></div>`}
+  </div>`;
+}
+
+function questCard(v){
+  const q = v.quest, p = v.partner;
+  const pct = n => Math.min(100, Math.round(n / q.target * 100));
+  const tile = q.kind === 'game' ? `<span class="tile ${GAME_INFO[q.game].tile}">${icon(GAME_INFO[q.game].icon, 'duotone')}</span>` : `<span class="tile t-fire">${icon('calendar-check', 'duotone')}</span>`;
+  const bar = q.kind === 'game' ? `<i class="a" style="width:${pct(q.me)}%"></i><i class="b" style="width:${Math.max(0, Math.min(100 - pct(q.me), pct(q.them)))}%"></i>` : `<i class="ab" style="width:${pct(q.total)}%"></i>`;
+  return `<div class="glass panel quest iri ${q.claimed ? 'won' : ''}">
+    <div class="row-flex between"><span class="label">Team quest · this week</span><span class="chip ${q.claimed ? 'teal' : ''}">${q.claimed ? icon('check') + ' Done' : icon('clock') + ' ' + plural(q.daysLeft, 'day') + ' left'}</span></div>
+    <div class="row-flex mt-s" style="gap:12px">${tile}<div style="min-width:0"><h2>${esc(q.title)}</h2><div class="sub" style="margin-top:2px;font-size:13px">${esc(q.goal)}</div></div></div>
+    <div class="qnum mt-s">${Math.min(q.total, q.target)}<span>/ ${q.target}</span></div>
+    <div class="qbar mt-s">${bar}</div>
+    ${q.kind === 'game' ? `<div class="legend mt-s"><span>${faceOf(meAsPlayer())} You ${q.me}</span><span>${faceOf(p)} ${esc(p.name)} ${q.them}</span>${q.minEach ? `<small>Each of you: at least ${q.minEach}</small>` : ''}</div>`
+      : `<div class="legend mt-s"><span>${icon('calendar-check')} Days you both practiced this week</span></div>`}
+    <div class="soft qreward mt-s"><span class="tile t-star">${icon(q.claimed ? 'seal-check' : 'treasure-chest', 'duotone')}</span>
+      <div><b>${q.claimed ? 'Quest complete!' : '+' + q.xp + ' XP each'}</b><small>${q.claimed ? '+' + q.xp + ' XP for both of you. A new quest on Sunday.' : 'for both of you when the team finishes'}</small></div></div>
+    <div class="sub mt-s" style="font-size:12.5px">${esc(q.reason)}</div>
+    ${q.kind === 'game' && !q.claimed ? `<button class="btn btn-primary btn-block mt-s" data-duogame="${q.game}">${icon('play')} Play ${GAME_INFO[q.game].name}</button>` : ''}
+  </div>`;
+}
+
+function bindDuos(){
+  ['duos', 'duobanner'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.onclick = async e => {
+      const t = e.target.closest('button');
+      if (!t || t.disabled) return;
+      if (t.dataset.duogame) return startGame(t.dataset.duogame);
+      if (t.dataset.duoplay) return startGame(warmupGame(dash));
+      if (t.dataset.duofocus) { featuredDuo = t.dataset.duofocus; return refreshDuos(); }
+      if (t.dataset.duomenu) return duoMenu(t.dataset.duomenu);
+      const act = t.dataset.duonudge ? ['apiDuoNudge', t.dataset.duonudge] : t.dataset.duoyes ? ['apiDuoAnswer', t.dataset.duoyes, true]
+        : t.dataset.duono ? ['apiDuoAnswer', t.dataset.duono, false] : null;
+      if (!act) return;
+      t.disabled = true;
+      try {
+        const D = await call(act[0], session.name, session.pin, ...act.slice(1));
+        if (duelsHome) duelsHome.duos = D;
+        toast(t.dataset.duonudge ? 'Nudge sent' : t.dataset.duoyes ? 'Your duo streak starts today!' : 'OK, maybe later');
+        refreshDuos();
+      } catch(err){ toast(err.message, true); t.disabled = false; }
+    };
+  });
+}
+
+function refreshDuos(){
+  const a = document.getElementById('duobanner'), b = document.getElementById('duos');
+  if (a) a.outerHTML = duoBanner();
+  if (b) b.outerHTML = duoSection();
+  bindDuos();
+  checkDuoParty();
+}
+
+function duoMenu(id){
+  const v = duelsHome.duos.active.find(x => x.id === id);
+  if (!v) return;
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="sheet glass">
+    <div class="row-flex between"><span class="label">Duo streak with ${esc(v.partner.name)}</span>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
+    <div class="sub mt-s">Together since ${longDate(v.since)}. ${v.milestones.length ? 'Badges: ' + v.milestones.join(', ') + ' days.' : ''}</div>
+    <div class="jrules" style="--wb:#ea580c">
+      <div>${icon('fire', 'duotone')}<span>The streak grows on every day you both practice (a task, a game or a duel).</span></div>
+      <div>${icon('shield-check', 'duotone')}<span>One missed day a week is forgiven.</span></div>
+      <div>${icon('medal', 'duotone')}<span>Badges at ${duelsHome.duos.milestones.join(', ')} days: +${duelsHome.duos.milestoneXp.join(', +')} XP for both.</span></div>
+    </div>
+    <button class="btn btn-glass btn-block mt" id="end" style="color:#be123c">Stop this duo streak</button>
+  </div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  ov.onclick = e => { if (e.target === ov) close(); };
+  ov.querySelector('#x').onclick = close;
+  ov.querySelector('#end').onclick = async e => {
+    const b = e.currentTarget;
+    if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = 'Tap again to stop it (' + plural(v.days, 'day') + ' will be gone)'; return; }
+    b.disabled = true;
+    try { duelsHome.duos = await call('apiDuoEnd', session.name, session.pin, id); close(); refreshDuos(); toast('Duo streak stopped'); }
+    catch(err){ toast(err.message, true); b.disabled = false; }
+  };
+}
+
+// Milestones and finished quests are celebrated once on each phone.
+function checkDuoParty(){
+  const D = duelsHome && duelsHome.duos;
+  if (!D || !session || G || DU || document.querySelector('.evolve')) return;
+  const key = 'eq_duoseen_' + session.name, seen = store.get(key) || {};
+  for (const v of D.active) {
+    const s = seen[v.id] || { m: 0, q: '' }, top = v.milestones.length ? Math.max(...v.milestones) : 0;
+    if (!seen[v.id]) { seen[v.id] = { m: top, q: v.quest.claimed ? v.quest.week : '' }; continue; }
+    if (top > s.m) { s.m = top; seen[v.id] = s; store.set(key, seen); return duoParty(v, 'streak', top); }
+    if (v.quest.claimed && s.q !== v.quest.week) { s.q = v.quest.week; seen[v.id] = s; store.set(key, seen); return duoParty(v, 'quest'); }
+  }
+  store.set(key, seen);
+}
+
+function duoParty(v, kind, m){
+  const ov = document.createElement('div');
+  ov.className = 'evolve';
+  const D = duelsHome.duos, xp = kind === 'quest' ? v.quest.xp : D.milestoneXp[D.milestones.indexOf(m)];
+  ov.innerHTML = `<canvas></canvas><div class="flash"></div>
+    <div style="position:relative;width:100%;max-width:360px">
+      <div class="duoparty">${petPic(meAsPlayer(), 'celebrate', 'dp-a')}
+        ${kind === 'quest' ? `<span class="dp-mid chest">${icon('treasure-chest', 'duotone')}</span>` : `<span class="dp-mid flame">${FLAME}<b>${m}</b></span>`}
+        ${petPic(v.partner, 'celebrate', 'dp-b flip')}</div>
+      <h1 class="reveal hide">${kind === 'quest' ? 'Team quest complete!' : m + '-day duo streak!'}</h1>
+      <div class="sub reveal hide">${kind === 'quest' ? 'You and ' + esc(v.partner.name) + ' did it: ' + esc(v.quest.goal) + '.' : 'You and ' + esc(v.partner.name) + ' practiced together ' + m + ' days in a row.'}</div>
+      <div class="unlock reveal hide"><span>+${xp} XP for you</span><span>+${xp} XP for ${esc(v.partner.name)}</span></div>
+      <button class="btn btn-teal btn-block mt reveal hide" id="dp-ok">${kind === 'quest' ? 'Yay, team!' : 'Keep it going!'}</button>
+    </div>`;
+  document.body.appendChild(ov);
+  const fl = ov.querySelector('.flash');
+  [[350, () => fl.classList.add('go')], [550, () => confettiCanvas(ov.querySelector('canvas'))],
+   [900, () => ov.querySelectorAll('.reveal').forEach(x => x.classList.remove('hide'))]].forEach(([ms, f]) => setTimeout(f, ms));
+  ov.querySelector('#dp-ok').onclick = () => { ov.remove(); checkDuoParty(); };
+}
+
 // ---------- Journey ----------
 // A world per level (names and rules come from the server). Every daily task is a station; the
 // gate at the end of a world is a challenge with questions from the next level, from all four games.
@@ -2452,9 +2704,11 @@ function renderDash(){
   <div class="stack">
     ${dashHeader(d)}
     ${duelBanner()}
+    ${duoBanner()}
 
     ${petCard(d)}
     ${journeyCard(d)}
+    ${duoSection()}
 
     <div class="hero">
       ${ring(s.weekDone, s.weekTotal)}
@@ -2498,10 +2752,12 @@ function renderDash(){
   bindPet(d);
   bindJourney();
   bindTogether();
+  bindDuos();
   startHomePoll();
   if (d.push && d.push.key) pushKey = d.push.key;
   renderPushCard();
   checkGrowth();
+  checkDuoParty();
 }
 
 // ---------- Reminders (Web Push) ----------
@@ -2629,6 +2885,7 @@ function openSheet(w){
     try {
       const first = !!dash.levelTest, wasOpen = !!dash.journey && dash.journey.gate.state === 'open';
       dash = await call('apiSubmit', session.name, session.pin, w.date, c, t, level);
+      homeStale = true;
       const j = dash.journey;
       close(); renderDash();
       celebrate(dash.justEarned, j && !first ? 'Station ' + Math.min(j.stations, j.goal) + ' of ' + j.goal + ' · ' + j.name : '');
