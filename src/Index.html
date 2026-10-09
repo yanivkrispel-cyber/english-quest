@@ -562,7 +562,41 @@ body.splashing #app{opacity:0}
 .tsc.top{transform:rotate(180deg)}
 .tquit{position:absolute;right:0;top:50%;margin-top:-21px;width:36px;height:36px;font-size:15px}
 .ttime{position:absolute;left:0;top:50%;margin-top:-13px}
-@media (prefers-reduced-motion:reduce){.boss.hit,.bpop.go{animation:none}.knot{transition:none}}
+/* Talk & Tap */
+.talkcard{gap:8px}
+.tword{font-size:38px;font-weight:800;letter-spacing:-.6px;line-height:1.1;color:#4338ca;word-break:break-word}
+.vsb i{font-size:22px}
+.tabooin{color:#be123c;font-weight:700;text-decoration:underline dotted}
+.taboo{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;font-size:12.5px;font-weight:700;color:var(--muted)}
+.mic{display:flex;align-items:center;gap:12px;padding:12px 14px}
+.micb{position:relative;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;flex:none;color:#fff;font-size:26px;
+  background:linear-gradient(145deg,#5eead4,#0d9488);box-shadow:0 14px 24px -12px #0d9488}
+.micb::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:3px solid rgba(13,148,136,.35);animation:tping 1.6s ease-out infinite}
+@keyframes tping{from{transform:scale(.85);opacity:.9}to{transform:scale(1.35);opacity:0}}
+.thelp{padding:12px 14px;display:grid;gap:6px}
+.thelp .st{font-size:14px;font-weight:600;color:#3b3f55;padding:7px 11px;border-radius:12px;background:rgba(255,255,255,.7)}
+.tlisten{grid-template-columns:auto minmax(0,1fr);justify-items:start;align-items:center;text-align:left}
+.tlisten .ear{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:26px;
+  background:linear-gradient(145deg,#f9a8d4,#db2777);box-shadow:0 14px 24px -12px #db2777}
+.tlisten .qbig{font-size:17px}
+.tasks{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.tflash{position:fixed;inset:0;z-index:45;display:grid;place-items:center;pointer-events:none;padding:20px;background:rgba(28,30,45,.16)}
+.tflash .glass{padding:16px 24px 20px;min-width:240px;max-width:320px;text-align:center;display:grid;gap:6px;justify-items:center;
+  background:linear-gradient(140deg,rgba(255,255,255,.97),rgba(255,255,255,.88));animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+.tflash .tfpet{position:relative;width:96px;height:96px;display:grid;place-items:center}
+.tflash .tfpet img{width:96px;height:96px;object-fit:contain}
+.tflash .tfpet .duel-av{width:76px;height:76px;font-size:30px}
+.tflash .tfi{position:absolute;right:-8px;bottom:-4px;font-size:34px;line-height:1;background:#fff;border-radius:50%}
+.tflash.ok .tfi{color:#10b981}
+.tflash.no .tfi{color:#e11d48}
+.tflash .tft{font-size:18px;font-weight:700;line-height:1.35}
+.tflash .tfs{font-size:13px;font-weight:800;color:#b45309;display:flex;align-items:center;gap:5px}
+.tflash.no .tfs{color:var(--muted)}
+.lrow .x.good{color:#047857;background:rgba(16,185,129,.16)}
+.lrow .x.skip{color:var(--muted);background:rgba(148,163,184,.18)}
+.lrow .lpic{width:34px;height:34px;object-fit:contain;flex:none}
+.lrow .tsay{width:34px;height:34px;font-size:15px;flex:none}
+@media (prefers-reduced-motion:reduce){.boss.hit,.bpop.go{animation:none}.knot{transition:none}.micb::after,.tflash .glass{animation:none}}
 /* Duo Streak and Team Quest */
 .duocard{padding:16px;border-radius:30px;display:grid;gap:12px;border:1px solid rgba(255,255,255,.82);
   background:linear-gradient(155deg,rgba(254,215,170,.88),rgba(251,207,232,.72) 52%,rgba(221,214,254,.85));box-shadow:0 26px 50px -22px rgba(234,88,12,.4),var(--inner)}
@@ -940,7 +974,7 @@ function gamesPanel(d){
   </div>`;
 }
 
-const BANK_V = 1, ROUND = 5;
+const BANK_V = 2, ROUND = 5;
 const LV_ORDER = ['a1', 'a2', 'b1', 'b2', 'c1'];
 const NEXT_LV = { a1: 'a2', a2: 'b1', b1: 'b2', b2: 'c1' };
 let bankPromise = null, bankIndex = null, G = null;
@@ -1313,11 +1347,15 @@ async function dcall(fn, ...args){
 
 // ---- Home: invite banner and the Play together card ----
 function duelBanner(){
-  const h = duelsHome, inv = h && h.incoming[0], ch = h && h.challenges[0];
+  const h = duelsHome, inv = h && h.incoming[0], ch = h && h.challenges[0], pl = h && h.playing && h.playing[0];
   let body = '';
-  if (inv) body = `<div class="today iri duel-banner">
+  if (pl) body = `<div class="today iri duel-banner">
+      <div class="row-flex" style="gap:12px">${faceOf(duelThem(pl))}<div style="min-width:0"><span class="label" style="color:#3b3f55">Playing now</span>
+        <h2 style="margin-top:2px">${modeTitle(pl)} with ${esc((duelThem(pl) || {}).name || 'a friend')}</h2></div></div>
+      <button class="btn btn-primary btn-block mt-s" data-duelopen="${pl.code}">${icon('play')} Back to the game</button></div>`;
+  else if (inv) body = `<div class="today iri duel-banner">
       <div class="row-flex" style="gap:12px">${faceOf(inv.host)}<div style="min-width:0"><span class="label" style="color:#3b3f55">Invitation · ${duelLeft(inv)}</span>
-        <h2 style="margin-top:2px">${esc(inv.host.name)} invites you to a ${modeTitle(inv)}</h2></div></div>
+        <h2 style="margin-top:2px">${esc(inv.host.name)} invites you to ${modeInvite(inv)}</h2></div></div>
       <div class="btns"><button class="btn btn-glass" data-duelno="${inv.code}">Not now</button><button class="btn btn-teal" data-dueljoin="${inv.code}">${icon('play')} Join</button></div></div>`;
   else if (ch) body = `<div class="today iri duel-banner">
       <div class="row-flex" style="gap:12px">${faceOf(ch.host)}<div style="min-width:0"><span class="label" style="color:#3b3f55">Challenge · ${duelLeft(ch)}</span>
@@ -1345,10 +1383,11 @@ function togetherCard(){
   });
   h.results.slice(0, 3).forEach(v => {
     const me = duelMe(v), them = duelThem(v) || { name: '?' };
-    const res = v.mode === 'boss' ? (v.winner === 'team' ? 'Victory!' : 'The boss got away') : v.winner === me.name ? 'You won' : v.winner === 'draw' ? 'A draw' : esc(them.name) + ' won';
+    const res = v.mode === 'talk' ? (v.team == null ? '' : v.team + '/' + v.items + ' words') + (v.winner === 'team' ? ' · Team win' : '')
+      : v.mode === 'boss' ? (v.winner === 'team' ? 'Victory!' : 'The boss got away') : v.winner === me.name ? 'You won' : v.winner === 'draw' ? 'A draw' : esc(them.name) + ' won';
     rows.push(`<button class="soft drow" data-duelopen="${v.code}">${faceOf(them)}
-      <span class="drow-main"><b>${v.mode === 'boss' ? 'Boss Battle with ' + esc(them.name) : 'You ' + (me.score == null ? '–' : me.score) + ' : ' + (them.score == null ? '–' : them.score) + ' ' + esc(them.name)}</b>
-      <small>${res}${v.mode === 'boss' ? '' : ' · ' + modeTitle(v)}</small></span>
+      <span class="drow-main"><b>${v.mode === 'boss' || v.mode === 'talk' ? modeTitle(v) + ' with ' + esc(them.name) : 'You ' + (me.score == null ? '–' : me.score) + ' : ' + (them.score == null ? '–' : them.score) + ' ' + esc(them.name)}</b>
+      <small>${res}${v.mode === 'boss' || v.mode === 'talk' ? '' : ' · ' + modeTitle(v)}</small></span>
       <span class="chip purple" data-rematch="${v.code}">${icon('arrows-clockwise')} Rematch</span></button>`);
   });
   return `<div class="glass panel" id="together">
@@ -1400,7 +1439,7 @@ async function pollHome(){
     const fresh = h.incoming.find(v => !(duelsHome && duelsHome.incoming.some(x => x.code === v.code)));
     duelsHome = h;
     refreshTogether();
-    if (fresh) { toast(fresh.host.name + ' invites you to a ' + modeTitle(fresh) + '!'); try { navigator.vibrate && navigator.vibrate(120); } catch(e){} }
+    if (fresh) { toast(fresh.host.name + ' invites you to ' + modeInvite(fresh) + '!'); try { navigator.vibrate && navigator.vibrate(120); } catch(e){} }
   } catch(e){}
 }
 function startHomePoll(){
@@ -1427,6 +1466,8 @@ function inviteSheet(name){
         <span class="drow-main"><b>Word Duel</b><small>Race now · ${DUEL_ITEMS} questions each</small></span><span class="radio">${icon('check')}</span></button>
       <button class="mrow" data-mode="boss"><span class="tile t-uoe">${icon('shield', 'duotone')}</span>
         <span class="drow-main"><b>Boss Battle</b><small>Team up against the Word Thief</small></span><span class="radio">${icon('check')}</span></button>
+      <button class="mrow" data-mode="talk"><span class="tile t-listen">${icon('chats-circle', 'duotone')}</span>
+        <span class="drow-main"><b>Talk &amp; Tap</b><small>Describe words in English, together</small></span><span class="radio">${icon('check')}</span></button>
       <button class="mrow" data-mode="challenge"><span class="tile t-read">${icon('ghost', 'duotone')}</span>
         <span class="drow-main"><b>Challenge</b><small>You play now, ${esc(name)} plays later</small></span><span class="radio">${icon('check')}</span></button>
       ${duoOption(name)}
@@ -1528,7 +1569,7 @@ async function duelRematch(code){
   if (!v) return;
   const them = duelThem(v), mate = h && h.friends.some(f => f.name === (them && them.name));
   loading();
-  try { routeDuel(await dcall('apiDuelInvite', mate ? them.name : '', v.mode === 'challenge' ? 'challenge' : v.mode === 'boss' ? 'boss' : 'live')); }
+  try { routeDuel(await dcall('apiDuelInvite', mate ? them.name : '', rematchMode(v))); }
   catch(e){ toast(e.message, true); renderDash(); }
 }
 
@@ -1538,6 +1579,7 @@ function routeDuel(v){
   const me = duelMe(v);
   if (v.state === 'done') return duelResult(v);
   if (v.state === 'cancelled') return duelNotice(v, 'This invite was cancelled');
+  if (v.state === 'playing' && me.score != null) { duelSession(v); Object.assign(DU, { finished: true, score: me.score, team: null }); return duelWait(v); }
   if (v.role === 'host') {
     if (v.state === 'invited' || v.state === 'declined' || (v.state === 'expired' && v.mode === 'live' && me.score == null)) return duelLobby(v);
     if (v.state === 'solo') return duelIntro(v);
@@ -1564,7 +1606,7 @@ function stopDuel(){
 }
 function duelProgress(){
   return { n: DU.answered, s: DU.score, ms: DU.lastMs, f: DU.finished, r: DU.reaction, rt: DU.reactionAt,
-    dmg: DU.boss ? DU.boss.dmg : 0, hint: DU.boss ? DU.boss.hintAt : 0 };
+    dmg: DU.boss ? DU.boss.dmg : 0, hint: DU.boss ? DU.boss.hintAt : 0, p: DU.talk ? DU.talk.mine.join(',') : '' };
 }
 async function duelLoop(){
   const me = DU;
@@ -1588,6 +1630,7 @@ function onDuelUpdate(v){
   const r = v.them && v.them.rt;
   if (r && r !== DU.seenRt) { if (DU.seenRt !== null && v.them.r >= 0) showReaction(duelThem(v), v.them.r); DU.seenRt = r; }
   else if (DU.seenRt === null) DU.seenRt = r || 0;
+  if (DU.screen === 'talk') return talkUpdate(v);
   if (DU.screen === 'lobby') return lobbyUpdate(v);
   if (DU.screen === 'play') return updateRace();
   if (DU.screen === 'wait') { if (v.state === 'done') return duelResult(v); updateRace(); return waitUpdate(v); }
@@ -1629,7 +1672,8 @@ function duelLobby(v){
         <div class="count" id="lcount">${icon('hourglass-medium', 'duotone')}</div>
         <div class="side wait" id="lthem"></div>
       </div>
-      <div class="sub" style="text-align:center;margin-top:10px;font-size:13px">${v.mode === 'boss' ? 'Team up: right answers hit the boss.' : 'Same game.'} Questions at each player's level.</div>
+      <div class="sub" style="text-align:center;margin-top:10px;font-size:13px">${v.mode === 'talk' ? 'One describes a word in English, the other picks it. Sit face to face (no peeking!) or call each other.'
+        : (v.mode === 'boss' ? 'Team up: right answers hit the boss.' : 'Same game.') + ' Questions at each player\'s level.'}</div>
     </div>
     <div id="lstat"></div>
     <div style="flex:1"></div>
@@ -1695,7 +1739,7 @@ function lobbyUpdate(v){
 
 function codeShare(v){
   const link = appBase() + '?duel=' + v.code;
-  const text = dash.girl.name + ' invites you to a ' + modeTitle(v) + ' on English Quest! 🎮\nOpen the app, tap Play together, then Code, and enter ' + v.code + '.\nOr tap: ' + link;
+  const text = dash.girl.name + ' invites you to ' + modeInvite(v) + ' on English Quest! 🎮\nOpen the app, tap Play together, then Code, and enter ' + v.code + '.\nOr tap: ' + link;
   return `<div class="glass panel" style="text-align:center;padding:16px">
     <div class="label">Send this code to your friend</div>
     <div class="codebig">${esc(v.code)}</div>
@@ -1729,10 +1773,11 @@ function duelInvitation(v){
   app.innerHTML = `<div class="gscreen" id="dinv">
     <div class="gtop"><button class="btn btn-glass icon-btn" data-act="home">${icon('arrow-left')}</button><h2>Invitation</h2></div>
     <div class="glass panel iri" style="text-align:center;display:grid;gap:12px;justify-items:center">
-      <div class="vs">${petPic(host, 'happy')}<span class="vsb">VS</span>${petPic(meAsPlayer(), 'happy', 'flip')}</div>
-      <h2>${esc(host.name)} invites you to a ${modeTitle(v)}</h2>
-      <div class="row-flex" style="flex-wrap:wrap;justify-content:center;gap:6px"><span class="chip">${v.mode === 'boss' ? 'Team game' : DUEL_ITEMS + ' questions'}</span>
-        <span class="chip orange">Your level: ${esc(dash.girl.levelLabel)}</span><span class="chip teal">XP for both</span></div>
+      <div class="vs">${petPic(host, 'happy')}<span class="vsb">${v.mode === 'boss' || v.mode === 'talk' ? icon('handshake') : 'VS'}</span>${petPic(meAsPlayer(), 'happy', 'flip')}</div>
+      <h2>${esc(host.name)} invites you to ${modeInvite(v)}</h2>
+      <div class="row-flex" style="flex-wrap:wrap;justify-content:center;gap:6px"><span class="chip">${v.mode === 'boss' ? 'Team game' : v.mode === 'talk' ? 'Team game · ' + v.items + ' words' : DUEL_ITEMS + ' questions'}</span>
+        <span class="chip orange">${v.mode === 'talk' && v.guest ? 'Words at ' + talkLevel(v).toUpperCase() : 'Your level: ' + esc(dash.girl.levelLabel)}</span><span class="chip teal">XP for both</span></div>
+      ${v.mode === 'talk' ? `<div class="sub" style="margin:0;font-size:13px">${icon('chats-circle')} You will talk in English: sit together, or call ${esc(host.name)} first.</div>` : ''}
       <button class="btn btn-teal btn-block" data-act="join">${icon('play')} Join</button>
       <button class="btn btn-glass btn-block" data-act="wait">Give me 5 minutes</button>
       <button class="btn btn-glass btn-block" data-act="no">Not now</button>
@@ -1785,6 +1830,7 @@ async function startDuelPlay(v){
   try { B = await loadBank(); }
   catch(e){ toast(e.message, true); stopDuel(); return renderDash(); }
   duelSession(v);
+  if (v.mode === 'talk') return talkStart(DU.view, B);
   const live = v.state === 'playing';
   Object.assign(DU, { screen: 'play', live, answered: 0, score: 0, lastMs: 0, finished: false, track: [], xp: null,
     localStart: live ? v.start - duelOffset : Date.now(),
@@ -1799,6 +1845,7 @@ async function startDuelPlay(v){
 }
 
 function duelRaceCard(){
+  if (DU.talk) return talkTeamCard();
   if (DU.boss) return bossCard();
   const v = DU.view, them = duelThem(v), me = meAsPlayer();
   const stations = Array.from({ length: DUEL_ITEMS }, (_, k) => `<i class="stn" style="left:${(k + 1) * 12.5}%"></i>`).join('') + `<span class="fin">${icon('flag-checkered', 'duotone')}</span>`;
@@ -1814,7 +1861,7 @@ function duelRaceCard(){
 }
 
 function updateRace(){
-  if (!DU) return;
+  if (!DU || DU.talk) return;
   if (DU.boss) return updateBoss();
   const pos = s => (s ? s / DUEL_ITEMS * 87.5 : 3) + '%';
   const me = document.getElementById('run-me'), them = document.getElementById('run-them');
@@ -1869,12 +1916,12 @@ async function finishDuel(){
   saveDuel(R);
 }
 
-async function saveDuel(R){
+async function saveDuel(R, head){
   if (!DU) return;
   const code = DU.code;
   app.innerHTML = `<div class="gscreen"><div class="result">
       ${dash.pet ? `<img class="pet-img" src="${petSrc(dash.pet.id, dash.pet.stage, 'thinking')}" alt="">` : ''}
-      <h1>${R.correct}/${R.total}</h1>
+      <h1>${head || R.correct + '/' + R.total}</h1>
       <div class="saved wait" id="dsave"><span class="mini-spin"></span>Saving…</div></div>
     <div class="stack" style="gap:10px" id="dsavebtns"></div></div>`;
   try {
@@ -1892,7 +1939,7 @@ async function saveDuel(R){
     st.className = 'saved err'; st.innerHTML = icon('wifi-slash') + ' ' + esc(e.message);
     document.getElementById('dsavebtns').innerHTML = `<button class="btn btn-primary btn-block" id="dretry">${icon('arrows-clockwise')} Try again</button>
       <button class="btn btn-glass btn-block" id="dleave">Home</button>`;
-    document.getElementById('dretry').onclick = () => saveDuel(R);
+    document.getElementById('dretry').onclick = () => saveDuel(R, head);
     document.getElementById('dleave').onclick = () => { stopDuel(); renderDash(); };
   }
 }
@@ -1907,7 +1954,7 @@ function duelWait(v){
     ${duelRaceCard()}
     <div class="result">
       ${dash.pet ? `<img class="pet-img" src="${petSrc(dash.pet.id, dash.pet.stage, 'cool')}" alt="">` : ''}
-      <h1>${DU.score}/${DUEL_ITEMS}</h1>
+      <h1>${DU.talk || v.mode === 'talk' ? (DU.team == null ? '–' : DU.team) + '/' + TALK_ITEMS : DU.score + '/' + DUEL_ITEMS}</h1>
       <div class="saved wait" id="dwstat"><span class="mini-spin"></span>Waiting for ${esc(them ? them.name : 'your friend')}…</div>
       ${DU.xp != null ? `<div class="sub" style="margin:0;font-size:13px">${icon('check')} +${DU.xp} XP saved</div>` : ''}
     </div>
@@ -1925,6 +1972,7 @@ function duelWait(v){
 function waitUpdate(v){
   const el = document.getElementById('dwstat'), them = duelThem(v), t = v.them;
   if (!el || !them) return;
+  if (v.mode === 'talk') { el.innerHTML = '<span class="mini-spin"></span>Waiting for ' + esc(them.name) + '…' + (v.themOnline === false ? ' · seems offline' : ''); return; }
   el.innerHTML = '<span class="mini-spin"></span>' + (t && t.n ? esc(them.name) + ' is on question ' + Math.min(DUEL_ITEMS, t.n + 1) + ' of ' + DUEL_ITEMS : 'Waiting for ' + esc(them.name) + '…') +
     (v.themOnline === false ? ' · seems offline' : '');
 }
@@ -1973,25 +2021,29 @@ async function duelResult(v){
   let B = null;
   try { B = await loadBank(); } catch(e){}
   const me = duelMe(v), them = duelThem(v) || { name: 'Friend' };
-  const boss = v.mode === 'boss', won = boss ? v.winner === 'team' : v.winner === me.name, draw = !boss && v.winner === 'draw';
+  const boss = v.mode === 'boss', talk = v.mode === 'talk', team = boss || talk;
+  const won = team ? v.winner === 'team' : v.winner === me.name, draw = !team && v.winner === 'draw';
+  const rows = talk && B ? talkRows(B, v) : null, best = rows ? talkStreak(rows.filter(r => r.pick).map(r => r.pick)).best : 0;
   const dmg = boss && v.damage ? { me: v.role === 'guest' ? v.damage.guest : v.damage.host, them: v.role === 'guest' ? v.damage.host : v.damage.guest, total: v.damage.total } : null;
   const winner = won ? me : draw ? null : them, loser = won ? them : draw ? null : me;
-  const head = boss ? (won ? 'Victory! The Word Thief is beaten.' : 'The Word Thief got away this time.') : won ? (them.score == null ? 'You won! ' + esc(them.name) + ' left the duel.' : me.score - them.score === 1 || me.score === them.score ? 'You won. Close one!' : 'You won!')
+  const head = talk ? (v.team >= v.items ? 'Perfect! You understood each other every time.' : won ? 'Great teamwork!' : 'Good try! Keep talking.')
+    : boss ? (won ? 'Victory! The Word Thief is beaten.' : 'The Word Thief got away this time.') : won ? (them.score == null ? 'You won! ' + esc(them.name) + ' left the duel.' : me.score - them.score === 1 || me.score === them.score ? 'You won. Close one!' : 'You won!')
     : draw ? 'A draw! Same score, same time.' : esc(them.name) + ' won this time.';
-  const learn = B ? learnTogether(B, v, me, them) : '';
+  const learn = rows ? talkLearn(rows, me) : B && !talk ? learnTogether(B, v, me, them) : '';
   app.innerHTML = `<div class="gscreen" id="dres">
     <div class="gtop"><button class="btn btn-glass icon-btn" data-act="home">${icon('x')}</button>
       <div style="flex:1;min-width:0"><h2>${modeTitle(v)}</h2><div class="sub" style="font-size:12px;margin:0">${esc(me.name)} and ${esc(them.name)} · ${fmtDate(v.date || dash.today)}</div></div></div>
     <div class="result" style="flex:none">
-      <div class="podium ${boss ? 'team' : ''}">${boss ? petPic(me, won ? 'celebrate' : 'oops', 'big') + (won ? `<span class="crown">${icon('crown-simple', 'duotone')}</span>` : '') + petPic(them, won ? 'celebrate' : 'oops', 'big flip')
+      <div class="podium ${team ? 'team' : ''}">${team ? petPic(me, won ? 'celebrate' : talk ? 'happy' : 'oops', 'big') + (won ? `<span class="crown">${icon('crown-simple', 'duotone')}</span>` : '') + petPic(them, won ? 'celebrate' : talk ? 'happy' : 'oops', 'big flip')
         : draw ? petPic(me, 'happy', 'big') + petPic(them, 'happy', 'small flip')
         : petPic(winner, 'celebrate', 'big') + `<span class="crown">${icon('crown-simple', 'duotone')}</span>` + petPic(loser, won ? 'oops' : 'happy', 'small flip')}</div>
-      <div class="score2">${dmg ? Math.max(0, v.boss.hp - dmg.total) + '<span>/</span>' + v.boss.hp + '<small>boss HP left</small>' : (me.score == null ? '–' : me.score) + '<span>:</span>' + (them.score == null ? '–' : them.score)}</div>
+      <div class="score2">${talk ? (v.team == null ? '–' : v.team) + '<span>/</span>' + v.items + '<small>words right</small>'
+        : dmg ? Math.max(0, v.boss.hp - dmg.total) + '<span>/</span>' + v.boss.hp + '<small>boss HP left</small>' : (me.score == null ? '–' : me.score) + '<span>:</span>' + (them.score == null ? '–' : them.score)}</div>
       <h2>${head}</h2>
       <div class="row-flex" style="gap:6px;flex-wrap:wrap;justify-content:center">
         ${xp != null ? `<span class="chip purple">${icon('lightning')} +${xp} XP</span>` : ''}
-        ${won ? `<span class="chip orange">${icon('crown-simple')} ${boss ? 'Team win' : 'Winner'}</span>` : ''}
-        ${dmg ? `<span class="chip">${icon('sword')} You hit ${dmg.me} · ${esc(them.name)} ${dmg.them}</span>` : `<span class="chip">${icon('timer')} You ${me.ms == null ? '–' : secs(me.ms)}${them.ms == null ? '' : ' · ' + esc(them.name) + ' ' + secs(them.ms)}</span>`}</div>
+        ${won ? `<span class="chip orange">${icon('crown-simple')} ${team ? 'Team win' : 'Winner'}</span>` : ''}
+        ${talk ? `<span class="chip">${icon('fire')} Best streak ${best}</span>` : dmg ? `<span class="chip">${icon('sword')} You hit ${dmg.me} · ${esc(them.name)} ${dmg.them}</span>` : `<span class="chip">${icon('timer')} You ${me.ms == null ? '–' : secs(me.ms)}${them.ms == null ? '' : ' · ' + esc(them.name) + ' ' + secs(them.ms)}</span>`}</div>
     </div>
     ${learn}
     <div class="stack" style="gap:10px">
@@ -2003,10 +2055,11 @@ async function duelResult(v){
     const t = e.target.closest('button');
     if (!t) return;
     if (t.dataset.act === 'home') { homeStale = true; return renderDash(); }
+    if (t.dataset.say) return sayWord(t.dataset.say);
     if (t.dataset.act === 'again') {
       const mate = duelsHome && duelsHome.friends.some(f => f.name === them.name);
       loading();
-      try { return routeDuel(await dcall('apiDuelInvite', mate ? them.name : '', v.mode === 'challenge' ? 'challenge' : v.mode === 'boss' ? 'boss' : 'live')); }
+      try { return routeDuel(await dcall('apiDuelInvite', mate ? them.name : '', rematchMode(v))); }
       catch(err){ toast(err.message, true); return renderDash(); }
     }
     if (t.dataset.helped) {
@@ -2088,7 +2141,9 @@ const BOSS_SVG = `<svg class="boss" id="bosssvg" viewBox="0 0 170 150" aria-hidd
   <circle cx="22" cy="58" r="14" fill="#f6a04d"/><text x="22" y="64" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-weight="800" font-size="16" fill="#fff">a</text>
   <circle cx="150" cy="48" r="14" fill="#3cc7b6"/><text x="150" y="54" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-weight="800" font-size="16" fill="#fff">b</text>
   <circle cx="155" cy="100" r="11" fill="#6366f1"/><text x="155" y="105" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-weight="800" font-size="13" fill="#fff">?</text></svg>`;
-const modeTitle = v => v.mode === 'boss' ? 'Boss Battle' : v.mode === 'challenge' ? 'Challenge' : 'Word Duel';
+const modeTitle = v => v.mode === 'boss' ? 'Boss Battle' : v.mode === 'talk' ? 'Talk & Tap' : v.mode === 'challenge' ? 'Challenge' : 'Word Duel';
+const modeInvite = v => v.mode === 'talk' ? 'Talk & Tap' : 'a ' + modeTitle(v);
+const rematchMode = v => ['challenge', 'boss', 'talk'].indexOf(v.mode) >= 0 ? v.mode : 'live';
 
 function bossCard(){
   const them = duelThem(DU.view), me = meAsPlayer();
@@ -2185,6 +2240,254 @@ function bossVictory(){
 // After each question is drawn: a waiting 50/50 lands on the first question that has options.
 function duelAfterRender(){
   if (DU && DU.boss) bossApplyHint();
+}
+
+// ---------- Talk & Tap ----------
+// Spec: specs/talk-tap.md. One kid describes a word, the other picks it from four; the roles swap every
+// word. Both phones build the same words from the duel's seed; only the picks travel, with the polls.
+const TALK_ITEMS = 8, TALK_FLASH = 1700;
+const TALK_TIPS = ['Speak slowly. You can do it!', 'Short sentences work best.', 'Stuck? Tap Need help.', 'Explain it like to a little kid.'];
+const TALK_ASK = ['Can you say that again?', 'Another clue, please!', 'Is it a…?'];
+const TALK_HELP = ["It's…", 'You use it when…', 'For example, …'];
+// The host describes words 1, 3, 5, 7 (k = 0, 2, 4, 6); the guest the others.
+const talkDescriber = k => k % 2 ? 'guest' : 'host';
+const talkKey = code => 'eq_talk_' + (session ? session.name : '') + '_' + code;
+const talkTheirs = () => String((DU && DU.them && DU.them.p) || '').split(',').filter(String);
+const talkStreak = picks => picks.reduce((a, p) => { a.s = p.ok ? a.s + 1 : 0; a.best = Math.max(a.best, a.s); return a; }, { s: 0, best: 0 });
+
+// The lower level of the two kids (a B1+ kid counts as B1), so both can follow.
+function talkLevel(v){
+  const at = p => LV_ORDER.indexOf(kidLevels(p && p.level)[0]);
+  return LV_ORDER[Math.max(0, Math.min(at(v.host), at(v.guest)))];
+}
+
+// The 8 words of a game, each with its don't-say words and four options from its topic. The words take
+// turns between the topics, so one game has animals, food, feelings… and not four things from home.
+function talkItems(B, v){
+  const lv = talkLevel(v), T = (B.talk || {})[lv] || {}, rnd = rng32((v.seed ^ hashStr('talk:' + lv)) >>> 0);
+  const pics = new Set([].concat(...Object.values(B.pics || {})));
+  const all = [].concat(...Object.keys(T).map(topic => T[topic].map(([word, a, b]) => ({ word, avoid: [a, b], topic }))));
+  const topics = shuffle(Object.keys(T), rnd), pools = topics.map(t => shuffle(all.filter(x => x.topic === t), rnd)), words = [];
+  for (let r = 0; words.length < TALK_ITEMS && r < 40; r++) pools.forEach(p => { if (p[r] && words.length < TALK_ITEMS) words.push(p[r]); });
+  return words.map(x => {
+    let others = shuffle(all.filter(y => y.topic === x.topic && y.word !== x.word), rnd).slice(0, 3);
+    if (others.length < 3) others = others.concat(shuffle(all.filter(y => y.topic !== x.topic), rnd).slice(0, 3 - others.length));
+    const m = (B.match[lv] || []).find(y => y[0] === x.word), pic = lv === 'a1' && pics.has(x.word);
+    return Object.assign({}, x, { lv, pic, def: m ? m[1] : '', options: shuffle([x.word].concat(others.map(o => o.word)), rnd),
+      id: (pic ? 'p:' : 'm:' + lv + ':') + idKey(x.word) });
+  });
+}
+
+// The picks so far, word by word, up to the first word nobody picked yet.
+function talkPicks(v, mine, theirs){
+  const out = [];
+  for (let k = 0; k < TALK_ITEMS; k++) {
+    const myTurn = talkDescriber(k) !== v.role, x = (myTurn ? mine : theirs)[k >> 1];
+    if (!x) break;
+    const [ok, ms, o] = x.split(':');
+    out.push({ ok: ok === '1', ms: Number(ms), o: Number(o), mine: myTurn });
+  }
+  return out;
+}
+
+function talkStart(v, B){
+  // After a reload the picks come back from this phone or from the server, whichever knows more.
+  const fromServer = String((v.mine && v.mine.p) || '').split(',').filter(String), kept = store.get(talkKey(v.code)) || [];
+  const mine = kept.length > fromServer.length ? kept : fromServer;
+  Object.assign(DU, { screen: 'talk', live: true, finished: false, track: [], xp: null, localStart: v.start - duelOffset,
+    talk: { items: talkItems(B, v), starters: B.starters || {}, mine, shown: 0, busy: false, help: false } });
+  G = null; speechStop();
+  DU.talk.shown = talkPicks(v, mine, talkTheirs()).length;
+  talkRender();
+  talkClock();
+  duelLoop();
+}
+
+function talkRender(){
+  const T = DU && DU.talk;
+  if (!T || DU.screen !== 'talk') return;
+  const v = DU.view, k = T.shown;
+  if (k >= TALK_ITEMS) return talkFinish();
+  const it = T.items[k], them = duelThem(v) || { name: 'your friend' }, describe = talkDescriber(k) === v.role;
+  const picks = talkPicks(v, T.mine, talkTheirs()).slice(0, k);
+  window.scrollTo(0, 0);
+  app.innerHTML = `<div class="gscreen talk" id="talk">
+    <div class="gtop"><button class="btn btn-glass icon-btn" id="tquit" title="Stop">${icon('x')}</button>
+      <div style="flex:1;min-width:0"><h2>Talk &amp; Tap</h2><div class="sub" style="font-size:12px;margin:0">Word ${k + 1} of ${TALK_ITEMS} · ${describe ? 'you describe' : 'you listen'}</div></div>
+      <span class="chip orange" id="tstreak" title="Team streak">${icon('fire')} ${talkStreak(picks).s}</span><span class="chip" id="dtimer">${icon('timer')} ${duelClockText()}</span></div>
+    <div class="gprog">${Array.from({ length: TALK_ITEMS }, (_, j) => `<i class="${j < k ? (picks[j].ok ? 'ok' : 'no') : j === k ? 'on' : ''}"></i>`).join('')}</div>
+    ${describe ? talkDescribeHtml(it, them, T) : talkListenHtml(it, them)}
+  </div>`;
+  document.getElementById('talk').onclick = talkClick;
+}
+
+function talkDescribeHtml(it, them, T){
+  const help = T.starters[it.topic] || TALK_HELP;
+  return `<div class="glass qcard talkcard">
+      <div class="qprompt">Describe this word to ${esc(them.name)}</div>
+      ${it.pic ? `<img class="qpic" src="${picSrc(it.word)}" alt="">` : ''}
+      <div class="tword">${esc(it.word)}</div>
+      <div class="taboo"><span>Don't say</span>${it.avoid.map(w => `<span class="chip red">${esc(w)}</span>`).join('')}</div></div>
+    <div class="soft mic"><span class="micb">${icon('microphone', 'duotone')}</span>
+      <div class="drow-main"><b>Talk in English</b><small id="tstatus">${esc(them.name)} picks the word on the other phone</small></div></div>
+    <button class="soft drow" id="thelp"><span class="tile sm t-star">${icon('lightbulb', 'duotone')}</span>
+      <span class="drow-main"><b>Need help?</b><small>Sentence starters and what it means</small></span>${icon(T.help ? 'caret-up' : 'caret-down')}</button>
+    <div class="glass thelp" id="thelpbox"${T.help ? '' : ' hidden'}>${help.map(s => `<div class="st">${esc(s)}</div>`).join('')}
+      ${it.def ? `<div class="sub" style="margin:4px 0 0;font-size:13px"><b style="color:var(--ink)">It means:</b> ${talkMarked(it)}</div>` : ''}</div>
+    <div class="react">${dash.pet ? `<img class="gpet" src="${petSrc(dash.pet.id, dash.pet.stage, 'thinking')}" alt="">` : ''}<div class="bubble">${esc(TALK_TIPS[(DU.view.seed + T.shown) % TALK_TIPS.length])}</div></div>`;
+}
+
+// The meaning with the don't-say words marked, so the one describing knows not to read them out.
+function talkMarked(it){
+  return it.avoid.reduce((s, w) => s.replace(new RegExp('\\b(' + w.replace(/[^A-Za-z]/g, '') + ')\\b', 'gi'), '<span class="tabooin">$1</span>'), esc(it.def));
+}
+
+function talkListenHtml(it, them){
+  return `<div class="glass qcard tlisten"><span class="ear">${icon('ear', 'duotone')}</span>
+      <div class="qbig">${esc(them.name)} is describing a word. Which one?</div></div>
+    <div class="opts">${it.options.map((o, i) => `<button class="opt" data-pick="${i}">${esc(o)}</button>`).join('')}</div>
+    <div class="label" style="text-align:center">Ask in English</div>
+    <div class="tasks">${TALK_ASK.map(a => `<span class="chip">${esc(a)}</span>`).join('')}</div>
+    <div class="react">${dash.pet ? `<img class="gpet" src="${petSrc(dash.pet.id, dash.pet.stage, 'happy')}" alt="">` : ''}<div class="bubble">A wrong pick sends the team streak back to 0.</div></div>`;
+}
+
+function talkClick(e){
+  const t = e.target.closest('button');
+  if (!t || !DU || !DU.talk) return;
+  const T = DU.talk;
+  if (t.id === 'tquit') {
+    // Leaving saves the words played so far; the friend's phone then ends the game too.
+    if (!(T.quitAt > Date.now() - 3000)) { T.quitAt = Date.now(); return toast('Tap again to stop the game. Your words so far are saved.'); }
+    return talkFinish();
+  }
+  if (t.id === 'thelp') {
+    T.help = !T.help;
+    const box = document.getElementById('thelpbox');
+    if (box) box.hidden = !T.help;
+    t.lastElementChild.outerHTML = icon(T.help ? 'caret-up' : 'caret-down');
+    return;
+  }
+  if (t.dataset.pick != null) talkPick(Number(t.dataset.pick));
+}
+
+// My pick (I listen): kept on the phone at once, sent with the next poll.
+function talkPick(i){
+  const T = DU.talk, v = DU.view, k = T.shown, it = T.items[k];
+  if (!it || T.busy || DU.finished || talkDescriber(k) === v.role || T.mine.length > (k >> 1)) return;
+  T.busy = true;
+  const ok = it.options[i] === it.word, ms = Math.min(999999, Math.max(0, Math.round(Date.now() - DU.localStart)));
+  T.mine.push((ok ? 1 : 0) + ':' + ms + ':' + i);
+  store.set(talkKey(v.code), T.mine);
+  app.querySelectorAll('[data-pick]').forEach(b => { b.disabled = true; if (it.options[b.dataset.pick] === it.word) b.classList.add('ok'); });
+  if (!ok) { const b = app.querySelector('[data-pick="' + i + '"]'); if (b) b.classList.add('no', 'shake'); }
+  talkFlash(k, { ok, o: i, mine: true });
+}
+
+// The result of one word on both phones, then the next word with the roles swapped.
+function talkFlash(k, p){
+  const T = DU.talk, v = DU.view, it = T.items[k], them = duelThem(v) || { name: 'Your friend' };
+  T.busy = true;
+  const streak = talkStreak(talkPicks(v, T.mine, talkTheirs()).slice(0, k + 1)).s, word = '<b>' + esc(it.word) + '</b>';
+  const text = p.ok ? (p.mine ? 'Right! It is ' : esc(them.name) + ' got it: ') + word
+    : (p.mine ? 'It was ' : esc(them.name) + ' picked ' + esc(it.options[p.o] || '?') + '. It was ') + word;
+  const ov = document.createElement('div');
+  ov.className = 'tflash ' + (p.ok ? 'ok' : 'no');
+  ov.innerHTML = `<div class="glass"><div class="tfpet">${petPic(meAsPlayer(), p.ok ? 'celebrate' : 'oops')}<span class="tfi">${icon(p.ok ? 'check-circle' : 'x-circle', 'duotone')}</span></div><div class="tft">${text}</div>
+    <div class="tfs">${p.ok ? icon('fire') + ' Team streak ' + streak : 'The streak starts again'}</div></div>`;
+  document.body.appendChild(ov);
+  try { navigator.vibrate && navigator.vibrate(p.ok ? 40 : [70, 50, 70]); } catch(e){}
+  const st = document.getElementById('tstreak');
+  if (st) st.innerHTML = icon('fire') + ' ' + streak;
+  setTimeout(() => {
+    ov.remove();
+    if (!DU || DU.talk !== T) return;
+    T.shown = k + 1; T.busy = false;
+    talkRender();
+    talkUpdate(DU.view);
+  }, TALK_FLASH);
+}
+
+// A poll answer: the friend picked the word I describe, or stopped the game.
+function talkUpdate(v){
+  const T = DU && DU.talk;
+  if (!T || T.busy || DU.screen !== 'talk' || DU.finished) return;
+  const p = talkPicks(v, T.mine, talkTheirs())[T.shown], them = duelThem(v) || { name: 'Your friend' };
+  if (p) return talkFlash(T.shown, p);
+  if (DU.them && DU.them.f) { toast(them.name + ' stopped the game. Your words are saved.'); return talkFinish(); }
+  const st = document.getElementById('tstatus');
+  if (st) st.textContent = v.themOnline === false ? them.name + ' seems offline…' : them.name + ' picks the word on the other phone';
+}
+
+function talkClock(){
+  clearInterval(duelTick);
+  duelTick = setInterval(() => {
+    if (!DU || !DU.talk || DU.screen !== 'talk') return clearInterval(duelTick);
+    const el = document.getElementById('dtimer');
+    if (el) el.innerHTML = icon('timer') + ' ' + duelClockText();
+    if (Date.now() - DU.localStart >= DU.view.maxMs) { clearInterval(duelTick); toast('Time is up!'); talkFinish(); }
+  }, 250);
+}
+
+// All words played, the time is up, or someone stopped: save my picks (the words I listened to).
+function talkFinish(){
+  if (!DU || DU.finished || !DU.talk) return;
+  clearInterval(duelTick);
+  const T = DU.talk, v = DU.view, mine = T.mine.slice(0, TALK_ITEMS / 2);
+  const heard = T.items.filter((_, k) => talkDescriber(k) !== v.role), missed = [], right = [];
+  mine.forEach((x, j) => { if (heard[j]) (x[0] === '1' ? right : missed).push(heard[j].id); });
+  const team = talkPicks(v, T.mine, talkTheirs()).filter(p => p.ok).length;
+  const R = { correct: mine.filter(x => x[0] === '1').length, total: mine.length, ms: Math.min(v.maxMs, Math.round(Date.now() - DU.localStart)),
+    track: mine.join(','), missed, right };
+  Object.assign(DU, { finished: true, score: R.correct, answered: R.total, lastMs: R.ms, screen: 'saving', team });
+  store.del(talkKey(v.code));
+  saveDuel(R, team + '/' + TALK_ITEMS);
+}
+
+function talkTeamCard(){
+  const them = duelThem(DU.view), me = meAsPlayer();
+  return `<div class="glass panel" id="race" style="padding:14px"><div class="team">
+    <div class="tm">${petPic(me, 'happy', 'tmpet')}<b>You</b></div><div class="feed">${icon('chats-circle')} Talk &amp; Tap</div>
+    <div class="tm">${petPic(them, 'happy', 'tmpet flip')}<b>${esc(them ? them.name : 'Friend')}</b></div></div></div>`;
+}
+
+// Each word of a finished game: who described it, who picked it, and the pick (from both kids' tracks).
+function talkRows(B, v){
+  const split = s => String(s || '').split(',').filter(String), tracks = { host: split(v.host.track), guest: split(v.guest && v.guest.track) };
+  return talkItems(B, v).map((it, k) => {
+    const d = talkDescriber(k), l = d === 'host' ? 'guest' : 'host', x = tracks[l][k >> 1], p = x ? x.split(':') : null;
+    return { it, describer: v[d], listener: v[l], pick: p ? { ok: p[0] === '1', o: Number(p[2]) } : null };
+  });
+}
+
+function talkLearn(rows, me){
+  const mine = r => r && r.name === me.name;
+  const missed = rows.filter(r => r.pick && !r.pick.ok && mine(r.listener)).length;
+  const list = rows.map(r => {
+    const who = mine(r.listener) ? 'You' : esc(r.listener ? r.listener.name : 'Friend'), by = mine(r.describer) ? 'you' : esc(r.describer ? r.describer.name : 'your friend');
+    const res = !r.pick ? 'not played' : r.pick.ok ? who + ' got it' : who + ' picked ' + esc(r.it.options[r.pick.o] || '?');
+    return `<div class="lrow"><span class="x ${!r.pick ? 'skip' : r.pick.ok ? 'good' : ''}">${icon(!r.pick ? 'minus' : r.pick.ok ? 'check' : 'x')}</span>
+      ${r.it.pic ? `<img class="lpic" src="${picSrc(r.it.word)}" alt="">` : ''}
+      <div class="lt"><b>${esc(r.it.word)}</b>${r.it.def ? ': ' + esc(r.it.def) : ''}<br><small>Described by ${by} · ${res}</small></div>
+      <button class="btn btn-glass icon-btn tsay" data-say="${esc(r.it.word)}" aria-label="Hear it">${icon('speaker-high')}</button></div>`;
+  }).join('');
+  return `<div class="glass panel" style="padding:16px">
+    <div class="row-flex between"><h2>Learn together</h2>${missed ? `<span class="chip">${missed} to review</span>` : ''}</div>
+    <div class="sub mt-s" style="font-size:12.5px">Say each word out loud together. Tap ${icon('speaker-high')} to hear it.</div>
+    <div class="stack mt-s" style="gap:8px">${list}</div>
+    ${missed ? '<div class="sub mt-s" style="font-size:12px">The words you missed come back in Match it.</div>' : ''}</div>`;
+}
+
+// One word read aloud by the phone's English voice.
+function sayWord(text){
+  if (!('speechSynthesis' in window)) return toast('No sound on this device');
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = voice ? voice.lang : 'en-GB';
+    if (voice) u.voice = voice;
+    u.rate = .9;
+    speechSynthesis.speak(u);
+  } catch(e){}
 }
 
 // ---------- Tug of War (one phone, two players) ----------

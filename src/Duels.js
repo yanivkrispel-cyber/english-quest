@@ -1,5 +1,6 @@
-// Play together: Word Duel (live), Challenge (one plays now, the other later) and Boss Battle (both against a
-// boss), plus the saves of Tug of War (one phone). Specs: specs/play-together.md, specs/boss-tug.md
+// Play together: Word Duel (live), Challenge (one plays now, the other later), Boss Battle (both against a
+// boss) and Talk & Tap (one describes, the other picks), plus the saves of Tug of War (one phone).
+// Specs: specs/play-together.md, specs/boss-tug.md, specs/talk-tap.md
 // Only functions and literal constants here: files load in one global scope, so nothing at the top
 // level may use another file's names.
 
@@ -7,11 +8,15 @@ var DUEL = {
   items: 7, maxMs: 180000, countdownMs: 6000, inviteMin: 5, waitMin: 5, challengeHours: 24,
   winXp: 5, togetherXp: 10, rightXp: 2, onlineMs: 90000, cacheSec: 1800, leftGraceMs: 20000
 };
-var DUEL_MODES = ['live', 'challenge', 'boss'];
+var DUEL_MODES = ['live', 'challenge', 'boss', 'talk'];
 // Boss Battle: hit points and damage rules (sent with the duel, so the app shows the same numbers live).
 var BOSS = { hp: 240, items: 12, hit: 12, fast: 6, fastMs: 6000, heal: 5, double: 10, doubleMs: 3000, winXp: 10 };
+// Talk & Tap: 8 words and the roles swap every word, so each kid picks 4. A pick is `1:4210:2` (right or
+// wrong, ms since the start, the option tapped). 6 right words or more is a team win.
+var TALK = { items: 8, picks: 4, maxMs: 360000, winAt: 6, winXp: 10 };
+var TALK_PICK = /^[01]:\d{1,6}:[0-3]$/;
 // Games rows of the games kids play together (the together bonus is for the first of them in a day).
-var DUEL_TOGETHER = ['duel', 'boss', 'tug'];
+var DUEL_TOGETHER = ['duel', 'boss', 'tug', 'talk'];
 var TUG = { maxAnswers: 40 };
 var DUEL_REACTIONS = 6;
 var DUEL_LETTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
@@ -149,15 +154,17 @@ function apiDuelPoll(name, pin, code, progress) {
   var d = duelGet(code);
   var role = duelRole(d, kid.Name);
   if (!role) throw new Error('This duel is not yours');
+  var p = null, most = Math.max(DUEL.items, BOSS.items, TALK.items);
   if (progress && typeof progress === 'object') {
-    var p = {
-      n: duelInt(progress.n, 0, DUEL.items), s: duelInt(progress.s, 0, DUEL.items), ms: duelInt(progress.ms, 0, DUEL.maxMs + 60000),
+    p = {
+      n: duelInt(progress.n, 0, most), s: duelInt(progress.s, 0, most), ms: duelInt(progress.ms, 0, duelMaxMs(d) + 60000),
       f: !!progress.f, r: progress.r >= 0 && progress.r < DUEL_REACTIONS ? duelInt(progress.r, 0, DUEL_REACTIONS - 1) : -1,
       rt: duelInt(progress.rt, 0, 1e15), dmg: duelInt(progress.dmg, -2000, 2000), hint: duelInt(progress.hint, 0, 1e15)
     };
+    if (d.Mode === 'talk') p.p = talkMerge(progress.p, (duelProgress(d.Id, kid.Name) || {}).p);
     CacheService.getScriptCache().put('DP:' + d.Id + ':' + kid.Name, JSON.stringify(p), DUEL.cacheSec);
   }
-  if ((d.State === 'playing' && now > Number(d.Start) + DUEL.maxMs + DUEL.leftGraceMs) ||
+  if ((d.State === 'playing' && now > Number(d.Start) + duelMaxMs(d) + DUEL.leftGraceMs) ||
       ((d.State === 'invited' || d.State === 'solo' || d.State === 'challenge') && now > Number(d.Expires))) {
     var lock = LockService.getScriptLock();
     lock.waitLock(20000);
@@ -172,6 +179,8 @@ function apiDuelPoll(name, pin, code, progress) {
   var out = duelView(d, kid.Name);
   out.them = other ? duelProgress(d.Id, other) : null;
   out.themOnline = other ? duelOnline([other])[other] : false;
+  // A talk game's phone that reloaded takes its picks back from here.
+  if (d.Mode === 'talk') out.mine = p || duelProgress(d.Id, kid.Name);
   return out;
 }
 
@@ -200,9 +209,10 @@ function apiDuelFinish(name, pin, code, result) {
       closed = true;
     }
     duelSave(d);
-    xp = duelXp(kid, d, role, r);
+    xp = d.Mode === 'talk' ? talkXp(kid, d, role, r) : duelXp(kid, d, role, r);
     var p = duelProgress(d.Id, kid.Name) || {};
     p.n = r.total; p.s = r.correct; p.ms = r.ms; p.f = true;
+    if (d.Mode === 'talk') p.p = r.track;
     CacheService.getScriptCache().put('DP:' + d.Id + ':' + kid.Name, JSON.stringify(p), DUEL.cacheSec);
   } finally {
     lock.releaseLock();
@@ -286,7 +296,7 @@ function duelExpire(d, now) {
 // A live duel past its time: whoever finished wins; nobody finished -> expired.
 function duelTimeout(d, now) {
   var h = duelHas(d, 'Host'), g = duelHas(d, 'Guest');
-  if ((h && g) || (d.Mode === 'boss' && (h || g))) duelClose(d, now);
+  if ((h && g) || ((d.Mode === 'boss' || d.Mode === 'talk') && (h || g))) duelClose(d, now);
   else if (h || g) { d.State = 'done'; d.Winner = h ? d.Host : d.Guest; d.Ended = new Date(now).toISOString(); duelBonus(d); }
   else { d.State = 'expired'; d.Ended = new Date(now).toISOString(); }
   duelSave(d);
@@ -295,6 +305,7 @@ function duelTimeout(d, now) {
 function duelClose(d, now) {
   var hs = Number(d.HostScore), gs = Number(d.GuestScore), hm = Number(d.HostMs), gm = Number(d.GuestMs);
   if (d.Mode === 'boss') d.Winner = bossDamage(d).total >= BOSS.hp ? 'team' : 'boss';
+  else if (d.Mode === 'talk') d.Winner = talkTeam(d) >= TALK.winAt ? 'team' : 'none';
   else d.Winner = hs > gs ? d.Host : gs > hs ? d.Guest : hm < gm ? d.Host : gm < hm ? d.Guest : 'draw';
   d.State = 'done';
   d.Ended = new Date(now).toISOString();
@@ -304,6 +315,7 @@ function duelClose(d, now) {
 // The winner's +5 is a separate zero-question Games row (each player's row is written when she
 // finishes, before the winner is known). It still counts inside the daily cap.
 function duelBonus(d) {
+  if (d.Mode === 'talk') return;
   if (d.Mode === 'boss') {
     if (d.Winner !== 'team') return;
     [d.Host, d.Guest].forEach(function (n) { var k = n && findGirl(n); if (k) duelAddXp(k, BOSS.winXp, 0, 0, '', k.Level, 'boss'); });
@@ -336,16 +348,17 @@ function duelAddXp(kid, xp, correct, total, missed, level, game) {
   return xp;
 }
 
-// A Word Duel result has all 7 questions (unanswered as '-'); a boss battle has the ones answered (0-12).
+// A Word Duel result has all 7 questions (unanswered as '-'); a boss battle has the ones answered (0-12);
+// a Talk & Tap result has the kid's own picks (0-4).
 function duelResult(res, mode) {
   res = res || {};
-  var boss = mode === 'boss', max = boss ? BOSS.items : DUEL.items;
+  var boss = mode === 'boss', talk = mode === 'talk', max = talk ? TALK.picks : boss ? BOSS.items : DUEL.items;
   var total = duelInt(res.total, 0, max), correct = duelInt(res.correct, 0, total);
-  if (!boss && total !== DUEL.items) throw new Error('Invalid result');
-  var track = String(res.track || '').split(',').filter(String), entry = boss ? /^[01]:\d{1,6}$/ : /^[01-]:\d{1,6}$/;
+  if (!boss && !talk && total !== DUEL.items) throw new Error('Invalid result');
+  var track = String(res.track || '').split(',').filter(String), entry = talk ? TALK_PICK : boss ? /^[01]:\d{1,6}$/ : /^[01-]:\d{1,6}$/;
   if (track.length !== total || !track.every(function (x) { return entry.test(x); })) throw new Error('Invalid result');
   if (track.filter(function (x) { return x[0] === '1'; }).length !== correct) throw new Error('Invalid result');
-  return { correct: correct, total: total, ms: duelInt(res.ms, 0, DUEL.maxMs + 60000), track: track.join(','),
+  return { correct: correct, total: total, ms: duelInt(res.ms, 0, (talk ? TALK.maxMs : DUEL.maxMs) + 60000), track: track.join(','),
     missed: cleanIds(res.missed, max), right: cleanIds(res.right, max) };
 }
 
@@ -371,6 +384,38 @@ function bossDamage(d) {
     dmg[e.who] += hit;
   });
   return { host: dmg.Host, guest: dmg.Guest, total: dmg.Host + dmg.Guest };
+}
+
+// ---------- Talk & Tap ----------
+
+// A kid's picks (validated). A phone that reloaded may send fewer: a shorter list never replaces a longer
+// one that it is the start of.
+function talkMerge(s, old) {
+  var list = talkList(s), prev = talkList(old);
+  if (prev.length > list.length && prev.slice(0, list.length).join(',') === list.join(',')) return prev.join(',');
+  return list.join(',');
+}
+
+function talkList(s) {
+  var list = String(s || '').split(',').filter(String);
+  return list.length <= TALK.picks && list.every(function (x) { return TALK_PICK.test(x); }) ? list : [];
+}
+
+function talkTeam(d) { return (Number(d.HostScore) || 0) + (Number(d.GuestScore) || 0); }
+
+// Every word the team got right counts for both kids: one described it, the other picked it. The
+// partner's picks come from her saved result, or from her last poll if she has not finished yet. The
+// together bonus needs a pick of her own (stopping at once and starting again earns nothing extra).
+function talkXp(kid, d, role, r) {
+  var t = today(), P = role === 'host' ? 'Guest' : 'Host';
+  var mate = duelHas(d, P) ? Number(d[P + 'Score']) || 0
+    : talkList((duelProgress(d.Id, d[P]) || {}).p).filter(function (x) { return x[0] === '1'; }).length;
+  var team = r.correct + mate;
+  var together = r.total > 0 && !readTableUncached('Games').some(function (g) { return g.Girl === kid.Name && g.Date === t && DUEL_TOGETHER.indexOf(g.Game) >= 0 && Number(g.Total) > 0; });
+  var xp = team * DUEL.rightXp + (together ? DUEL.togetherXp : 0) + (team >= TALK.winAt ? TALK.winXp : 0);
+  var got = duelAddXp(kid, xp, r.correct, r.total, r.missed.join(' '), role === 'host' ? d.HostLevel : d.GuestLevel, 'talk');
+  updateReview(kid.Name, r.missed, r.right, t);
+  return got;
 }
 
 // ---------- Tug of War (one phone) ----------
@@ -430,6 +475,9 @@ function duelHome(kid) {
     challenges: withMe.filter(function (r) { return r.State === 'challenge' && r.Guest === name && live(r); }).map(function (r) { return duelView(r, name); }),
     waiting: withMe.filter(function (r) { return r.Host === name && (r.State === 'challenge' || r.State === 'invited') && live(r); }).map(function (r) { return duelView(r, name); }),
     results: withMe.filter(function (r) { return r.State === 'done' && r.Date >= addDays(t, -7); }).slice(-5).reverse().map(function (r) { return duelView(r, name); }),
+    // A live game still running that she has not finished (after a reload or a call): the app offers to go back.
+    playing: withMe.filter(function (r) { return r.State === 'playing' && Number(r.Start) + duelMaxMs(r) > now && !duelHas(r, r.Host === name ? 'Host' : 'Guest'); })
+      .map(function (r) { return duelView(r, name); }),
     helper: duelHelperStars(name),
     duos: duoHome(kid),
     now: now
@@ -443,7 +491,8 @@ function duelView(d, me) {
   var face = function (k) { var p = k ? petInfo(k) : null; return p ? { id: p.id, stage: p.stage } : null; };
   var done = d.State === 'done';
   var v = {
-    code: d.Id, mode: d.Mode, state: d.State, role: role, seed: Number(d.Seed), items: d.Mode === 'boss' ? BOSS.items : DUEL.items, maxMs: DUEL.maxMs,
+    code: d.Id, mode: d.Mode, state: d.State, role: role, seed: Number(d.Seed),
+    items: d.Mode === 'boss' ? BOSS.items : d.Mode === 'talk' ? TALK.items : DUEL.items, maxMs: duelMaxMs(d),
     start: d.Start ? Number(d.Start) : null, expires: Number(d.Expires) || null, reply: d.Reply || '', now: Date.now(), date: d.Date,
     host: { name: d.Host, level: d.HostLevel, label: LEVEL_LABEL[d.HostLevel] || '', color: host ? host.Color : '', pet: face(host),
       score: duelHas(d, 'Host') ? Number(d.HostScore) : null, ms: duelHas(d, 'Host') ? Number(d.HostMs) : null },
@@ -455,6 +504,7 @@ function duelView(d, me) {
   if (duelHas(d, 'Guest') && (done || role === 'guest')) v.guest.track = String(d.GuestTrack);
   if (!guest && !d.Guest && d.State !== 'done') v.open = true;
   if (d.Mode === 'boss') { v.boss = BOSS; if (done) v.damage = bossDamage(d); }
+  if (d.Mode === 'talk') { v.talk = TALK; if (done) v.team = talkTeam(d); }
   return v;
 }
 
@@ -544,12 +594,14 @@ function duelSeen(name) {
 
 function duelRole(d, name) { return d.Host === name ? 'host' : d.Guest === name ? 'guest' : null; }
 function duelHas(d, P) { return d[P + 'Score'] !== '' && d[P + 'Score'] !== undefined && d[P + 'Score'] !== null; }
+function duelMaxMs(d) { return d.Mode === 'talk' ? TALK.maxMs : DUEL.maxMs; }
 function duelInt(v, min, max) { v = Math.round(Number(v)); return isNaN(v) ? min : Math.max(min, Math.min(max, v)); }
 
 // ---------- Notifications ----------
 
 function duelMessage(kind, d) {
   var url = './?duel=' + d.Id, score = function (s, ms) { return s + '/' + DUEL.items + ' in ' + Math.round(ms / 1000) + ' s'; };
+  if (kind === 'invite' && d.Mode === 'talk') return { title: d.Host + ' invites you to Talk & Tap', body: 'Describe words in English, together. Tap to join!', url: url, tag: 'eq-duel' };
   if (kind === 'invite' && d.Mode === 'boss') return { title: d.Host + ' invites you to a Boss Battle', body: 'Team up against the Word Thief. Tap to join!', url: url, tag: 'eq-duel' };
   if (kind === 'invite') return { title: d.Host + ' invites you to a Word Duel', body: DUEL.items + ' questions at your level. Tap to join!', url: url, tag: 'eq-duel' };
   if (kind === 'challenge') return { title: d.Host + ' challenged you!', body: 'Beat ' + score(d.HostScore, d.HostMs) + '. You have ' + DUEL.challengeHours + ' hours.', url: url, tag: 'eq-duel' };

@@ -52,6 +52,27 @@ LEVELS.forEach(lv => {
   counts[lv] = ['match', 'listen', 'build', 'spot'].map(g => g + ' ' + (B[g][lv] || []).length).join(', ');
 });
 
+// Talk & Tap: Match it words of the level (A1 also the picture words), two don't-say words each, at least
+// 4 words per topic for the options, starters for every topic.
+LEVELS.forEach(lv => {
+  const T = (B.talk || {})[lv];
+  if (!T) return err('talk/' + lv, 'missing');
+  const known = new Set((B.match[lv] || []).map(m => m[0]).concat(lv === 'a1' ? picWords : [])), seen = new Set();
+  Object.entries(T).forEach(([topic, list]) => {
+    if (!(B.starters || {})[topic] || B.starters[topic].length < 2) err('talk/' + lv + '/' + topic, 'no starters for this topic');
+    if (list.length < 4) err('talk/' + lv + '/' + topic, 'a topic needs at least 4 words for the options');
+    list.forEach(x => {
+      const where = 'talk/' + lv + '/' + topic + '/' + x[0];
+      if (x.length !== 3 || !x[1] || !x[2]) return err(where, 'needs a word and two words not to say');
+      if (!known.has(x[0])) err(where, 'not a Match it word of this level');
+      if (seen.has(x[0])) err(where, 'duplicate');
+      seen.add(x[0]);
+      if (x[1] === x[2] || x.slice(1).some(t => t.toLowerCase() === x[0].toLowerCase())) err(where, 'the words not to say must differ from the word and from each other');
+    });
+  });
+  counts[lv] += ', talk ' + seen.size;
+});
+
 console.log('pictures:', picWords.length);
 LEVELS.forEach(lv => console.log(lv + ':', counts[lv]));
 if (errors.length) { console.log('\n' + errors.join('\n')); process.exit(1); }
