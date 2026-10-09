@@ -205,6 +205,7 @@ function apiDuelFinish(name, pin, code, result) {
     if (opened && d.Guest) pushToKid(d.Guest, duelMessage('challenge', d));
     if (closed && d.Mode === 'challenge') pushToKid(d.Host, duelMessage('played', d));
   } catch (e) { console.error(e); }
+  try { duoAfterPractice(kid.Name); } catch (e) { console.error(e); }
   var out = duelView(d, kid.Name);
   out.xp = xp;
   out.dash = buildDashboard(findGirl(kid.Name));
@@ -356,6 +357,7 @@ function duelHome(kid) {
     waiting: withMe.filter(function (r) { return r.Host === name && (r.State === 'challenge' || r.State === 'invited') && live(r); }).map(function (r) { return duelView(r, name); }),
     results: withMe.filter(function (r) { return r.State === 'done' && r.Date >= addDays(t, -7); }).slice(-5).reverse().map(function (r) { return duelView(r, name); }),
     helper: duelHelperStars(name),
+    duos: duoHome(kid),
     now: now
   };
 }

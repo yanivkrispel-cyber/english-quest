@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v9';
+var SETUP_VERSION = 'v10';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
@@ -56,7 +56,10 @@ var HEADERS = {
   ParentPush: ['Who', 'Endpoint', 'Created', 'Agent', 'Instant'],
   // Play together (Duels.js): one row per duel or challenge.
   Duels: ['Id', 'Created', 'Date', 'Mode', 'State', 'Host', 'Guest', 'HostLevel', 'GuestLevel', 'Seed', 'Start', 'Expires', 'Reply',
-    'HostScore', 'HostMs', 'HostTrack', 'GuestScore', 'GuestMs', 'GuestTrack', 'Winner', 'Ended', 'Helped']
+    'HostScore', 'HostMs', 'HostTrack', 'GuestScore', 'GuestMs', 'GuestTrack', 'Winner', 'Ended', 'Helped'],
+  // Duo Streak and Team Quest (Duos.js): pairs of kids, and one-off XP outside the daily game cap.
+  Duos: ['Id', 'Created', 'A', 'B', 'State', 'Since', 'Ended', 'Nudges', 'Milestones', 'QuestDone'],
+  Bonus: ['Timestamp', 'Girl', 'Date', 'Kind', 'XP', 'Ref']
 };
 
 var WORDS = [
@@ -110,7 +113,8 @@ function api() {
   apiParentPushSubscribe: apiParentPushSubscribe, apiParentPushPrefs: apiParentPushPrefs, apiParentPushTest: apiParentPushTest,
   apiGameResult: apiGameResult, apiSetPet: apiSetPet, apiGateResult: apiGateResult,
   apiDuelHome: apiDuelHome, apiDuelInvite: apiDuelInvite, apiDuelJoin: apiDuelJoin, apiDuelReply: apiDuelReply,
-  apiDuelCancel: apiDuelCancel, apiDuelSolo: apiDuelSolo, apiDuelPoll: apiDuelPoll, apiDuelFinish: apiDuelFinish, apiDuelHelped: apiDuelHelped
+  apiDuelCancel: apiDuelCancel, apiDuelSolo: apiDuelSolo, apiDuelPoll: apiDuelPoll, apiDuelFinish: apiDuelFinish, apiDuelHelped: apiDuelHelped,
+  apiDuoInvite: apiDuoInvite, apiDuoAnswer: apiDuoAnswer, apiDuoNudge: apiDuoNudge, apiDuoEnd: apiDuoEnd
   };
 }
 
@@ -187,7 +191,7 @@ function apiPublic(groupId) {
 // Called when a kid taps her name, while she types her PIN: fills the cache.
 function apiWarm() {
   ensureSetup();
-  ['Girls', 'Assignments', 'Log', 'Rewards', 'Groups', 'Games', 'Review', 'Gates'].forEach(readTable);
+  ['Girls', 'Assignments', 'Log', 'Rewards', 'Groups', 'Games', 'Review', 'Gates', 'Duels', 'Duos', 'Bonus'].forEach(readTable);
   return true;
 }
 
@@ -243,6 +247,7 @@ function apiSubmit(name, pin, date, correct, total, levelResult) {
     lock.releaseLock();
   }
   try { notifyCompletion(kid, entry); } catch (e) { console.error(e); }
+  try { duoAfterPractice(kid.Name); } catch (e) { console.error(e); }
   var dash = buildDashboard(findGirl(kid.Name));
   dash.justEarned = dash.week.filter(function (d) { return d.date === date; })[0].points;
   return dash;
@@ -276,6 +281,7 @@ function apiGameResult(name, pin, game, level, correct, total, missed, right) {
   } finally {
     lock.releaseLock();
   }
+  try { duoAfterPractice(kid.Name); } catch (e) { console.error(e); }
   var dash = buildDashboard(findGirl(kid.Name));
   dash.gameXp = xp;
   return dash;
@@ -304,6 +310,7 @@ function petInfo(kid) {
   readTable('Log').forEach(function (l) { if (l.Girl === kid.Name && String(l.DoneOn) >= since) xp += Number(l.Points) || 0; });
   readTable('Games').forEach(function (g) { if (g.Girl === kid.Name) xp += Number(g.XP) || 0; });
   readTable('Gates').forEach(function (g) { if (g.Girl === kid.Name) xp += Number(g.XP) || 0; });
+  readTable('Bonus').forEach(function (b) { if (b.Girl === kid.Name) xp += Number(b.XP) || 0; });
   var stage = 1;
   PET_STAGES.forEach(function (min, i) { if (xp >= min) stage = i + 1; });
   return { id: kid.Pet, name: kid.PetName || '', xp: xp, stage: stage, from: PET_STAGES[stage - 1], to: PET_STAGES[stage] || null, since: since };
@@ -896,7 +903,7 @@ function sheet(name) { return SpreadsheetApp.getActive().getSheetByName(name); }
 // Two cache levels: TABLES lives for one request; CacheService survives across requests
 // (sheet reads cost 0.3-1s each). Manual edits in the sheet clear it via onEdit.
 var TABLES = {};
-var CACHE_TTL = { Girls: 21600, Rewards: 21600, Settings: 21600, Groups: 21600, Push: 21600, ParentPush: 21600, Assignments: 900, Log: 900, Games: 900, Review: 900, Gates: 900, Duels: 900 };
+var CACHE_TTL = { Girls: 21600, Rewards: 21600, Settings: 21600, Groups: 21600, Push: 21600, ParentPush: 21600, Assignments: 900, Log: 900, Games: 900, Review: 900, Gates: 900, Duels: 900, Duos: 900, Bonus: 900 };
 var CHUNK = 30000;
 
 function readTable(name) {
