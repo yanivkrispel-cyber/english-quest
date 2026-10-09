@@ -495,6 +495,11 @@ body.splashing #app{opacity:0}
 .podium .duel-av.big{width:110px;height:110px;bottom:10px;left:22px}
 .podium .duel-av.small{width:76px;height:76px;bottom:8px;font-size:30px}
 .podium .crown{position:absolute;left:58px;top:-12px;font-size:32px;color:#f59e0b;filter:drop-shadow(0 4px 6px rgba(217,119,6,.45))}
+.podium.team{width:250px}
+.podium.team .big{width:118px;height:118px;left:0}
+.podium.team .big.flip{left:auto;right:0}
+.podium.team .crown{left:50%;margin-left:-16px;top:-6px}
+.score2 small{display:block;font-size:12px;font-weight:700;letter-spacing:0;color:var(--muted);margin-top:4px}
 .score2{font-size:44px;font-weight:800;letter-spacing:-1px;line-height:1}
 .score2 span{color:var(--faint);margin:0 8px}
 .lrow{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:16px;background:rgba(255,255,255,.62);text-align:left}
@@ -503,6 +508,61 @@ body.splashing #app{opacity:0}
 .lrow .lt{flex:1;min-width:0;font-size:13.5px;line-height:1.35}
 .lrow .lt b{color:var(--ink)}
 .lrow .btn-sm{height:32px;font-size:12.5px;padding:0 12px;flex:none}
+/* Boss Battle */
+.bossbox{padding:12px 14px;display:grid;gap:7px;border-radius:28px;border:1px solid rgba(255,255,255,.85);
+  background:linear-gradient(160deg,rgba(237,233,254,.92),rgba(251,207,232,.66));box-shadow:0 22px 40px -22px rgba(124,58,237,.45),var(--inner)}
+.bossbox > .row-flex b{font-size:14px}
+.bossbox > .row-flex small{font-size:12px;font-weight:800;color:#7c3aed;font-variant-numeric:tabular-nums}
+.bossbar{height:12px;border-radius:9px;background:rgba(255,255,255,.75);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.08)}
+.bossbar i{display:block;height:100%;width:100%;border-radius:inherit;background:linear-gradient(90deg,#a855f7,#f472b6);transition:width .6s ease}
+.bossstage{position:relative;height:126px;display:grid;place-items:center}
+.boss{width:138px;height:122px;overflow:visible}
+.boss.hit{animation:bosshit .45s ease}
+@keyframes bosshit{25%{transform:translateX(7px) rotate(4deg)}55%{transform:translateX(-5px) rotate(-3deg)}}
+.bossstage .dbl{position:absolute;top:2px;left:0}
+.bpop{position:absolute;right:18px;top:24px;font-weight:800;font-size:26px;color:#7c3aed;text-shadow:0 2px 0 #fff;opacity:0;pointer-events:none}
+.bpop.heal{color:#16a34a}
+.bpop.go{animation:bpop 1s ease-out}
+@keyframes bpop{0%{opacity:0;transform:translateY(10px) scale(.8)}20%{opacity:1;transform:translateY(0) scale(1.15)}70%{opacity:1;transform:translateY(-14px)}100%{opacity:0;transform:translateY(-22px)}}
+.team{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:end;gap:6px}
+.tm{display:grid;justify-items:center;font-size:12px}
+.tm b{font-size:12px}
+.tm .tmpet{width:56px;height:56px;object-fit:contain}
+.tm .duel-av.tmpet{width:44px;height:44px;font-size:18px}
+.feed{align-self:center;text-align:center;font-size:12px;font-weight:700;color:#7c3aed;background:rgba(255,255,255,.75);border-radius:999px;padding:5px 8px}
+.assist{display:flex;align-items:center;gap:11px;padding:10px 12px}
+.opt.gone{opacity:.25;text-decoration:line-through}
+/* Tug of War */
+.tugscreen{position:fixed;inset:0;z-index:30;display:grid;grid-template-rows:minmax(0,1fr) auto minmax(0,1fr);gap:6px;max-width:480px;margin:0 auto;
+  padding:calc(10px + env(safe-area-inset-top)) 12px calc(10px + env(safe-area-inset-bottom))}
+.tughalf{display:flex;flex-direction:column;justify-content:center;gap:8px;position:relative;min-height:0}
+.tughalf.top{transform:rotate(180deg)}
+.tughalf .qcard{padding:12px}
+.tughalf .qbig{font-size:17px}
+.tughalf .qpic{width:96px;height:96px}
+.tughalf .opt{min-height:46px;font-size:15px}
+@media (max-height:720px){.tughalf .qpic{width:70px;height:70px}.tughalf .qcard{padding:9px 12px}.tughalf .opt{min-height:40px}}
+.tfreeze{position:absolute;inset:0;z-index:2;border-radius:24px;display:grid;place-items:center;align-content:center;gap:6px;text-align:center;padding:16px;
+  background:rgba(224,242,254,.88);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);color:#0369a1;font-weight:700}
+.tfreeze b{font-size:20px;display:flex;align-items:center;gap:6px}
+.tfreeze span{font-size:15px;color:#1c1e2b}
+.tugmid{position:relative;height:clamp(110px,calc(100vh - 620px),240px);height:clamp(110px,calc(100dvh - 620px),240px);display:grid;grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr);align-items:center}
+.rope{position:relative;height:100%}
+.rope::before{content:'';position:absolute;left:50%;top:-4px;bottom:-4px;width:10px;margin-left:-5px;border-radius:6px;
+  background:repeating-linear-gradient(45deg,#e0b07a 0 6px,#b77c3f 6px 12px);box-shadow:0 4px 10px -4px rgba(0,0,0,.4)}
+.mk{position:absolute;left:14px;right:14px;height:2px;border-radius:2px;background:rgba(99,102,241,.3)}
+.mk.mid{left:4px;right:4px;height:3px;background:var(--primary)}
+.mk.end0,.mk.end1{left:6px;right:6px;height:4px}
+.mk.end0{background:#6366f1}
+.mk.end1{background:#f59e0b}
+.knot{position:absolute;left:50%;top:50%;width:28px;height:28px;margin:-14px 0 0 -14px;border-radius:50%;transition:top .35s cubic-bezier(.3,1.5,.5,1);
+  background:radial-gradient(circle at 35% 30%,#fda4af,#e11d48);border:3px solid #fff;box-shadow:0 6px 12px -4px rgba(225,29,72,.7)}
+.tsc{display:grid;justify-items:center;gap:3px;font-weight:700;color:#3b3f55}
+.tsc b{font-size:24px;font-weight:800;color:var(--ink);line-height:1}
+.tsc.top{transform:rotate(180deg)}
+.tquit{position:absolute;right:0;top:50%;margin-top:-21px;width:36px;height:36px;font-size:15px}
+.ttime{position:absolute;left:0;top:50%;margin-top:-13px}
+@media (prefers-reduced-motion:reduce){.boss.hit,.bpop.go{animation:none}.knot{transition:none}}
 /* Duo Streak and Team Quest */
 .duocard{padding:16px;border-radius:30px;display:grid;gap:12px;border:1px solid rgba(255,255,255,.82);
   background:linear-gradient(155deg,rgba(254,215,170,.88),rgba(251,207,232,.72) 52%,rgba(221,214,254,.85));box-shadow:0 26px 50px -22px rgba(234,88,12,.4),var(--inner)}
@@ -1013,9 +1073,10 @@ function renderItem(){
     <div class="react">${dash.pet ? `<img class="gpet" id="gpet" src="${petSrc(dash.pet.id, dash.pet.stage, 'thinking')}" alt="">` : ''}
       <div class="bubble" id="fb">${hint}</div></div>
     <div id="explain"></div><div style="flex:1"></div><div id="gnext"></div>
-    ${G.duel && DU && DU.live ? reactionsBar() : ''}
+    ${G.duel && DU && DU.boss ? bossAssist() : ''}${G.duel && DU && DU.live ? reactionsBar() : ''}
   </div>`;
   document.getElementById('gs').onclick = onGameClick;
+  if (G.duel) duelAfterRender();
   if (game === 'listen') setTimeout(() => sayIt(false), 300);
 }
 
@@ -1023,6 +1084,7 @@ function onGameClick(e){
   const t = e.target.closest('button');
   if (!t || !G) return;
   if (t.dataset.react != null) return sendReaction(Number(t.dataset.react));
+  if (t.dataset.hint) return bossSendHint();
   if (t.id === 'gquit') {
     // Leaving the gate challenge or a duel halfway takes a second tap; nothing is saved then.
     if ((G.gate || G.duel) && !(G.quitAt > Date.now() - 3000)) { G.quitAt = Date.now(); return toast(G.duel ? 'Tap again to leave the duel.' : 'Tap again to leave. This try won\'t count.'); }
@@ -1212,8 +1274,9 @@ function rng32(a){
 function hashStr(s){ let h = 2166136261; for (const c of String(s)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
 
 // Same seed and level: the same questions in the same order, with the same options.
-function duelItems(B, seed, level){
-  const order = shuffle(DUEL_GAMES, rng32(seed)), rnd = rng32((seed ^ hashStr(level)) >>> 0), used = new Set();
+function duelItems(B, seed, level, count){
+  const n = count || DUEL_ITEMS;
+  const order = shuffle(DUEL_GAMES, rng32(seed)).concat(n > DUEL_GAMES.length ? shuffle(DUEL_GAMES, rng32(seed + 1)) : []).slice(0, n), rnd = rng32((seed ^ hashStr(level)) >>> 0), used = new Set();
   return order.map(game => {
     const pool = [].concat(...kidLevels(level).map(l => bankItems(B, game, l))).filter(x => !used.has(x.id));
     const x = pool[Math.floor(rnd() * pool.length)];
@@ -1254,7 +1317,7 @@ function duelBanner(){
   let body = '';
   if (inv) body = `<div class="today iri duel-banner">
       <div class="row-flex" style="gap:12px">${faceOf(inv.host)}<div style="min-width:0"><span class="label" style="color:#3b3f55">Invitation · ${duelLeft(inv)}</span>
-        <h2 style="margin-top:2px">${esc(inv.host.name)} invites you to a Word Duel</h2></div></div>
+        <h2 style="margin-top:2px">${esc(inv.host.name)} invites you to a ${modeTitle(inv)}</h2></div></div>
       <div class="btns"><button class="btn btn-glass" data-duelno="${inv.code}">Not now</button><button class="btn btn-teal" data-dueljoin="${inv.code}">${icon('play')} Join</button></div></div>`;
   else if (ch) body = `<div class="today iri duel-banner">
       <div class="row-flex" style="gap:12px">${faceOf(ch.host)}<div style="min-width:0"><span class="label" style="color:#3b3f55">Challenge · ${duelLeft(ch)}</span>
@@ -1282,10 +1345,10 @@ function togetherCard(){
   });
   h.results.slice(0, 3).forEach(v => {
     const me = duelMe(v), them = duelThem(v) || { name: '?' };
-    const res = v.winner === me.name ? 'You won' : v.winner === 'draw' ? 'A draw' : esc(them.name) + ' won';
+    const res = v.mode === 'boss' ? (v.winner === 'team' ? 'Victory!' : 'The boss got away') : v.winner === me.name ? 'You won' : v.winner === 'draw' ? 'A draw' : esc(them.name) + ' won';
     rows.push(`<button class="soft drow" data-duelopen="${v.code}">${faceOf(them)}
-      <span class="drow-main"><b>You ${me.score == null ? '–' : me.score} : ${them.score == null ? '–' : them.score} ${esc(them.name)}</b>
-      <small>${res} · ${v.mode === 'challenge' ? 'Challenge' : 'Word Duel'}</small></span>
+      <span class="drow-main"><b>${v.mode === 'boss' ? 'Boss Battle with ' + esc(them.name) : 'You ' + (me.score == null ? '–' : me.score) + ' : ' + (them.score == null ? '–' : them.score) + ' ' + esc(them.name)}</b>
+      <small>${res}${v.mode === 'boss' ? '' : ' · ' + modeTitle(v)}</small></span>
       <span class="chip purple" data-rematch="${v.code}">${icon('arrows-clockwise')} Rematch</span></button>`);
   });
   return `<div class="glass panel" id="together">
@@ -1295,6 +1358,8 @@ function togetherCard(){
     ${others.length ? '<div class="label mt">Your group</div>' : ''}
     <div class="friends ${others.length ? 'mt-s' : 'mt'}">${friends}<button class="fr" id="duelcode"><span class="addc">${icon('user-plus')}</span><b>Code</b><small>Join or share</small></button></div>
     ${others.length ? `<div class="label mt">Other groups</div><div class="friends mt-s">${others.map(tile).join('')}</div>` : ''}
+    <button class="soft drow mt" id="tugopen"><span class="tile t-write">${icon('device-mobile', 'duotone')}</span>
+      <span class="drow-main"><b>Tug of War</b><small>Two players, one phone, face to face</small></span>${icon('caret-right')}</button>
     ${rows.length ? `<div class="stack mt" style="gap:8px">${rows.join('')}</div>` : ''}
     ${h.helper ? `<div class="sub mt-s" style="font-size:12.5px">${icon('star', 'duotone')} ${plural(h.helper, 'Helper star')} for explaining to a friend</div>` : ''}
   </div>`;
@@ -1310,6 +1375,7 @@ function bindTogether(){
       if (t.dataset.rematch) return duelRematch(t.dataset.rematch);
       if (t.dataset.friend) return inviteSheet(t.dataset.friend);
       if (t.id === 'duelcode') return codeSheet();
+      if (t.id === 'tugopen') return tugSheet();
       if (t.dataset.duelopen) return openDuel(t.dataset.duelopen);
       if (t.dataset.dueljoin) return joinDuel(t.dataset.dueljoin);
       if (t.dataset.duelno) return replyDuel(t.dataset.duelno, 'no');
@@ -1334,7 +1400,7 @@ async function pollHome(){
     const fresh = h.incoming.find(v => !(duelsHome && duelsHome.incoming.some(x => x.code === v.code)));
     duelsHome = h;
     refreshTogether();
-    if (fresh) { toast(fresh.host.name + ' invites you to a Word Duel!'); try { navigator.vibrate && navigator.vibrate(120); } catch(e){} }
+    if (fresh) { toast(fresh.host.name + ' invites you to a ' + modeTitle(fresh) + '!'); try { navigator.vibrate && navigator.vibrate(120); } catch(e){} }
   } catch(e){}
 }
 function startHomePoll(){
@@ -1359,6 +1425,8 @@ function inviteSheet(name){
     <div class="stack mt" style="gap:10px">
       <button class="mrow" data-mode="live"><span class="tile t-grammar">${icon('sword', 'duotone')}</span>
         <span class="drow-main"><b>Word Duel</b><small>Race now · ${DUEL_ITEMS} questions each</small></span><span class="radio">${icon('check')}</span></button>
+      <button class="mrow" data-mode="boss"><span class="tile t-uoe">${icon('shield', 'duotone')}</span>
+        <span class="drow-main"><b>Boss Battle</b><small>Team up against the Word Thief</small></span><span class="radio">${icon('check')}</span></button>
       <button class="mrow" data-mode="challenge"><span class="tile t-read">${icon('ghost', 'duotone')}</span>
         <span class="drow-main"><b>Challenge</b><small>You play now, ${esc(name)} plays later</small></span><span class="radio">${icon('check')}</span></button>
       ${duoOption(name)}
@@ -1406,9 +1474,9 @@ function codeSheet(){
     <div class="label mt">Or make a code to send</div>
     <div class="stack mt-s" style="gap:10px">
       <button class="mrow" data-open="live"><span class="tile t-grammar">${icon('sword', 'duotone')}</span><span class="drow-main"><b>Word Duel code</b><small>Play together now</small></span>${icon('caret-right')}</button>
-      <button class="mrow" data-open="challenge"><span class="tile t-read">${icon('ghost', 'duotone')}</span><span class="drow-main"><b>Challenge code</b><small>You play now, she plays within 24 hours</small></span>${icon('caret-right')}</button>
+      <button class="mrow" data-open="challenge"><span class="tile t-read">${icon('ghost', 'duotone')}</span><span class="drow-main"><b>Challenge code</b><small>You play now, your friend within 24 hours</small></span>${icon('caret-right')}</button>
     </div>
-    <div class="sub mt-s" style="font-size:12px">You get a 4-letter code to send on WhatsApp. The first friend who enters it in her English Quest app plays with you.</div>
+    <div class="sub mt-s" style="font-size:12px">You get a 4-letter code to send on WhatsApp. The first friend who enters it in English Quest plays with you.</div>
   </div>`;
   document.body.appendChild(ov);
   const close = () => ov.remove();
@@ -1460,7 +1528,7 @@ async function duelRematch(code){
   if (!v) return;
   const them = duelThem(v), mate = h && h.friends.some(f => f.name === (them && them.name));
   loading();
-  try { routeDuel(await dcall('apiDuelInvite', mate ? them.name : '', v.mode === 'challenge' ? 'challenge' : 'live')); }
+  try { routeDuel(await dcall('apiDuelInvite', mate ? them.name : '', v.mode === 'challenge' ? 'challenge' : v.mode === 'boss' ? 'boss' : 'live')); }
   catch(e){ toast(e.message, true); renderDash(); }
 }
 
@@ -1495,7 +1563,8 @@ function stopDuel(){
   clearInterval(duelTick);
 }
 function duelProgress(){
-  return { n: DU.answered, s: DU.score, ms: DU.lastMs, f: DU.finished, r: DU.reaction, rt: DU.reactionAt };
+  return { n: DU.answered, s: DU.score, ms: DU.lastMs, f: DU.finished, r: DU.reaction, rt: DU.reactionAt,
+    dmg: DU.boss ? DU.boss.dmg : 0, hint: DU.boss ? DU.boss.hintAt : 0 };
 }
 async function duelLoop(){
   const me = DU;
@@ -1515,6 +1584,7 @@ async function duelLoop(){
 function onDuelUpdate(v){
   DU.view = v;
   DU.them = v.them;
+  if (DU.boss) bossPartner(v.them);
   const r = v.them && v.them.rt;
   if (r && r !== DU.seenRt) { if (DU.seenRt !== null && v.them.r >= 0) showReaction(duelThem(v), v.them.r); DU.seenRt = r; }
   else if (DU.seenRt === null) DU.seenRt = r || 0;
@@ -1551,7 +1621,7 @@ function duelLobby(v){
   const me = duelMe(v);
   app.innerHTML = `<div class="gscreen" id="lobby">
     <div class="gtop"><button class="btn btn-glass icon-btn" id="lquit">${icon('x')}</button>
-      <div style="flex:1;min-width:0"><h2>Word Duel</h2><div class="sub" style="font-size:12px;margin:0" id="lsub"></div></div>
+      <div style="flex:1;min-width:0"><h2>${modeTitle(v)}</h2><div class="sub" style="font-size:12px;margin:0" id="lsub"></div></div>
       ${v.role === 'host' ? `<span class="chip purple">${icon('key')} ${esc(v.code)}</span>` : ''}</div>
     <div class="glass panel iri" style="padding:18px 14px 16px">
       <div class="duo">
@@ -1559,7 +1629,7 @@ function duelLobby(v){
         <div class="count" id="lcount">${icon('hourglass-medium', 'duotone')}</div>
         <div class="side wait" id="lthem"></div>
       </div>
-      <div class="sub" style="text-align:center;margin-top:10px;font-size:13px">Same game. Questions at each player's level.</div>
+      <div class="sub" style="text-align:center;margin-top:10px;font-size:13px">${v.mode === 'boss' ? 'Team up: right answers hit the boss.' : 'Same game.'} Questions at each player's level.</div>
     </div>
     <div id="lstat"></div>
     <div style="flex:1"></div>
@@ -1625,7 +1695,7 @@ function lobbyUpdate(v){
 
 function codeShare(v){
   const link = appBase() + '?duel=' + v.code;
-  const text = dash.girl.name + ' invites you to a ' + (v.mode === 'challenge' ? 'Challenge' : 'Word Duel') + ' on English Quest! 🎮\nOpen the app, tap Play together, then Code, and enter ' + v.code + '.\nOr tap: ' + link;
+  const text = dash.girl.name + ' invites you to a ' + modeTitle(v) + ' on English Quest! 🎮\nOpen the app, tap Play together, then Code, and enter ' + v.code + '.\nOr tap: ' + link;
   return `<div class="glass panel" style="text-align:center;padding:16px">
     <div class="label">Send this code to your friend</div>
     <div class="codebig">${esc(v.code)}</div>
@@ -1660,8 +1730,8 @@ function duelInvitation(v){
     <div class="gtop"><button class="btn btn-glass icon-btn" data-act="home">${icon('arrow-left')}</button><h2>Invitation</h2></div>
     <div class="glass panel iri" style="text-align:center;display:grid;gap:12px;justify-items:center">
       <div class="vs">${petPic(host, 'happy')}<span class="vsb">VS</span>${petPic(meAsPlayer(), 'happy', 'flip')}</div>
-      <h2>${esc(host.name)} invites you to a Word Duel</h2>
-      <div class="row-flex" style="flex-wrap:wrap;justify-content:center;gap:6px"><span class="chip">${DUEL_ITEMS} questions</span>
+      <h2>${esc(host.name)} invites you to a ${modeTitle(v)}</h2>
+      <div class="row-flex" style="flex-wrap:wrap;justify-content:center;gap:6px"><span class="chip">${v.mode === 'boss' ? 'Team game' : DUEL_ITEMS + ' questions'}</span>
         <span class="chip orange">Your level: ${esc(dash.girl.levelLabel)}</span><span class="chip teal">XP for both</span></div>
       <button class="btn btn-teal btn-block" data-act="join">${icon('play')} Join</button>
       <button class="btn btn-glass btn-block" data-act="wait">Give me 5 minutes</button>
@@ -1692,8 +1762,8 @@ function duelIntro(v){
       ${petPic(isHost ? meAsPlayer() : host, 'cool', 'pet-img' + (isHost ? '' : ' ghostpet'))}
       <h1 style="font-size:28px">${isHost ? 'You play first' : 'Beat ' + host.score + '/' + DUEL_ITEMS + ' in ' + secs(host.ms)}</h1>
       <div class="sub" style="max-width:310px;margin:0">${isHost
-        ? (guest ? esc(guest.name) + ' races your time later. She has 24 hours.' : 'Then send the code to a friend. She has 24 hours.')
-        : 'Race ' + esc(host.name) + '\'s ghost: it runs exactly as she played. Your questions are at your level.'}</div>
+        ? (guest ? esc(guest.name) + ' races your time within 24 hours.' : 'Then send the code to a friend. It works for 24 hours.')
+        : 'Race ' + esc(host.name) + '\'s ghost: it runs exactly as ' + esc(host.name) + ' played. Your questions are at your level.'}</div>
       <div class="row-flex" style="gap:8px;flex-wrap:wrap;justify-content:center"><span class="chip">${icon('list-numbers')} ${DUEL_ITEMS} questions</span>
         <span class="chip">${icon('timer')} 3 minutes</span>${isHost ? '' : `<span class="chip">${icon('hourglass-medium')} ${duelLeft(v)}</span>`}</div>
     </div>
@@ -1718,9 +1788,10 @@ async function startDuelPlay(v){
   const live = v.state === 'playing';
   Object.assign(DU, { screen: 'play', live, answered: 0, score: 0, lastMs: 0, finished: false, track: [], xp: null,
     localStart: live ? v.start - duelOffset : Date.now(),
-    ghost: !live && v.role === 'guest' && v.host.track ? parseTrack(v.host.track) : null });
-  G = { game: 'duel', items: duelItems(B, v.seed, me.level), i: 0, res: [], missed: [], right: [], built: [], locked: false,
-    duel: { label: me.label || dash.girl.levelLabel, title: v.mode === 'challenge' ? (v.role === 'guest' ? esc(v.host.name) + '\'s challenge' : 'Challenge') : 'Word Duel' } };
+    ghost: !live && v.role === 'guest' && v.host.track ? parseTrack(v.host.track) : null,
+    boss: v.mode === 'boss' && live ? { dmg: 0, prev: 0, themDmg: 0, themRight: -1e9, themS: 0, hintAt: 0, seenHint: null, hintPending: false, won: false } : null });
+  G = { game: 'duel', items: duelItems(B, v.seed, me.level, v.items), i: 0, res: [], missed: [], right: [], built: [], locked: false,
+    duel: { label: me.label || dash.girl.levelLabel, title: v.mode === 'challenge' ? (v.role === 'guest' ? esc(v.host.name) + '\'s challenge' : 'Challenge') : modeTitle(v) } };
   window.scrollTo(0, 0);
   renderItem();
   duelClock();
@@ -1728,6 +1799,7 @@ async function startDuelPlay(v){
 }
 
 function duelRaceCard(){
+  if (DU.boss) return bossCard();
   const v = DU.view, them = duelThem(v), me = meAsPlayer();
   const stations = Array.from({ length: DUEL_ITEMS }, (_, k) => `<i class="stn" style="left:${(k + 1) * 12.5}%"></i>`).join('') + `<span class="fin">${icon('flag-checkered', 'duotone')}</span>`;
   const runner = (p, id, cls) => p && p.pet && PET_ART[p.pet.id]
@@ -1743,6 +1815,7 @@ function duelRaceCard(){
 
 function updateRace(){
   if (!DU) return;
+  if (DU.boss) return updateBoss();
   const pos = s => (s ? s / DUEL_ITEMS * 87.5 : 3) + '%';
   const me = document.getElementById('run-me'), them = document.getElementById('run-them');
   if (me) me.style.left = pos(DU.score);
@@ -1761,6 +1834,7 @@ function duelAnswer(ok){
   const ms = Math.max(0, Math.round(Date.now() - DU.localStart));
   DU.track.push((ok ? 1 : 0) + ':' + ms);
   DU.answered = G.res.length; DU.score = G.res.filter(Boolean).length; DU.lastMs = ms;
+  if (DU.boss) bossHit(ok, ms);
   updateRace();
 }
 
@@ -1786,9 +1860,11 @@ async function finishDuel(){
   clearInterval(duelTick);
   const items = G.items, v = DU.view;
   const ms = Math.min(v.maxMs, Math.round(Date.now() - DU.localStart));
-  while (DU.track.length < items.length) { DU.track.push('-:' + ms); G.missed.push(items[DU.track.length - 1].id); }
-  const R = { correct: G.res.filter(Boolean).length, total: items.length, ms, track: DU.track.join(','), missed: G.missed.slice(0, DUEL_ITEMS), right: G.right.slice(0, DUEL_ITEMS) };
-  Object.assign(DU, { finished: true, score: R.correct, answered: items.length, lastMs: ms, screen: 'saving' });
+  // A boss battle reports the questions answered; a Word Duel all seven (unanswered ones as missed).
+  const boss = v.mode === 'boss';
+  if (!boss) while (DU.track.length < items.length) { DU.track.push('-:' + ms); G.missed.push(items[DU.track.length - 1].id); }
+  const R = { correct: G.res.filter(Boolean).length, total: boss ? DU.track.length : items.length, ms, track: DU.track.join(','), missed: G.missed.slice(0, v.items), right: G.right.slice(0, v.items) };
+  Object.assign(DU, { finished: true, score: R.correct, answered: R.total, lastMs: ms, screen: 'saving' });
   G = null; speechStop();
   saveDuel(R);
 }
@@ -1827,7 +1903,7 @@ function duelWait(v){
   const them = duelThem(v);
   app.innerHTML = `<div class="gscreen" id="dwait">
     <div class="gtop"><button class="btn btn-glass icon-btn" data-act="home">${icon('x')}</button>
-      <div style="flex:1;min-width:0"><h2>Word Duel</h2><div class="sub" style="font-size:12px;margin:0">You finished!</div></div></div>
+      <div style="flex:1;min-width:0"><h2>${modeTitle(v)}</h2><div class="sub" style="font-size:12px;margin:0">You finished!</div></div></div>
     ${duelRaceCard()}
     <div class="result">
       ${dash.pet ? `<img class="pet-img" src="${petSrc(dash.pet.id, dash.pet.stage, 'cool')}" alt="">` : ''}
@@ -1897,23 +1973,25 @@ async function duelResult(v){
   let B = null;
   try { B = await loadBank(); } catch(e){}
   const me = duelMe(v), them = duelThem(v) || { name: 'Friend' };
-  const won = v.winner === me.name, draw = v.winner === 'draw';
+  const boss = v.mode === 'boss', won = boss ? v.winner === 'team' : v.winner === me.name, draw = !boss && v.winner === 'draw';
+  const dmg = boss && v.damage ? { me: v.role === 'guest' ? v.damage.guest : v.damage.host, them: v.role === 'guest' ? v.damage.host : v.damage.guest, total: v.damage.total } : null;
   const winner = won ? me : draw ? null : them, loser = won ? them : draw ? null : me;
-  const head = won ? (them.score == null ? 'You won! ' + esc(them.name) + ' left the duel.' : me.score - them.score === 1 || me.score === them.score ? 'You won. Close one!' : 'You won!')
+  const head = boss ? (won ? 'Victory! The Word Thief is beaten.' : 'The Word Thief got away this time.') : won ? (them.score == null ? 'You won! ' + esc(them.name) + ' left the duel.' : me.score - them.score === 1 || me.score === them.score ? 'You won. Close one!' : 'You won!')
     : draw ? 'A draw! Same score, same time.' : esc(them.name) + ' won this time.';
   const learn = B ? learnTogether(B, v, me, them) : '';
   app.innerHTML = `<div class="gscreen" id="dres">
     <div class="gtop"><button class="btn btn-glass icon-btn" data-act="home">${icon('x')}</button>
-      <div style="flex:1;min-width:0"><h2>${v.mode === 'challenge' ? 'Challenge' : 'Word Duel'}</h2><div class="sub" style="font-size:12px;margin:0">${esc(me.name)} and ${esc(them.name)} · ${fmtDate(v.date || dash.today)}</div></div></div>
+      <div style="flex:1;min-width:0"><h2>${modeTitle(v)}</h2><div class="sub" style="font-size:12px;margin:0">${esc(me.name)} and ${esc(them.name)} · ${fmtDate(v.date || dash.today)}</div></div></div>
     <div class="result" style="flex:none">
-      <div class="podium">${draw ? petPic(me, 'happy', 'big') + petPic(them, 'happy', 'small flip')
+      <div class="podium ${boss ? 'team' : ''}">${boss ? petPic(me, won ? 'celebrate' : 'oops', 'big') + (won ? `<span class="crown">${icon('crown-simple', 'duotone')}</span>` : '') + petPic(them, won ? 'celebrate' : 'oops', 'big flip')
+        : draw ? petPic(me, 'happy', 'big') + petPic(them, 'happy', 'small flip')
         : petPic(winner, 'celebrate', 'big') + `<span class="crown">${icon('crown-simple', 'duotone')}</span>` + petPic(loser, won ? 'oops' : 'happy', 'small flip')}</div>
-      <div class="score2">${me.score == null ? '–' : me.score}<span>:</span>${them.score == null ? '–' : them.score}</div>
+      <div class="score2">${dmg ? Math.max(0, v.boss.hp - dmg.total) + '<span>/</span>' + v.boss.hp + '<small>boss HP left</small>' : (me.score == null ? '–' : me.score) + '<span>:</span>' + (them.score == null ? '–' : them.score)}</div>
       <h2>${head}</h2>
       <div class="row-flex" style="gap:6px;flex-wrap:wrap;justify-content:center">
         ${xp != null ? `<span class="chip purple">${icon('lightning')} +${xp} XP</span>` : ''}
-        ${won ? `<span class="chip orange">${icon('crown-simple')} Winner</span>` : ''}
-        <span class="chip">${icon('timer')} You ${me.ms == null ? '–' : secs(me.ms)}${them.ms == null ? '' : ' · ' + esc(them.name) + ' ' + secs(them.ms)}</span></div>
+        ${won ? `<span class="chip orange">${icon('crown-simple')} ${boss ? 'Team win' : 'Winner'}</span>` : ''}
+        ${dmg ? `<span class="chip">${icon('sword')} You hit ${dmg.me} · ${esc(them.name)} ${dmg.them}</span>` : `<span class="chip">${icon('timer')} You ${me.ms == null ? '–' : secs(me.ms)}${them.ms == null ? '' : ' · ' + esc(them.name) + ' ' + secs(them.ms)}</span>`}</div>
     </div>
     ${learn}
     <div class="stack" style="gap:10px">
@@ -1928,7 +2006,7 @@ async function duelResult(v){
     if (t.dataset.act === 'again') {
       const mate = duelsHome && duelsHome.friends.some(f => f.name === them.name);
       loading();
-      try { return routeDuel(await dcall('apiDuelInvite', mate ? them.name : '', v.mode === 'challenge' ? 'challenge' : 'live')); }
+      try { return routeDuel(await dcall('apiDuelInvite', mate ? them.name : '', v.mode === 'challenge' ? 'challenge' : v.mode === 'boss' ? 'boss' : 'live')); }
       catch(err){ toast(err.message, true); return renderDash(); }
     }
     if (t.dataset.helped) {
@@ -1952,7 +2030,7 @@ function itemAnswer(it){
 
 function learnTogether(B, v, me, them){
   const mine = me.track ? parseTrack(me.track) : [], theirs = them.track ? parseTrack(them.track) : [];
-  const myItems = duelItems(B, v.seed, me.level), theirItems = them.level ? duelItems(B, v.seed, them.level) : [];
+  const myItems = duelItems(B, v.seed, me.level, v.items), theirItems = them.level ? duelItems(B, v.seed, them.level, v.items) : [];
   const myLv = lvIndex(me.level), theirLv = lvIndex(them.level), same = me.level === them.level;
   const missed = myItems.map((it, k) => ({ it, k })).filter(x => mine[x.k] && !mine[x.k].ok);
   const canAsk = k => theirLv > myLv || (same && theirs[k] && theirs[k].ok);
@@ -1989,6 +2067,318 @@ if (!IN_APPS_SCRIPT && 'serviceWorker' in navigator) {
     if (!c) return;
     if (session && dash && !dash.levelTest) openDuel(c); else pendingDuel = c;
   });
+}
+
+// ---------- Boss Battle (on the duel engine) ----------
+// Spec: specs/boss-tug.md. Each phone shows the boss's HP from its own hits and the partner's reported
+// hits; the server decides the result from both tracks with the same rules (v.boss).
+const BOSS_SVG = `<svg class="boss" id="bosssvg" viewBox="0 0 170 150" aria-hidden="true">
+  <defs><radialGradient id="bossg" cx="40%" cy="32%" r="72%"><stop offset="0" stop-color="#c4b5fd"/><stop offset=".6" stop-color="#8b5cf6"/><stop offset="1" stop-color="#5b21b6"/></radialGradient></defs>
+  <ellipse cx="85" cy="142" rx="50" ry="7" fill="rgba(38,40,80,.2)"/>
+  <path d="M52 44 L44 14 L68 36 Z" fill="#f9a8d4"/><path d="M118 44 L126 14 L102 36 Z" fill="#f9a8d4"/>
+  <path d="M85 28c35 0 56 26 56 60s-19 50-56 50-56-16-56-50 21-60 56-60z" fill="url(#bossg)"/>
+  <ellipse cx="85" cy="104" rx="30" ry="22" fill="rgba(255,255,255,.18)"/>
+  <circle cx="68" cy="74" r="12.5" fill="#fff"/><circle cx="102" cy="74" r="12.5" fill="#fff"/>
+  <circle cx="70" cy="76" r="6" fill="#1c1e2b"/><circle cx="100" cy="76" r="6" fill="#1c1e2b"/>
+  <circle cx="72" cy="74" r="2" fill="#fff"/><circle cx="102" cy="74" r="2" fill="#fff"/>
+  <rect x="54" y="55" width="26" height="6" rx="3" fill="#2e1065" transform="rotate(16 67 58)"/>
+  <rect x="90" y="55" width="26" height="6" rx="3" fill="#2e1065" transform="rotate(-16 103 58)"/>
+  <path d="M70 100 Q85 92 100 100" stroke="#2e1065" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M79 97 l3 7 3-7z" fill="#fff"/>
+  <circle cx="22" cy="58" r="14" fill="#f6a04d"/><text x="22" y="64" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-weight="800" font-size="16" fill="#fff">a</text>
+  <circle cx="150" cy="48" r="14" fill="#3cc7b6"/><text x="150" y="54" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-weight="800" font-size="16" fill="#fff">b</text>
+  <circle cx="155" cy="100" r="11" fill="#6366f1"/><text x="155" y="105" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-weight="800" font-size="13" fill="#fff">?</text></svg>`;
+const modeTitle = v => v.mode === 'boss' ? 'Boss Battle' : v.mode === 'challenge' ? 'Challenge' : 'Word Duel';
+
+function bossCard(){
+  const them = duelThem(DU.view), me = meAsPlayer();
+  return `<div class="bossbox" id="race">
+    <div class="row-flex between"><b>Grumble the Word Thief</b><small id="bosshp"></small></div>
+    <div class="bossbar"><i id="bossbar"></i></div>
+    <div class="bossstage">${BOSS_SVG}<span class="chip orange dbl" id="bossdbl" hidden>${icon('lightning')} Double hit!</span><span class="bpop" id="bosspop"></span></div>
+    <div class="team"><div class="tm">${petPic(me, 'cool', 'tmpet')}<b>You</b></div><div class="feed" id="bossfeed">Right answers hit the boss!</div>
+      <div class="tm">${petPic(them, 'celebrate', 'tmpet flip')}<b>${esc(them ? them.name : 'Friend')}</b></div></div>
+  </div>`;
+}
+
+function updateBoss(){
+  const b = DU.boss, hp = DU.view.boss.hp, left = Math.max(0, hp - b.dmg - b.themDmg);
+  const t = document.getElementById('bosshp'), bar = document.getElementById('bossbar');
+  if (t) t.textContent = left + ' / ' + hp;
+  if (bar) bar.style.width = Math.max(0, Math.min(100, left / hp * 100)) + '%';
+  if (left <= 0 && !b.won && G && G.duel) { b.won = true; bossVictory(); }
+}
+
+function bossFx(text, cls){
+  const p = document.getElementById('bosspop'), s = document.getElementById('bosssvg');
+  if (p) { p.className = 'bpop ' + (cls || ''); p.textContent = text; void p.offsetWidth; p.classList.add('go'); }
+  if (s) { s.classList.remove('hit'); void s.getBoundingClientRect(); s.classList.add('hit'); }
+}
+
+// My answer: the same rules as bossDamage() on the server.
+function bossHit(ok, ms){
+  const b = DU.boss, R = DU.view.boss;
+  if (!ok) { b.dmg -= R.heal; bossFx('+' + R.heal, 'heal'); b.prev = ms; return; }
+  let hit = R.hit + (ms - b.prev <= R.fastMs ? R.fast : 0);
+  if (ms - b.themRight <= R.doubleMs) {
+    hit += R.double;
+    const d = document.getElementById('bossdbl');
+    if (d) { d.hidden = false; setTimeout(() => { d.hidden = true; }, 1400); }
+  }
+  b.dmg += hit; b.prev = ms;
+  bossFx('-' + hit);
+}
+
+// The partner's progress from a poll: her hits, and a 50/50 she sent me.
+function bossPartner(t){
+  const b = DU.boss;
+  if (!t || !b) return;
+  if (t.s > b.themS) {
+    b.themRight = t.ms;
+    const gain = (t.dmg || 0) - b.themDmg, them = duelThem(DU.view), f = document.getElementById('bossfeed');
+    if (f && gain > 0) f.textContent = (them ? them.name : 'Your friend') + ' hit for ' + gain + '!';
+  }
+  b.themS = t.s; b.themDmg = t.dmg || 0;
+  if (b.seenHint === null) b.seenHint = t.hint || 0;
+  else if (t.hint && t.hint !== b.seenHint) { b.seenHint = t.hint; b.hintPending = true; bossApplyHint(); }
+}
+
+// A 50/50 hides two wrong options of a Match it / Hear it question (or of the next one).
+function bossApplyHint(){
+  const b = DU && DU.boss;
+  if (!b || !b.hintPending || !G || !G.duel || G.locked) return;
+  const it = G.items[G.i];
+  if (!it || (it.game !== 'match' && it.game !== 'listen')) return;
+  b.hintPending = false;
+  const wrong = [...document.querySelectorAll('.opt')].filter(o => o.dataset.v !== it.answer).slice(0, 2);
+  wrong.forEach(o => { o.disabled = true; o.classList.add('gone'); });
+  const them = duelThem(DU.view);
+  toast((them ? them.name : 'Your friend') + ' sent you a 50/50!');
+}
+
+function bossSendHint(){
+  const b = DU && DU.boss;
+  if (!b) return;
+  const wait = 30000 - (Date.now() - b.hintAt);
+  if (wait > 0) return toast('You can help again in ' + Math.ceil(wait / 1000) + ' s');
+  b.hintAt = Date.now();
+  const them = duelThem(DU.view);
+  toast('50/50 sent to ' + (them ? them.name : 'your friend'));
+}
+
+function bossAssist(){
+  const them = duelThem(DU.view);
+  return `<div class="soft assist"><span class="tile t-uoe">${icon('hand-heart', 'duotone')}</span>
+    <div class="drow-main"><b>Help ${esc(them ? them.name : 'your friend')}</b><small>Send a 50/50 (once every 30 s)</small></div>
+    <button class="btn btn-primary btn-sm" data-hint="1">Send</button></div>`;
+}
+
+function bossVictory(){
+  const ov = document.createElement('div');
+  ov.className = 'celebrate';
+  ov.innerHTML = `<div class="glass"><div class="pts">Victory!</div><div style="font-weight:700">The Word Thief is beaten</div></div>`;
+  document.body.appendChild(ov);
+  confetti();
+  setTimeout(() => { ov.remove(); finishDuel(); }, 1600);
+}
+
+// After each question is drawn: a waiting 50/50 lands on the first question that has options.
+function duelAfterRender(){
+  if (DU && DU.boss) bossApplyHint();
+}
+
+// ---------- Tug of War (one phone, two players) ----------
+// Spec: specs/boss-tug.md. The top half is turned to the second kid; each half has its own questions
+// at its player's level. A right answer pulls the knot one step; five steps win.
+let TW = null;
+const TUG_STEPS = 5, TUG_MS = 120000, TUG_FREEZE = 1500;
+
+function tugSheet(){
+  const h = duelsHome, list = (h ? h.friends : []).filter(f => f.ready);
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="sheet glass">
+    <div class="row-flex between"><span class="label">Tug of War · one phone</span>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
+    <div class="sub mt-s" style="font-size:13px">Put the phone flat on the table between you. Each of you gets your own questions at your level; right answers pull the rope.</div>
+    <div class="label mt">Who plays with you?</div>
+    <div class="friends mt-s">${list.map(f => `<button class="fr" data-tugmate="${esc(f.name)}"><span class="av">${petFace(f.pet, f.color, f.name)}</span><b>${esc(f.name)}</b><small>Level ${esc(f.level)}</small></button>`).join('')}
+      <button class="fr" data-tugmate=""><span class="addc">${icon('user')}</span><b>Guest</b><small>No XP</small></button></div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  ov.onclick = e => {
+    if (e.target === ov) return close();
+    const t = e.target.closest('[data-tugmate]');
+    if (t) { close(); return t.dataset.tugmate ? tugPin(t.dataset.tugmate) : tugStart(null, ''); }
+  };
+  ov.querySelector('#x').onclick = close;
+}
+
+// The second kid types her PIN on this phone; the server checks it.
+function tugPin(name){
+  let pin = '';
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="sheet glass" style="text-align:center">
+    <div class="row-flex between"><span class="label">${esc(name)}, your PIN</span>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
+    <div class="dots" id="tdots">${'<div class="dot"></div>'.repeat(4)}</div>
+    <div class="pad">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="btn btn-glass" data-k="${n}">${n}</button>`).join('')}
+      <span></span><button class="btn btn-glass" data-k="0">0</button><button class="btn btn-glass" data-k="del">${icon('backspace')}</button></div>
+    <div class="sub mt-s" style="font-size:12px">So the game saves XP for both of you.</div>
+  </div>`;
+  document.body.appendChild(ov);
+  const dots = ov.querySelector('#tdots'), pad = ov.querySelector('.pad');
+  const paint = () => dots.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('on', i < pin.length));
+  ov.querySelector('#x').onclick = () => ov.remove();
+  pad.onclick = async e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    if (b.dataset.k === 'del') pin = pin.slice(0, -1); else if (pin.length < 4) pin += b.dataset.k;
+    paint();
+    if (pin.length < 4) return;
+    pad.classList.add('busy');
+    try { const mate = await call('apiTugCheck', name, pin); ov.remove(); tugStart(mate, pin); }
+    catch(err){ toast(err.message.includes('PIN') ? 'Wrong PIN, try again' : err.message, true); pin = ''; paint(); pad.classList.remove('busy'); dots.classList.remove('shake'); void dots.offsetWidth; dots.classList.add('shake'); }
+  };
+}
+
+function tugQueue(B, level){
+  const items = [].concat(...kidLevels(level).map(l => bankItems(B, 'match', l).concat(bankItems(B, 'spot', l))));
+  return { all: shuffle(items), i: 0 };
+}
+function tugNext(B, p){
+  if (p.q.i >= p.q.all.length) { p.q.all = shuffle(p.q.all); p.q.i = 0; }
+  const x = p.q.all[p.q.i++];
+  p.cur = prepare(B, x.id.indexOf('s:') === 0 ? 'spot' : 'match', x);
+}
+
+async function tugStart(mate, matePin){
+  app.innerHTML = '<div class="spinner"></div>';
+  let B;
+  try { B = await loadBank(); } catch(e){ toast(e.message, true); return renderDash(); }
+  const me = meAsPlayer(), guest = !mate;
+  const two = [Object.assign({}, me, { pin: session.pin }), guest ? { name: 'Guest', level: me.level, label: me.label, color: '#94a3b8', pet: null, guest: true } : Object.assign({}, mate, { pin: matePin })];
+  TW = { B, pos: 0, end: Date.now() + TUG_MS, over: false, quitAt: 0,
+    p: two.map(x => Object.assign(x, { q: tugQueue(B, x.level), cur: null, frozen: 0, correct: 0, total: 0, missed: [], right: [] })) };
+  TW.p.forEach(p => tugNext(B, p));
+  G = null; stopDuel();
+  app.innerHTML = `<div class="tugscreen" id="tug">
+    <div class="tughalf top" data-half="1"></div>
+    <div class="tugmid">
+      <div class="tsc top">${faceOf(TW.p[1])}<b id="tsc1">0</b></div>
+      <div class="rope" id="rope">${[-5, -2.5, 0, 2.5, 5].map(k => `<i class="mk ${k === 0 ? 'mid' : k === 5 ? 'end0' : k === -5 ? 'end1' : ''}" style="top:${50 + k * 9}%"></i>`).join('')}<span class="knot" id="knot"></span></div>
+      <div class="tsc">${faceOf(TW.p[0])}<b id="tsc0">0</b></div>
+      <button class="btn btn-glass icon-btn tquit" id="tquit">${icon('x')}</button>
+      <span class="chip ttime" id="ttime">2:00</span>
+    </div>
+    <div class="tughalf" data-half="0"></div>
+  </div>`;
+  tugHalf(0); tugHalf(1);
+  document.getElementById('tug').onclick = tugClick;
+  TW.tick = setInterval(tugTick, 250);
+}
+
+function tugHalf(i){
+  const p = TW.p[i], el = document.querySelector('.tughalf[data-half="' + i + '"]'), it = p.cur;
+  if (!el || !it) return;
+  const q = it.game === 'match'
+    ? `<div class="glass qcard">${it.kind === 'pic' ? `<div class="qprompt">What is this?</div><img class="qpic" src="${picSrc(it.word)}" alt="">` : `<div class="qprompt">Which word matches?</div><div class="qbig">${esc(it.def)}</div>`}</div>
+       <div class="opts">${it.options.map(o => `<button class="opt" data-p="${i}" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div>`
+    : `<div class="glass qcard"><div class="qprompt">One word is wrong. Tap it!</div>
+       <div class="sentence">${it.tokens.map((t, k) => `<button class="tok" data-p="${i}" data-k="${k}">${esc(t)}</button>`).join('')}</div></div>`;
+  el.innerHTML = `<div class="row-flex between"><span class="chip ${i ? 'orange' : 'purple'}">${esc(p.name)} · ${esc(p.label || '')}</span>
+      <span class="sub" style="margin:0;font-size:12px">${p.correct} right</span></div>${q}<div class="tfreeze" hidden></div>`;
+}
+
+function tugClick(e){
+  const t = e.target.closest('button');
+  if (!t || !TW || TW.over) return;
+  if (t.id === 'tquit') {
+    if (TW.quitAt > Date.now() - 3000) return tugEnd(true);
+    TW.quitAt = Date.now();
+    return toast('Tap again to stop. Nothing is saved.');
+  }
+  const i = Number(t.dataset.p), p = TW.p[i];
+  if (isNaN(i) || p.frozen > Date.now() || p.busy) return;
+  const it = p.cur, ok = it.game === 'match' ? t.dataset.v === it.answer : Number(t.dataset.k) === it.wrong;
+  p.total++; p.busy = true;
+  (ok ? p.right : p.missed).push(it.id);
+  const half = document.querySelector('.tughalf[data-half="' + i + '"]');
+  if (it.game === 'match') half.querySelectorAll('.opt').forEach(b => { if (b.dataset.v === it.answer) b.classList.add('ok'); });
+  else { const w = half.querySelector('.tok[data-k="' + it.wrong + '"]'); if (w) { w.classList.add('fixed'); w.innerHTML = '<s>' + esc(it.tokens[it.wrong]) + '</s>' + esc(fixedWord(it)); } }
+  if (ok) {
+    p.correct++;
+    TW.pos += i === 0 ? 1 : -1;
+    tugRope();
+    try { navigator.vibrate && navigator.vibrate(30); } catch(err){}
+    setTimeout(() => { p.busy = false; if (!TW || TW.over) return; tugNext(TW.B, p); tugHalf(i); }, 450);
+  } else {
+    t.classList.add('no', 'shake');
+    p.frozen = Date.now() + TUG_FREEZE;
+    const fz = half.querySelector('.tfreeze');
+    if (fz) { fz.hidden = false; fz.innerHTML = `<b>${icon('snowflake', 'duotone')} Frozen</b><span>${it.game === 'match' ? esc(it.answer) : esc(fixedSentence(it))}</span>`; }
+    setTimeout(() => { p.busy = false; if (!TW || TW.over) return; tugNext(TW.B, p); tugHalf(i); }, TUG_FREEZE);
+  }
+  if (Math.abs(TW.pos) >= TUG_STEPS) setTimeout(() => tugEnd(false), 500);
+}
+
+function tugRope(){
+  const k = document.getElementById('knot');
+  if (k) k.style.top = (50 + TW.pos * 9) + '%';
+  ['tsc0', 'tsc1'].forEach((id, i) => { const el = document.getElementById(id); if (el) el.textContent = TW.p[i].correct; });
+}
+
+function tugTick(){
+  if (!TW || TW.over) return clearInterval(TW && TW.tick);
+  const left = Math.max(0, TW.end - Date.now()), s = Math.ceil(left / 1000), el = document.getElementById('ttime');
+  if (el) el.textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  if (!left) tugEnd(false);
+}
+
+async function tugEnd(quit){
+  if (!TW || TW.over) return;
+  TW.over = true;
+  clearInterval(TW.tick);
+  if (quit) { TW = null; return renderDash(); }
+  const [a, b] = TW.p, win = TW.pos > 0 ? a : TW.pos < 0 ? b : null;
+  window.scrollTo(0, 0);
+  app.innerHTML = `<div class="gscreen" id="tres"><div class="result" style="flex:none">
+      <div class="podium">${win ? petPic(win, 'celebrate', 'big') + `<span class="crown">${icon('crown-simple', 'duotone')}</span>` + petPic(win === a ? b : a, 'happy', 'small flip')
+        : petPic(a, 'happy', 'big') + petPic(b, 'happy', 'small flip')}</div>
+      <div class="score2">${a.correct}<span>:</span>${b.correct}</div>
+      <h2>${win ? esc(win.name) + ' pulled the rope!' : 'A draw! The knot stayed in the middle.'}</h2>
+      <div class="saved wait" id="tsave"><span class="mini-spin"></span>Saving…</div>
+    </div>
+    ${tugLearn()}
+    <div class="stack" style="gap:10px"><button class="btn btn-primary btn-block" data-act="again">${icon('arrows-clockwise')} Play again</button>
+      <button class="btn btn-glass btn-block" data-act="home">Back</button></div></div>`;
+  if (win && !win.guest) confetti();
+  const mate = b.guest ? null : b, res = p => ({ correct: p.correct, total: p.total, missed: p.missed.slice(-40), right: p.right.slice(-40) });
+  document.getElementById('tres').onclick = e => {
+    const t = e.target.closest('button');
+    if (!t) return;
+    if (t.dataset.act === 'home') { TW = null; homeStale = true; return renderDash(); }
+    if (t.dataset.act === 'again') { const m = mate ? { name: b.name, level: b.level, label: b.label, color: b.color, pet: b.pet } : null, pin = b.pin; TW = null; return tugStart(m, pin || ''); }
+  };
+  const st = document.getElementById('tsave');
+  try {
+    const r = await call('apiTugSave', session.name, session.pin, mate ? mate.name : '', mate ? mate.pin : '', res(a), mate ? res(b) : null);
+    if (r.dash) { dash = r.dash; checkGrowth(); }
+    homeStale = true;
+    if (st) { st.className = 'saved'; st.innerHTML = icon('check') + ' Saved · +' + r.xp + ' XP for ' + esc(a.name) + (mate ? ', +' + r.mateXp + ' XP for ' + esc(mate.name) : ''); }
+  } catch(err){ if (st) { st.className = 'saved err'; st.innerHTML = icon('wifi-slash') + ' ' + esc(err.message); } }
+}
+
+function tugLearn(){
+  const rows = TW.p.filter(p => p.missed.length).map(p => {
+    const seen = new Set(), items = p.missed.filter(id => !seen.has(id) && seen.add(id)).slice(0, 4).map(id => itemById(TW.B, id)).filter(Boolean)
+      .map(x => prepare(TW.B, x.id.indexOf('s:') === 0 ? 'spot' : 'match', x));
+    return items.length ? `<div class="label mt-s">${esc(p.name)}</div>` + items.map(it => `<div class="lrow"><span class="x">${icon('x')}</span><div class="lt">${itemAnswer(it)}</div></div>`).join('') : '';
+  }).join('');
+  return rows ? `<div class="glass panel" style="padding:16px"><div class="row-flex between"><h2>Learn together</h2></div><div class="stack" style="gap:8px">${rows}</div>
+    <div class="sub mt-s" style="font-size:12px">The ones you missed come back in your games.</div></div>` : '';
 }
 
 // ---------- Duo Streak and Team Quest ----------

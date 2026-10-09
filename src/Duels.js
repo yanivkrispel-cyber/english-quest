@@ -1,4 +1,5 @@
-// Play together: Word Duel (live) and Challenge (one plays now, the other later). Spec: specs/play-together.md
+// Play together: Word Duel (live), Challenge (one plays now, the other later) and Boss Battle (both against a
+// boss), plus the saves of Tug of War (one phone). Specs: specs/play-together.md, specs/boss-tug.md
 // Only functions and literal constants here: files load in one global scope, so nothing at the top
 // level may use another file's names.
 
@@ -6,7 +7,12 @@ var DUEL = {
   items: 7, maxMs: 180000, countdownMs: 6000, inviteMin: 5, waitMin: 5, challengeHours: 24,
   winXp: 5, togetherXp: 10, rightXp: 2, onlineMs: 90000, cacheSec: 1800, leftGraceMs: 20000
 };
-var DUEL_MODES = ['live', 'challenge'];
+var DUEL_MODES = ['live', 'challenge', 'boss'];
+// Boss Battle: hit points and damage rules (sent with the duel, so the app shows the same numbers live).
+var BOSS = { hp: 240, items: 12, hit: 12, fast: 6, fastMs: 6000, heal: 5, double: 10, doubleMs: 3000, winXp: 10 };
+// Games rows of the games kids play together (the together bonus is for the first of them in a day).
+var DUEL_TOGETHER = ['duel', 'boss', 'tug'];
+var TUG = { maxAnswers: 40 };
 var DUEL_REACTIONS = 6;
 var DUEL_LETTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
 var DUEL_DONE = ['done', 'declined', 'expired', 'cancelled'];
@@ -35,7 +41,7 @@ function apiDuelInvite(name, pin, guestName, mode) {
   try {
     var rows = duelRows();
     // Rematch tapped on both phones: join the invite that is already waiting for me.
-    var mine = guest && mode === 'live' ? rows.filter(function (r) {
+    var mine = guest && mode !== 'challenge' ? rows.filter(function (r) {
       return r.State === 'invited' && r.Host === guest.Name && r.Guest === kid.Name && Number(r.Expires) > now;
     }).pop() : null;
     if (mine) {
@@ -44,16 +50,16 @@ function apiDuelInvite(name, pin, guestName, mode) {
     } else {
       d = {
         Id: duelCode(rows), Created: new Date(now).toISOString(), Date: today(), Mode: mode,
-        State: mode === 'live' ? 'invited' : 'solo', Host: kid.Name, Guest: guest ? guest.Name : '',
+        State: mode === 'challenge' ? 'solo' : 'invited', Host: kid.Name, Guest: guest ? guest.Name : '',
         HostLevel: kid.Level, GuestLevel: guest ? guest.Level : '', Seed: String(1 + Math.floor(Math.random() * 2147483646)),
-        Start: '', Expires: String(now + (mode === 'live' ? DUEL.inviteMin * 60000 : DUEL.challengeHours * 3600000)), Reply: ''
+        Start: '', Expires: String(now + (mode === 'challenge' ? DUEL.challengeHours * 3600000 : DUEL.inviteMin * 60000)), Reply: ''
       };
       duelSave(d, true);
     }
   } finally {
     lock.releaseLock();
   }
-  if (!joined && guest && mode === 'live') {
+  if (!joined && guest && mode !== 'challenge') {
     try { pushToKid(guest.Name, duelMessage('invite', d)); } catch (e) { console.error(e); }
   }
   return duelView(d, kid.Name);
@@ -147,7 +153,7 @@ function apiDuelPoll(name, pin, code, progress) {
     var p = {
       n: duelInt(progress.n, 0, DUEL.items), s: duelInt(progress.s, 0, DUEL.items), ms: duelInt(progress.ms, 0, DUEL.maxMs + 60000),
       f: !!progress.f, r: progress.r >= 0 && progress.r < DUEL_REACTIONS ? duelInt(progress.r, 0, DUEL_REACTIONS - 1) : -1,
-      rt: duelInt(progress.rt, 0, 1e15)
+      rt: duelInt(progress.rt, 0, 1e15), dmg: duelInt(progress.dmg, -2000, 2000), hint: duelInt(progress.hint, 0, 1e15)
     };
     CacheService.getScriptCache().put('DP:' + d.Id + ':' + kid.Name, JSON.stringify(p), DUEL.cacheSec);
   }
@@ -172,14 +178,14 @@ function apiDuelPoll(name, pin, code, progress) {
 // One player's final result. The second finisher closes the duel; in a challenge the host
 // finishing first opens it for the guest (who gets a notification).
 function apiDuelFinish(name, pin, code, result) {
-  var kid = duelKid(name, pin), now = Date.now(), d, closed = false, opened = false, xp = 0;
-  var r = duelResult(result);
+  var kid = duelKid(name, pin), now = Date.now(), d, r, closed = false, opened = false, xp = 0;
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
     d = duelFresh(code);
     var role = duelRole(d, kid.Name);
     if (!role) throw new Error('This duel is not yours');
+    r = duelResult(result, d.Mode);
     var P = role === 'host' ? 'Host' : 'Guest';
     if (d[P + 'Score'] !== '' && d[P + 'Score'] !== undefined && d[P + 'Score'] !== null) throw new Error('Your result is already saved');
     var ok = (d.State === 'playing') || (d.State === 'solo' && role === 'host') || (d.State === 'challenge' && role === 'guest');
@@ -280,7 +286,7 @@ function duelExpire(d, now) {
 // A live duel past its time: whoever finished wins; nobody finished -> expired.
 function duelTimeout(d, now) {
   var h = duelHas(d, 'Host'), g = duelHas(d, 'Guest');
-  if (h && g) duelClose(d, now);
+  if ((h && g) || (d.Mode === 'boss' && (h || g))) duelClose(d, now);
   else if (h || g) { d.State = 'done'; d.Winner = h ? d.Host : d.Guest; d.Ended = new Date(now).toISOString(); duelBonus(d); }
   else { d.State = 'expired'; d.Ended = new Date(now).toISOString(); }
   duelSave(d);
@@ -288,7 +294,8 @@ function duelTimeout(d, now) {
 
 function duelClose(d, now) {
   var hs = Number(d.HostScore), gs = Number(d.GuestScore), hm = Number(d.HostMs), gm = Number(d.GuestMs);
-  d.Winner = hs > gs ? d.Host : gs > hs ? d.Guest : hm < gm ? d.Host : gm < hm ? d.Guest : 'draw';
+  if (d.Mode === 'boss') d.Winner = bossDamage(d).total >= BOSS.hp ? 'team' : 'boss';
+  else d.Winner = hs > gs ? d.Host : gs > hs ? d.Guest : hm < gm ? d.Host : gm < hm ? d.Guest : 'draw';
   d.State = 'done';
   d.Ended = new Date(now).toISOString();
   duelBonus(d);
@@ -297,6 +304,11 @@ function duelClose(d, now) {
 // The winner's +5 is a separate zero-question Games row (each player's row is written when she
 // finishes, before the winner is known). It still counts inside the daily cap.
 function duelBonus(d) {
+  if (d.Mode === 'boss') {
+    if (d.Winner !== 'team') return;
+    [d.Host, d.Guest].forEach(function (n) { var k = n && findGirl(n); if (k) duelAddXp(k, BOSS.winXp, 0, 0, '', k.Level, 'boss'); });
+    return;
+  }
   if (!d.Winner || d.Winner === 'draw') return;
   var w = findGirl(d.Winner);
   if (!w) return;
@@ -305,34 +317,96 @@ function duelBonus(d) {
 
 function duelXp(kid, d, role, r) {
   var t = today();
-  var together = !readTableUncached('Games').some(function (g) { return g.Girl === kid.Name && g.Date === t && g.Game === 'duel' && Number(g.Total) > 0; });
+  var together = !readTableUncached('Games').some(function (g) { return g.Girl === kid.Name && g.Date === t && DUEL_TOGETHER.indexOf(g.Game) >= 0 && Number(g.Total) > 0; });
   var xp = r.correct * DUEL.rightXp + (together ? DUEL.togetherXp : 0);
-  var got = duelAddXp(kid, xp, r.correct, r.total, r.missed.join(' '), role === 'host' ? d.HostLevel : d.GuestLevel);
+  var got = duelAddXp(kid, xp, r.correct, r.total, r.missed.join(' '), role === 'host' ? d.HostLevel : d.GuestLevel, d.Mode === 'boss' ? 'boss' : 'duel');
   updateReview(kid.Name, r.missed, r.right, t);
   return got;
 }
 
-// One Games row (Game = duel), capped like the mini-games. Returns the XP actually given.
-function duelAddXp(kid, xp, correct, total, missed, level) {
+// One Games row (Game = duel, boss or tug), capped like the mini-games. Returns the XP actually given.
+function duelAddXp(kid, xp, correct, total, missed, level, game) {
   var t = today();
   var used = readTableUncached('Games').filter(function (g) { return g.Girl === kid.Name && g.Date === t; })
     .reduce(function (a, g) { return a + (Number(g.XP) || 0); }, 0);
   xp = Math.max(0, Math.min(xp, GAME_XP.dayCap - used));
   if (!total && !xp) return 0;
-  appendRow('Games', { Timestamp: new Date(), Girl: kid.Name, Date: t, Game: 'duel', Level: LEVELS.indexOf(level) >= 0 ? level : kid.Level,
+  appendRow('Games', { Timestamp: new Date(), Girl: kid.Name, Date: t, Game: game || 'duel', Level: LEVELS.indexOf(level) >= 0 ? level : kid.Level,
     Correct: correct, Total: total, XP: xp, Missed: missed });
   return xp;
 }
 
-function duelResult(res) {
+// A Word Duel result has all 7 questions (unanswered as '-'); a boss battle has the ones answered (0-12).
+function duelResult(res, mode) {
   res = res || {};
-  var total = duelInt(res.total, 0, DUEL.items), correct = duelInt(res.correct, 0, total);
-  if (total !== DUEL.items) throw new Error('Invalid result');
-  var track = String(res.track || '').split(',').filter(String);
-  if (track.length !== total || !track.every(function (x) { return /^[01-]:\d{1,6}$/.test(x); })) throw new Error('Invalid result');
+  var boss = mode === 'boss', max = boss ? BOSS.items : DUEL.items;
+  var total = duelInt(res.total, 0, max), correct = duelInt(res.correct, 0, total);
+  if (!boss && total !== DUEL.items) throw new Error('Invalid result');
+  var track = String(res.track || '').split(',').filter(String), entry = boss ? /^[01]:\d{1,6}$/ : /^[01-]:\d{1,6}$/;
+  if (track.length !== total || !track.every(function (x) { return entry.test(x); })) throw new Error('Invalid result');
   if (track.filter(function (x) { return x[0] === '1'; }).length !== correct) throw new Error('Invalid result');
   return { correct: correct, total: total, ms: duelInt(res.ms, 0, DUEL.maxMs + 60000), track: track.join(','),
-    missed: cleanIds(res.missed, DUEL.items), right: cleanIds(res.right, DUEL.items) };
+    missed: cleanIds(res.missed, max), right: cleanIds(res.right, max) };
+}
+
+// Boss damage from both tracks in time order: a right answer hits for 12, +6 within 6 s of the kid's
+// previous answer (or the start), +10 within 3 s of the partner's right answer; a wrong one heals 5.
+function bossDamage(d) {
+  var events = [];
+  ['Host', 'Guest'].forEach(function (P) {
+    var prev = 0;
+    String(d[P + 'Track'] || '').split(',').filter(String).forEach(function (x) {
+      var p = x.split(':'), t = Number(p[1]) || 0;
+      events.push({ who: P, ok: p[0] === '1', t: t, prev: prev });
+      prev = t;
+    });
+  });
+  events.sort(function (a, b) { return a.t - b.t; });
+  var last = { Host: -1e9, Guest: -1e9 }, dmg = { Host: 0, Guest: 0 };
+  events.forEach(function (e) {
+    if (!e.ok) { dmg[e.who] -= BOSS.heal; return; }
+    var hit = BOSS.hit + (e.t - e.prev <= BOSS.fastMs ? BOSS.fast : 0);
+    if (e.t - last[e.who === 'Host' ? 'Guest' : 'Host'] <= BOSS.doubleMs) hit += BOSS.double;
+    last[e.who] = e.t;
+    dmg[e.who] += hit;
+  });
+  return { host: dmg.Host, guest: dmg.Guest, total: dmg.Host + dmg.Guest };
+}
+
+// ---------- Tug of War (one phone) ----------
+
+// The second kid on the same phone proves who she is with her PIN.
+function apiTugCheck(name, pin) {
+  var kid = duelKid(name, pin), p = petInfo(kid);
+  return { name: kid.Name, level: kid.Level, label: LEVEL_LABEL[kid.Level] || kid.Level, color: kid.Color, pet: p ? { id: p.id, stage: p.stage } : null };
+}
+
+// Both results at once ({correct, total, missed, right}); mate = '' plays as a guest and saves nothing.
+function apiTugSave(name, pin, mateName, matePin, mine, hers) {
+  var kid = duelKid(name, pin), mate = mateName ? duelKid(mateName, matePin) : null, xp = {}, t = today();
+  if (mate && mate.Name === kid.Name) throw new Error('Two different players, please');
+  var players = [[kid, tugResult(mine)]].concat(mate ? [[mate, tugResult(hers)]] : []);
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    players.forEach(function (p) {
+      var k = p[0], r = p[1];
+      if (!r.total) return;
+      var together = mate && !readTableUncached('Games').some(function (g) { return g.Girl === k.Name && g.Date === t && DUEL_TOGETHER.indexOf(g.Game) >= 0 && Number(g.Total) > 0; });
+      xp[k.Name] = duelAddXp(k, r.correct * DUEL.rightXp + (together ? DUEL.togetherXp : 0), r.correct, r.total, r.missed.join(' '), k.Level, 'tug');
+      updateReview(k.Name, r.missed, r.right, t);
+    });
+  } finally {
+    lock.releaseLock();
+  }
+  players.forEach(function (p) { try { duoAfterPractice(p[0].Name); } catch (e) { console.error(e); } });
+  return { xp: xp[kid.Name] || 0, mateXp: mate ? xp[mate.Name] || 0 : null, dash: buildDashboard(findGirl(kid.Name)) };
+}
+
+function tugResult(res) {
+  res = res || {};
+  var total = duelInt(res.total, 0, TUG.maxAnswers), correct = duelInt(res.correct, 0, total);
+  return { correct: correct, total: total, missed: cleanIds(res.missed, TUG.maxAnswers), right: cleanIds(res.right, TUG.maxAnswers) };
 }
 
 // ---------- Views ----------
@@ -369,7 +443,7 @@ function duelView(d, me) {
   var face = function (k) { var p = k ? petInfo(k) : null; return p ? { id: p.id, stage: p.stage } : null; };
   var done = d.State === 'done';
   var v = {
-    code: d.Id, mode: d.Mode, state: d.State, role: role, seed: Number(d.Seed), items: DUEL.items, maxMs: DUEL.maxMs,
+    code: d.Id, mode: d.Mode, state: d.State, role: role, seed: Number(d.Seed), items: d.Mode === 'boss' ? BOSS.items : DUEL.items, maxMs: DUEL.maxMs,
     start: d.Start ? Number(d.Start) : null, expires: Number(d.Expires) || null, reply: d.Reply || '', now: Date.now(), date: d.Date,
     host: { name: d.Host, level: d.HostLevel, label: LEVEL_LABEL[d.HostLevel] || '', color: host ? host.Color : '', pet: face(host),
       score: duelHas(d, 'Host') ? Number(d.HostScore) : null, ms: duelHas(d, 'Host') ? Number(d.HostMs) : null },
@@ -380,6 +454,7 @@ function duelView(d, me) {
   if (duelHas(d, 'Host') && (done || d.Mode === 'challenge' || role === 'host')) v.host.track = String(d.HostTrack);
   if (duelHas(d, 'Guest') && (done || role === 'guest')) v.guest.track = String(d.GuestTrack);
   if (!guest && !d.Guest && d.State !== 'done') v.open = true;
+  if (d.Mode === 'boss') { v.boss = BOSS; if (done) v.damage = bossDamage(d); }
   return v;
 }
 
@@ -475,6 +550,7 @@ function duelInt(v, min, max) { v = Math.round(Number(v)); return isNaN(v) ? min
 
 function duelMessage(kind, d) {
   var url = './?duel=' + d.Id, score = function (s, ms) { return s + '/' + DUEL.items + ' in ' + Math.round(ms / 1000) + ' s'; };
+  if (kind === 'invite' && d.Mode === 'boss') return { title: d.Host + ' invites you to a Boss Battle', body: 'Team up against the Word Thief. Tap to join!', url: url, tag: 'eq-duel' };
   if (kind === 'invite') return { title: d.Host + ' invites you to a Word Duel', body: DUEL.items + ' questions at your level. Tap to join!', url: url, tag: 'eq-duel' };
   if (kind === 'challenge') return { title: d.Host + ' challenged you!', body: 'Beat ' + score(d.HostScore, d.HostMs) + '. You have ' + DUEL.challengeHours + ' hours.', url: url, tag: 'eq-duel' };
   var res = d.Winner === d.Host ? 'You won!' : d.Winner === 'draw' ? 'A draw!' : d.Guest + ' won.';

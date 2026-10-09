@@ -25,7 +25,7 @@ function apiDuoInvite(name, pin, partnerName) {
     var rows = duoRows();
     var pair = rows.filter(function (r) { return duoHas(r, kid.Name) && duoHas(r, mate.Name) && (r.State === 'active' || r.State === 'invited'); })[0];
     if (pair && pair.State === 'active') throw new Error('You already have a duo streak with ' + mate.Name);
-    if (pair && pair.A === kid.Name) throw new Error('You already asked ' + mate.Name + '. Waiting for her answer.');
+    if (pair && pair.A === kid.Name) throw new Error('You already asked ' + mate.Name + '. Waiting for an answer.');
     if (duoCount(rows, kid.Name) >= DUO.max) throw new Error('You can have up to ' + DUO.max + ' duo streaks');
     if (duoCount(rows, mate.Name) >= DUO.max) throw new Error(mate.Name + ' already has ' + DUO.max + ' duo streaks');
     if (pair) {

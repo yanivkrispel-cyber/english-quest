@@ -114,7 +114,8 @@ function api() {
   apiGameResult: apiGameResult, apiSetPet: apiSetPet, apiGateResult: apiGateResult,
   apiDuelHome: apiDuelHome, apiDuelInvite: apiDuelInvite, apiDuelJoin: apiDuelJoin, apiDuelReply: apiDuelReply,
   apiDuelCancel: apiDuelCancel, apiDuelSolo: apiDuelSolo, apiDuelPoll: apiDuelPoll, apiDuelFinish: apiDuelFinish, apiDuelHelped: apiDuelHelped,
-  apiDuoInvite: apiDuoInvite, apiDuoAnswer: apiDuoAnswer, apiDuoNudge: apiDuoNudge, apiDuoEnd: apiDuoEnd
+  apiDuoInvite: apiDuoInvite, apiDuoAnswer: apiDuoAnswer, apiDuoNudge: apiDuoNudge, apiDuoEnd: apiDuoEnd,
+  apiTugCheck: apiTugCheck, apiTugSave: apiTugSave
   };
 }
 

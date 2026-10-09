@@ -252,7 +252,7 @@ function parentSummary() {
   readTable('Log').forEach(function (l) { if (l.Date === t) done[l.Girl] = l; });
   readTable('Games').forEach(function (g) {
     if (g.Date !== t || !(Number(g.Total) > 0)) return;
-    if (g.Game === 'duel') duels[g.Girl] = (duels[g.Girl] || 0) + 1; else played[g.Girl] = (played[g.Girl] || 0) + 1;
+    if (['duel', 'boss', 'tug'].indexOf(g.Game) >= 0) duels[g.Girl] = (duels[g.Girl] || 0) + 1; else played[g.Girl] = (played[g.Girl] || 0) + 1;
   });
   readTable('Gates').forEach(function (g) { if (g.Date === t) gated[g.Girl] = g; });
   var byWho = {};
@@ -263,7 +263,7 @@ function parentSummary() {
     var n = kids.filter(function (k) { return done[k.Name]; }).length;
     var body = kids.map(function (k) {
       var l = done[k.Name], n = played[k.Name], du = duels[k.Name], g = gated[k.Name];
-      var games = (n ? ' +' + n + (n === 1 ? ' game' : ' games') : '') + (du ? ' +' + du + (du === 1 ? ' duel' : ' duels') : '');
+      var games = (n ? ' +' + n + (n === 1 ? ' game' : ' games') : '') + (du ? ' +' + du + (du === 1 ? ' game together' : ' games together') : '');
       var gate = g ? (g.Passed === 'yes' ? 'reached ' + LEVEL_LABEL[g.To] + '!' : 'gate ' + g.Correct + '/' + g.Total) : '';
       if (!l) return k.Name + ' ' + (gate || '—') + games;
       return k.Name + ' ✓' + (l.Section === 'level' ? ' level test' : (l.Percent !== '' ? ' ' + l.Percent + '%' : '')) + games + (gate ? ' · ' + gate : '');

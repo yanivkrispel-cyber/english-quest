@@ -544,3 +544,63 @@ console.log('after ending one:', duo('apiDuelHome', 'Aviv').duos.outgoing.map(x 
 duo('apiDuoAnswer', 'Dana', duo('apiDuelHome', 'Dana').duos.incoming[0].id, false);
 console.log('declined:', duo('apiDuelHome', 'Aviv').duos.outgoing.length, '(expect 0) | states', [...new Set(sheets.Duos.rows.slice(1).map(r => r[4]))].join());
 }
+
+// ---- play together, phase 3: Boss Battle and Tug of War ----
+{ // a block, so these names do not clash with the sections above
+const bp = { Aviv: '2694', Ziv: '4821', Ron: '7356', Noa: noaPin };
+const call_ = (fn, who, ...args) => run(fn + '(' + [who, bp[who]].concat(args).map(a => JSON.stringify(a)).join(',') + ')');
+const fails = (label, f) => { try { f(); console.log('NOT REJECTED:', label); } catch (e) { console.log(label + ' ok:', e.message); } };
+const trk = list => list.map(x => x[0] + ':' + x[1]).join(',');
+const rowsOf = (who, game) => sheets.Games.rows.filter(r => r[1] === who && r[3] === game && r[2] === ctx.__day).map(r => r[5] + '/' + r[6] + ':' + r[7] + 'xp');
+pushStatus = () => 201;
+nextDay(); nextDay();
+console.log('boss damage rules:', JSON.stringify(run("bossDamage({HostTrack:'1:5000,1:20000,0:21000', GuestTrack:'1:6500,1:30000'})")), '(expect host 25, guest 34, total 59)');
+
+// A won battle
+pushLog.length = 0;
+let V = call_('apiDuelInvite', 'Aviv', 'Ziv', 'boss');
+console.log('boss invite:', V.mode, V.state, '| items', V.items, '| hp', V.boss.hp, '| push', JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/abc')")));
+let J = call_('apiDuelJoin', 'Ziv', V.code);
+console.log('joined:', J.state, J.mode);
+call_('apiDuelPoll', 'Aviv', V.code, { n: 3, s: 3, ms: 9000, dmg: 54, hint: 777 });
+let P = call_('apiDuelPoll', 'Ziv', V.code, { n: 2, s: 2, ms: 8000, dmg: 30 });
+console.log('Ziv sees Aviv: dmg', P.them.dmg, '| hint', P.them.hint);
+fails('boss result with 13 answers', () => call_('apiDuelFinish', 'Aviv', V.code, { correct: 13, total: 13, ms: 1, track: trk(Array.from({ length: 13 }, (_, i) => [1, i + 1])) }));
+fails('boss result with an unanswered mark', () => call_('apiDuelFinish', 'Aviv', V.code, { correct: 0, total: 1, ms: 1, track: '-:100' }));
+const hostWin = trk(Array.from({ length: 10 }, (_, i) => [1, 3000 * (i + 1)]));
+const guestWin = trk([[1, 4000], [1, 8000], [0, 9000], [1, 12000], [1, 16000], [1, 20000]]);
+let F1 = call_('apiDuelFinish', 'Aviv', V.code, { correct: 10, total: 10, ms: 30000, track: hostWin, missed: [], right: ['m:b1:a1'] });
+console.log('Aviv finished:', F1.state, '| xp', F1.xp, '(expect 30: 10 right + together)');
+let F2 = call_('apiDuelFinish', 'Ziv', V.code, { correct: 5, total: 6, ms: 20000, track: guestWin, missed: ['s:b2:1'], right: [] });
+console.log('Ziv finished:', F2.state, '| winner', F2.winner, '| damage', JSON.stringify(F2.damage), '| xp', F2.xp);
+console.log('rows:', rowsOf('Aviv', 'boss').join(' '), '|', rowsOf('Ziv', 'boss').join(' '), '(win bonus rows 0/0:10xp)');
+
+// A lost battle, and a battle where one kid left
+V = call_('apiDuelInvite', 'Ron', 'Aviv', 'boss');
+call_('apiDuelJoin', 'Aviv', V.code);
+call_('apiDuelFinish', 'Ron', V.code, { correct: 3, total: 5, ms: 90000, track: trk([[1, 10000], [0, 30000], [1, 50000], [0, 70000], [1, 90000]]) });
+P = call_('apiDuelFinish', 'Aviv', V.code, { correct: 2, total: 3, ms: 120000, track: trk([[1, 20000], [0, 60000], [1, 120000]]) });
+console.log('lost battle:', P.state, P.winner, '| damage', P.damage.total, '(<240) | Ron win rows:', rowsOf('Ron', 'boss').filter(x => x.indexOf('0/0') === 0).length, '(expect 0)');
+V = call_('apiDuelInvite', 'Ron', 'Ziv', 'boss');
+call_('apiDuelJoin', 'Ziv', V.code);
+call_('apiDuelFinish', 'Ron', V.code, { correct: 2, total: 2, ms: 9000, track: trk([[1, 4000], [1, 9000]]) });
+clockShift += 210000;
+P = call_('apiDuelPoll', 'Ron', V.code, null);
+console.log('partner left:', P.state, P.winner, '| damage', P.damage.total);
+V = call_('apiDuelInvite', 'Aviv', 'Ron', 'boss');
+call_('apiDuelReply', 'Ron', V.code, 'no');
+const S = call_('apiDuelSolo', 'Aviv', V.code);
+console.log('a declined boss invite becomes a Word Duel challenge:', S.mode, S.state, S.items);
+
+// Tug of War
+nextDay();
+let T = run("apiTugCheck('Ziv','4821')");
+console.log('tug check:', T.name, T.label, !!T.pet);
+fails('tug: wrong PIN for the second kid', () => run("apiTugSave('Aviv','2694','Ziv','0000',{correct:5,total:8},{correct:6,total:9})"));
+fails('tug: the same kid twice', () => run("apiTugSave('Aviv','2694','Aviv','2694',{correct:5,total:8},{correct:6,total:9})"));
+T = run("apiTugSave('Aviv','2694','Ziv','4821',{correct:5,total:8,missed:['m:b1:x1','m:b1:x2','m:b1:x3'],right:[]},{correct:6,total:9,missed:['s:b2:9'],right:[]})");
+console.log('tug saved:', T.xp, T.mateXp, '(expect 20 and 22) | rows', rowsOf('Aviv', 'tug').join(), '|', rowsOf('Ziv', 'tug').join(), '| review', /m:b1:x2\|1/.test((sheets.Review.rows.find(r => r[0] === 'Aviv') || [])[1]));
+T = run("apiTugSave('Aviv','2694','','',{correct:3,total:4},null)");
+console.log('tug as a guest:', T.xp, T.mateXp, '(expect 6 and null) | rows', rowsOf('Aviv', 'tug').length);
+console.log('tug counts for the duo streak:', run("practiceDays('Ziv')['" + ctx.__day + "']") === true);
+}
