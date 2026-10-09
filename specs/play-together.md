@@ -6,8 +6,9 @@ Options and research: https://claude.ai/artifact/7hZzT8PCe7uWXrPySqEh7X (the own
 ## Scope
 
 In phase 1:
-- **Invites**: a "Play together" card lists the kids in the group with an online dot; a 4-letter code
-  invites a friend from another group. The invitee gets a phone notification and an in-app banner.
+- **Invites**: a "Play together" card lists every kid in the app with an online dot (her group first, then the
+  other groups); a 4-letter code or a WhatsApp link invites anyone. The invitee gets a phone notification and an
+  in-app banner.
 - **Word Duel** (live): 7 questions each, near-live race over the existing Apps Script API.
 - **Challenge** (not at the same time): the host plays first; the other kid plays later against her
   "ghost" within 24 hours. A live invite nobody answered can be sent as a challenge.
@@ -28,7 +29,7 @@ Later phases (not here): Duo Streak, Team Quest, Boss Battle, Tug of War, Pet Ar
 | Invite | A live invite stays open 5 minutes; "Give me 5 minutes" adds 5 more. |
 | Challenge | Open 24 hours after the host finished. The host keeps her XP if nobody plays it. |
 | Messages | Preset reactions only (Good luck!, Nice one!, So close!, Wow!, GG, Let's go!). No free text. |
-| Who | Kids who finished the level test. Invite by name inside the group; by code across groups unless a group's `Friends` column says `no`. |
+| Who | Kids who finished the level test, in any group (the owner asked for play across groups). A group whose `Friends` column says `no` plays only inside the group. |
 
 ## States
 
@@ -66,8 +67,8 @@ CacheService (script cache):
 
 | Function | Purpose |
 |---|---|
-| `apiDuelHome()` | Friends (group kids, pet, online, ready), incoming invites, challenges waiting for me, my open challenges, recent results, Helper stars. Polled every 20 s on the home screen. |
-| `apiDuelInvite(guest, mode)` | `mode` = `live` or `challenge`; `guest` = a name in my group, or `''` for a code invite. If the guest already invited me, joins her invite instead. Notifies the guest. |
+| `apiDuelHome()` | Players (every kid I may play with: pet, online, ready, group name if not mine), incoming invites, challenges waiting for me, my open challenges, recent results, Helper stars. Polled every 20 s on the home screen. |
+| `apiDuelInvite(guest, mode)` | `mode` = `live` or `challenge`; `guest` = any kid I may play with, or `''` for a code invite. If the guest already invited me, joins her invite instead. Notifies the guest. |
 | `apiDuelJoin(code)` | Join a live invite (sets the start 6 s ahead) or open a challenge meant for me. |
 | `apiDuelReply(code, reply)` | `wait` (+5 minutes) or `no` (decline). |
 | `apiDuelCancel(code)` | Host cancels an open invite. |

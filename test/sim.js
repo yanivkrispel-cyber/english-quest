@@ -321,7 +321,9 @@ console.log('duel home:', H.friends.map(f => f.name + ':' + f.level + (f.online 
 console.log('dashboard carries duels:', !!run("apiDashboard('Aviv','2694')").duels, '| parent view does not:', run("apiParent('1234')").groups[0].girls.every(k => k.duels === undefined));
 fails('self invite', () => duel('apiDuelInvite', 'Aviv', 'Aviv', 'live'));
 fails('unknown player', () => duel('apiDuelInvite', 'Aviv', 'Nobody', 'live'));
-fails('other group by name', () => duel('apiDuelInvite', 'Aviv', 'Noa', 'live'));
+const cross = duel('apiDuelInvite', 'Aviv', 'Noa', 'live');
+console.log('invite across groups by name:', cross.state, cross.guest.name, '| Noa in the list with her group:', JSON.stringify(H.friends.filter(f => f.name === 'Noa').map(f => f.group)), '| own group has no label:', H.friends.filter(f => f.name === 'Ziv')[0].group === '');
+duel('apiDuelCancel', 'Aviv', cross.code);
 fails('bad mode', () => duel('apiDuelInvite', 'Aviv', 'Ziv', 'chess'));
 const gilPin = run("apiAdminAddKid('1234','Gil','9','" + famId + "','a1')").created.pin;
 fails('kid before the level test', () => duel('apiDuelInvite', 'Aviv', 'Gil', 'live'));
@@ -393,6 +395,8 @@ const gRow = sheets.Groups.rows.findIndex(r => r[0] === gid), fCol = sheets.Grou
 sheets.Groups.rows[gRow][fCol] = 'no'; run('clearCache()');
 V = duel('apiDuelInvite', 'Ziv', '', 'live');
 fails('Friends switched off', () => duel('apiDuelJoin', 'Noa', V.code));
+console.log('switched off: Noa hidden from Aviv:', !duel('apiDuelHome', 'Aviv').friends.some(f => f.name === 'Noa'), '| Noa sees only her group:', duel('apiDuelHome', 'Noa').friends.map(f => f.name).join());
+fails('named invite into a switched-off group', () => duel('apiDuelInvite', 'Aviv', 'Noa', 'live'));
 sheets.Groups.rows[gRow][fCol] = ''; run('clearCache()');
 duel('apiDuelCancel', 'Ziv', V.code);
 fails('join a cancelled invite', () => duel('apiDuelJoin', 'Noa', V.code));

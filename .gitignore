@@ -3,3 +3,5 @@ node_modules/
 test/Design2.jpg
 tools/.fluent/
 test/phone.html
+test/dev.html
+test/duo.html

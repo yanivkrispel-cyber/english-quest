@@ -17,7 +17,7 @@ function apiDuelHome(name, pin) {
   return duelHome(duelKid(name, pin));
 }
 
-// Invite a kid from the group (live or challenge), or open a code invite (guest = '').
+// Invite any kid in the app (live or challenge), or open a code invite (guest = '').
 function apiDuelInvite(name, pin, guestName, mode) {
   var kid = duelKid(name, pin);
   if (DUEL_MODES.indexOf(mode) < 0) throw new Error('Choose a game');
@@ -26,7 +26,7 @@ function apiDuelInvite(name, pin, guestName, mode) {
     guest = findGirl(guestName);
     if (!guest) throw new Error('Unknown player');
     if (guest.Name === kid.Name) throw new Error('Invite someone else');
-    if (groupOf(guest) !== groupOf(kid)) throw new Error('Use a code to invite a friend from another group');
+    if (!duelCanMeet(kid, guest)) throw new Error('Playing with other groups is switched off for this group');
     if (pendingLevelTest(guest)) throw new Error(guest.Name + ' takes the level test first');
   }
   var now = Date.now(), d, joined = false;
@@ -247,14 +247,24 @@ function duelStart(d, kid, now) {
   return d;
 }
 
-// Friends from another group can join a code invite unless either group switched it off.
+// Kids from different groups can play together unless either group switched it off (Groups.Friends = no).
+function duelGroupOpen(id) {
+  var g = findGroup(id);
+  return !(g && String(g.Friends || '').trim().toLowerCase() === 'no');
+}
+function duelCanMeet(a, b) {
+  return groupOf(a) === groupOf(b) || (duelGroupOpen(groupOf(a)) && duelGroupOpen(groupOf(b)));
+}
 function duelCheckFriends(d, kid) {
   var host = findGirl(d.Host);
-  if (!host || groupOf(host) === groupOf(kid)) return;
-  [groupOf(host), groupOf(kid)].forEach(function (id) {
-    var g = findGroup(id);
-    if (g && String(g.Friends || '').trim().toLowerCase() === 'no') throw new Error('Playing with other groups is switched off for this group');
-  });
+  if (host && !duelCanMeet(host, kid)) throw new Error('Playing with other groups is switched off for this group');
+}
+
+// Everyone this kid may play with: her group first, then the other groups (unless switched off).
+function duelPlayers(kid) {
+  var mine = groupOf(kid);
+  return readTable('Girls').filter(function (k) { return k.Name !== kid.Name && duelCanMeet(kid, k); })
+    .sort(function (a, b) { return (groupOf(a) === mine ? 0 : 1) - (groupOf(b) === mine ? 0 : 1); });
 }
 
 // Lazily closes invites and challenges whose time is up (called inside the lock).
@@ -329,14 +339,16 @@ function duelResult(res) {
 function duelHome(kid) {
   var now = Date.now(), t = today(), name = kid.Name;
   var rows = readTable('Duels');
-  var mates = kidsIn(groupOf(kid)).filter(function (k) { return k.Name !== name; });
+  var mates = duelPlayers(kid), mine = groupOf(kid);
   var online = duelOnline(mates.map(function (k) { return k.Name; }));
   var live = function (r) { return Number(r.Expires) > now; };
   var withMe = rows.filter(function (r) { return r.Host === name || r.Guest === name; });
   return {
     friends: mates.map(function (k) {
       var pet = petInfo(k);
+      var g = findGroup(groupOf(k));
       return { name: k.Name, color: k.Color, level: LEVEL_LABEL[k.Level] || k.Level, ready: !pendingLevelTest(k), online: !!online[k.Name],
+        group: groupOf(k) === mine ? '' : (g ? String(g.Name) : ''),
         pet: pet ? { id: pet.id, stage: pet.stage } : null };
     }),
     incoming: withMe.filter(function (r) { return r.State === 'invited' && r.Guest === name && live(r); }).map(function (r) { return duelView(r, name); }),

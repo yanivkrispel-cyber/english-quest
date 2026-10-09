@@ -419,6 +419,91 @@ body.splashing #app{opacity:0}
 .unlock{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
 .unlock span{font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3)}
 .btn-ghost{color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3)}
+/* Play together */
+.t-together{background:linear-gradient(145deg,#8b8ffb,#3cc7b6);--tc:#3cc7b6}
+.gdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.2)}
+.friends{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:8px}
+.fr{display:grid;justify-items:center;align-content:start;gap:2px;padding:10px 4px 9px;border-radius:20px;font:inherit;color:var(--ink);cursor:pointer;
+  background:rgba(255,255,255,.52);border:1px solid rgba(255,255,255,.88);transition:transform .12s}
+.fr:active{transform:scale(.96)}
+.fr b{font-size:14px;margin-top:4px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fr small{font-size:11px;font-weight:700;color:var(--muted)}
+.fr small.ok{color:#047857}
+.fr.off{opacity:.55}
+.fr .av{position:relative;display:block}
+.fr .av .pet-face,.fr .av .avatar{width:54px;height:54px}
+.fr .av .pet-face img{width:100px;height:100px}
+.fr .av .on{position:absolute;right:0;bottom:2px;width:14px;height:14px;border-radius:50%;background:#10b981;border:2.5px solid #fff}
+.addc{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;color:var(--primary);font-size:22px;border:2px dashed rgba(99,102,241,.45);background:rgba(255,255,255,.5)}
+.drow,.mrow{display:flex;align-items:center;gap:12px;padding:10px 12px;width:100%;font:inherit;color:var(--ink);text-align:left;cursor:pointer;border-radius:20px}
+.drow .avatar,.drow .pet-face{width:42px;height:42px}
+.drow .pet-face img{width:78px;height:78px}
+.drow-main{flex:1;min-width:0;display:block}
+.drow-main b{display:block;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drow-main small{display:block;font-size:12px;color:var(--muted);font-weight:600}
+.mrow{background:rgba(255,255,255,.72);border:1.5px solid rgba(255,255,255,.95);box-shadow:0 8px 16px -14px rgba(38,40,80,.5)}
+.mrow.sel{border-color:var(--primary);box-shadow:0 0 0 4px rgba(99,102,241,.14)}
+.mrow[disabled]{opacity:.6}
+.radio{width:24px;height:24px;border-radius:50%;flex:none;display:grid;place-items:center;color:transparent;font-size:13px;border:2px solid rgba(99,102,241,.35)}
+.mrow.sel .radio{color:#fff;border-color:transparent;background:linear-gradient(180deg,var(--primary-2),var(--primary))}
+.code-in{text-transform:uppercase;letter-spacing:6px;font-size:22px;font-weight:800;text-align:center}
+.codebig{font-size:46px;font-weight:800;letter-spacing:8px;color:#4338ca;margin:2px 0 8px}
+.duel-banner h2{font-size:19px}
+#together .chip{white-space:nowrap;flex:none}
+.duo{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:end;gap:4px}
+.side{display:grid;justify-items:center;gap:4px;min-width:0;transition:opacity .3s}
+.side img,.side .duel-av{width:104px;height:104px;object-fit:contain;filter:drop-shadow(0 12px 12px rgba(38,40,80,.25))}
+.side b{font-size:16px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.side.wait{opacity:.5}
+.duel-av{display:inline-grid;place-items:center;border-radius:50%;color:#fff;font-weight:800;font-size:40px;flex:none}
+.flip{transform:scaleX(-1)}
+.count{position:relative;width:84px;height:84px;margin-bottom:46px;border-radius:50%;display:grid;place-items:center;font-size:40px;font-weight:800;color:#4338ca;
+  background:linear-gradient(140deg,rgba(255,255,255,.92),rgba(255,255,255,.55));box-shadow:0 18px 30px -16px rgba(38,40,80,.45)}
+.count::before{content:'';position:absolute;inset:-4px;border-radius:50%;padding:4px;background:var(--iri);animation:spin 5s linear infinite;pointer-events:none;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.count i{font-size:32px;color:var(--faint)}
+.race{padding:18px 14px 10px;display:grid;gap:9px}
+.lane{display:grid;grid-template-columns:76px minmax(0,1fr) 20px;align-items:center;gap:8px}
+.lwho{display:flex;align-items:center;gap:6px;font-weight:700;font-size:13px;min-width:0}
+.lwho span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lwho .pet-face,.lwho .avatar{width:26px;height:26px;box-shadow:none;font-size:12px}
+.lwho .pet-face img{width:50px;height:50px}
+.track{position:relative;height:28px;border-radius:999px;background:rgba(255,255,255,.62);box-shadow:inset 0 1px 3px rgba(0,0,0,.08)}
+.track .stn{position:absolute;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:rgba(99,102,241,.25)}
+.track .fin{position:absolute;right:-3px;top:50%;margin-top:-9px;font-size:18px;color:var(--muted)}
+.runner{position:absolute;bottom:3px;width:40px;height:40px;margin-left:-20px;object-fit:contain;object-position:bottom;transition:left .6s cubic-bezier(.3,1.4,.5,1);
+  filter:drop-shadow(0 4px 4px rgba(38,40,80,.25))}
+.runner.ghost{opacity:.5;filter:saturate(.5) drop-shadow(0 0 6px rgba(99,102,241,.6))}
+.runner.dot{width:18px;height:18px;margin-left:-9px;bottom:5px;border-radius:50%;border:3px solid #fff}
+.lane > b{font-weight:800;font-size:17px;text-align:right}
+.reacts{display:flex;gap:6px;flex-wrap:wrap}
+.reacts button{height:34px;padding:0 12px;border-radius:999px;font:inherit;font-weight:700;font-size:12.5px;cursor:pointer;color:var(--ink);
+  background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.95);box-shadow:0 8px 16px -12px rgba(38,40,80,.45)}
+.reacts button.sent{background:linear-gradient(180deg,#e0e7ff,#c7d2fe)}
+.rtoast{position:fixed;z-index:45;top:66px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:5px 16px 5px 5px;border-radius:999px;
+  font-weight:700;font-size:14px;white-space:nowrap;background:rgba(255,255,255,.96);box-shadow:0 14px 30px -12px rgba(38,40,80,.5);animation:fade .25s}
+.rtoast .pet-face,.rtoast .avatar{width:30px;height:30px;font-size:13px}
+.rtoast .pet-face img{width:56px;height:56px}
+.vs{display:flex;align-items:center;justify-content:center;gap:2px}
+.vs img,.vs .duel-av{width:100px;height:100px;object-fit:contain;filter:drop-shadow(0 10px 10px rgba(38,40,80,.22))}
+.vsb{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff;flex:none;
+  background:linear-gradient(145deg,#8b8ffb,#3cc7b6);box-shadow:0 12px 20px -10px #3cc7b6,inset 0 1px 0 rgba(255,255,255,.5)}
+.ghostpet{opacity:.6;filter:saturate(.6) drop-shadow(0 0 14px rgba(99,102,241,.55))}
+.podium{position:relative;width:230px;height:140px;margin:0 auto}
+.podium .big{position:absolute;left:10px;bottom:0;width:134px;height:134px;object-fit:contain;filter:drop-shadow(0 12px 12px rgba(38,40,80,.25))}
+.podium .small{position:absolute;right:6px;bottom:0;width:94px;height:94px;object-fit:contain;filter:drop-shadow(0 10px 10px rgba(38,40,80,.2))}
+.podium .duel-av.big{width:110px;height:110px;bottom:10px;left:22px}
+.podium .duel-av.small{width:76px;height:76px;bottom:8px;font-size:30px}
+.podium .crown{position:absolute;left:58px;top:-12px;font-size:32px;color:#f59e0b;filter:drop-shadow(0 4px 6px rgba(217,119,6,.45))}
+.score2{font-size:44px;font-weight:800;letter-spacing:-1px;line-height:1}
+.score2 span{color:var(--faint);margin:0 8px}
+.lrow{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:16px;background:rgba(255,255,255,.62);text-align:left}
+.lrow .x{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;flex:none;color:#be123c;background:rgba(232,104,122,.16);font-size:14px}
+.lrow .x.ok{color:#b45309;background:rgba(246,160,77,.2)}
+.lrow .lt{flex:1;min-width:0;font-size:13.5px;line-height:1.35}
+.lrow .lt b{color:var(--ink)}
+.lrow .btn-sm{height:32px;font-size:12.5px;padding:0 12px;flex:none}
+@media (prefers-reduced-motion:reduce){.count::before{animation:none}.runner{transition:none}}
 @media (prefers-reduced-motion:reduce){.pet-img.bounce,.speak.talk,.xp-pop,.evolve .flash.go,.mnode.cur::after,.mpet,.mgate.open{animation:none}}
 </style>
 </head>
@@ -753,7 +838,7 @@ function loadBank(){
     document.head.appendChild(s);
   });
 }
-const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const shuffle = (a, rnd = Math.random) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const idKey = w => String(w).replace(/[^A-Za-z0-9-]/g, '_');
 const picSrc = w => ASSETS + 'pics/' + String(w).replace(/ /g, '-') + '.webp';
 // A B1+ kid plays B1 and B2 items together.
@@ -796,19 +881,19 @@ function makeRound(B, game){
 }
 
 // Each prepared item knows its game, so one round can mix games (the gate challenge).
-const prepare = (B, game, x) => Object.assign(prepareItem(B, game, x), { game });
-function prepareItem(B, game, x){
+const prepare = (B, game, x, rnd) => Object.assign(prepareItem(B, game, x, rnd), { game });
+function prepareItem(B, game, x, rnd){
   if (game === 'match') {
     const others = x.kind === 'pic' ? B.pics[x.topic].filter(w => w !== x.word) : B.match[x.lv].map(m => m[0]).filter(w => w !== x.word);
-    return Object.assign({ answer: x.word, options: shuffle([x.word].concat(shuffle(others).slice(0, 3))) }, x);
+    return Object.assign({ answer: x.word, options: shuffle([x.word].concat(shuffle(others, rnd).slice(0, 3)), rnd) }, x);
   }
   if (game === 'listen') {
     const [say, q, a, ...wrong] = x.data;
-    return Object.assign({ say, q: q || 'Which word do you hear?', answer: a, options: shuffle([a].concat(wrong)) }, x);
+    return Object.assign({ say, q: q || 'Which word do you hear?', answer: a, options: shuffle([a].concat(wrong), rnd) }, x);
   }
   if (game === 'build') {
     const words = x.data.split(' ');
-    let order = shuffle(words.map((_, i) => i));
+    let order = shuffle(words.map((_, i) => i), rnd);
     if (order.every((v, i) => words[v] === words[i])) order = order.reverse();
     return Object.assign({ sentence: x.data, words, order }, x);
   }
@@ -864,14 +949,15 @@ function renderItem(){
   const hint = { match: 'Hmm… which one is it?', listen: 'Listen carefully!', build: 'Let\'s build it together!', spot: 'Can you find it?' }[game];
   app.innerHTML = `<div class="gscreen" id="gs">
     <div class="gtop"><button class="btn btn-glass icon-btn" id="gquit" title="Stop">${icon('x')}</button>
-      <div style="flex:1;min-width:0"><h2>${G.gate ? 'Gate challenge' : info.name}</h2><div class="sub" style="font-size:12px;margin:0">${G.gate
-        ? info.name + ' · level ' + esc(dash.journey.gate.nextLabel) : 'Level ' + esc(dash.girl.levelLabel)} · ${G.i + 1} of ${n}</div></div>
-      <span class="tile ${info.tile}">${icon(info.icon, 'duotone')}</span></div>
-    <div class="gprog" id="gprog">${gameBars()}</div>
+      <div style="flex:1;min-width:0"><h2>${G.duel ? G.duel.title : G.gate ? 'Gate challenge' : info.name}</h2><div class="sub" style="font-size:12px;margin:0">${G.duel
+        ? info.name + ' · level ' + esc(G.duel.label) : G.gate ? info.name + ' · level ' + esc(dash.journey.gate.nextLabel) : 'Level ' + esc(dash.girl.levelLabel)} · ${G.i + 1} of ${n}</div></div>
+      ${G.duel ? `<span class="chip" id="dtimer">${icon('timer')} ${duelClockText()}</span>` : `<span class="tile ${info.tile}">${icon(info.icon, 'duotone')}</span>`}</div>
+    ${G.duel ? duelRaceCard() : `<div class="gprog" id="gprog">${gameBars()}</div>`}
     ${body}
     <div class="react">${dash.pet ? `<img class="gpet" id="gpet" src="${petSrc(dash.pet.id, dash.pet.stage, 'thinking')}" alt="">` : ''}
       <div class="bubble" id="fb">${hint}</div></div>
     <div id="explain"></div><div style="flex:1"></div><div id="gnext"></div>
+    ${G.duel && DU && DU.live ? reactionsBar() : ''}
   </div>`;
   document.getElementById('gs').onclick = onGameClick;
   if (game === 'listen') setTimeout(() => sayIt(false), 300);
@@ -880,10 +966,12 @@ function renderItem(){
 function onGameClick(e){
   const t = e.target.closest('button');
   if (!t || !G) return;
+  if (t.dataset.react != null) return sendReaction(Number(t.dataset.react));
   if (t.id === 'gquit') {
-    // Leaving the gate challenge halfway takes a second tap; nothing is saved then.
-    if (G.gate && !(G.quitAt > Date.now() - 3000)) { G.quitAt = Date.now(); return toast('Tap again to leave. This try won\'t count.'); }
+    // Leaving the gate challenge or a duel halfway takes a second tap; nothing is saved then.
+    if ((G.gate || G.duel) && !(G.quitAt > Date.now() - 3000)) { G.quitAt = Date.now(); return toast(G.duel ? 'Tap again to leave the duel.' : 'Tap again to leave. This try won\'t count.'); }
     const gate = G.gate;
+    if (G.duel) stopDuel();
     G = null; speechStop();
     return gate ? renderMap() : renderDash();
   }
@@ -933,7 +1021,7 @@ function answered(ok, explain){
   const it = G.items[G.i];
   G.res.push(ok);
   (ok ? G.right : G.missed).push(it.id);
-  document.getElementById('gprog').innerHTML = gameBars();
+  if (G.duel) duelAnswer(ok); else document.getElementById('gprog').innerHTML = gameBars();
   const fb = document.getElementById('fb');
   fb.className = 'bubble ' + (ok ? 'ok' : 'no');
   fb.textContent = ok ? pick(['Correct!', 'Great!', 'Yes! You got it!', 'Perfect!', 'Well done!'])
@@ -972,6 +1060,7 @@ function xpPop(){
 
 function finishRound(){
   if (G.gate) return finishGate();
+  if (G.duel) return finishDuel();
   const correct = G.res.filter(Boolean).length, total = G.res.length, pct = total ? correct / total : 0;
   const mood = pct >= .8 ? 'celebrate' : pct >= .5 ? 'happy' : 'oops';
   store.set(seenKey(), (store.get(seenKey()) || []).concat(G.items.map(x => x.id)).slice(-60));
@@ -1048,6 +1137,786 @@ function sayIt(slow){
   } catch(e){}
 }
 function speechStop(){ try { speechSynthesis.cancel(); } catch(e){} }
+
+// ---------- Play together: Word Duel and Challenge ----------
+// Spec: specs/play-together.md. Both phones build the same game sequence from the duel's seed;
+// each player's questions come from her own level. A live duel syncs by polling the server.
+const DUEL_ITEMS = 7;
+const DUEL_GAMES = ['match', 'listen', 'build', 'spot', 'match', 'listen', 'spot'];
+const DUEL_REACTIONS = ['Good luck!', 'Nice one!', 'So close!', 'Wow!', 'GG', 'Let\'s go!'];
+let DU = null, duelsHome = null, homeTimer = null, duelTick = null, pendingDuel = null, duelOffset = 0, homeStale = false;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const lvIndex = lv => LEVELS.findIndex(x => x[0] === lv);
+const secs = ms => Math.round((Number(ms) || 0) / 1000) + ' s';
+const appBase = () => IN_APPS_SCRIPT ? ASSETS : location.origin + location.pathname;
+function rng32(a){
+  return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+function hashStr(s){ let h = 2166136261; for (const c of String(s)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
+
+// Same seed and level: the same questions in the same order, with the same options.
+function duelItems(B, seed, level){
+  const order = shuffle(DUEL_GAMES, rng32(seed)), rnd = rng32((seed ^ hashStr(level)) >>> 0), used = new Set();
+  return order.map(game => {
+    const pool = [].concat(...kidLevels(level).map(l => bankItems(B, game, l))).filter(x => !used.has(x.id));
+    const x = pool[Math.floor(rnd() * pool.length)];
+    used.add(x.id);
+    return prepare(B, game, x, rnd);
+  });
+}
+const parseTrack = s => String(s || '').split(',').filter(String).map(x => { const p = x.split(':'); return { ok: p[0] === '1', t: Number(p[1]) || 0 }; });
+const ghostScore = (track, ms) => track.filter(x => x.ok && x.t <= ms).length;
+
+const meAsPlayer = () => ({ name: dash.girl.name, level: dash.girl.level, label: dash.girl.levelLabel, color: dash.girl.color, pet: dash.pet ? { id: dash.pet.id, stage: dash.pet.stage } : null });
+const duelMe = v => (v.role === 'guest' ? v.guest : v.host) || meAsPlayer();
+const duelThem = v => v.role === 'guest' ? v.host : v.guest;
+const faceOf = p => petFace(p && p.pet, (p && p.color) || '#8b8ffb', p ? p.name : '?');
+function petPic(p, mood, cls){
+  if (p && p.pet && PET_ART[p.pet.id]) return `<img class="${cls || ''}" src="${petSrc(p.pet.id, p.pet.stage, mood)}" alt="">`;
+  return `<span class="duel-av ${cls || ''}" style="background:${esc((p && p.color) || '#8b8ffb')}">${esc(String((p && p.name) || '?')[0])}</span>`;
+}
+// Time left on an invite or a challenge: '24h left' / '5 min left', or in words: '24 hours' / '5 minutes'.
+function duelLeft(v, words){
+  const ms = (v.expires || 0) - (v.now || Date.now());
+  if (!(ms > 0)) return words ? 'no time' : 'time is up';
+  const h = Math.round(ms / 3600000), m = Math.max(1, Math.ceil(ms / 60000));
+  if (ms >= 3600000) return words ? plural(h, 'hour') : h + 'h left';
+  return words ? plural(m, 'minute') : m + ' min left';
+}
+
+async function dcall(fn, ...args){
+  const t0 = Date.now();
+  const v = await call(fn, session.name, session.pin, ...args);
+  if (v && v.now) duelOffset = v.now - (t0 + Date.now()) / 2;
+  return v;
+}
+
+// ---- Home: invite banner and the Play together card ----
+function duelBanner(){
+  const h = duelsHome, inv = h && h.incoming[0], ch = h && h.challenges[0];
+  let body = '';
+  if (inv) body = `<div class="today iri duel-banner">
+      <div class="row-flex" style="gap:12px">${faceOf(inv.host)}<div style="min-width:0"><span class="label" style="color:#3b3f55">Invitation · ${duelLeft(inv)}</span>
+        <h2 style="margin-top:2px">${esc(inv.host.name)} invites you to a Word Duel</h2></div></div>
+      <div class="btns"><button class="btn btn-glass" data-duelno="${inv.code}">Not now</button><button class="btn btn-teal" data-dueljoin="${inv.code}">${icon('play')} Join</button></div></div>`;
+  else if (ch) body = `<div class="today iri duel-banner">
+      <div class="row-flex" style="gap:12px">${faceOf(ch.host)}<div style="min-width:0"><span class="label" style="color:#3b3f55">Challenge · ${duelLeft(ch)}</span>
+        <h2 style="margin-top:2px">${esc(ch.host.name)} challenged you! Beat ${ch.host.score}/${DUEL_ITEMS}</h2></div></div>
+      <button class="btn btn-primary btn-block mt-s" data-dueljoin="${ch.code}">${icon('ghost')} Play the challenge</button></div>`;
+  return `<div id="duelbanner">${body}</div>`;
+}
+
+function togetherCard(){
+  const h = duelsHome;
+  if (!h) return '<div id="together"></div>';
+  const on = h.friends.filter(f => f.online && f.ready).length;
+  // My group first; kids from the other groups show their group's name.
+  const tile = f => `<button class="fr ${f.ready ? '' : 'off'}" data-friend="${esc(f.name)}">
+      <span class="av">${petFace(f.pet, f.color, f.name)}${f.online ? '<i class="on"></i>' : ''}</span>
+      <b>${esc(f.name)}</b><small class="${f.online ? 'ok' : ''}">${!f.ready ? 'New' : f.online ? 'Online' : f.group ? esc(f.group) : 'Level ' + esc(f.level)}</small></button>`;
+  const mates = h.friends.filter(f => !f.group), others = h.friends.filter(f => f.group).sort((a, b) => (b.online ? 1 : 0) - (a.online ? 1 : 0));
+  const friends = mates.map(tile).join('');
+  const rows = [];
+  h.waiting.forEach(v => {
+    const to = v.guest ? esc(v.guest.name) : 'code ' + esc(v.code);
+    rows.push(`<button class="soft drow" data-duelopen="${v.code}">${v.guest ? faceOf(v.guest) : `<span class="tile sm t-read">${icon('key', 'duotone')}</span>`}
+      <span class="drow-main"><b>${v.state === 'challenge' ? 'Challenge to ' + to : 'Invite to ' + to}</b>
+      <small>${v.state === 'challenge' ? 'You got ' + v.host.score + '/' + DUEL_ITEMS + ' · ' + duelLeft(v) : 'Waiting · ' + duelLeft(v)}</small></span>${icon('caret-right')}</button>`);
+  });
+  h.results.slice(0, 3).forEach(v => {
+    const me = duelMe(v), them = duelThem(v) || { name: '?' };
+    const res = v.winner === me.name ? 'You won' : v.winner === 'draw' ? 'A draw' : esc(them.name) + ' won';
+    rows.push(`<button class="soft drow" data-duelopen="${v.code}">${faceOf(them)}
+      <span class="drow-main"><b>You ${me.score == null ? '–' : me.score} : ${them.score == null ? '–' : them.score} ${esc(them.name)}</b>
+      <small>${res} · ${v.mode === 'challenge' ? 'Challenge' : 'Word Duel'}</small></span>
+      <span class="chip purple" data-rematch="${v.code}">${icon('arrows-clockwise')} Rematch</span></button>`);
+  });
+  return `<div class="glass panel" id="together">
+    <div class="row-flex between" style="gap:10px"><div class="row-flex" style="gap:12px;min-width:0"><span class="tile t-together">${icon('users-three', 'duotone')}</span>
+      <div style="min-width:0"><h2>Play together</h2><div class="sub" style="margin-top:2px;font-size:13px">Invite someone. Learn as a team.</div></div></div>
+      ${on ? `<span class="chip teal"><i class="gdot"></i>${on} online</span>` : ''}</div>
+    ${others.length ? '<div class="label mt">Your group</div>' : ''}
+    <div class="friends ${others.length ? 'mt-s' : 'mt'}">${friends}<button class="fr" id="duelcode"><span class="addc">${icon('user-plus')}</span><b>Code</b><small>Join or share</small></button></div>
+    ${others.length ? `<div class="label mt">Other groups</div><div class="friends mt-s">${others.map(tile).join('')}</div>` : ''}
+    ${rows.length ? `<div class="stack mt" style="gap:8px">${rows.join('')}</div>` : ''}
+    ${h.helper ? `<div class="sub mt-s" style="font-size:12.5px">${icon('star', 'duotone')} ${plural(h.helper, 'Helper star')} for explaining to a friend</div>` : ''}
+  </div>`;
+}
+
+function bindTogether(){
+  ['together', 'duelbanner'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.onclick = e => {
+      const t = e.target.closest('[data-rematch],button');
+      if (!t) return;
+      if (t.dataset.rematch) return duelRematch(t.dataset.rematch);
+      if (t.dataset.friend) return inviteSheet(t.dataset.friend);
+      if (t.id === 'duelcode') return codeSheet();
+      if (t.dataset.duelopen) return openDuel(t.dataset.duelopen);
+      if (t.dataset.dueljoin) return joinDuel(t.dataset.dueljoin);
+      if (t.dataset.duelno) return replyDuel(t.dataset.duelno, 'no');
+    };
+  });
+}
+
+function refreshTogether(){
+  const b = document.getElementById('duelbanner'), c = document.getElementById('together');
+  if (b) b.outerHTML = duelBanner();
+  if (c) c.outerHTML = togetherCard();
+  bindTogether();
+}
+
+// The home screen asks for invites every 20 s while it is open (this also keeps the online dot).
+async function pollHome(){
+  if (!session || G || DU || document.visibilityState !== 'visible' || !document.getElementById('together')) return;
+  try {
+    const h = await call('apiDuelHome', session.name, session.pin);
+    if (!document.getElementById('together')) return;
+    const fresh = h.incoming.find(v => !(duelsHome && duelsHome.incoming.some(x => x.code === v.code)));
+    duelsHome = h;
+    refreshTogether();
+    if (fresh) { toast(fresh.host.name + ' invites you to a Word Duel!'); try { navigator.vibrate && navigator.vibrate(120); } catch(e){} }
+  } catch(e){}
+}
+function startHomePoll(){
+  clearInterval(homeTimer);
+  homeTimer = setInterval(pollHome, 20000);
+  if (homeStale) { homeStale = false; setTimeout(pollHome, 300); }
+}
+
+// ---- Invite, code and replies ----
+function inviteSheet(name){
+  const f = duelsHome && duelsHome.friends.find(x => x.name === name);
+  if (!f) return;
+  if (!f.ready) return toast(name + ' takes the level test first');
+  let mode = f.online ? 'live' : 'challenge';
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="sheet glass">
+    <div class="row-flex between"><span class="label">Play with ${esc(name)}</span>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
+    <div class="row-flex mt-s" style="gap:6px">${petFace(dash.pet, dash.girl.color, dash.girl.name)}<b style="color:var(--faint)">+</b>${faceOf(f)}
+      <span class="sub" style="margin:0 0 0 6px;font-size:13px">${f.online ? esc(name) + ' is online now' : esc(name) + ' will get a notification'}</span></div>
+    <div class="stack mt" style="gap:10px">
+      <button class="mrow" data-mode="live"><span class="tile t-grammar">${icon('sword', 'duotone')}</span>
+        <span class="drow-main"><b>Word Duel</b><small>Race now · ${DUEL_ITEMS} questions each</small></span><span class="radio">${icon('check')}</span></button>
+      <button class="mrow" data-mode="challenge"><span class="tile t-read">${icon('ghost', 'duotone')}</span>
+        <span class="drow-main"><b>Challenge</b><small>You play now, ${esc(name)} plays later</small></span><span class="radio">${icon('check')}</span></button>
+    </div>
+    <button class="btn btn-primary btn-block mt" id="go">${icon('paper-plane-tilt')} Send</button>
+  </div>`;
+  document.body.appendChild(ov);
+  const paint = () => ov.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('sel', b.dataset.mode === mode));
+  paint();
+  const close = () => ov.remove();
+  ov.onclick = e => { if (e.target === ov) close(); };
+  ov.querySelector('#x').onclick = close;
+  ov.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { mode = b.dataset.mode; paint(); });
+  ov.querySelector('#go').onclick = async e => {
+    const btn = e.currentTarget;
+    btn.disabled = true; btn.innerHTML = '<span class="mini-spin"></span>Sending…';
+    try { const v = await dcall('apiDuelInvite', name, mode); close(); routeDuel(v); }
+    catch(err){ toast(err.message, true); btn.disabled = false; btn.innerHTML = icon('paper-plane-tilt') + ' Send'; }
+  };
+}
+
+function codeSheet(){
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="sheet glass">
+    <div class="row-flex between"><span class="label">Play with a code</span>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
+    <div class="label mt">Got a code from a friend?</div>
+    <div class="row-flex mt-s" style="gap:10px"><input class="input code-in" id="dcode" maxlength="4" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="ABCD">
+      <button class="btn btn-teal" id="djoin">Join</button></div>
+    <div class="label mt">Or make a code to send</div>
+    <div class="stack mt-s" style="gap:10px">
+      <button class="mrow" data-open="live"><span class="tile t-grammar">${icon('sword', 'duotone')}</span><span class="drow-main"><b>Word Duel code</b><small>Play together now</small></span>${icon('caret-right')}</button>
+      <button class="mrow" data-open="challenge"><span class="tile t-read">${icon('ghost', 'duotone')}</span><span class="drow-main"><b>Challenge code</b><small>You play now, she plays within 24 hours</small></span>${icon('caret-right')}</button>
+    </div>
+    <div class="sub mt-s" style="font-size:12px">You get a 4-letter code to send on WhatsApp. The first friend who enters it in her English Quest app plays with you.</div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  ov.onclick = e => { if (e.target === ov) close(); };
+  ov.querySelector('#x').onclick = close;
+  const input = ov.querySelector('#dcode');
+  input.oninput = () => { input.value = input.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4); };
+  ov.querySelector('#djoin').onclick = () => {
+    if (input.value.length !== 4) return toast('A code has 4 letters', true);
+    close(); joinDuel(input.value);
+  };
+  ov.querySelectorAll('[data-open]').forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try { const v = await dcall('apiDuelInvite', '', b.dataset.open); close(); routeDuel(v); }
+    catch(err){ toast(err.message, true); b.disabled = false; }
+  });
+}
+
+async function joinDuel(code){
+  loading();
+  try { routeDuel(await dcall('apiDuelJoin', code)); }
+  catch(e){ toast(e.message, true); homeStale = true; renderDash(); }
+}
+
+async function replyDuel(code, reply){
+  try {
+    const v = await dcall('apiDuelReply', code, reply);
+    toast(reply === 'wait' ? v.host.name + ' knows you\'ll be there in 5 minutes' : 'OK, maybe next time');
+  } catch(e){ toast(e.message, true); }
+  homeStale = true;
+  renderDash();
+}
+
+// From a notification, a shared link or a row on the home screen.
+async function openDuel(code){
+  if (!session) { pendingDuel = code; return; }
+  loading();
+  try { routeDuel(await dcall('apiDuelPoll', code, null)); }
+  catch(e){
+    if (/not yours/.test(e.message)) {
+      try { return routeDuel(await dcall('apiDuelJoin', code)); } catch(e2){ toast(e2.message, true); }
+    } else toast(e.message, true);
+    renderDash();
+  }
+}
+
+async function duelRematch(code){
+  const h = duelsHome, v = h && h.results.find(x => x.code === code) || (DU && DU.view && DU.view.code === code ? DU.view : null);
+  if (!v) return;
+  const them = duelThem(v), mate = h && h.friends.some(f => f.name === (them && them.name));
+  loading();
+  try { routeDuel(await dcall('apiDuelInvite', mate ? them.name : '', v.mode === 'challenge' ? 'challenge' : 'live')); }
+  catch(e){ toast(e.message, true); renderDash(); }
+}
+
+// Where a duel goes next, from its state and the kid's role in it.
+function routeDuel(v){
+  if (!v) return renderDash();
+  const me = duelMe(v);
+  if (v.state === 'done') return duelResult(v);
+  if (v.state === 'cancelled') return duelNotice(v, 'This invite was cancelled');
+  if (v.role === 'host') {
+    if (v.state === 'invited' || v.state === 'declined' || (v.state === 'expired' && v.mode === 'live' && me.score == null)) return duelLobby(v);
+    if (v.state === 'solo') return duelIntro(v);
+    if (v.state === 'challenge') return duelSent(v);
+    if (v.state === 'playing') return duelLobby(v);
+  } else if (v.role === 'guest') {
+    if (v.state === 'invited' || v.state === 'declined') return duelInvitation(v);
+    if (v.state === 'playing') return duelLobby(v);
+    if (v.state === 'challenge' && me.score == null) return duelIntro(v);
+  }
+  duelNotice(v, v.state === 'expired' ? 'This duel has expired' : 'This duel is not open right now');
+}
+
+// ---- Duel session and sync ----
+function duelSession(v){
+  if (!DU || DU.code !== v.code) { stopDuel(); DU = { code: v.code, view: v, seenRt: null, reaction: -1, reactionAt: 0, score: 0, answered: 0, lastMs: 0, finished: false }; }
+  else DU.view = v;
+  return DU;
+}
+function stopDuel(){
+  if (DU) DU.stop = true;
+  DU = null;
+  clearInterval(duelTick);
+}
+function duelProgress(){
+  return { n: DU.answered, s: DU.score, ms: DU.lastMs, f: DU.finished, r: DU.reaction, rt: DU.reactionAt };
+}
+async function duelLoop(){
+  const me = DU;
+  if (!me || me.looping) return;
+  me.looping = true;
+  while (DU === me && !me.stop) {
+    try {
+      const v = await dcall('apiDuelPoll', me.code, duelProgress());
+      if (DU !== me || me.stop) break;
+      me.fails = 0;
+      onDuelUpdate(v);
+    } catch(e){ me.fails = (me.fails || 0) + 1; if (me.fails === 4) toast('The connection is slow…', true); }
+    await sleep(600);
+  }
+  me.looping = false;
+}
+function onDuelUpdate(v){
+  DU.view = v;
+  DU.them = v.them;
+  const r = v.them && v.them.rt;
+  if (r && r !== DU.seenRt) { if (DU.seenRt !== null && v.them.r >= 0) showReaction(duelThem(v), v.them.r); DU.seenRt = r; }
+  else if (DU.seenRt === null) DU.seenRt = r || 0;
+  if (DU.screen === 'lobby') return lobbyUpdate(v);
+  if (DU.screen === 'play') return updateRace();
+  if (DU.screen === 'wait') { if (v.state === 'done') return duelResult(v); updateRace(); return waitUpdate(v); }
+}
+
+function reactionsBar(){
+  return `<div class="reacts" id="reacts">${DUEL_REACTIONS.map((r, i) => `<button data-react="${i}">${esc(r)}</button>`).join('')}</div>`;
+}
+function sendReaction(i){
+  if (!DU || Date.now() - DU.reactionAt < 2500) return;
+  DU.reaction = i; DU.reactionAt = Date.now();
+  const b = document.querySelector('[data-react="' + i + '"]');
+  if (b) { b.classList.add('sent'); setTimeout(() => b.classList.remove('sent'), 1500); }
+}
+function showReaction(p, i){
+  if (!p || !DUEL_REACTIONS[i]) return;
+  document.querySelectorAll('.rtoast').forEach(x => x.remove());
+  const t = document.createElement('div');
+  t.className = 'rtoast';
+  t.innerHTML = `${faceOf(p)}<span>${esc(p.name)}: ${esc(DUEL_REACTIONS[i])}</span>`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2600);
+}
+
+// ---- Lobby: the host waits; both count down together ----
+function duelLobby(v){
+  duelSession(v);
+  DU.screen = 'lobby';
+  G = null; speechStop();
+  window.scrollTo(0, 0);
+  const me = duelMe(v);
+  app.innerHTML = `<div class="gscreen" id="lobby">
+    <div class="gtop"><button class="btn btn-glass icon-btn" id="lquit">${icon('x')}</button>
+      <div style="flex:1;min-width:0"><h2>Word Duel</h2><div class="sub" style="font-size:12px;margin:0" id="lsub"></div></div>
+      ${v.role === 'host' ? `<span class="chip purple">${icon('key')} ${esc(v.code)}</span>` : ''}</div>
+    <div class="glass panel iri" style="padding:18px 14px 16px">
+      <div class="duo">
+        <div class="side">${petPic(me, 'happy')}<b>${esc(me.name)}</b><span class="chip purple">${esc(me.label || '')}</span></div>
+        <div class="count" id="lcount">${icon('hourglass-medium', 'duotone')}</div>
+        <div class="side wait" id="lthem"></div>
+      </div>
+      <div class="sub" style="text-align:center;margin-top:10px;font-size:13px">Same game. Questions at each player's level.</div>
+    </div>
+    <div id="lstat"></div>
+    <div style="flex:1"></div>
+    <div id="lact" class="stack" style="gap:10px"></div>
+    <div id="lreact"></div>
+  </div>`;
+  document.getElementById('lobby').onclick = async e => {
+    const t = e.target.closest('button');
+    if (!t || !DU) return;
+    if (t.dataset.react != null) return sendReaction(Number(t.dataset.react));
+    if (t.dataset.copy) return copyText(t.dataset.copy);
+    const act = t.id === 'lquit' ? (DU.view.role === 'host' && DU.view.state === 'invited' ? 'cancel' : 'home') : t.dataset.act;
+    if (act === 'home') { stopDuel(); homeStale = true; return renderDash(); }
+    if (act === 'cancel' || act === 'solo') {
+      t.disabled = true;
+      try {
+        const nv = await dcall(act === 'cancel' ? 'apiDuelCancel' : 'apiDuelSolo', DU.code);
+        stopDuel();
+        if (act === 'cancel') { homeStale = true; return renderDash(); }
+        return duelIntro(nv);
+      } catch(err){ toast(err.message, true); t.disabled = false; }
+    }
+  };
+  lobbyUpdate(v);
+  duelLoop();
+}
+
+function lobbyUpdate(v){
+  if (!DU || DU.screen !== 'lobby') return;
+  const sub = document.getElementById('lsub');
+  if (!sub) return;
+  const them = duelThem(v), name = them ? them.name : 'your friend';
+  const stat = document.getElementById('lstat'), act = document.getElementById('lact'), th = document.getElementById('lthem');
+  th.className = 'side' + (v.state === 'playing' ? '' : ' wait');
+  th.innerHTML = them ? `${petPic(them, v.state === 'playing' ? 'cool' : 'sleepy', 'flip')}<b>${esc(them.name)}</b><span class="chip orange">${esc(them.label || '')}</span>`
+    : `<span class="duel-av" style="background:rgba(255,255,255,.7);color:var(--faint)">?</span><b>Friend</b><span class="chip">Code ${esc(v.code)}</span>`;
+  if (v.state === 'playing') {
+    sub.textContent = 'Get ready…';
+    stat.innerHTML = '';
+    act.innerHTML = '';
+    if (!document.getElementById('reacts')) document.getElementById('lreact').innerHTML = reactionsBar();
+    return duelCountdown(v);
+  }
+  if (v.state === 'invited') {
+    sub.textContent = them ? 'Waiting for ' + them.name + '…' : 'Waiting for your friend…';
+    stat.innerHTML = them ? `<div class="soft stat" style="padding:12px 14px"><span class="tile sm t-listen">${icon(v.reply === 'wait' ? 'hourglass-medium' : 'bell-ringing', 'duotone')}</span>
+        <div class="sub" style="margin:0;font-size:13px">${v.reply === 'wait' ? '<b style="color:var(--ink)">' + esc(them.name) + ':</b> Give me 5 minutes!' : esc(them.name) + ' got a notification.'} · ${duelLeft(v)}</div></div>` : codeShare(v);
+    act.innerHTML = `<button class="btn btn-glass btn-block" data-act="solo">${icon('ghost')} Play it as a challenge instead</button>
+      <button class="btn btn-glass btn-block" data-act="cancel">Cancel</button>`;
+    return;
+  }
+  if (v.state === 'declined' || v.state === 'expired') {
+    sub.textContent = v.state === 'declined' ? name + ' can\'t play now' : 'No answer from ' + name;
+    stat.innerHTML = `<div class="soft stat" style="padding:12px 14px"><span class="tile sm t-read">${icon('ghost', 'duotone')}</span>
+      <div class="sub" style="margin:0;font-size:13px">Send it as a challenge: you play now, ${esc(name)} plays within 24 hours.</div></div>`;
+    act.innerHTML = `<button class="btn btn-primary btn-block" data-act="solo">${icon('ghost')} Send as a challenge</button>
+      <button class="btn btn-glass btn-block" data-act="home">Back</button>`;
+    return;
+  }
+  stopDuel();
+  routeDuel(v);
+}
+
+function codeShare(v){
+  const link = appBase() + '?duel=' + v.code;
+  const text = dash.girl.name + ' invites you to a ' + (v.mode === 'challenge' ? 'Challenge' : 'Word Duel') + ' on English Quest! 🎮\nOpen the app, tap Play together, then Code, and enter ' + v.code + '.\nOr tap: ' + link;
+  return `<div class="glass panel" style="text-align:center;padding:16px">
+    <div class="label">Send this code to your friend</div>
+    <div class="codebig">${esc(v.code)}</div>
+    <div class="row-flex" style="justify-content:center;gap:8px;flex-wrap:wrap">
+      <a class="btn btn-teal btn-sm" target="_blank" rel="noopener" href="${esc(waLink(text))}">${icon('whatsapp-logo')} WhatsApp</a>
+      <button class="btn btn-glass btn-sm" data-copy="${esc(text)}">${icon('copy')} Copy</button></div>
+    <div class="sub mt-s" style="font-size:12px">${v.mode === 'challenge' ? 'Your friend has 24 hours to play it.' : 'The code is open for ' + duelLeft(v, true) + '.'}</div>
+  </div>`;
+}
+
+function duelCountdown(v){
+  if (DU.counting) return;
+  DU.counting = true;
+  const tick = () => {
+    if (!DU || DU.screen !== 'lobby') return;
+    const left = (DU.view.start - duelOffset) - Date.now();
+    if (left <= 0) return startDuelPlay(DU.view);
+    const el = document.getElementById('lcount');
+    if (el) el.textContent = Math.ceil(left / 1000);
+    setTimeout(tick, 100);
+  };
+  tick();
+}
+
+// ---- Guest: the invitation ----
+function duelInvitation(v){
+  duelSession(v);
+  DU.screen = 'invite';
+  window.scrollTo(0, 0);
+  const host = v.host;
+  app.innerHTML = `<div class="gscreen" id="dinv">
+    <div class="gtop"><button class="btn btn-glass icon-btn" data-act="home">${icon('arrow-left')}</button><h2>Invitation</h2></div>
+    <div class="glass panel iri" style="text-align:center;display:grid;gap:12px;justify-items:center">
+      <div class="vs">${petPic(host, 'happy')}<span class="vsb">VS</span>${petPic(meAsPlayer(), 'happy', 'flip')}</div>
+      <h2>${esc(host.name)} invites you to a Word Duel</h2>
+      <div class="row-flex" style="flex-wrap:wrap;justify-content:center;gap:6px"><span class="chip">${DUEL_ITEMS} questions</span>
+        <span class="chip orange">Your level: ${esc(dash.girl.levelLabel)}</span><span class="chip teal">XP for both</span></div>
+      <button class="btn btn-teal btn-block" data-act="join">${icon('play')} Join</button>
+      <button class="btn btn-glass btn-block" data-act="wait">Give me 5 minutes</button>
+      <button class="btn btn-glass btn-block" data-act="no">Not now</button>
+      <div class="sub" style="margin:0;font-size:12.5px">${icon('clock-countdown')} ${duelLeft(v)}</div>
+    </div>
+  </div>`;
+  document.getElementById('dinv').onclick = e => {
+    const t = e.target.closest('button');
+    if (!t) return;
+    const code = v.code;
+    if (t.dataset.act === 'home') { stopDuel(); return renderDash(); }
+    stopDuel();
+    if (t.dataset.act === 'join') return joinDuel(code);
+    if (t.dataset.act === 'wait' || t.dataset.act === 'no') return replyDuel(code, t.dataset.act);
+  };
+}
+
+// ---- Challenge: before playing ----
+function duelIntro(v){
+  duelSession(v);
+  DU.screen = 'intro';
+  window.scrollTo(0, 0);
+  const host = v.host, guest = v.guest, isHost = v.role === 'host';
+  app.innerHTML = `<div class="gscreen" id="dintro">
+    <div class="gtop"><button class="btn btn-glass icon-btn" data-act="home">${icon('arrow-left')}</button><h2>${isHost ? 'Challenge' : esc(host.name) + '\'s challenge'}</h2></div>
+    <div class="result">
+      ${petPic(isHost ? meAsPlayer() : host, 'cool', 'pet-img' + (isHost ? '' : ' ghostpet'))}
+      <h1 style="font-size:28px">${isHost ? 'You play first' : 'Beat ' + host.score + '/' + DUEL_ITEMS + ' in ' + secs(host.ms)}</h1>
+      <div class="sub" style="max-width:310px;margin:0">${isHost
+        ? (guest ? esc(guest.name) + ' races your time later. She has 24 hours.' : 'Then send the code to a friend. She has 24 hours.')
+        : 'Race ' + esc(host.name) + '\'s ghost: it runs exactly as she played. Your questions are at your level.'}</div>
+      <div class="row-flex" style="gap:8px;flex-wrap:wrap;justify-content:center"><span class="chip">${icon('list-numbers')} ${DUEL_ITEMS} questions</span>
+        <span class="chip">${icon('timer')} 3 minutes</span>${isHost ? '' : `<span class="chip">${icon('hourglass-medium')} ${duelLeft(v)}</span>`}</div>
+    </div>
+    <button class="btn btn-primary btn-block" data-act="go">${icon('play')} Start</button>
+  </div>`;
+  document.getElementById('dintro').onclick = e => {
+    const t = e.target.closest('button');
+    if (!t) return;
+    if (t.dataset.act === 'home') { stopDuel(); homeStale = true; return renderDash(); }
+    if (t.dataset.act === 'go') startDuelPlay(DU.view);
+  };
+}
+
+// ---- Playing: the game screens of the mini-games, plus the race, a timer and reactions ----
+async function startDuelPlay(v){
+  const me = duelMe(v);
+  app.innerHTML = '<div class="spinner"></div>';
+  let B;
+  try { B = await loadBank(); }
+  catch(e){ toast(e.message, true); stopDuel(); return renderDash(); }
+  duelSession(v);
+  const live = v.state === 'playing';
+  Object.assign(DU, { screen: 'play', live, answered: 0, score: 0, lastMs: 0, finished: false, track: [], xp: null,
+    localStart: live ? v.start - duelOffset : Date.now(),
+    ghost: !live && v.role === 'guest' && v.host.track ? parseTrack(v.host.track) : null });
+  G = { game: 'duel', items: duelItems(B, v.seed, me.level), i: 0, res: [], missed: [], right: [], built: [], locked: false,
+    duel: { label: me.label || dash.girl.levelLabel, title: v.mode === 'challenge' ? (v.role === 'guest' ? esc(v.host.name) + '\'s challenge' : 'Challenge') : 'Word Duel' } };
+  window.scrollTo(0, 0);
+  renderItem();
+  duelClock();
+  if (live) duelLoop();
+}
+
+function duelRaceCard(){
+  const v = DU.view, them = duelThem(v), me = meAsPlayer();
+  const stations = Array.from({ length: DUEL_ITEMS }, (_, k) => `<i class="stn" style="left:${(k + 1) * 12.5}%"></i>`).join('') + `<span class="fin">${icon('flag-checkered', 'duotone')}</span>`;
+  const runner = (p, id, cls) => p && p.pet && PET_ART[p.pet.id]
+    ? `<img class="runner ${cls}" id="${id}" src="${petSrc(p.pet.id, p.pet.stage, 'happy')}" alt="" style="left:3%">`
+    : `<span class="runner dot ${cls}" id="${id}" style="left:3%;background:${esc((p && p.color) || '#8b8ffb')}"></span>`;
+  const racing = DU.live || DU.ghost;
+  return `<div class="glass race" id="race">
+    <div class="lane"><span class="lwho">${faceOf(me)}<span>You</span></span><div class="track">${stations}${runner(me, 'run-me', '')}</div><b id="sc-me">${DU.score}</b></div>
+    <div class="lane"><span class="lwho">${faceOf(them)}<span>${esc(them ? them.name : 'Friend')}</span></span><div class="track">${stations}${racing && them ? runner(them, 'run-them', DU.ghost ? 'ghost' : '') : ''}</div>
+      <b id="sc-them">${racing ? 0 : '–'}</b></div>
+  </div>`;
+}
+
+function updateRace(){
+  if (!DU) return;
+  const pos = s => (s ? s / DUEL_ITEMS * 87.5 : 3) + '%';
+  const me = document.getElementById('run-me'), them = document.getElementById('run-them');
+  if (me) me.style.left = pos(DU.score);
+  const sm = document.getElementById('sc-me');
+  if (sm) sm.textContent = DU.score;
+  let ts = null;
+  if (DU.ghost) ts = ghostScore(DU.ghost, Date.now() - DU.localStart);
+  else if (DU.live && DU.them) ts = DU.them.s;
+  if (ts == null) return;
+  if (them) them.style.left = pos(ts);
+  const st = document.getElementById('sc-them');
+  if (st) st.textContent = ts;
+}
+
+function duelAnswer(ok){
+  const ms = Math.max(0, Math.round(Date.now() - DU.localStart));
+  DU.track.push((ok ? 1 : 0) + ':' + ms);
+  DU.answered = G.res.length; DU.score = G.res.filter(Boolean).length; DU.lastMs = ms;
+  updateRace();
+}
+
+function duelClockText(){
+  if (!DU || !DU.localStart) return '3:00';
+  const s = Math.ceil(Math.max(0, DU.view.maxMs - (Date.now() - DU.localStart)) / 1000);
+  return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+}
+function duelClock(){
+  clearInterval(duelTick);
+  duelTick = setInterval(() => {
+    if (!DU || !G || !G.duel) return clearInterval(duelTick);
+    const el = document.getElementById('dtimer');
+    if (el) el.innerHTML = icon('timer') + ' ' + duelClockText();
+    if (DU.ghost) updateRace();
+    if (Date.now() - DU.localStart >= DU.view.maxMs) { clearInterval(duelTick); toast('Time is up!'); finishDuel(); }
+  }, 250);
+}
+
+// The last question (or the time limit): unanswered questions count as missed.
+async function finishDuel(){
+  if (!DU || DU.finished || !G) return;
+  clearInterval(duelTick);
+  const items = G.items, v = DU.view;
+  const ms = Math.min(v.maxMs, Math.round(Date.now() - DU.localStart));
+  while (DU.track.length < items.length) { DU.track.push('-:' + ms); G.missed.push(items[DU.track.length - 1].id); }
+  const R = { correct: G.res.filter(Boolean).length, total: items.length, ms, track: DU.track.join(','), missed: G.missed.slice(0, DUEL_ITEMS), right: G.right.slice(0, DUEL_ITEMS) };
+  Object.assign(DU, { finished: true, score: R.correct, answered: items.length, lastMs: ms, screen: 'saving' });
+  G = null; speechStop();
+  saveDuel(R);
+}
+
+async function saveDuel(R){
+  if (!DU) return;
+  const code = DU.code;
+  app.innerHTML = `<div class="gscreen"><div class="result">
+      ${dash.pet ? `<img class="pet-img" src="${petSrc(dash.pet.id, dash.pet.stage, 'thinking')}" alt="">` : ''}
+      <h1>${R.correct}/${R.total}</h1>
+      <div class="saved wait" id="dsave"><span class="mini-spin"></span>Saving…</div></div>
+    <div class="stack" style="gap:10px" id="dsavebtns"></div></div>`;
+  try {
+    const r = await dcall('apiDuelFinish', code, R);
+    if (!DU || DU.code !== code) return;
+    if (r.dash) { dash = r.dash; checkGrowth(); }
+    DU.xp = r.xp;
+    homeStale = true;
+    if (r.state === 'done') return duelResult(r);
+    if (r.state === 'challenge') return duelSent(r);
+    duelWait(r);
+  } catch(e){
+    const st = document.getElementById('dsave');
+    if (!st) return;
+    st.className = 'saved err'; st.innerHTML = icon('wifi-slash') + ' ' + esc(e.message);
+    document.getElementById('dsavebtns').innerHTML = `<button class="btn btn-primary btn-block" id="dretry">${icon('arrows-clockwise')} Try again</button>
+      <button class="btn btn-glass btn-block" id="dleave">Home</button>`;
+    document.getElementById('dretry').onclick = () => saveDuel(R);
+    document.getElementById('dleave').onclick = () => { stopDuel(); renderDash(); };
+  }
+}
+
+// ---- After playing ----
+function duelWait(v){
+  DU.view = v; DU.screen = 'wait';
+  const them = duelThem(v);
+  app.innerHTML = `<div class="gscreen" id="dwait">
+    <div class="gtop"><button class="btn btn-glass icon-btn" data-act="home">${icon('x')}</button>
+      <div style="flex:1;min-width:0"><h2>Word Duel</h2><div class="sub" style="font-size:12px;margin:0">You finished!</div></div></div>
+    ${duelRaceCard()}
+    <div class="result">
+      ${dash.pet ? `<img class="pet-img" src="${petSrc(dash.pet.id, dash.pet.stage, 'cool')}" alt="">` : ''}
+      <h1>${DU.score}/${DUEL_ITEMS}</h1>
+      <div class="saved wait" id="dwstat"><span class="mini-spin"></span>Waiting for ${esc(them ? them.name : 'your friend')}…</div>
+      ${DU.xp != null ? `<div class="sub" style="margin:0;font-size:13px">${icon('check')} +${DU.xp} XP saved</div>` : ''}
+    </div>
+    ${reactionsBar()}
+  </div>`;
+  document.getElementById('dwait').onclick = e => {
+    const t = e.target.closest('button');
+    if (!t) return;
+    if (t.dataset.react != null) return sendReaction(Number(t.dataset.react));
+    if (t.dataset.act === 'home') { toast('The result will be in Play together'); stopDuel(); renderDash(); }
+  };
+  updateRace();
+  duelLoop();
+}
+function waitUpdate(v){
+  const el = document.getElementById('dwstat'), them = duelThem(v), t = v.them;
+  if (!el || !them) return;
+  el.innerHTML = '<span class="mini-spin"></span>' + (t && t.n ? esc(them.name) + ' is on question ' + Math.min(DUEL_ITEMS, t.n + 1) + ' of ' + DUEL_ITEMS : 'Waiting for ' + esc(them.name) + '…') +
+    (v.themOnline === false ? ' · seems offline' : '');
+}
+
+function duelSent(v){
+  const xp = DU && DU.code === v.code ? DU.xp : null;
+  stopDuel();
+  window.scrollTo(0, 0);
+  const me = duelMe(v), them = duelThem(v);
+  app.innerHTML = `<div class="gscreen" id="dsent">
+    <div class="result">
+      ${petPic(me, 'celebrate', 'pet-img')}
+      <h1>${me.score == null ? '–' : me.score}/${DUEL_ITEMS}</h1>
+      <h2>${them ? 'Challenge sent!' : 'Your challenge is ready'}</h2>
+      <div class="sub" style="max-width:310px;margin:0">${them ? esc(them.name) + ' gets a notification and has ' + duelLeft(v, true) + ' to beat ' + me.score + '/' + DUEL_ITEMS + ' in ' + secs(me.ms) + '.' : 'Send the code. The first friend who enters it gets the challenge.'}</div>
+      ${xp != null ? `<div class="saved">${icon('check')} +${xp} XP${dash.pet ? ' for ' + esc(dash.pet.name) : ''}</div>` : ''}
+    </div>
+    ${them ? '' : codeShare(v)}
+    <button class="btn btn-primary btn-block" data-act="home">Back</button>
+  </div>`;
+  document.getElementById('dsent').onclick = e => {
+    const t = e.target.closest('button');
+    if (!t) return;
+    if (t.dataset.copy) return copyText(t.dataset.copy);
+    if (t.dataset.act === 'home') { homeStale = true; renderDash(); }
+  };
+}
+
+function duelNotice(v, text){
+  stopDuel();
+  app.innerHTML = `<div class="gscreen"><div class="result">
+      <span class="gate-hero" style="--na:#c7d2fe;--nb:#818cf8">${icon('hourglass-medium', 'duotone')}</span>
+      <h2>${esc(text)}</h2></div>
+    <button class="btn btn-primary btn-block" id="dhome">Back</button></div>`;
+  document.getElementById('dhome').onclick = () => { homeStale = true; renderDash(); };
+}
+
+// The result, then "Learn together": my misses with the answers (ask the stronger partner),
+// and the partner's misses I can explain (a Helper star each).
+async function duelResult(v){
+  const xp = DU && DU.code === v.code ? DU.xp : null;
+  stopDuel();
+  G = null; speechStop();
+  window.scrollTo(0, 0);
+  app.innerHTML = '<div class="spinner"></div>';
+  let B = null;
+  try { B = await loadBank(); } catch(e){}
+  const me = duelMe(v), them = duelThem(v) || { name: 'Friend' };
+  const won = v.winner === me.name, draw = v.winner === 'draw';
+  const winner = won ? me : draw ? null : them, loser = won ? them : draw ? null : me;
+  const head = won ? (them.score == null ? 'You won! ' + esc(them.name) + ' left the duel.' : me.score - them.score === 1 || me.score === them.score ? 'You won. Close one!' : 'You won!')
+    : draw ? 'A draw! Same score, same time.' : esc(them.name) + ' won this time.';
+  const learn = B ? learnTogether(B, v, me, them) : '';
+  app.innerHTML = `<div class="gscreen" id="dres">
+    <div class="gtop"><button class="btn btn-glass icon-btn" data-act="home">${icon('x')}</button>
+      <div style="flex:1;min-width:0"><h2>${v.mode === 'challenge' ? 'Challenge' : 'Word Duel'}</h2><div class="sub" style="font-size:12px;margin:0">${esc(me.name)} and ${esc(them.name)} · ${fmtDate(v.date || dash.today)}</div></div></div>
+    <div class="result" style="flex:none">
+      <div class="podium">${draw ? petPic(me, 'happy', 'big') + petPic(them, 'happy', 'small flip')
+        : petPic(winner, 'celebrate', 'big') + `<span class="crown">${icon('crown-simple', 'duotone')}</span>` + petPic(loser, won ? 'oops' : 'happy', 'small flip')}</div>
+      <div class="score2">${me.score == null ? '–' : me.score}<span>:</span>${them.score == null ? '–' : them.score}</div>
+      <h2>${head}</h2>
+      <div class="row-flex" style="gap:6px;flex-wrap:wrap;justify-content:center">
+        ${xp != null ? `<span class="chip purple">${icon('lightning')} +${xp} XP</span>` : ''}
+        ${won ? `<span class="chip orange">${icon('crown-simple')} Winner</span>` : ''}
+        <span class="chip">${icon('timer')} You ${me.ms == null ? '–' : secs(me.ms)}${them.ms == null ? '' : ' · ' + esc(them.name) + ' ' + secs(them.ms)}</span></div>
+    </div>
+    ${learn}
+    <div class="stack" style="gap:10px">
+      <button class="btn btn-primary btn-block" data-act="again">${icon('arrows-clockwise')} Rematch</button>
+      <button class="btn btn-glass btn-block" data-act="home">Back</button></div>
+  </div>`;
+  if (won || draw) confetti();
+  document.getElementById('dres').onclick = async e => {
+    const t = e.target.closest('button');
+    if (!t) return;
+    if (t.dataset.act === 'home') { homeStale = true; return renderDash(); }
+    if (t.dataset.act === 'again') {
+      const mate = duelsHome && duelsHome.friends.some(f => f.name === them.name);
+      loading();
+      try { return routeDuel(await dcall('apiDuelInvite', mate ? them.name : '', v.mode === 'challenge' ? 'challenge' : 'live')); }
+      catch(err){ toast(err.message, true); return renderDash(); }
+    }
+    if (t.dataset.helped) {
+      t.disabled = true;
+      try {
+        const r = await dcall('apiDuelHelped', v.code, t.dataset.helped);
+        t.outerHTML = `<span class="chip teal">${icon('star')} Helper</span>`;
+        if (duelsHome) duelsHome.helper = r.helper;
+        toast('Helper star! Thanks for helping ' + them.name);
+      } catch(err){ toast(err.message, true); t.disabled = false; }
+    }
+  };
+}
+
+function itemAnswer(it){
+  if (it.game === 'match') return it.kind === 'pic' ? `This is a <b>${esc(it.word)}</b>.` : `<b>${esc(it.word)}</b>: ${esc(it.def)}`;
+  if (it.game === 'listen') return `You heard: <b>${esc(it.say)}</b>`;
+  if (it.game === 'build') return `<b>${esc(it.sentence)}</b>`;
+  return `<b>${esc(fixedSentence(it))}</b>${it.tip ? '<br>' + esc(it.tip) : ''}`;
+}
+
+function learnTogether(B, v, me, them){
+  const mine = me.track ? parseTrack(me.track) : [], theirs = them.track ? parseTrack(them.track) : [];
+  const myItems = duelItems(B, v.seed, me.level), theirItems = them.level ? duelItems(B, v.seed, them.level) : [];
+  const myLv = lvIndex(me.level), theirLv = lvIndex(them.level), same = me.level === them.level;
+  const missed = myItems.map((it, k) => ({ it, k })).filter(x => mine[x.k] && !mine[x.k].ok);
+  const canAsk = k => theirLv > myLv || (same && theirs[k] && theirs[k].ok);
+  const canHelp = k => myLv > theirLv || (same && mine[k] && mine[k].ok);
+  const helpable = theirItems.map((it, k) => ({ it, k })).filter(x => theirs[x.k] && !theirs[x.k].ok && canHelp(x.k));
+  const done = new Set((v.helped || []).filter(h => h.indexOf(me.name + ':') === 0).map(h => h.slice(me.name.length + 1)));
+  const rows = missed.map(x => `<div class="lrow"><span class="x">${icon('x')}</span><div class="lt">${itemAnswer(x.it)}</div>
+      ${canAsk(x.k) ? `<span class="chip purple">${icon('hand-waving')} Ask ${esc(them.name)}</span>` : ''}</div>`).join('');
+  const help = helpable.map(x => `<div class="lrow"><span class="x ok">${icon('lightbulb')}</span><div class="lt">${itemAnswer(x.it)}</div>
+      ${done.has(x.it.id) ? `<span class="chip teal">${icon('star')} Helper</span>` : `<button class="btn btn-glass btn-sm" data-helped="${esc(x.it.id)}">I explained it</button>`}</div>`).join('');
+  return `<div class="glass panel" style="padding:16px">
+    <div class="row-flex between"><h2>Learn together</h2>${missed.length ? `<span class="chip">${missed.length} to review</span>` : ''}</div>
+    ${rows ? `<div class="stack mt-s" style="gap:8px">${rows}</div><div class="sub mt-s" style="font-size:12px">These come back in your games.</div>`
+      : `<div class="sub mt-s" style="font-size:13px">${me.track ? 'No mistakes. Well done!' : ''}</div>`}
+    ${help ? `<div class="label mt">${esc(them.name)} missed these. Can you explain one?</div><div class="stack mt-s" style="gap:8px">${help}</div>` : ''}
+  </div>`;
+}
+
+// A duel link (?duel=CODE) from a notification or WhatsApp opens after sign-in.
+function takeDuelParam(){
+  const q = new URLSearchParams(location.search), c = q.get('duel');
+  if (!c) return;
+  pendingDuel = c;
+  q.delete('duel');
+  try { history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash); } catch(e){}
+}
+// Back in the app (from another app or tab): check for invites right away.
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') pollHome(); });
+if (!IN_APPS_SCRIPT && 'serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('message', e => {
+    const u = e.data && e.data.url;
+    if (!u) return;
+    const c = new URL(u, location.href).searchParams.get('duel');
+    if (!c) return;
+    if (session && dash && !dash.levelTest) openDuel(c); else pendingDuel = c;
+  });
+}
 
 // ---------- Journey ----------
 // A world per level (names and rules come from the server). Every daily task is a station; the
@@ -1440,6 +2309,7 @@ async function boot(){
 
 // ---------- Home ----------
 async function start(){
+  takeDuelParam();
   const saved = store.get('eq_auth'), admin = store.get('eq_admin');
   if (saved && await login(saved.name, saved.pin, true)) return;
   if (!saved && admin && await parent(admin, true)) return;
@@ -1534,6 +2404,7 @@ async function login(name, pin, silent, remember){
     if (remember) store.set('eq_auth', session);
     dash = d; renderDash();
     flushPending();
+    if (pendingDuel && !d.levelTest) { const c = pendingDuel; pendingDuel = null; openDuel(c); }
     return true;
   } catch(e){
     if (silent) store.del('eq_auth');
@@ -1561,8 +2432,9 @@ function scoreText(d){
 }
 
 function renderDash(){
-  G = null; speechStop();
+  G = null; speechStop(); stopDuel();
   const d = dash, s = d.stats;
+  if (d.duels) duelsHome = d.duels;
   if (!d.games) d.games = Object.assign({}, GAMES_DEFAULT);
   if (d.levelTest) return renderOnboarding(d);
   const today = d.week.find(w => w.isToday);
@@ -1572,6 +2444,7 @@ function renderDash(){
   app.innerHTML = `
   <div class="stack">
     ${dashHeader(d)}
+    ${duelBanner()}
 
     ${petCard(d)}
     ${journeyCard(d)}
@@ -1587,6 +2460,7 @@ function renderDash(){
 
     ${today ? todayCard(today) : ''}
     ${gamesPanel(d)}
+    ${togetherCard()}
     <div id="pushcard"></div>
 
     <div class="glass panel">
@@ -1616,6 +2490,8 @@ function renderDash(){
   ['adopt', 'petedit'].forEach(id => { const b = document.getElementById(id); if (b) b.onclick = petPicker; });
   bindPet(d);
   bindJourney();
+  bindTogether();
+  startHomePoll();
   if (d.push && d.push.key) pushKey = d.push.key;
   renderPushCard();
   checkGrowth();

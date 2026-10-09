@@ -1,6 +1,7 @@
 // Service worker: makes the app installable, keeps the last app shell for offline start,
-// and shows reminder notifications. Pushes arrive without a payload; the text comes from the API.
-const CACHE = 'eq-v3';
+// and shows notifications (reminders, duel invites). Pushes arrive without a payload; the text comes
+// from the API, with an optional url to open on tap (a duel: ./?duel=CODE).
+const CACHE = 'eq-v4';
 const API_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 
 self.addEventListener('install', e => {
@@ -41,16 +42,22 @@ self.addEventListener('push', e => {
       if (r.ok && r.data) msg = r.data;
     } catch (err) {}
     await self.registration.showNotification(msg.title, {
-      body: msg.body, icon: 'icons/icon-192.png', badge: 'icons/badge-96.png', tag: 'eq-reminder', renotify: true
+      body: msg.body, icon: 'icons/icon-192.png', badge: 'icons/badge-96.png', tag: msg.tag || 'eq-reminder', renotify: true,
+      data: { url: msg.url || './' }
     });
   })());
 });
 
+// An open app gets the url as a message (it opens the duel itself); otherwise open a window there.
 self.addEventListener('notificationclick', e => {
   e.notification.close();
+  const url = (e.notification.data && e.notification.data.url) || './';
   e.waitUntil((async () => {
     const wins = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-    if (wins.length) return wins[0].focus();
-    return self.clients.openWindow('./');
+    if (wins.length) {
+      if (url !== './') wins[0].postMessage({ url });
+      return wins[0].focus();
+    }
+    return self.clients.openWindow(url);
   })());
 });

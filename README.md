@@ -41,6 +41,13 @@ notifications, and reward points.
   the app. 12 right raises the kid's level (daily tasks and games move up), gives the pet 100 XP and plays the
   level-up ceremony with a certificate picture to share; parents get a notification. After a miss the gate opens
   again 3 days later and the missed questions come back in the games. The last world (C1) ends at a summit.
+- **Play together** (spec: `specs/play-together.md`): a kid invites any other kid in the app (her group first,
+  then the other groups) and they get a notification. *Word Duel*: 7 questions each from all four games, each at
+  her own level, raced live on two phones (runners on a track, preset reactions, 3 minutes). *Challenge*: one plays
+  now, the other within 24 hours against her "ghost"; an invite nobody answered can be sent as a challenge. A 4-letter
+  code (or a WhatsApp link) invites anyone. The result screen ("Learn together") lists the missed questions with the
+  answers; the stronger player gets a Helper star for explaining one. XP: 2 per right answer, +5 for the winner, +10
+  for the first duel of the day, inside the daily 60 XP cap. A group can opt out of playing with other groups.
 - Installable app (PWA) on Android / iOS; **phone reminders** at 17:00 and a last call at 20:00
   on days she hasn't practiced.
 
@@ -89,7 +96,8 @@ Phone / browser                     GitHub Pages (docs/)            Google
 | Games | Timestamp, Girl, Date, Game, Level, Correct, Total, XP, Missed | One row per finished mini-game round. |
 | Review | Girl, Items | Spaced review: `itemId\|box\|due` entries for items a kid missed. |
 | Gates | Timestamp, Girl, Date, From, To, Correct, Total, Passed, Tasks, XP | One row per gate challenge. `Tasks` = tasks the kid had logged by then; the stations of her current world are the tasks after the last passed gate. |
-| Groups | Id, Name, ParentPIN, Goal, GoalReward, Email | First row is the default group (link without `?g=`). Empty ParentPIN = admin only. |
+| Groups | Id, Name, ParentPIN, Goal, GoalReward, Email, Friends | First row is the default group (link without `?g=`). Empty ParentPIN = admin only. `Friends` = `no` keeps the group's kids out of play with other groups. |
+| Duels | Id, Created, Date, Mode, State, Host, Guest, HostLevel, GuestLevel, Seed, Start, Expires, Reply, HostScore, HostMs, HostTrack, GuestScore, GuestMs, GuestTrack, Winner, Ended, Helped | One row per duel or challenge (Id = the 4-letter code). Tracks: `1:4210,0:9800,…` (right/wrong and ms since the start, `-` unanswered). Each player's XP is a `Games` row with Game = `duel`. |
 | Assignments | Girl, Date, Section, Level, Title, URL | One exercise per kid per day, created lazily. |
 | Log | Timestamp, Girl, Date, DoneOn, Section, Level, Title, URL, Correct, Total, Percent, Points | One row per completed task. |
 | Rewards | Points, Reward, Group | Empty Group = applies to groups without rewards of their own. |
@@ -105,6 +113,7 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 |---|---|
 | `src/Code.js` | Server: API, groups, assignments/rotation, scoring, cache layer, triggers, setup migrations |
 | `src/Push.js` | Web Push: P-256/ES256, VAPID JWT, kid reminders, parent notifications |
+| `src/Duels.js` | Play together: invites, live duels synced by polling, challenges, results, Helper stars |
 | `src/Index.html` | Whole UI (Liquid Glass design, Phosphor icons), works in Pages and Apps Script |
 | `src/Catalog.js` | Generated exercise catalog (`node gen-catalog.js` from `catalog.tsv`) |
 | `src/appsscript.json` | Manifest: V8, Asia/Jerusalem, web app = execute as owner, anyone anonymous |
@@ -118,6 +127,8 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | `test/sim.js` | End-to-end simulation of the server with mocked Google services |
 | `test/push-crypto.js` | Verifies the ES256 implementation against Node crypto |
 | `test/preview.js` | Builds `test/preview.html`: the UI with mocked server data, for visual checks |
+| `test/dev-server.js` | Local two-player environment: the real server code with mocked Google services, on port 8787 |
+| `specs/` | Feature specs (`play-together.md`) |
 
 ## API (`doPost` body: `{"fn": name, "args": [...]}`)
 
@@ -130,6 +141,7 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | apiGameResult(name, pin, game, level, correct, total, missed, right) | kid | Record a mini-game round, update XP and the review list |
 | apiSetPet(name, pin, petId, petName) | kid | Adopt or change the pet (XP stays) |
 | apiGateResult(name, pin, correct, total, missed, right) | kid | Record a gate challenge (only while the gate is open); 12/15 raises the level |
+| apiDuelHome / Invite / Join / Reply / Cancel / Solo / Poll / Finish / Helped | kid | Play together (see `specs/play-together.md`); `apiDuelPoll` is the hot path, every ~2 s during a duel |
 | apiPushSubscribe / apiPushMessage | kid / service worker | Register a device / text of the pending notification |
 | apiParent(pin) | parent / admin | Overview of the groups this PIN may see |
 | apiParentPushSubscribe / Prefs / Test | parent / admin | Parent notifications on this phone |
@@ -155,4 +167,5 @@ node test/sim.js          # server scenarios (scoring, groups, PIN lockout, push
 node test/games-check.js  # mini-game content
 node test/push-crypto.js  # ES256 signatures verified by Node crypto
 node test/preview.js      # then serve app/ and open /test/preview.html (mock data, any 4-digit PIN)
+node test/dev-server.js   # two players locally: open /test/dev.html on localhost:8787 and on 127.0.0.1:8787
 ```
