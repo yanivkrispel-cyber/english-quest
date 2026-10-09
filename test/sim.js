@@ -46,7 +46,7 @@ const ctx = {
 };
 const props = ctx.PropertiesService.getScriptProperties(); ctx.PropertiesService.getScriptProperties = () => props;
 vm.createContext(ctx);
-for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js']) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
+for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js']) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
 // Each call is a fresh request: per-request table memo resets, CacheService persists.
 const run = s => { if (typeof ctx.TABLES === 'object') vm.runInContext('TABLES = {}', ctx); return vm.runInContext(s, ctx); };
 let day = '2026-10-08';
@@ -440,4 +440,99 @@ run("apiParentPushSubscribe('1234','https://fcm.googleapis.com/fcm/send/dad3','A
 run('parentSummary()');
 console.log('summary with duels:', JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/dad3')")));
 console.log('duels tab:', sheets.Duels.rows.length - 1, 'rows | states', [...new Set(sheets.Duels.rows.slice(1).map(r => r[4]))].join(','));
+}
+
+// ---- play together, phase 2: Duo Streak and Team Quest ----
+{ // a block, so these names do not clash with the sections above
+const dp = { Aviv: '2694', Ziv: '4821', Ron: '7356', Noa: noaPin, Tal: talPin, Dana: danaPin, Lia: liaPin };
+const lvOf = who => run("findGirl('" + who + "').Level");
+const duo = (fn, who, ...args) => run(fn + '(' + [who, dp[who]].concat(args).map(a => JSON.stringify(a)).join(',') + ')');
+const fails = (label, f) => { try { f(); console.log('NOT REJECTED:', label); } catch (e) { console.log(label + ' ok:', e.message); } };
+const play = (who, game, correct) => run("apiGameResult('" + who + "','" + dp[who] + "','" + game + "','" + lvOf(who) + "'," + correct + ",5,[],[])");
+const with_ = (who, mate) => duo('apiDuelHome', who).duos.active.find(x => x.partner.name === mate);
+const bonus = (who, kind) => sheets.Bonus.rows.slice(1).filter(r => r[1] === who && (!kind || r[3] === kind)).map(r => r[4] + ':' + r[5]);
+const strip = v => v.week.map(w => w.saved ? 'S' : w.me && w.them ? '2' : w.me || w.them ? '1' : w.future ? '.' : '0').join('');
+const zivDev = 'https://fcm.googleapis.com/fcm/send/abc';
+pushStatus = () => 201;
+ctx.__day = run("weekStart(addDays('" + ctx.__day + "', 14))");
+console.log('duo week starts', ctx.__day, run("parseDate('" + ctx.__day + "').getDay()"), '(expect 0, a Sunday)');
+
+// Requests
+pushLog.length = 0;
+let H = duo('apiDuoInvite', 'Aviv', 'Ziv');
+console.log('duo request sent:', H.outgoing.map(x => x.partner.name).join(), '| push', pushLog.length, JSON.stringify(run("apiPushMessage('" + zivDev + "')")));
+fails('ask twice', () => duo('apiDuoInvite', 'Aviv', 'Ziv'));
+fails('ask yourself', () => duo('apiDuoInvite', 'Aviv', 'Aviv'));
+fails('a kid before the level test', () => duo('apiDuoInvite', 'Aviv', 'Gil'));
+let Z = duo('apiDuelHome', 'Ziv').duos;
+console.log('Ziv sees a request from:', Z.incoming.map(x => x.partner.name + ':' + x.partner.level).join());
+fails("answer someone else's request", () => duo('apiDuoAnswer', 'Ron', Z.incoming[0].id, true));
+pushLog.length = 0;
+Z = duo('apiDuoAnswer', 'Ziv', Z.incoming[0].id, true);
+const zid = Z.active[0].id;
+console.log('accepted:', Z.active.length, '| since', Z.active[0].since === ctx.__day, '| days', Z.active[0].days, '| quest', Z.active[0].quest.kind, '-', Z.active[0].quest.goal, '| push to Aviv', pushLog.length);
+fails('answer again', () => duo('apiDuoAnswer', 'Ziv', zid, true));
+duo('apiDuoInvite', 'Ron', 'Aviv');
+console.log('asking back accepts hers:', duo('apiDuoInvite', 'Aviv', 'Ron').active.map(x => x.partner.name).join());
+fails('ask again when active', () => duo('apiDuoInvite', 'Ziv', 'Aviv'));
+
+// Week 1, day 1: Aviv practices, Ziv not yet; nudge and the reminder
+play('Aviv', 'match', 4);
+let A = with_('Aviv', 'Ziv');
+console.log('day 1, Aviv only:', A.days, A.todayMe, A.todayThem, '| strip', strip(A));
+pushLog.length = 0;
+duo('apiDuoNudge', 'Aviv', zid);
+console.log('nudge:', pushLog.length, JSON.stringify(run("apiPushMessage('" + zivDev + "')")));
+fails('nudge twice a day', () => duo('apiDuoNudge', 'Aviv', zid));
+const rid = with_('Ron', 'Aviv').id;
+fails('nudge a partner who practiced', () => duo('apiDuoNudge', 'Ron', rid));
+console.log('reminder:', JSON.stringify(run("reminderMessage(findGirl('Ziv'), false)")));
+console.log('last call:', JSON.stringify(run("reminderMessage(findGirl('Ziv'), true)")));
+console.log('no duo mention for Aviv (practiced):', JSON.stringify(run("reminderMessage(findGirl('Aviv'), false)")).indexOf('duo') < 0);
+play('Ziv', 'listen', 3);
+A = with_('Aviv', 'Ziv');
+console.log('day 1, both:', A.days, '(expect 1) | strip', strip(A), '| sort: Ron first (only Aviv practiced there):', duo('apiDuelHome', 'Aviv').duos.active.map(x => x.partner.name).join());
+
+// Days 2-7: both practice every day (Ziv keeps missing Hear it). Day 7 = the 7-day milestone.
+const petBefore = run("apiDashboard('Aviv','2694')").pet.xp;
+for (let k = 0; k < 6; k++) {
+  nextDay(); play('Aviv', 'spot', 4);
+  if (k === 5) pushLog.length = 0;
+  play('Ziv', 'listen', 2);
+}
+A = with_('Aviv', 'Ziv');
+console.log('day 7:', A.days, '(expect 7) | milestones', JSON.stringify(A.milestones), '| next', A.next, '| strip', strip(A));
+console.log('milestone XP:', bonus('Aviv', 'duo-streak').join(), '|', bonus('Ziv', 'duo-streak').join(), '| pushes', pushLog.length);
+console.log('team quest week 1 (days):', A.quest.total + '/' + A.quest.target, A.quest.done, '| reward:', bonus('Aviv', 'quest').join(), bonus('Ziv', 'quest').join());
+console.log('pet XP counts bonus:', run("apiDashboard('Aviv','2694')").pet.xp - petBefore, '(game XP + 20 + 40)');
+play('Aviv', 'spot', 5); play('Ziv', 'spot', 5);
+console.log('rewards once:', bonus('Aviv').length, '(expect 2)');
+
+// Week 2: the quest comes from last week (Hear it was weakest); Sunday missed by Ziv is saved.
+nextDay(); play('Aviv', 'match', 5);
+A = with_('Aviv', 'Ziv');
+console.log('week 2 quest:', A.quest.kind, A.quest.game, '-', A.quest.goal, '|', A.quest.reason, '| days left', A.quest.daysLeft);
+nextDay(); play('Aviv', 'listen', 5); play('Ziv', 'listen', 5);
+A = with_('Aviv', 'Ziv');
+console.log('Monday:', A.days, '(expect 8, Sunday saved) | strip', strip(A), '| quest', A.quest.me + '+' + A.quest.them + '=' + A.quest.total + '/' + A.quest.target);
+nextDay(); play('Aviv', 'listen', 5);
+nextDay(); play('Aviv', 'listen', 5); play('Ziv', 'listen', 5);
+A = with_('Aviv', 'Ziv');
+console.log('two misses in a week:', A.days, '(expect 1) | strip', strip(A), '| quest', A.quest.total + '/' + A.quest.target);
+nextDay(); play('Aviv', 'listen', 5); play('Aviv', 'listen', 5); play('Ziv', 'listen', 5);
+A = with_('Aviv', 'Ziv');
+console.log('quest done:', A.quest.total + '/' + A.quest.target, A.quest.done, A.quest.claimed, '| rewards', bonus('Aviv', 'quest').join(), '|', bonus('Ziv', 'quest').join());
+
+// Limits, decline, end
+duo('apiDuoInvite', 'Aviv', 'Noa');
+duo('apiDuoAnswer', 'Noa', duo('apiDuelHome', 'Noa').duos.incoming[0].id, true);
+duo('apiDuoInvite', 'Aviv', 'Tal');
+duo('apiDuoAnswer', 'Tal', duo('apiDuelHome', 'Tal').duos.incoming[0].id, true);
+console.log('Aviv duos:', duo('apiDuelHome', 'Aviv').duos.active.map(x => x.partner.name).join());
+fails('a fifth duo', () => duo('apiDuoInvite', 'Aviv', 'Dana'));
+duo('apiDuoEnd', 'Aviv', with_('Aviv', 'Noa').id);
+duo('apiDuoInvite', 'Aviv', 'Dana');
+console.log('after ending one:', duo('apiDuelHome', 'Aviv').duos.outgoing.map(x => x.partner.name).join());
+duo('apiDuoAnswer', 'Dana', duo('apiDuelHome', 'Dana').duos.incoming[0].id, false);
+console.log('declined:', duo('apiDuelHome', 'Aviv').duos.outgoing.length, '(expect 0) | states', [...new Set(sheets.Duos.rows.slice(1).map(r => r[4]))].join());
 }

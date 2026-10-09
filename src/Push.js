@@ -348,6 +348,11 @@ function reminderMessage(kid, lastCall) {
   var a = todayTask(kid);
   var logs = readTable('Log').filter(function (l) { return l.Girl === kid.Name; });
   var label = SECTIONS[a.section].label;
+  // A duo partner who already practiced today is the best reason to come (Duos.js).
+  var duo = null;
+  try { duo = duoReminder(kid); } catch (e) { console.error(e); }
+  if (duo && lastCall) return { title: 'Last call, ' + kid.Name, body: duo.partner + ' practiced today. ' + (duo.days ? 'Save your ' + duo.days + '-day duo streak: ' : '') + label + ' — ' + a.title };
+  if (duo) return { title: duo.partner + ' is waiting for you', body: duo.partner + ' practiced today. ' + (duo.days ? 'Keep your ' + duo.days + '-day duo streak going! ' : '') + 'Today: ' + label };
   if (lastCall) {
     return { title: 'Last call, ' + kid.Name, body: '10 minutes before the day ends — ' + label + ': ' + a.title };
   }
