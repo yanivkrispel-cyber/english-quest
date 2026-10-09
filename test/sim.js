@@ -167,3 +167,42 @@ console.log('group summary:', JSON.stringify(run("apiPushMessage('https://web.pu
 try { run("apiParentPushTest('" + gartPin + "','https://fcm.googleapis.com/fcm/send/dad')"); } catch (e) { console.log('test on other parent device blocked:', e.message); }
 pushStatus = () => 410; run("apiParentPushTest('1234','https://fcm.googleapis.com/fcm/send/dad')");
 console.log('gone device removed:', sheets.ParentPush.rows.length - 1, '(expect 1)');
+
+// ---- games & pets ----
+ctx.__day = '2026-10-21';
+let gd = run("apiDashboard('Aviv','2694')");
+console.log('pet before adopting:', gd.pet, '| games:', JSON.stringify(gd.games));
+try { run("apiSetPet('Aviv','2694','dragon','X')"); } catch (e) { console.log('bad pet ok:', e.message); }
+try { run("apiSetPet('Aviv','2694','turtle','   ')"); } catch (e) { console.log('empty name ok:', e.message); }
+gd = run("apiSetPet('Aviv','2694','turtle','Shelly <b>')");
+console.log('adopted:', JSON.stringify(gd.pet));
+gd = run("apiGameResult('Aviv','2694','match','a2',4,5,['m:a2:library'],['m:a2:pilot','m:a2:lunch','m:a2:nurse','m:a2:bakery'])");
+console.log('round 4/5 xp', gd.gameXp, '(expect 8) | pet xp', gd.pet.xp, '| due today', JSON.stringify(gd.games.review));
+gd = run("apiGameResult('Aviv','2694','listen','a2',5,5,[],['l:a2:0','l:a2:1'])");
+console.log('perfect round xp', gd.gameXp, '(expect 15)');
+for (let i = 0; i < 4; i++) gd = run("apiGameResult('Aviv','2694','build','a2',5,5,[],[])");
+console.log('daily cap: today xp', gd.games.todayXp, '(expect 60) | last round xp', gd.gameXp, '(expect 0) | rounds', gd.games.todayRounds);
+try { run("apiGameResult('Aviv','2694','chess','a2',1,5,[],[])"); } catch (e) { console.log('bad game ok:', e.message); }
+try { run("apiGameResult('Aviv','2694','match','a2',6,5,[],[])"); } catch (e) { console.log('bad score ok:', e.message); }
+run("apiGameResult('Aviv','2694','spot','zz',2,5,['bad id with spaces','s:a2:3'],[])");
+console.log('level fallback + id filter:', sheets.Games.rows.slice(-1)[0].join(' | '));
+ctx.__day = '2026-10-22';
+gd = run("apiDashboard('Aviv','2694')");
+console.log('due next day:', JSON.stringify(gd.games.review), '| today xp reset:', gd.games.todayXp, '| week rounds', gd.games.weekRounds, 'avg', gd.games.weekAvg);
+run("apiGameResult('Aviv','2694','match','a2',1,1,[],['m:a2:library'])");
+console.log('review row:', sheets.Review.rows.slice(1).map(r => r.join(' ')).join(' / '));
+console.log('due on 10-24 (none expected for library):', JSON.stringify((ctx.__day = '2026-10-24', run("apiDashboard('Aviv','2694')")).games.review));
+ctx.__day = '2026-10-25';
+console.log('due on 10-25:', JSON.stringify(run("apiDashboard('Aviv','2694')").games.review));
+run("apiSubmit('Aviv','2694','2026-10-25',9,10,null)");
+gd = run("apiDashboard('Aviv','2694')");
+console.log('pet after a task:', JSON.stringify(gd.pet), '| recent', JSON.stringify(gd.games.recent));
+console.log('public list:', JSON.stringify(run("apiPublic('')").girls.map(g => g.name + ':' + (g.pet ? g.pet.id + '/' + g.pet.stage : '-'))));
+const pk = run("apiParent('1234')").groups[0].girls.find(k => k.girl.name === 'Aviv');
+console.log('parent sees:', pk.pet.name, 'stage', pk.pet.stage, '| games this week', pk.games.weekRounds, pk.games.weekAvg + '%');
+pushStatus = () => 201;
+run("apiParentPushSubscribe('1234','https://fcm.googleapis.com/fcm/send/dad2','Android',false)");
+run("apiGameResult('Aviv','2694','listen','a2',3,5,[],[])");
+run('parentSummary()');
+console.log('summary with games:', JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/dad2')")));
+run('weeklySummary()');

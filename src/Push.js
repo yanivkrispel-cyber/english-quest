@@ -230,8 +230,9 @@ function notifyCompletion(kid, entry) {
 // Time-driven (21:00): who practiced today, per parent.
 function parentSummary() {
   var t = today();
-  var done = {};
+  var done = {}, played = {};
   readTable('Log').forEach(function (l) { if (l.Date === t) done[l.Girl] = l; });
+  readTable('Games').forEach(function (g) { if (g.Date === t) played[g.Girl] = (played[g.Girl] || 0) + 1; });
   var byWho = {};
   readTable('ParentPush').forEach(function (r) { (byWho[r.Who] = byWho[r.Who] || []).push(r.Endpoint); });
   Object.keys(byWho).forEach(function (who) {
@@ -239,9 +240,10 @@ function parentSummary() {
     if (!kids.length) return;
     var n = kids.filter(function (k) { return done[k.Name]; }).length;
     var body = kids.map(function (k) {
-      var l = done[k.Name];
-      if (!l) return k.Name + ' —';
-      return k.Name + ' ✓' + (l.Section === 'level' ? ' level test' : (l.Percent !== '' ? ' ' + l.Percent + '%' : ''));
+      var l = done[k.Name], n = played[k.Name];
+      var games = n ? ' +' + n + (n === 1 ? ' game' : ' games') : '';
+      if (!l) return k.Name + ' —' + games;
+      return k.Name + ' ✓' + (l.Section === 'level' ? ' level test' : (l.Percent !== '' ? ' ' + l.Percent + '%' : '')) + games;
     }).join(' · ');
     try { deliver(byWho[who], { title: 'Today: ' + n + '/' + kids.length + ' practiced', body: body }, 'ParentPush'); } catch (e) { console.error(e); }
   });

@@ -19,6 +19,16 @@ notifications, and reward points.
 - Log a score (correct / out of). Points: 10 per task, +5 for 80%+, +3 if done on the day,
   +20 for a full week. Missed days of the current week can be caught up.
 - Streak, weekly ring, average score, rewards ladder, word of the day.
+- **Mini-games in the app** (about 2 minutes, 5 items a round, at the kid's level; the score saves by
+  itself): *Match it* (word ↔ picture at A1, word ↔ definition above), *Hear it* (the phone reads a
+  word or sentence aloud), *Build it* (tap the words into a sentence), *Spot it* (tap the wrong word).
+  The day's warm-up game follows the day's section. Missed items come back after 1, 3, 7 and 21 days;
+  two strong rounds in a row bring one item from the next level. Content: `docs/games.js`.
+- **Pets**: each kid adopts one of 10 pets and names it. Right answers give XP (2 each, +5 for a
+  perfect round, at most 60 a day from games) and task points count too; the pet grows through five
+  stages (Baby 0, Kid 150, Explorer 500, Hero 1100, Legend 2000 XP) with a celebration at each step.
+  Six moods: happy, celebrating, thinking, oops, sleepy (not practiced yet today), cool (7-day streak).
+  How the art is made: `tools/PETS.md`.
 - Installable app (PWA) on Android / iOS; **phone reminders** at 17:00 and a last call at 20:00
   on days she hasn't practiced.
 
@@ -63,7 +73,9 @@ Phone / browser                     GitHub Pages (docs/)            Google
 
 | Tab | Columns | Notes |
 |---|---|---|
-| Girls | Name, Age, PIN, Level, Email, Redeemed, Color, Group | One row per kid (name kept for history). Names must be unique. `Redeemed` = points spent on rewards. |
+| Girls | Name, Age, PIN, Level, Email, Redeemed, Color, Group, Pet, PetName, PetSince | One row per kid (name kept for history). Names must be unique. `Redeemed` = points spent on rewards. Pet = pet id; task points count toward its growth from PetSince on. |
+| Games | Timestamp, Girl, Date, Game, Level, Correct, Total, XP, Missed | One row per finished mini-game round. |
+| Review | Girl, Items | Spaced review: `itemId\|box\|due` entries for items a kid missed. |
 | Groups | Id, Name, ParentPIN, Goal, GoalReward, Email | First row is the default group (link without `?g=`). Empty ParentPIN = admin only. |
 | Assignments | Girl, Date, Section, Level, Title, URL | One exercise per kid per day, created lazily. |
 | Log | Timestamp, Girl, Date, DoneOn, Section, Level, Title, URL, Correct, Total, Percent, Points | One row per completed task. |
@@ -84,6 +96,10 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | `src/Catalog.js` | Generated exercise catalog (`node gen-catalog.js` from `catalog.tsv`) |
 | `src/appsscript.json` | Manifest: V8, Asia/Jerusalem, web app = execute as owner, anyone anonymous |
 | `docs/` | GitHub Pages site: `index.html` (built), `sw.js`, `manifest.webmanifest`, `icons/` |
+| `docs/games.js` | Mini-game content for A1–C1 (edited by hand; not in `src/`, so clasp never pushes it) |
+| `docs/pets/`, `docs/pics/` | Pet stickers (`<pet>/<stage>-<mood>.webp`) and A1 picture words |
+| `tools/` | Art pipeline: `cut_sheet.py` (sticker sheet → stickers), `pics.py` + `pics_fetch.sh`, `PETS.md` (prompts) |
+| `test/games-check.js` | Validates `docs/games.js` (shapes, duplicates, pictures on disk) |
 | `build-pages.js` | Builds `docs/index.html` from `src/Index.html` (adds head tags, manifest, icons) |
 | `make-icons.py` | Renders the app icons with Pillow |
 | `test/sim.js` | End-to-end simulation of the server with mocked Google services |
@@ -98,6 +114,8 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | apiWarm() | anyone | Pre-fills the cache while a PIN is typed |
 | apiDashboard(name, pin) | kid | Week, stats, rewards, push key |
 | apiSubmit(name, pin, date, correct, total, level) | kid | Log a task (notifies parents) |
+| apiGameResult(name, pin, game, level, correct, total, missed, right) | kid | Record a mini-game round, update XP and the review list |
+| apiSetPet(name, pin, petId, petName) | kid | Adopt or change the pet (XP stays) |
 | apiPushSubscribe / apiPushMessage | kid / service worker | Register a device / text of the pending notification |
 | apiParent(pin) | parent / admin | Overview of the groups this PIN may see |
 | apiParentPushSubscribe / Prefs / Test | parent / admin | Parent notifications on this phone |
@@ -119,7 +137,8 @@ Always update the **existing** deployment id above: the front end and service wo
 ## Test
 
 ```bash
-node test/sim.js          # server scenarios (scoring, groups, PIN lockout, push, settings)
+node test/sim.js          # server scenarios (scoring, groups, PIN lockout, push, settings, games, pets)
+node test/games-check.js  # mini-game content
 node test/push-crypto.js  # ES256 signatures verified by Node crypto
-node test/preview.js      # then serve test/ and open preview.html (mock data, any 4-digit PIN)
+node test/preview.js      # then serve app/ and open /test/preview.html (mock data, any 4-digit PIN)
 ```

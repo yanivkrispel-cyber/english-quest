@@ -1,6 +1,6 @@
 // Service worker: makes the app installable, keeps the last app shell for offline start,
 // and shows reminder notifications. Pushes arrive without a payload; the text comes from the API.
-const CACHE = 'eq-v2';
+const CACHE = 'eq-v3';
 const API_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 
 self.addEventListener('install', e => {

@@ -1,0 +1,82 @@
+# Pets: how the art is made
+
+Ten pets, five growth stages each, six moods per stage. Every stage is one **sticker sheet** (3×2 grid,
+flat gray background, white die-cut outlines), generated for free in the **Gemini web app** (Nano
+Banana, owner's Google account, about 20 images a day), then cut into stickers with
+`tools/cut_sheet.py`.
+
+| Pet id | Name | Stage-2+ scarf |
+|---|---|---|
+| turtle | Shelly | orange |
+| monster | Fizz | sunny-yellow |
+| cat | Mochi | sky-blue |
+| cow | Daisy | pink |
+| fawn | Fern | leaf-green |
+| donkey | Dusty | red |
+| sheep | Cloud | lavender |
+| giraffe | Zuri | turquoise |
+| elephant | Peanut | coral |
+| lion | Leo | royal-blue |
+
+Moods, in sheet order (row-major): `happy`, `celebrate`, `thinking`, `oops`, `sleepy`, `cool`.
+Files: `docs/pets/<pet>/<stage>-<mood>.webp`. The source sheets (JPEG, ~0.5 MB each) are kept outside
+the repo in `C:\Dev\EnglishLessons\art\sheets\<pet>-<stage>.jpg`.
+
+## Adding a stage
+
+1. Generate the sheet (prompt below). **One new Gemini chat per sheet.** Generating several
+   characters in one chat makes features bleed between them (a cat got the monster's round ears),
+   and asking for "the next stage" inside the same chat returns almost the same picture.
+2. Download the full-size image (it lands in `Downloads/Gemini_Generated_Image_*.jpg`), copy it to
+   `art/sheets/<pet>-<stage>.jpg`, then from `app/`:
+   `uv run --no-project --with pillow --with numpy --with scipy python tools/cut_sheet.py ../art/sheets/<pet>-<stage>.jpg docs/pets/<pet> <stage> --preview /tmp/check.png`
+   (it stops with an error unless it finds exactly 6 stickers in 2 rows of 3).
+3. Raise `PET_ART[<pet>]` in `src/Index.html` to the new stage. Kids whose pet is already that far
+   get the growing celebration the next time they open the app.
+
+Gemini web tips: in a fresh chat, Enter often does not send; click the send arrow (sometimes twice).
+If it answers with a written prompt instead of an image, reply "Please generate this image now".
+
+## Prompt
+
+```
+Create an image: a character sticker sheet for a children's English-learning app. CHARACTER: <DESCRIPTION>
+GROWTH STAGE <N> of 5, <STAGE TEXT>. LAYOUT: landscape 3:2 image with exactly 6 poses of this same
+character in a neat 3x2 grid (3 columns, 2 rows), each pose centered in its own cell, with wide empty
+space between poses and around the edges. Poses in this exact order, left to right, top row first:
+1) Happy: waving hello with one hand, big open-mouth smile. 2) Celebrating: jumping with both arms up,
+eyes squeezed shut with joy. 3) Thinking: one hand on chin, looking up curiously. 4) Oops: embarrassed
+giggle, covering mouth with one hand. 5) Sleepy: curled up asleep, eyes closed, peaceful smile.
+6) Cool: wearing black sunglasses, confident grin, thumbs up. The character must look identical in
+all 6 poses. STYLE: premium 3D render, like a Pixar character made of soft matte polymer clay, smooth
+rounded shapes, subtle clay texture, soft studio lighting, rich but gentle colors. Each pose is a
+die-cut sticker with a thick, clean, continuous white outline around the whole silhouette.
+BACKGROUND: one perfectly flat, uniform medium-gray color (#909090) everywhere, no gradient, no
+texture, no floor, no shadows. No text, no letters, no numbers, no extra symbols or decorations anywhere.
+```
+
+Stage texts (stage 1 says "a baby <animal>" in the description; later stages "a young <animal>"):
+
+1. **BABY**: a newborn, very small and extra chubby, oversized head, tiny stubby limbs, no clothes and no accessories
+2. **KID**: no longer a baby but a playful young kid: clearly taller, with the head about one third of the total body height, longer arms and legs, a slimmer body, a sporty confident look, wearing a soft <SCARF> scarf knotted around the neck in all 6 poses (also while sleeping)
+3. **EXPLORER**: an adventurous older kid: taller again, the head about a quarter of the body height, athletic, wearing the same <SCARF> scarf and a small brown leather explorer backpack with straps in all 6 poses
+4. **HERO**: a brave young teen hero: tall and confident, wearing the <SCARF> scarf and a short flowing royal-purple cape with a golden star clasp in all 6 poses (no backpack)
+5. **LEGEND**: a grown-up legend: tall, proud and wise but still cute, wearing a gold-trimmed royal-purple cape and a small shiny golden crown in all 6 poses
+
+## Descriptions
+
+- **turtle**: "Shelly", a ___ turtle with bright leaf-green skin, thin yellow stripes on the neck and cheeks, a round olive-green shell with a golden-yellow rim, a cream belly plate, rosy red-orange blush cheeks, and huge glossy dark-brown eyes with two white catchlights.
+- **monster**: "Fizz", a ___ fluffy monster with soft sky-blue fur (rendered as soft fuzzy clay), a creamy white face and belly, a fluffy pink-and-lavender tuft of hair on top of the head, two small lavender horns with tiny white speckles, big round ears with pink insides, a few small lavender spots on the forehead, a fluffy pink-lavender tail, pink paw pads, rosy cheeks, and huge glossy blue eyes with white catchlights.
+- **cat**: "Mochi", a ___ kitten with orange-and-white tabby fur (orange head and back with soft darker orange stripes, white muzzle, chest and paws), pointed triangular cat ears with pink insides, a light-blue collar with a small golden bell (stage 1 only), pink paw pads, a striped orange tail, rosy cheeks, and huge glossy amber-brown eyes with two white catchlights.
+- **cow**: "Daisy", a ___ calf (cow), white with soft black patches, black ears with pink insides, a pink muzzle with two nostrils, two small cream horn nubs, a small white daisy flower tucked behind one ear, a thin tail with a black tuft, small dark hooves, rosy cheeks, and huge glossy dark-brown eyes with two white catchlights.
+- **fawn**: "Fern", a ___ fawn (deer), warm caramel-brown with small white spots on the back, a fluffy cream chest, a cream muzzle with a small dark nose, big soft ears with cream insides, two small velvet antler nubs, a short fluffy tail, small dark hooves, rosy cheeks, and huge glossy dark-brown eyes with long lashes and two white catchlights.
+- **donkey**: "Dusty", a ___ donkey, soft light-gray body, a cream muzzle and cream belly, long upright ears with dark-gray tips and pink insides, a short spiky dark-gray mane tuft on top of the head, a thin tail with a dark tuft, small dark-gray hooves, rosy cheeks, and huge glossy dark-brown eyes with two white catchlights.
+- **sheep**: "Cloud", a ___ lamb (sheep) with a fluffy cream-white wool body made of soft round clay curls, a smooth cream-beige face, small floppy ears with pink insides, a fluffy wool tuft on top of the head, a tiny pink nose, small gray hooves, rosy cheeks, and huge glossy dark-brown eyes with two white catchlights.
+- **giraffe**: "Zuri", a ___ giraffe, butter-yellow with soft orange-brown patches, two small ossicones (horns) with brown fluffy tips, a short brown mane, a cream muzzle, a thin tail with a brown tuft, small brown hooves, rosy cheeks, and huge glossy dark-brown eyes with long lashes and two white catchlights. (Stage 1: "a short neck"; later stages: "a longer neck".)
+- **elephant**: "Peanut", a ___ elephant, soft powder blue-gray skin, big round ears with pink insides, a short curled trunk, a tiny tuft of hair on top of the head, light cream toenails, a thin tail with a small tuft, rosy cheeks, and huge glossy dark-brown eyes with two white catchlights.
+- **lion**: "Leo", a ___ lion, warm golden-yellow fur, a fluffy orange mane around the face (cub-size at stage 1, big later), a cream muzzle and cream belly, small round ears, a tail with an orange tuft, pink paw pads, rosy cheeks, and huge glossy amber-brown eyes with two white catchlights.
+
+## A1 pictures
+
+`docs/pics/` holds the picture words for Match it at A1: Microsoft Fluent Emoji 3D (MIT license),
+fetched and converted by `tools/pics_fetch.sh` and `tools/pics.py`.

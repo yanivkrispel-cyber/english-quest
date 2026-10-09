@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v6';
+var SETUP_VERSION = 'v7';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
@@ -24,9 +24,22 @@ var DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 var WEEK_BONUS = 20;
 var COLORS = ['#7b7ff7', '#3cc7b6', '#f6a04d', '#e879f9', '#38bdf8', '#f472b6', '#a3e635', '#fb7185', '#facc15', '#818cf8'];
 
+// Mini-games (content lives in docs/games.js) and pets. A round is 5 items; every right answer
+// is worth 2 XP, a perfect round 5 more, and games give at most 60 XP a day.
+var GAMES = ['match', 'listen', 'build', 'spot'];
+var GAME_XP = { right: 2, perfect: 5, dayCap: 60 };
+var PETS = ['turtle', 'monster', 'cat', 'cow', 'fawn', 'donkey', 'sheep', 'giraffe', 'elephant', 'lion'];
+// XP where each growth stage starts: Baby, Kid, Explorer, Hero, Legend. A pet grows from game XP
+// plus the task points earned since it was adopted.
+var PET_STAGES = [0, 150, 500, 1100, 2000];
+// Spaced review: a missed item comes back after 1 day, then 3, 7 and 21 days while it is answered right.
+var REVIEW_DAYS = [1, 3, 7, 21];
+
 // The sheet tab for kids is still called "Girls" (it predates groups).
 var HEADERS = {
-  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group'],
+  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince'],
+  Games: ['Timestamp', 'Girl', 'Date', 'Game', 'Level', 'Correct', 'Total', 'XP', 'Missed'],
+  Review: ['Girl', 'Items'],
   Assignments: ['Girl', 'Date', 'Section', 'Level', 'Title', 'URL'],
   Log: ['Timestamp', 'Girl', 'Date', 'DoneOn', 'Section', 'Level', 'Title', 'URL', 'Correct', 'Total', 'Percent', 'Points'],
   Rewards: ['Points', 'Reward', 'Group'],
@@ -84,7 +97,8 @@ function api() {
   apiPublic: apiPublic, apiWarm: apiWarm, apiDashboard: apiDashboard, apiSubmit: apiSubmit, apiParent: apiParent,
   apiAdminAddGroup: apiAdminAddGroup, apiAdminAddKid: apiAdminAddKid, apiAdminSettings: apiAdminSettings,
   apiPushSubscribe: apiPushSubscribe, apiPushMessage: apiPushMessage, apiAdminTestPush: apiAdminTestPush,
-  apiParentPushSubscribe: apiParentPushSubscribe, apiParentPushPrefs: apiParentPushPrefs, apiParentPushTest: apiParentPushTest
+  apiParentPushSubscribe: apiParentPushSubscribe, apiParentPushPrefs: apiParentPushPrefs, apiParentPushTest: apiParentPushTest,
+  apiGameResult: apiGameResult, apiSetPet: apiSetPet
   };
 }
 
@@ -149,7 +163,10 @@ function apiPublic(groupId) {
   if (!g) throw new Error('This link is not valid — ask your parent for the right one.');
   return {
     group: { id: String(g.Id), name: g.Name },
-    girls: kidsIn(String(g.Id)).map(function (k) { return { name: k.Name, color: k.Color, age: k.Age }; }),
+    girls: kidsIn(String(g.Id)).map(function (k) {
+      var pet = petInfo(k);
+      return { name: k.Name, color: k.Color, age: k.Age, pet: pet ? { id: pet.id, stage: pet.stage } : null };
+    }),
     word: wordOfDay(today()),
     today: today()
   };
@@ -158,7 +175,7 @@ function apiPublic(groupId) {
 // Called when a kid taps her name, while she types her PIN: fills the cache.
 function apiWarm() {
   ensureSetup();
-  ['Girls', 'Assignments', 'Log', 'Rewards', 'Groups'].forEach(readTable);
+  ['Girls', 'Assignments', 'Log', 'Rewards', 'Groups', 'Games', 'Review'].forEach(readTable);
   return true;
 }
 
@@ -204,6 +221,125 @@ function apiSubmit(name, pin, date, correct, total, levelResult) {
   var dash = buildDashboard(findGirl(kid.Name));
   dash.justEarned = dash.week.filter(function (d) { return d.date === date; })[0].points;
   return dash;
+}
+
+// ---------- Mini-games & pets ----------
+
+// One finished round. The score is measured by the game itself, so nothing is typed by hand.
+// missed / right: ids of the items answered wrong / right, for the spaced review.
+function apiGameResult(name, pin, game, level, correct, total, missed, right) {
+  var kid = auth(name, pin);
+  if (GAMES.indexOf(game) < 0) throw new Error('Unknown game');
+  correct = Math.round(Number(correct));
+  total = Math.round(Number(total));
+  if (!(total >= 1 && total <= 10 && correct >= 0 && correct <= total)) throw new Error('Invalid score');
+  if (LEVELS.indexOf(level) < 0) level = kid.Level;
+  missed = cleanIds(missed);
+  right = cleanIds(right);
+  var t = today(), xp;
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    var used = readTableUncached('Games').filter(function (g) { return g.Girl === kid.Name && g.Date === t; })
+      .reduce(function (a, g) { return a + (Number(g.XP) || 0); }, 0);
+    xp = correct * GAME_XP.right + (correct === total && total >= 5 ? GAME_XP.perfect : 0);
+    xp = Math.max(0, Math.min(xp, GAME_XP.dayCap - used));
+    appendRow('Games', { Timestamp: new Date(), Girl: kid.Name, Date: t, Game: game, Level: level,
+      Correct: correct, Total: total, XP: xp, Missed: missed.join(' ') });
+    updateReview(kid.Name, missed, right, t);
+  } finally {
+    lock.releaseLock();
+  }
+  var dash = buildDashboard(findGirl(kid.Name));
+  dash.gameXp = xp;
+  return dash;
+}
+
+function apiSetPet(name, pin, petId, petName) {
+  var kid = auth(name, pin);
+  if (PETS.indexOf(petId) < 0) throw new Error('Choose a pet');
+  petName = String(petName || '').replace(/[<>"]/g, '').replace(/\s+/g, ' ').trim().slice(0, 16);
+  if (!petName) throw new Error('Give your pet a name');
+  var fields = { Pet: petId, PetName: petName };
+  if (!kid.PetSince) fields.PetSince = today();
+  setGirlFields(kid.Name, fields);
+  return buildDashboard(findGirl(kid.Name));
+}
+
+function cleanIds(list) {
+  return (Array.isArray(list) ? list : []).map(String).filter(function (s) { return /^[A-Za-z0-9:_-]{1,40}$/.test(s); }).slice(0, 10);
+}
+
+// Pet growth: game XP plus task points since adoption (tasks done before adopting don't count).
+function petInfo(kid) {
+  if (PETS.indexOf(kid.Pet) < 0) return null;
+  var since = String(kid.PetSince || '');
+  var xp = 0;
+  readTable('Log').forEach(function (l) { if (l.Girl === kid.Name && String(l.DoneOn) >= since) xp += Number(l.Points) || 0; });
+  readTable('Games').forEach(function (g) { if (g.Girl === kid.Name) xp += Number(g.XP) || 0; });
+  var stage = 1;
+  PET_STAGES.forEach(function (min, i) { if (xp >= min) stage = i + 1; });
+  return { id: kid.Pet, name: kid.PetName || '', xp: xp, stage: stage, from: PET_STAGES[stage - 1], to: PET_STAGES[stage] || null, since: since };
+}
+
+function gameStats(kid, t) {
+  var rows = readTable('Games').filter(function (g) { return g.Girl === kid.Name; });
+  var todayRows = rows.filter(function (g) { return g.Date === t; });
+  var week = weekDates(t);
+  var weekRows = rows.filter(function (g) { return week.indexOf(g.Date) >= 0; });
+  var pct = function (list) {
+    var c = 0, n = 0;
+    list.forEach(function (g) { c += Number(g.Correct) || 0; n += Number(g.Total) || 0; });
+    return n ? Math.round(c / n * 100) : null;
+  };
+  var recent = {};
+  GAMES.forEach(function (name) {
+    recent[name] = rows.filter(function (g) { return g.Game === name; }).slice(-3).map(function (g) {
+      return Number(g.Total) ? Math.round(Number(g.Correct) / Number(g.Total) * 100) : 0;
+    });
+  });
+  return {
+    todayRounds: todayRows.length,
+    todayXp: todayRows.reduce(function (a, g) { return a + (Number(g.XP) || 0); }, 0),
+    dayCap: GAME_XP.dayCap,
+    weekRounds: weekRows.length,
+    weekAvg: pct(weekRows),
+    total: rows.length,
+    recent: recent,
+    review: dueReview(kid.Name, t)
+  };
+}
+
+// Review state per kid, one cell: "id|box|due id|box|due ...". Only items missed at least once.
+function readReview(name) {
+  var row = readTable('Review').filter(function (r) { return r.Girl === name; })[0];
+  var map = {};
+  String(row ? row.Items : '').split(' ').forEach(function (p) {
+    var a = p.split('|');
+    if (a.length === 3) map[a[0]] = { box: Number(a[1]) || 1, due: a[2] };
+  });
+  return map;
+}
+
+function updateReview(name, missed, right, t) {
+  var map = readReview(name), changed = false;
+  missed.forEach(function (id) { map[id] = { box: 1, due: addDays(t, REVIEW_DAYS[0]) }; changed = true; });
+  right.forEach(function (id) {
+    var e = map[id];
+    if (!e) return;
+    changed = true;
+    if (e.box >= REVIEW_DAYS.length) { delete map[id]; return; }
+    map[id] = { box: e.box + 1, due: addDays(t, REVIEW_DAYS[e.box]) };
+  });
+  if (!changed) return;
+  var ids = Object.keys(map).sort(function (a, b) { return map[a].due < map[b].due ? -1 : 1; }).slice(0, 300);
+  upsertRow('Review', 'Girl', name, { Items: ids.map(function (id) { return id + '|' + map[id].box + '|' + map[id].due; }).join(' ') });
+}
+
+function dueReview(name, t) {
+  var map = readReview(name);
+  return Object.keys(map).filter(function (id) { return map[id].due <= t; })
+    .sort(function (a, b) { return map[a].due < map[b].due ? -1 : 1; }).slice(0, 30);
 }
 
 // The admin PIN (Settings) sees every group; a group's ParentPIN sees only that group.
@@ -401,6 +537,8 @@ function buildDashboard(kid) {
     },
     rewards: rewards,
     nextReward: next,
+    pet: petInfo(kid),
+    games: gameStats(kid, t),
     push: { key: vapidPublicKey(), devices: readTable('Push').filter(function (s) { return s.Girl === kid.Name; }).length },
     word: wordOfDay(t)
   };
@@ -538,9 +676,10 @@ function weeklySummary() {
 function summaryHtml(g) {
   var rows = g.girls.map(function (d) {
     return '<tr><td><b>' + d.girl.name + '</b></td><td>' + d.stats.weekDone + '/' + d.stats.weekTotal + '</td><td>' +
-      (d.stats.avg === null ? '–' : d.stats.avg + '%') + '</td><td>' + d.stats.streak + '</td><td>' + d.stats.balance + '</td><td>' + d.girl.levelLabel + '</td></tr>';
+      (d.stats.avg === null ? '–' : d.stats.avg + '%') + '</td><td>' + d.stats.streak + '</td><td>' + d.stats.balance + '</td><td>' + d.girl.levelLabel + '</td><td>' +
+      d.games.weekRounds + (d.games.weekAvg === null ? '' : ' (' + d.games.weekAvg + '%)') + '</td></tr>';
   }).join('');
-  return '<h3>' + g.name + '</h3><table cellpadding="6" border="1" style="border-collapse:collapse"><tr><th>Name</th><th>Week</th><th>Avg</th><th>Streak</th><th>Points</th><th>Level</th></tr>' +
+  return '<h3>' + g.name + '</h3><table cellpadding="6" border="1" style="border-collapse:collapse"><tr><th>Name</th><th>Week</th><th>Avg</th><th>Streak</th><th>Points</th><th>Level</th><th>Games</th></tr>' +
     rows + '</table><p>Group goal: ' + g.goal.total + ' / ' + g.goal.goal + '</p><p><a href="' + g.link + '">Open English Quest</a></p>';
 }
 
@@ -634,7 +773,7 @@ function sheet(name) { return SpreadsheetApp.getActive().getSheetByName(name); }
 // Two cache levels: TABLES lives for one request; CacheService survives across requests
 // (sheet reads cost 0.3-1s each). Manual edits in the sheet clear it via onEdit.
 var TABLES = {};
-var CACHE_TTL = { Girls: 21600, Rewards: 21600, Settings: 21600, Groups: 21600, Push: 21600, ParentPush: 21600, Assignments: 900, Log: 900 };
+var CACHE_TTL = { Girls: 21600, Rewards: 21600, Settings: 21600, Groups: 21600, Push: 21600, ParentPush: 21600, Assignments: 900, Log: 900, Games: 900, Review: 900 };
 var CHUNK = 30000;
 
 function readTable(name) {
@@ -712,13 +851,42 @@ function findGirl(name) {
 }
 
 function setGirlField(name, field, value) {
+  var fields = {};
+  fields[field] = value;
+  setGirlFields(name, fields);
+}
+
+function setGirlFields(name, fields) {
   invalidate('Girls');
   var sh = sheet('Girls');
   var values = sh.getDataRange().getValues();
-  var col = values[0].indexOf(field);
   for (var i = 1; i < values.length; i++) {
-    if (String(values[i][0]).trim() === name) sh.getRange(i + 1, col + 1).setValue(value);
+    if (String(values[i][0]).trim() !== name) continue;
+    Object.keys(fields).forEach(function (f) {
+      var col = values[0].indexOf(f);
+      if (col >= 0) sh.getRange(i + 1, col + 1).setValue(fields[f]);
+    });
   }
+}
+
+// Updates the row whose keyField equals key (by header name), or appends one.
+function upsertRow(name, keyField, key, fields) {
+  invalidate(name);
+  var sh = sheet(name);
+  var values = sh.getDataRange().getValues();
+  var head = values[0], k = head.indexOf(keyField);
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][k]).trim() !== key) continue;
+    Object.keys(fields).forEach(function (f) {
+      var col = head.indexOf(f);
+      if (col >= 0) sh.getRange(i + 1, col + 1).setValue(fields[f]);
+    });
+    return;
+  }
+  var obj = {};
+  obj[keyField] = key;
+  Object.keys(fields).forEach(function (f) { obj[f] = fields[f]; });
+  appendRow(name, obj);
 }
 
 function getSetting(key) {
