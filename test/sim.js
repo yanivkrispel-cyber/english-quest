@@ -2,6 +2,10 @@
 const fs = require('fs'), vm = require('vm'), crypto = require('crypto');
 const toSigned = buf => Array.from(buf).map(b => (b > 127 ? b - 256 : b));
 const pushLog = [];
+// A clock the tests can move forward: Date.now() and new Date() inside the scripts add clockShift ms.
+const RealDate = Date;
+let clockShift = 0;
+class SimDate extends RealDate { constructor(...a) { if (a.length) super(...a); else super(RealDate.now() + clockShift); } static now() { return RealDate.now() + clockShift; } }
 let pushStatus = () => 201;
 const sheets = {};
 function mkSheet(name){ const rows = []; return sheets[name] = {
@@ -23,7 +27,7 @@ const cacheMock = {
   removeAll: ks => ks.forEach(k => delete cacheStore[k]),
 };
 const ctx = {
-  console, Math, JSON, Date, Number, String, Object, Array, BigInt, parseInt,
+  console, Math, JSON, Date: SimDate, Number, String, Object, Array, BigInt, parseInt,
   UrlFetchApp: { fetchAll: reqs => reqs.map(o => { pushLog.push({ url: o.url, auth: o.headers.Authorization }); const c = pushStatus(o.url); return { getResponseCode: () => c }; }) },
   SpreadsheetApp: { getActive: () => ({ getSheetByName: n => sheets[n] || null, insertSheet: mkSheet, getSheets: () => Object.values(sheets),
     deleteSheet(){}, setSpreadsheetTimeZone(){}, getUrl: () => 'SHEET' }) },
@@ -42,7 +46,7 @@ const ctx = {
 };
 const props = ctx.PropertiesService.getScriptProperties(); ctx.PropertiesService.getScriptProperties = () => props;
 vm.createContext(ctx);
-for (const f of ['Catalog.js', 'Code.js', 'Push.js']) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
+for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js']) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
 // Each call is a fresh request: per-request table memo resets, CacheService persists.
 const run = s => { if (typeof ctx.TABLES === 'object') vm.runInContext('TABLES = {}', ctx); return vm.runInContext(s, ctx); };
 let day = '2026-10-08';
@@ -301,3 +305,139 @@ L2 = run("apiGateResult('Lia','" + liaPin + "',12,15,[],[])").journey;
 console.log('lia passed 12/15:', L2.label, L2.name, L2.gate.state, '(expect top) | next', L2.gate.next);
 try { run("apiGateResult('Lia','" + liaPin + "',15,15,[],[])"); } catch (e) { console.log('no gate after the last world ok:', e.message); }
 console.log('gates rows:', sheets.Gates.rows.slice(1).map(r => r.slice(1).join(' ')).join(' / '));
+
+// ---- play together: Word Duel and Challenge ----
+{ // a block, so these names do not clash with the sections above
+nextDay();
+pushStatus = () => 201;
+const dpin = { Aviv: '2694', Ziv: '4821', Ron: '7356', Noa: noaPin };
+const duel = (fn, who, ...args) => run(fn + '(' + [who, dpin[who]].concat(args).map(a => JSON.stringify(a)).join(',') + ')');
+const fails = (label, f) => { try { f(); console.log('NOT REJECTED:', label); } catch (e) { console.log(label + ' ok:', e.message); } };
+const track = (oks, step) => oks.map((o, i) => o + ':' + (i + 1) * step).join(',');
+const zivDevice = 'https://fcm.googleapis.com/fcm/send/abc';
+const gamesRows = who => sheets.Games.rows.filter(r => r[1] === who && r[3] === 'duel');
+let H = duel('apiDuelHome', 'Aviv');
+console.log('duel home:', H.friends.map(f => f.name + ':' + f.level + (f.online ? ':online' : '') + (f.ready ? '' : ':new') + (f.pet ? ':' + f.pet.id : '')).join(' '), '| incoming', H.incoming.length, '| helper', H.helper);
+console.log('dashboard carries duels:', !!run("apiDashboard('Aviv','2694')").duels, '| parent view does not:', run("apiParent('1234')").groups[0].girls.every(k => k.duels === undefined));
+fails('self invite', () => duel('apiDuelInvite', 'Aviv', 'Aviv', 'live'));
+fails('unknown player', () => duel('apiDuelInvite', 'Aviv', 'Nobody', 'live'));
+const cross = duel('apiDuelInvite', 'Aviv', 'Noa', 'live');
+console.log('invite across groups by name:', cross.state, cross.guest.name, '| Noa in the list with her group:', JSON.stringify(H.friends.filter(f => f.name === 'Noa').map(f => f.group)), '| own group has no label:', H.friends.filter(f => f.name === 'Ziv')[0].group === '');
+duel('apiDuelCancel', 'Aviv', cross.code);
+fails('bad mode', () => duel('apiDuelInvite', 'Aviv', 'Ziv', 'chess'));
+const gilPin = run("apiAdminAddKid('1234','Gil','9','" + famId + "','a1')").created.pin;
+fails('kid before the level test', () => duel('apiDuelInvite', 'Aviv', 'Gil', 'live'));
+fails('level-test kid cannot play', () => run("apiDuelHome('Gil','" + gilPin + "')"));
+
+// 1. A live duel from invite to result.
+pushLog.length = 0;
+let V = duel('apiDuelInvite', 'Aviv', 'Ziv', 'live');
+console.log('invite:', /^[A-HJ-NP-Z]{4}$/.test(V.code), V.state, V.mode, V.role, '| expires in', Math.round((V.expires - V.now) / 60000), 'min | push', pushLog.length, JSON.stringify(run("apiPushMessage('" + zivDevice + "')")));
+H = duel('apiDuelHome', 'Ziv');
+console.log('Ziv sees:', H.incoming.map(x => x.code === V.code && x.host.name + ' ' + x.host.label).join(), '| Aviv waiting:', duel('apiDuelHome', 'Aviv').waiting.length);
+fails('a stranger polls', () => duel('apiDuelPoll', 'Ron', V.code, null));
+fails('bad code', () => duel('apiDuelJoin', 'Ziv', 'AB'));
+fails('no such duel', () => duel('apiDuelJoin', 'Ziv', 'QQQQ'));
+let J = duel('apiDuelJoin', 'Ziv', V.code.toLowerCase());
+console.log('joined:', J.state, '| starts in', J.start - J.now, 'ms | guest', J.guest.name, J.guest.label, '| seed', J.seed === V.seed);
+let P = duel('apiDuelPoll', 'Aviv', V.code, { n: 3, s: 2, ms: 20000, f: false, r: 1, rt: 111 });
+console.log('Aviv polls before Ziv played:', JSON.stringify(P.them), P.themOnline);
+P = duel('apiDuelPoll', 'Ziv', V.code, { n: 2, s: 2, ms: 15000, r: 9, rt: 'x' });
+console.log('Ziv sees Aviv:', JSON.stringify(P.them), '| Aviv sees Ziv:', JSON.stringify(duel('apiDuelPoll', 'Aviv', V.code, null).them));
+console.log('tracks hidden while playing:', P.host.track === undefined && P.guest.track === undefined);
+fails('result with 6 answers', () => duel('apiDuelFinish', 'Aviv', V.code, { correct: 5, total: 6, ms: 1, track: track([1, 1, 1, 1, 1, 0], 9) }));
+fails('result whose score does not match its track', () => duel('apiDuelFinish', 'Aviv', V.code, { correct: 6, total: 7, ms: 1, track: track([1, 1, 0, 1, 1, 0, 1], 9) }));
+let F1 = duel('apiDuelFinish', 'Aviv', V.code, { correct: 5, total: 7, ms: 61000, track: track([1, 1, 0, 1, 1, 0, 1], 8700), missed: ['m:b1:cancel', 's:b1:2'], right: ['l:b1:0'] });
+console.log('Aviv finished:', F1.state, '| xp', F1.xp, '(expect 20) | dash pet xp', F1.dash.pet && F1.dash.pet.xp, '| rounds today', F1.dash.games.todayRounds);
+fails('finish twice', () => duel('apiDuelFinish', 'Aviv', V.code, { correct: 5, total: 7, ms: 61000, track: track([1, 1, 0, 1, 1, 0, 1], 8700) }));
+let F2 = duel('apiDuelFinish', 'Ziv', V.code, { correct: 6, total: 7, ms: 70000, track: track([1, 1, 1, 0, 1, 1, 1], 10000), missed: ['b:b2:3'], right: [] });
+console.log('Ziv finished:', F2.state, '| winner', F2.winner, '| xp', F2.xp, '(expect 22) | both tracks', !!F2.host.track, !!F2.guest.track);
+console.log('duel rows:', gamesRows('Aviv').map(r => r.slice(4, 9).join(' ')).join(' / '), '||', gamesRows('Ziv').map(r => r.slice(4, 9).join(' ')).join(' / '));
+console.log('missed in review:', /m:b1:cancel\|1/.test((sheets.Review.rows.find(r => r[0] === 'Aviv') || [])[1]), /b:b2:3\|1/.test((sheets.Review.rows.find(r => r[0] === 'Ziv') || [])[1]));
+console.log('results:', duel('apiDuelHome', 'Aviv').results.map(r => r.code + ' ' + r.host.score + ':' + r.guest.score + ' ' + r.winner).join());
+fails('helper star before the end of another duel', () => duel('apiDuelHelped', 'Ziv', 'QQQQ', 'm:b1:cancel'));
+let HS = duel('apiDuelHelped', 'Ziv', V.code, 'm:b1:cancel');
+HS = duel('apiDuelHelped', 'Ziv', V.code, 'm:b1:cancel');
+console.log('helper stars for Ziv:', HS.helper, '(expect 1) | in her home:', duel('apiDuelHome', 'Ziv').helper, '| Aviv:', duel('apiDuelHome', 'Aviv').helper);
+
+// 2. Declined, then sent as a challenge; the guest plays it later against the ghost.
+V = duel('apiDuelInvite', 'Ron', 'Aviv', 'live');
+let R = duel('apiDuelReply', 'Aviv', V.code, 'wait');
+console.log('give me 5 minutes:', R.reply, '| expires in', Math.round((R.expires - R.now) / 60000), 'min (expect 10)');
+R = duel('apiDuelReply', 'Aviv', V.code, 'no');
+console.log('declined:', R.state, '| host sees', duel('apiDuelPoll', 'Ron', V.code, null).state);
+console.log('changed her mind (joins a declined invite):', duel('apiDuelJoin', 'Aviv', duel('apiDuelInvite', 'Ron', 'Aviv', 'live').code).state);
+fails('the guest cannot turn it into a challenge', () => duel('apiDuelSolo', 'Aviv', V.code));
+let S = duel('apiDuelSolo', 'Ron', V.code);
+console.log('host plays first:', S.state, S.mode);
+fails('join while the host is still playing', () => duel('apiDuelJoin', 'Aviv', V.code));
+pushLog.length = 0;
+const avivDevices = sheets.Push.rows.filter(r => r[0] === 'Aviv').length;
+let C = duel('apiDuelFinish', 'Ron', V.code, { correct: 6, total: 7, ms: 48000, track: track([1, 1, 1, 1, 0, 1, 1], 6800), missed: ['s:b1:7'], right: [] });
+console.log('challenge open:', C.state, '| expires in', Math.round((C.expires - C.now) / 3600000), 'h | pushes', pushLog.length, '(Aviv devices: ' + avivDevices + ')');
+H = duel('apiDuelHome', 'Aviv');
+const ch = H.challenges.find(x => x.code === V.code);
+console.log('Aviv has a challenge:', !!ch, '| ghost track visible:', !!(ch && ch.host.track), '| Ron waiting list:', duel('apiDuelHome', 'Ron').waiting.map(x => x.state).join());
+J = duel('apiDuelJoin', 'Aviv', V.code);
+console.log('Aviv opens it:', J.state, J.role, J.mode);
+pushLog.length = 0;
+run("apiPushSubscribe('Ron','7356','https://fcm.googleapis.com/fcm/send/ron','Android',false)");
+C = duel('apiDuelFinish', 'Aviv', V.code, { correct: 6, total: 7, ms: 52000, track: track([1, 1, 1, 0, 1, 1, 1], 7400), missed: ['l:b1:4'], right: [] });
+console.log('challenge played:', C.state, '| winner', C.winner, '(expect Ron, faster) | push to Ron', JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/ron')")));
+
+// 3. A code invite: a friend from another group joins; then her group switches it off.
+V = duel('apiDuelInvite', 'Ziv', '', 'live');
+console.log('code invite:', V.open, V.state, V.guest);
+J = duel('apiDuelJoin', 'Noa', V.code);
+console.log('Noa (other group) joined:', J.state, J.guest.name, J.guest.label, '| Noa sees host', J.host.name);
+fails('a third kid joins a full duel', () => duel('apiDuelJoin', 'Ron', V.code));
+const gRow = sheets.Groups.rows.findIndex(r => r[0] === gid), fCol = sheets.Groups.rows[0].indexOf('Friends');
+sheets.Groups.rows[gRow][fCol] = 'no'; run('clearCache()');
+V = duel('apiDuelInvite', 'Ziv', '', 'live');
+fails('Friends switched off', () => duel('apiDuelJoin', 'Noa', V.code));
+console.log('switched off: Noa hidden from Aviv:', !duel('apiDuelHome', 'Aviv').friends.some(f => f.name === 'Noa'), '| Noa sees only her group:', duel('apiDuelHome', 'Noa').friends.map(f => f.name).join());
+fails('named invite into a switched-off group', () => duel('apiDuelInvite', 'Aviv', 'Noa', 'live'));
+sheets.Groups.rows[gRow][fCol] = ''; run('clearCache()');
+duel('apiDuelCancel', 'Ziv', V.code);
+fails('join a cancelled invite', () => duel('apiDuelJoin', 'Noa', V.code));
+
+// 4. Rematch tapped on both phones: the second invite joins the first.
+V = duel('apiDuelInvite', 'Aviv', 'Ziv', 'live');
+const W = duel('apiDuelInvite', 'Ziv', 'Aviv', 'live');
+console.log('rematch joins the waiting invite:', W.code === V.code, W.state, W.role);
+
+// 5. A partner who leaves: after the time limit the one who finished wins.
+V = duel('apiDuelInvite', 'Aviv', 'Ron', 'live');
+duel('apiDuelJoin', 'Ron', V.code);
+duel('apiDuelFinish', 'Aviv', V.code, { correct: 3, total: 7, ms: 90000, track: track([1, 0, 1, 0, 1, 0, 0], 12000) });
+console.log('before the time limit:', duel('apiDuelPoll', 'Aviv', V.code, null).state);
+clockShift += 210000;
+P = duel('apiDuelPoll', 'Aviv', V.code, null);
+console.log('after the time limit:', P.state, '| winner', P.winner, '(expect Aviv) | Ron result', P.guest.score);
+
+// 6. Expiry: an unanswered invite after 5 minutes (then sent as a challenge), a challenge after 24 hours.
+V = duel('apiDuelInvite', 'Aviv', 'Ziv', 'live');
+clockShift += 6 * 60000;
+console.log('unanswered invite:', duel('apiDuelPoll', 'Aviv', V.code, null).state, '| Ziv incoming', duel('apiDuelHome', 'Ziv').incoming.filter(x => x.code === V.code).length);
+fails('join an expired invite', () => duel('apiDuelJoin', 'Ziv', V.code));
+console.log('sent as a challenge after expiry:', duel('apiDuelSolo', 'Aviv', V.code).state);
+V = duel('apiDuelInvite', 'Ron', 'Ziv', 'challenge');
+duel('apiDuelFinish', 'Ron', V.code, { correct: 4, total: 7, ms: 80000, track: track([1, 1, 0, 1, 0, 1, 0], 11000) });
+clockShift += 25 * 3600000;
+nextDay();
+fails('play an expired challenge', () => duel('apiDuelJoin', 'Ziv', V.code));
+console.log('expired challenge:', duel('apiDuelPoll', 'Ron', V.code, null).state, '| Ron kept his XP row:', gamesRows('Ron').length > 0);
+
+// 7. The daily cap counts duels too.
+for (let k = 0; k < 4; k++) {
+  V = duel('apiDuelInvite', 'Aviv', 'Ziv', 'live');
+  duel('apiDuelJoin', 'Ziv', V.code);
+  duel('apiDuelFinish', 'Ziv', V.code, { correct: 1, total: 7, ms: 50000, track: track([1, 0, 0, 0, 0, 0, 0], 7000) });
+  F1 = duel('apiDuelFinish', 'Aviv', V.code, { correct: 7, total: 7, ms: 40000, track: track([1, 1, 1, 1, 1, 1, 1], 5700) });
+}
+console.log('cap: Aviv today', F1.dash.games.todayXp, '(expect 60) | last duel xp', F1.xp, '| rounds today', F1.dash.games.todayRounds, '(expect 4, bonus rows not counted)');
+run("apiParentPushSubscribe('1234','https://fcm.googleapis.com/fcm/send/dad3','Android',false)");
+run('parentSummary()');
+console.log('summary with duels:', JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/dad3')")));
+console.log('duels tab:', sheets.Duels.rows.length - 1, 'rows | states', [...new Set(sheets.Duels.rows.slice(1).map(r => r[4]))].join(','));
+}

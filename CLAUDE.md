@@ -20,6 +20,10 @@ working rules and the traps learned while building it.
    `docs/games.js` and the pet art). Mock data; any PIN works; Aviv has a pet and an open gate (finishing
    the challenge with under 12/15 fails, 12+ passes and plays the ceremony), Ziv has no pet, Ron is new.
    Use a fresh port for real-server tests so stored mock PINs aren't sent to the live API.
+   Two-player features: `node test/dev-server.js` runs the real server code (mocked Google services, 1.2 s per
+   call like Apps Script) on port 8787. Open `http://localhost:8787/test/dev.html` and `http://127.0.0.1:8787/test/dev.html`
+   in two tabs (separate storage); kids Aviv 2694, Ziv 4821, Ron 7356, admin 1234. The page is rebuilt from
+   `src/Index.html` on every load; server edits need a restart.
 4. `node build-pages.js && clasp push --force && clasp update-deployment <id from README>`.
 5. Commit and `git push` (Pages rebuild). Commit trailer lines per the session's attribution rules.
 6. Quick live check: `curl -sL -H "Content-Type: text/plain" --data '{"fn":"apiPublic","args":[""]}' <exec URL>`.
@@ -51,6 +55,14 @@ working rules and the traps learned while building it.
   in `Code.js` (15). The server rejects any other total.
 - Pet art is made in the Gemini web app (free, about 20 images a day): one new chat per sheet,
   otherwise characters bleed into each other. Recipe and prompts: `tools/PETS.md`.
+- **The working tree has CRLF line endings** (core.autocrlf). Scripted multi-line replacements must normalize
+  `\r\n` first (read, replace with LF, write back with CRLF), or nothing matches.
+- **Duels poll the server about every 2 s.** Keep `apiDuelPoll` to CacheService only (no sheet reads; state changes
+  happen under the script lock in the other duel calls). `ensureSetup()` checks a cache flag before Script Properties
+  (consumer quota: 50,000 reads a day).
+- The home screen polls invites only while the page is visible; background tabs skip it (test with the tab in front).
+- Chrome sometimes paints glass panels blank when two app iframes sit side by side (`test/duo.html`); the DOM is
+  fine. Check visuals in separate tabs.
 - Default PINs are random; the real PINs live only in the private sheet. The repo is public:
   never commit real PINs, emails or the sheet's contents (tests use fake PINs 4821/7356/2694/1234).
 
@@ -72,5 +84,8 @@ end of each world and a level-up ceremony with a shareable certificate. The owne
 challenge (15 questions from the next level, 12 to pass) over the self-reported test-english level test;
 before this, a kid's level never changed after her first test. Worlds are drawn in code; illustrated
 backgrounds from Gemini are an option for later.
+Play together, phase 1 (built 2026-10-09, spec `specs/play-together.md`): invites to any kid in the app, Word Duel
+(live), Challenge (24 h, ghost), Learn together results with Helper stars, rematch, duel notifications. Later
+phases from the options page: Duo Streak, Team Quest, Boss Battle, Tug of War, Pet Arena, Talk & Tap.
 Ideas not built yet: per-group reminder times, rewards redemption from the app (now via the
 `Redeemed` column), editing groups/kids from the app (now via the sheet).
