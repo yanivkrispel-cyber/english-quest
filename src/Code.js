@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v11';
+var SETUP_VERSION = 'v12';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
@@ -59,7 +59,10 @@ var HEADERS = {
     'HostScore', 'HostMs', 'HostTrack', 'GuestScore', 'GuestMs', 'GuestTrack', 'Winner', 'Ended', 'Helped'],
   // Duo Streak and Team Quest (Duos.js): pairs of kids, and one-off XP outside the daily game cap.
   Duos: ['Id', 'Created', 'A', 'B', 'State', 'Since', 'Ended', 'Nudges', 'Milestones', 'QuestDone'],
-  Bonus: ['Timestamp', 'Girl', 'Date', 'Kind', 'XP', 'Ref']
+  Bonus: ['Timestamp', 'Girl', 'Date', 'Kind', 'XP', 'Ref'],
+  // The Wordrobe (Shop.js): purchases, and what each pet wears.
+  Shop: ['Timestamp', 'Girl', 'Date', 'Item', 'Color', 'Price', 'Paid', 'Manners', 'Sentence'],
+  Wardrobe: ['Girl', 'Wear', 'Move', 'Updated']
 };
 
 var WORDS = [
@@ -115,7 +118,8 @@ function api() {
   apiDuelHome: apiDuelHome, apiDuelInvite: apiDuelInvite, apiDuelJoin: apiDuelJoin, apiDuelReply: apiDuelReply,
   apiDuelCancel: apiDuelCancel, apiDuelSolo: apiDuelSolo, apiDuelPoll: apiDuelPoll, apiDuelFinish: apiDuelFinish, apiDuelHelped: apiDuelHelped,
   apiDuoInvite: apiDuoInvite, apiDuoAnswer: apiDuoAnswer, apiDuoNudge: apiDuoNudge, apiDuoEnd: apiDuoEnd,
-  apiTugCheck: apiTugCheck, apiTugSave: apiTugSave
+  apiTugCheck: apiTugCheck, apiTugSave: apiTugSave,
+  apiShop: apiShop, apiShopBuy: apiShopBuy, apiWear: apiWear
   };
 }
 
@@ -192,7 +196,7 @@ function apiPublic(groupId) {
 // Called when a kid taps her name, while she types her PIN: fills the cache.
 function apiWarm() {
   ensureSetup();
-  ['Girls', 'Assignments', 'Log', 'Rewards', 'Groups', 'Games', 'Review', 'Gates', 'Duels', 'Duos', 'Bonus'].forEach(readTable);
+  ['Girls', 'Assignments', 'Log', 'Rewards', 'Groups', 'Games', 'Review', 'Gates', 'Duels', 'Duos', 'Bonus', 'Shop', 'Wardrobe'].forEach(readTable);
   return true;
 }
 
@@ -314,7 +318,9 @@ function petInfo(kid) {
   readTable('Bonus').forEach(function (b) { if (b.Girl === kid.Name) xp += Number(b.XP) || 0; });
   var stage = 1;
   PET_STAGES.forEach(function (min, i) { if (xp >= min) stage = i + 1; });
-  return { id: kid.Pet, name: kid.PetName || '', xp: xp, stage: stage, from: PET_STAGES[stage - 1], to: PET_STAGES[stage] || null, since: since };
+  var w = wardrobeOf(kid.Name);
+  return { id: kid.Pet, name: kid.PetName || '', xp: xp, stage: stage, from: PET_STAGES[stage - 1], to: PET_STAGES[stage] || null, since: since,
+    wear: w.wear, move: w.move };
 }
 
 function gameStats(kid, t) {
@@ -483,6 +489,7 @@ function parentData(list, isAdmin, who) {
         return { date: l.Date, doneOn: l.DoneOn, section: l.Section, title: l.Title, url: l.URL, correct: l.Correct, total: l.Total, percent: l.Percent, points: l.Points };
       });
       d.email = k.Email;
+      d.bought = shopBought(readTable('Shop').filter(function (r) { return r.Girl === k.Name; }), 3);
       if (isAdmin) d.pin = String(k.PIN);
       return d;
     });
@@ -643,6 +650,7 @@ function buildDashboard(kid) {
 
   var earned = totalPoints(logs, start);
   var redeemed = Number(kid.Redeemed) || 0;
+  var shield = hasShield(kid.Name), run = streakInfo(logs, t, shield);
   var balance = earned - redeemed;
   var rewards = rewardsFor(groupOf(kid));
   var next = rewards.filter(function (r) { return r.points > balance; })[0] || null;
@@ -653,7 +661,7 @@ function buildDashboard(kid) {
     week: week,
     stats: {
       earned: earned, redeemed: redeemed, balance: balance,
-      streak: streak(logs, t),
+      streak: run.days, shield: shield, saved: run.saved,
       weekDone: week.filter(function (d) { return d.done; }).length,
       weekTotal: week.filter(function (d) { return !d.beforeStart; }).length,
       avg: avgPercent(logs),
@@ -665,6 +673,8 @@ function buildDashboard(kid) {
     journey: pending ? null : journeyInfo(kid, t),
     pet: petInfo(kid),
     games: gameStats(kid, t),
+    coins: coinsOf(kid).balance,
+    shop: { open: shopOpenFor(kid, t), opens: shopOpens(), season: shopSeason(t) },
     push: { key: vapidPublicKey(), devices: readTable('Push').filter(function (s) { return s.Girl === kid.Name; }).length },
     word: wordOfDay(t)
   };
@@ -686,13 +696,25 @@ function totalPoints(logs, start) {
   return sum;
 }
 
-function streak(logs, t) {
-  var doneDays = {};
+function streak(logs, t, shield) { return streakInfo(logs, t, shield).days; }
+
+// Days in a row with a task done (today does not break it until the day is over). With the Streak Shield
+// (Shop.js), one missed day per week (Sun-Sat) between two practiced days is saved: it keeps the streak alive
+// but does not add to it. saved = the saved days of this week.
+function streakInfo(logs, t, shield) {
+  var doneDays = {}, used = {}, saved = [];
   logs.forEach(function (l) { doneDays[l.DoneOn] = true; });
   var d = doneDays[t] ? t : addDays(t, -1);
   var n = 0;
-  while (doneDays[d]) { n++; d = addDays(d, -1); }
-  return n;
+  for (;;) {
+    if (doneDays[d]) { n++; d = addDays(d, -1); continue; }
+    var prev = addDays(d, -1), ws = weekStart(d);
+    if (!shield || used[ws] || !doneDays[prev]) break;
+    used[ws] = true;
+    if (ws === weekStart(t)) saved.push(d);
+    d = prev;
+  }
+  return { days: n, saved: saved };
 }
 
 function avgPercent(logs) {
@@ -828,7 +850,7 @@ function installTriggers() {
 // Every 10 minutes during the day: refills the tables the cache lost (after 6 hours, or after a write), so
 // the first kid of the morning, or after a quiet hour, does not wait for the sheet. About 2 minutes of the
 // 90 minutes of trigger time a day.
-var WARM = { everyMin: 10, from: 7, to: 22, tables: ['Girls', 'Groups', 'Settings', 'Rewards', 'Assignments', 'Log', 'Games', 'Review', 'Gates', 'Duels', 'Duos', 'Bonus', 'Push'] };
+var WARM = { everyMin: 10, from: 7, to: 22, tables: ['Girls', 'Groups', 'Settings', 'Rewards', 'Assignments', 'Log', 'Games', 'Review', 'Gates', 'Duels', 'Duos', 'Bonus', 'Push', 'Shop', 'Wardrobe'] };
 function warmCache() {
   var h = Number(Utilities.formatDate(new Date(), TZ, 'H'));
   if (h < WARM.from || h >= WARM.to) return;
@@ -871,7 +893,7 @@ function ensureSetup() {
     if (stray && ss.getSheets().length > 1) ss.deleteSheet(stray);
     clearCache();
 
-    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: 'https://yanivkrispel-cyber.github.io/english-quest/' };
+    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: 'https://yanivkrispel-cyber.github.io/english-quest/', ShopOpens: SHOP.opens, ShopEarly: '' };
     Object.keys(defaults).forEach(function (k) { if (getSetting(k) === null) setSetting(k, defaults[k]); });
     if (getSetting('AppUrl') !== APP_URL) setSetting('AppUrl', APP_URL);
 

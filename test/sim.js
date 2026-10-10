@@ -48,7 +48,7 @@ const ctx = {
 };
 const props = ctx.PropertiesService.getScriptProperties(); ctx.PropertiesService.getScriptProperties = () => props;
 vm.createContext(ctx);
-for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js']) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
+for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js']) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
 // Each call is a fresh request: per-request table memo resets, CacheService persists.
 const run = s => { if (typeof ctx.TABLES === 'object') vm.runInContext('TABLES = {}', ctx); return vm.runInContext(s, ctx); };
 let day = '2026-10-08';
@@ -718,4 +718,144 @@ fails('tug: an expired token', () => save(T.token));
 clockShift -= 3 * 24 * 3600000;
 const S3 = save('4821', 'tug-save-0002');
 console.log('the PIN still works:', S3.xp >= 0 && S3.mateXp >= 0, '| rows', tugRows(), '(expect 4)');
+}
+
+// ---- The Wordrobe, phase 1: coins, Ask Coco, the wardrobe, the Streak Shield ----
+{ // a block, so these names do not clash with the sections above
+const sp = { Aviv: '2694', Ziv: '4821', Ron: '7356' };
+const call_ = (fn, who, ...args) => run(fn + '(' + [who, sp[who]].concat(args).map(a => JSON.stringify(a)).join(',') + ')');
+const fails = (label, f) => { try { f(); console.log('NOT REJECTED:', label); } catch (e) { console.log(label + ' ok:', e.message); } };
+const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+const xpOf = who => ['Games', 'Gates', 'Bonus'].reduce((a, t) => a + sheets[t].rows.slice(1).filter(r => r[1] === who)
+  .reduce((b, r) => b + (Number(r[sheets[t].rows[0].indexOf('XP')]) || 0), 0), 0);
+const year = ctx.__day.slice(0, 4);
+ctx.__day = year + '-10-20';
+run("setSetting('ShopOpens', '" + year + "-10-24')");
+run("setSetting('ShopEarly', '')");
+
+// Closed until the date; early names may shop
+let S = call_('apiShop', 'Aviv');
+check('closed before the date', S.open === false && S.opens === year + '-10-24');
+fails('buy before the opening', () => call_('apiShopBuy', 'Aviv', 'bow-tie', '', ['Give me', 'the', 'Bow Tie', '.']));
+run("setSetting('ShopEarly', 'Ron, aviv')");
+check('early names may shop', call_('apiShop', 'Aviv').open === true && call_('apiShop', 'Ziv').open === false);
+run("setSetting('ShopEarly', '')");
+ctx.__day = year + '-10-24';
+
+// Coins: every point and every XP
+let D = call_('apiDashboard', 'Aviv');
+S = call_('apiShop', 'Aviv');
+check('coins = points + XP', S.coins.earned === D.stats.earned + xpOf('Aviv') && D.coins === S.coins.balance && S.coins.spent === 0,
+  S.coins.earned + ' = ' + D.stats.earned + ' + ' + xpOf('Aviv'));
+check('the shop is open on the date', S.open && D.shop.open && D.shop.season === 'halloween', JSON.stringify(D.shop));
+check('the catalog', S.items.length === 43 && S.items.filter(i => i.season === 'halloween').every(i => i.available));
+
+// Ask Coco: the grade decides the price
+const before = S.coins.balance;
+let B = call_('apiShopBuy', 'Aviv', 'star-beanie', 'pink', ['Could', 'I', 'please', 'have', 'the', 'pink', 'Star Beanie', '?', 'Thank you!']);
+check('15% for "Could I please ... ? Thank you!"', B.bought.paid === 102 && B.bought.pct === 15 && B.coins.balance === before - 102,
+  B.bought.sentence + ' -> ' + B.bought.paid);
+check('worn at once, in its color', JSON.stringify(B.wear) === '["star-beanie:pink"]', JSON.stringify(B.wear));
+B = call_('apiShopBuy', 'Aviv', 'bow-tie', 'red', ['Give me', 'the', 'Bow Tie', '.']);
+check('full price for "Give me the bow tie."', B.bought.paid === 80 && B.bought.n === 0 && JSON.stringify(B.wear) === '["star-beanie:pink","bow-tie"]', JSON.stringify(B.wear));
+B = call_('apiShopBuy', 'Aviv', 'round-specs', '', ['I', 'want', 'the', 'Round Specs', 'please', '.']);
+check('5% for "I want ..., please."', B.bought.paid === 86 && B.bought.sentence === 'I want the round specs, please.', B.bought.sentence);
+B = call_('apiShopBuy', 'Aviv', 'spin', '', ['Can', 'I', 'have', 'the', 'Spin', 'please', '?']);
+check('10% for "Can I have ..., please?" and the move is set', B.bought.paid === 72 && B.move === 'spin', B.bought.sentence);
+fails('the same item twice', () => call_('apiShopBuy', 'Aviv', 'spin', '', ['Can', 'I', 'have', 'the', 'Spin', '?']));
+fails('a color it does not come in', () => call_('apiShopBuy', 'Aviv', 'beret', 'green', ['Can', 'I', 'have', 'the', 'Beret', '?']));
+fails('no question mark', () => call_('apiShopBuy', 'Aviv', 'heart-locket', '', ['Can', 'I', 'have', 'the', 'Heart Locket', '.']));
+fails('the color after the item', () => call_('apiShopBuy', 'Aviv', 'beret', 'blue', ['Can', 'I', 'have', 'the', 'Beret', 'blue', '?']));
+fails('two pleases', () => call_('apiShopBuy', 'Aviv', 'heart-locket', '', ['Could', 'I', 'please', 'have', 'the', 'Heart Locket', 'please', '?']));
+fails('not enough coins', () => call_('apiShopBuy', 'Aviv', 'baby-dragon', '', ['May', 'I', 'have', 'the', 'Baby Dragon', '?', 'Thank you!']));
+fails('an unknown item', () => call_('apiShopBuy', 'Aviv', 'unicorn', '', ['Give me', 'the', 'Unicorn', '.']));
+ctx.__day = year + '-11-20';
+fails('Halloween is over', () => call_('apiShopBuy', 'Aviv', 'tiny-ghost', '', ['Give me', 'the', 'Tiny Ghost', '.']));
+check('the drop is back next year', call_('apiShop', 'Aviv').items.find(i => i.id === 'tiny-ghost').available === false);
+ctx.__day = year + '-10-25';
+B = call_('apiShopBuy', 'Aviv', 'tiny-ghost', '', ["I'd like", 'the', 'Tiny Ghost', 'please', '.', 'Thank you!']);
+check('12% for "I would like ..., please. Thank you!"', B.bought.paid === 132 && B.bought.n === 3, B.bought.sentence + ' ' + B.bought.paid);
+
+// The wardrobe: owned items only, one per place
+let W = call_('apiWear', 'Aviv', ['star-beanie:purple', 'round-specs', 'tiny-ghost'], 'spin');
+check('wear owned items in a new color', JSON.stringify(W.wear) === '["star-beanie:purple","round-specs","tiny-ghost"]' && W.move === 'spin');
+W = call_('apiWear', 'Aviv', ['star-beanie:blue'], '');
+check('the drawn color is stored plain', JSON.stringify(W.wear) === '["star-beanie"]' && W.move === '');
+fails('wear what she does not own', () => call_('apiWear', 'Aviv', ['wizard-hat'], ''));
+fails('two items in one place', () => call_('apiWear', 'Aviv', ['star-beanie', 'star-beanie:pink'], ''));
+fails('a color it does not come in (wear)', () => call_('apiWear', 'Aviv', ['round-specs:pink'], ''));
+fails('a move she does not own', () => call_('apiWear', 'Aviv', [], 'moonwalk'));
+call_('apiWear', 'Aviv', ['star-beanie:pink', 'bow-tie', 'tiny-ghost'], 'spin');
+D = call_('apiDashboard', 'Aviv');
+check('the dashboard pet wears it', D.pet && JSON.stringify(D.pet.wear) === '["star-beanie:pink","bow-tie","tiny-ghost"]' && D.pet.move === 'spin', JSON.stringify(D.pet && D.pet.wear));
+const friend = call_('apiDuelHome', 'Ziv').friends.find(f => f.name === 'Aviv');
+check('other kids see what her pet wears', friend && friend.pet && friend.pet.wear.length === 3 && friend.pet.move === 'spin', JSON.stringify(friend && friend.pet));
+
+// The Streak Shield: one missed day per week is saved
+const logRows = sheets.Log.rows, hd = logRows[0], col = n => hd.indexOf(n);
+const shieldKid = 'Ron';
+for (let i = logRows.length - 1; i >= 1; i--) if (logRows[i][col('Girl')] === shieldKid) logRows.splice(i, 1);
+const addLog = date => { const r = []; r[col('Timestamp')] = new Date(); r[col('Girl')] = shieldKid; r[col('Date')] = date; r[col('DoneOn')] = date;
+  r[col('Section')] = 'grammar'; r[col('Percent')] = 80; r[col('Points')] = 10; logRows.push(r); };
+ctx.__day = run("weekStart('" + year + "-11-18')"); // a Sunday
+const d0 = ctx.__day, dayN = n => run("addDays('" + d0 + "', " + n + ")");
+[-7, -6, -5, -4, -3, -2, -1, 0, 1, 3].forEach(n => addLog(dayN(n))); // Tuesday (2) missed
+ctx.__day = dayN(3);
+run('clearCache()');
+D = call_('apiDashboard', shieldKid);
+check('without the shield the gap breaks the streak', D.stats.streak === 1 && D.stats.shield === false, D.stats.streak);
+sheets.Shop.rows.push(sheets.Shop.rows[0].map(h => ({ Timestamp: new Date(), Girl: shieldKid, Date: dayN(3), Item: 'streak-shield', Price: 400, Paid: 400, Manners: 2 })[h] ?? ''));
+run('clearCache()');
+D = call_('apiDashboard', shieldKid);
+check('with the shield Tuesday is saved', D.stats.streak === 10 && D.stats.shield === true && JSON.stringify(D.stats.saved) === JSON.stringify([dayN(2)]),
+  D.stats.streak + ' saved ' + JSON.stringify(D.stats.saved));
+addLog(dayN(4));
+ctx.__day = dayN(5); run('clearCache()');
+D = call_('apiDashboard', shieldKid);
+check('today does not break it until the day is over', D.stats.streak === 11, D.stats.streak);
+ctx.__day = dayN(6); run('clearCache()');
+D = call_('apiDashboard', shieldKid);
+check('a second missed day in a week: the newer one is saved, the older one breaks it', D.stats.streak === 2, D.stats.streak);
+ctx.__day = dayN(9); addLog(dayN(8)); addLog(dayN(9)); run('clearCache()');
+D = call_('apiDashboard', shieldKid);
+check('next week the shield saves a day again', D.stats.streak === 2, D.stats.streak);
+
+// Parent view: coins and the last purchases with the sentence
+ctx.__day = year + '-10-26'; run('clearCache()');
+const PA = run("apiParent('1234')").groups[0].girls.find(g => g.girl.name === 'Aviv');
+check('parents see coins and purchases', PA.coins === call_('apiShop', 'Aviv').coins.balance && PA.bought.length === 3 && PA.bought[0].name === 'Tiny Ghost',
+  JSON.stringify(PA.bought.map(b => b.name + ':' + b.paid + ':' + b.sentence)));
+console.log('shop tab:', sheets.Shop.rows.length - 1, 'rows | wardrobe tab:', sheets.Wardrobe.rows.length - 1, 'rows');
+}
+
+// ---- Ask Coco: the app grades requests exactly like the server ----
+{
+const html = fs.readFileSync('src/Index.html', 'utf8').split('\r\n').join('\n');
+const body = html.slice(html.indexOf('function cocoGrade('), html.indexOf('\n}\n', html.indexOf('function cocoGrade(')) + 2);
+const app = new vm.Script(body + '; cocoGrade').runInNewContext({});
+const cases = [
+  [['Could', 'I', 'please', 'have', 'the', 'pink', 'star beanie', '?', 'Thank you!'], 'Star Beanie', 'pink'],
+  [['Give me', 'the', 'bow tie', '.'], 'Bow Tie', 'red'],
+  [['Please', 'give me', 'the', 'bow tie', '.'], 'Bow Tie', ''],
+  [['I', 'want', 'the', 'round specs', 'please', '.'], 'Round Specs', ''],
+  [["I'd like", 'the', 'tiny ghost', 'please', '.', 'Thank you!'], 'Tiny Ghost', ''],
+  [['May', 'I', 'have', 'the', 'candy-corn glasses', '?'], 'Candy-corn Glasses', ''],
+  [['Can', 'I', 'have', 'the', 'beret', 'blue', '?'], 'Beret', 'blue'],
+  [['Can', 'I', 'have', 'beret', '?'], 'Beret', ''],
+  [['Can', 'I', 'want', 'the', 'beret', '?'], 'Beret', ''],
+  [['Could', 'I', 'have', 'the', 'spin', '.'], 'Spin', ''],
+  [['I', 'want', 'the', 'spin', '?'], 'Spin', ''],
+  [['Could', 'I', 'please', 'have', 'the', 'wizard hat', 'please', '?'], 'Wizard Hat', ''],
+  [['Thank you!', 'Could', 'I', 'have', 'the', 'wizard hat', '?'], 'Wizard Hat', ''],
+  [[], 'Wizard Hat', ''],
+  [['Could', 'I', 'have', 'the', 'wizard hat'], 'Wizard Hat', ''],
+  [['the', 'wizard hat', '.'], 'Wizard Hat', ''],
+];
+let same = 0;
+cases.forEach(([w, n, c]) => {
+  const a = JSON.stringify(run('cocoGrade(' + JSON.stringify(w) + ',' + JSON.stringify(n) + ',' + JSON.stringify(c) + ')'));
+  const b = JSON.stringify(app(w, n, c));
+  if (a === b) same++; else console.log('FAIL: grade differs for', w.join(' '), '\n  server', a, '\n  app   ', b);
+});
+console.log((same === cases.length ? 'ok: ' : 'FAIL: ') + 'the app and the server grade ' + same + '/' + cases.length + ' requests the same');
 }

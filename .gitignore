@@ -5,3 +5,4 @@ tools/.fluent/
 test/phone.html
 test/dev.html
 test/duo.html
+tools/__pycache__/

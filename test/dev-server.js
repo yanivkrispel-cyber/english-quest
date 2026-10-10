@@ -7,6 +7,7 @@
 // Seeded history (13 days): Aviv and Ziv have a 6-day duo streak (both practicing today makes 7, a
 // milestone) and a Hear it team quest (Ziv struggled with it last week); Ron and Aviv a 2-day one, and
 // Ron already practiced today.
+// The shop: Aviv may shop before the opening day (ShopEarly); GET /dev/day?d=2026-10-24 moves the server's date.
 // Bad networks on purpose: GET /dev/chaos?mode=hang|500|html|busy&n=3 makes the next n API calls hang, fail with
 // a 500, answer with an HTML error page, or report a Google error; /dev/chaos?mode=off stops it. The page gets
 // a service worker too (/test/sw.js is docs/sw.js), to test the caching.
@@ -40,6 +41,8 @@ for (let k = 1; k <= 13; k++) {
   if (k >= 3 && k <= 12) { play(KIDS[0], 'spot', 4); play(KIDS[1], 'listen', 2); }
   if (k >= 11) play(KIDS[2], 'build', 4);
 }
+// The Wordrobe opens on its date (Settings.ShopOpens); Aviv may shop before it, Ziv sees the teaser.
+run("setSetting('ShopEarly', 'Aviv')");
 global.devRun = run; global.devCtx = ctx; global.devPushLog = pushLog;
 `);
 
@@ -61,6 +64,19 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; ch
 let chaos = { mode: 'off', n: 0 };
 http.createServer((req, res) => {
   const url = new URL(req.url, 'http://x');
+  // Move the server's date: /dev/day?d=2026-10-24 (the shop's opening), 2026-10-31 (Halloween); /dev/day shows it.
+  if (url.pathname === '/dev/day') {
+    if (url.searchParams.get('d')) { global.devCtx.__day = url.searchParams.get('d'); global.devRun('clearCache()'); }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ day: global.devCtx.__day }));
+  }
+  // Coins for testing the shop: /dev/coins?who=Aviv&n=1500 (a Bonus row, so the pet grows too).
+  if (url.pathname === '/dev/coins') {
+    global.devCtx.__body = JSON.stringify({ Timestamp: new Date(), Girl: url.searchParams.get('who') || 'Aviv', Date: global.devCtx.__day, Kind: 'dev', XP: Number(url.searchParams.get('n')) || 1000, Ref: 'dev:' + Date.now() });
+    global.devRun("appendRow('Bonus', JSON.parse(__body))");
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(global.devCtx.__body);
+  }
   if (url.pathname === '/dev/chaos') {
     if (url.searchParams.get('mode')) chaos = { mode: url.searchParams.get('mode'), n: Number(url.searchParams.get('n')) || 1 };
     res.writeHead(200, { 'Content-Type': 'application/json' });
