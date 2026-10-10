@@ -2,6 +2,7 @@
 const fs = require('fs'), vm = require('vm'), crypto = require('crypto');
 const toSigned = buf => Array.from(buf).map(b => (b > 127 ? b - 256 : b));
 const pushLog = [];
+const trigLog = [];
 // A clock the tests can move forward: Date.now() and new Date() inside the scripts add clockShift ms.
 const RealDate = Date;
 let clockShift = 0;
@@ -34,10 +35,11 @@ const ctx = {
   Utilities: { formatDate: d => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jerusalem' }).format(d),
     DigestAlgorithm: { SHA_256: 'sha256' }, Charset: { UTF_8: 'utf8' }, getUuid: () => crypto.randomUUID(),
     computeDigest: (alg, str) => toSigned(crypto.createHash('sha256').update(str, 'utf8').digest()),
+    computeHmacSha256Signature: (value, key) => toSigned(crypto.createHmac('sha256', key).update(value, 'utf8').digest()),
     base64EncodeWebSafe: v => (typeof v === 'string' ? Buffer.from(v, 'utf8') : Buffer.from(v.map(b => b & 255))).toString('base64').replace(/\+/g, '-').replace(/\//g, '_') },
   LockService: { getScriptLock: () => ({ waitLock(){}, releaseLock(){} }) },
   PropertiesService: { getScriptProperties: () => ({ p: {}, getProperty(k){ return this.p[k] || null; }, setProperty(k,v){ this.p[k]=v; }, setProperties(o){ Object.assign(this.p, o); } }) },
-  ScriptApp: { getProjectTriggers: () => [], newTrigger: () => { const t = { timeBased: () => t, everyDays: () => t, atHour: () => t, inTimezone: () => t, onWeekDay: () => t, create: () => t }; return t; },
+  ScriptApp: { getProjectTriggers: () => [], newTrigger: n => { trigLog.push(n); const t = { timeBased: () => t, everyDays: () => t, everyMinutes: () => t, atHour: () => t, inTimezone: () => t, onWeekDay: () => t, create: () => t }; return t; },
     WeekDay: {}, getService: () => ({ getUrl: () => 'APPURL' }) },
   CacheService: { getScriptCache: () => cacheMock },
   ContentService: { MimeType: { JSON: 'json' }, createTextOutput: t => ({ setMimeType() { return this; }, getContent: () => t }) },
@@ -666,4 +668,54 @@ call_('apiDuelJoin', 'Ron', V.code);
 call_('apiDuelPoll', 'Ron', V.code, progress('1:9000:1'));
 P = call_('apiDuelFinish', 'Aviv', V.code, { correct: 0, total: 0, ms: 20000, track: '' });
 console.log('stopped before picking: xp', P.xp, '(expect 2: one team word, no together bonus)');
+}
+
+// ---- performance, phase 1: 6-hour cache with a version stamp, warm-up trigger, Tug of War tokens ----
+{ // a block, so these names do not clash with the sections above
+const fails = (label, f) => { try { f(); console.log('NOT REJECTED:', label); } catch (e) { console.log(label + ' ok:', e.message); } };
+// Every table is cached for 6 hours
+const putAll0 = cacheMock.putAll, ttls = new Set();
+cacheMock.putAll = (o, t) => { ttls.add(t); return putAll0(o); };
+run("clearCache(); ['Girls', 'Games', 'Log', 'Duels'].forEach(readTable)");
+cacheMock.putAll = putAll0;
+console.log('cache time:', [...ttls].join(), '(expect 21600)');
+// A copy read while a write happens is not kept
+run("clearCache(); var __race = true, __rtu = readTableUncached; readTableUncached = function (n) { var r = __rtu(n); if (n === 'Games' && __race) { __race = false; invalidate('Games'); } return r; }");
+run("readTable('Games')");
+const kept = run("cacheGet('Games') !== null");
+run("readTableUncached = __rtu");
+run("readTable('Games')");
+console.log('stale copy dropped:', kept === false, '| the next read is cached:', run("cacheGet('Games') !== null") === true);
+// A write invalidates after it is done, too (a read in between cannot keep the old row)
+run("readTable('Settings'); setSetting('PerfProbe', 'x')");
+console.log('settings fresh after a write:', run("getSetting('PerfProbe')") === 'x', '| cached again:', run("cacheGet('Settings') === null || cacheGet('Settings').some(function (r) { return r.Key === 'PerfProbe'; })"));
+// The warm-up trigger: installed with the others, fills the cache by day, does nothing at night
+console.log('triggers installed:', ['dailyReminder', 'weeklySummary', 'warmCache'].every(n => trigLog.includes(n)));
+run("clearCache()");
+const fmt0 = ctx.Utilities.formatDate;
+ctx.Utilities.formatDate = (d, tz, f) => f === 'H' ? '23' : fmt0(d);
+run("warmCache()");
+const night = run("cacheGet('Games')") === null;
+ctx.Utilities.formatDate = (d, tz, f) => f === 'H' ? '9' : fmt0(d);
+run("warmCache()");
+const day = run("WARM.tables.every(function (n) { return cacheGet(n) !== null; })");
+ctx.Utilities.formatDate = fmt0;
+console.log('warm-up: nothing at 23:00', night, '| all tables cached at 09:00', day);
+
+// Tug of War: a token instead of the second PIN, a save id against double saves
+nextDay();
+const T = run("apiTugCheck('Ziv','4821')");
+console.log('tug token:', /^\d{13}\.[A-Za-z0-9_-]{22}$/.test(T.token));
+const tugRows = () => sheets.Games.rows.filter(r => r[3] === 'tug' && r[2] === ctx.__day).length;
+const save = (cred, sid) => run("apiTugSave('Aviv','2694','Ziv'," + JSON.stringify(cred) + ",{correct:4,total:6},{correct:5,total:7}," + JSON.stringify(sid || '') + ")");
+let S1 = save(T.token, 'tug-save-0001');
+let S2 = save(T.token, 'tug-save-0001');
+console.log('saved with the token:', S1.xp, S1.mateXp, '| sent again:', S2.again === true, S2.xp, S2.mateXp, '| rows', tugRows(), '(expect 2)');
+fails('tug: a changed token', () => save(T.token.slice(0, -2) + 'xx'));
+fails('tug: Ziv\'s token for Ron', () => run("apiTugSave('Aviv','2694','Ron'," + JSON.stringify(T.token) + ",{correct:1,total:2},{correct:1,total:2})"));
+clockShift += 3 * 24 * 3600000;
+fails('tug: an expired token', () => save(T.token));
+clockShift -= 3 * 24 * 3600000;
+const S3 = save('4821', 'tug-save-0002');
+console.log('the PIN still works:', S3.xp >= 0 && S3.mateXp >= 0, '| rows', tugRows(), '(expect 4)');
 }

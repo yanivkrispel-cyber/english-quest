@@ -14,7 +14,8 @@ working rules and the traps learned while building it.
 ## Change → test → deploy
 1. Edit `src/` (server: `Code.js`, `Push.js`; UI: `Index.html`). Game content: `docs/games.js`
    (check with `node test/games-check.js`); pet art: see `tools/PETS.md`.
-2. `node test/sim.js` (extend it for new server behaviour) and, for crypto, `node test/push-crypto.js`.
+2. `node test/sim.js` (extend it for new server behaviour), `node test/ui-check.js` (Index.html traps) and, for
+   crypto, `node test/push-crypto.js`.
 3. Visual check: `node test/preview.js`, serve `app/` (`python -m http.server 8765`), open
    `http://localhost:8765/test/preview.html` with the Chrome tools (served from app/ so it can load
    `docs/games.js` and the pet art). Mock data; any PIN works; Aviv has a pet and an open gate (finishing
@@ -23,8 +24,11 @@ working rules and the traps learned while building it.
    Two-player features: `node test/dev-server.js` runs the real server code (mocked Google services, 1.2 s per
    call like Apps Script) on port 8787. Open `http://localhost:8787/test/dev.html` and `http://127.0.0.1:8787/test/dev.html`
    in two tabs (separate storage); kids Aviv 2694, Ziv 4821, Ron 7356, admin 1234. The page is rebuilt from
-   `src/Index.html` on every load; server edits need a restart.
-4. `node build-pages.js && clasp push --force && clasp update-deployment <id from README>`.
+   `src/Index.html` on every load; server edits need a restart. Bad networks on purpose:
+   `/dev/chaos?mode=hang|500|html|busy&n=2`. The dev page has the service worker too, so after an edit the first
+   reload still shows the old page (with the update bar); reload once more.
+4. `node build-pages.js && clasp push --force && clasp update-deployment <id from README>`, then
+   `node tools/warm.js` (the slow first call of a new version, so no kid gets it).
 5. Commit and `git push` (Pages rebuild). Commit trailer lines per the session's attribution rules.
 6. Quick live check: `curl -sL -H "Content-Type: text/plain" --data '{"fn":"apiPublic","args":[""]}' <exec URL>`.
 
@@ -63,6 +67,12 @@ working rules and the traps learned while building it.
 - The home screen polls invites only while the page is visible; background tabs skip it (test with the tab in front).
 - Chrome sometimes paints glass panels blank when two app iframes sit side by side (`test/duo.html`); the DOM is
   fine. Check visuals in separate tabs.
+- **Index.html is one global scope**: a second top-level function with the same name silently replaces the
+  first (a new `tugQueue()` broke Tug of War in testing). `node test/ui-check.js` catches it.
+- The cache keeps tables 6 hours: every write must call `invalidate(table)` when it is done (the helpers do).
+  A write that skips it shows stale data for hours, not minutes.
+- Phones run the service worker's copy of the app first: after a deploy, check the new version on the second
+  open (or tap the update bar).
 - Default PINs are random; the real PINs live only in the private sheet. The repo is public:
   never commit real PINs, emails or the sheet's contents (tests use fake PINs 4821/7356/2694/1234).
 

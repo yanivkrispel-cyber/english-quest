@@ -106,6 +106,12 @@ Phone / browser                     GitHub Pages (docs/)            Google
   with BigInt in `Push.js` (verified against Node crypto in `test/push-crypto.js`). Pushes carry no
   payload; the service worker asks `apiPushMessage` what to show. The VAPID key pair is generated
   on first use and stored only in Script Properties.
+- **Speed** (spec: `specs/perf-phase1.md`): a remembered kid's last dashboard is kept on the phone and shown at
+  once, fresh data comes in the background (the refresh button spins, or shows a dot when it failed). Every call
+  has a time limit, reads get a second try, Google's own failures read as "try again". The server caches every
+  table for 6 hours with a version stamp against stale copies, and the `warmCache` trigger refills it every
+  10 minutes by day. The service worker opens the app from the phone and keeps pictures and the game bank;
+  a newer app is announced with "A new version is ready".
 
 ## Sheet tabs
 
@@ -165,7 +171,7 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | apiGateResult(name, pin, correct, total, missed, right) | kid | Record a gate challenge (only while the gate is open); 12/15 raises the level |
 | apiDuoInvite / Answer / Nudge / End | kid | Duo streaks (see `specs/duo-streak.md`); the duo data comes with `apiDuelHome` and `apiDashboard` |
 | apiDuelHome / Invite / Join / Reply / Cancel / Solo / Poll / Finish / Helped | kid | Play together (see `specs/play-together.md`; Boss Battle: `specs/boss-tug.md`; Talk & Tap: `specs/talk-tap.md`); `apiDuelPoll` is the hot path, every ~2 s during a duel |
-| apiTugCheck / apiTugSave | kid | Tug of War on one phone: checks the second kid's PIN, then saves both results |
+| apiTugCheck / apiTugSave | kid | Tug of War on one phone: checks the second kid's PIN once (returns a 2-day token the phone keeps instead of her PIN), then saves both results (a save id makes a save sent twice count once) |
 | apiPushSubscribe / apiPushMessage | kid / service worker | Register a device / text of the pending notification |
 | apiParent(pin) | parent / admin | Overview of the groups this PIN may see |
 | apiParentPushSubscribe / Prefs / Test | parent / admin | Parent notifications on this phone |
@@ -179,8 +185,12 @@ Wrong PINs: 8 attempts per name (or for parent PINs) lock it for 15 minutes.
 node build-pages.js                     # src/Index.html -> docs/index.html
 clasp push --force                      # upload src/ to Apps Script
 clasp update-deployment AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w
+node tools/warm.js                      # the slow first call of the new version, instead of a kid
 git add -A && git commit -m "..." && git push   # GitHub Pages rebuilds docs/ (~1 min)
 ```
+
+Phones get a new app version in the background: the first open after a deploy still shows the old one, with
+"A new version is ready. Tap to update."; the next open shows the new one.
 
 Always update the **existing** deployment id above: the front end and service worker call that URL.
 
@@ -190,6 +200,8 @@ Always update the **existing** deployment id above: the front end and service wo
 node test/sim.js          # server scenarios (scoring, groups, PIN lockout, push, settings, games, pets, journey)
 node test/games-check.js  # mini-game content
 node test/push-crypto.js  # ES256 signatures verified by Node crypto
+node test/ui-check.js     # Index.html: parses, no "//" trap, no top-level name defined twice
 node test/preview.js      # then serve app/ and open /test/preview.html (mock data, any 4-digit PIN)
 node test/dev-server.js   # two players locally (seeded duo history): /test/dev.html on localhost:8787 and 127.0.0.1:8787
+                          # bad networks: /dev/chaos?mode=hang|500|html|busy&n=2 ; the page gets the service worker
 ```

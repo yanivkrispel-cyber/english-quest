@@ -17,7 +17,9 @@ var TALK = { items: 8, picks: 4, maxMs: 360000, winAt: 6, winXp: 10 };
 var TALK_PICK = /^[01]:\d{1,6}:[0-3]$/;
 // Games rows of the games kids play together (the together bonus is for the first of them in a day).
 var DUEL_TOGETHER = ['duel', 'boss', 'tug', 'talk'];
-var TUG = { maxAnswers: 40 };
+// Tug of War: the phone keeps a signed token for the second kid instead of her PIN (valid 2 days), so a
+// save that waits for the internet can still credit her; a save id makes a repeated save count once.
+var TUG = { maxAnswers: 40, tokenMs: 2 * 24 * 3600000, saveSec: 2 * 24 * 3600 };
 var DUEL_REACTIONS = 6;
 var DUEL_LETTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
 var DUEL_DONE = ['done', 'declined', 'expired', 'cancelled'];
@@ -420,30 +422,58 @@ function talkXp(kid, d, role, r) {
 
 // ---------- Tug of War (one phone) ----------
 
-// The second kid on the same phone proves who she is with her PIN.
+// The second kid on the same phone proves who she is with her PIN, once; the phone gets a token for the save.
 function apiTugCheck(name, pin) {
   var kid = duelKid(name, pin), p = petInfo(kid);
-  return { name: kid.Name, level: kid.Level, label: LEVEL_LABEL[kid.Level] || kid.Level, color: kid.Color, pet: p ? { id: p.id, stage: p.stage } : null };
+  return { name: kid.Name, level: kid.Level, label: LEVEL_LABEL[kid.Level] || kid.Level, color: kid.Color, pet: p ? { id: p.id, stage: p.stage } : null,
+    token: tugToken(kid) };
+}
+
+function tugSecret() {
+  var props = PropertiesService.getScriptProperties(), s = props.getProperty('TugSecret');
+  if (!s) { s = Utilities.getUuid(); props.setProperty('TugSecret', s); }
+  return s;
+}
+function tugSign(name, exp) {
+  return Utilities.base64EncodeWebSafe(Utilities.computeHmacSha256Signature(String(name).toLowerCase() + '|' + exp, tugSecret())).slice(0, 22);
+}
+function tugToken(kid) {
+  var exp = Date.now() + TUG.tokenMs;
+  return exp + '.' + tugSign(kid.Name, exp);
+}
+// The second kid: her PIN, or the token from apiTugCheck (a token has a dot, a PIN never does).
+function tugMate(name, cred) {
+  cred = String(cred || '');
+  if (cred.indexOf('.') < 0) return duelKid(name, cred);
+  var parts = cred.split('.'), exp = Number(parts[0]), kid = findGirl(name);
+  if (!kid || !(exp > Date.now()) || parts[1] !== tugSign(kid.Name, exp)) throw new Error('Wrong PIN');
+  if (pendingLevelTest(kid)) throw new Error('Take the level test first.');
+  return kid;
 }
 
 // Both results at once ({correct, total, missed, right}); mate = '' plays as a guest and saves nothing.
-function apiTugSave(name, pin, mateName, matePin, mine, hers) {
-  var kid = duelKid(name, pin), mate = mateName ? duelKid(mateName, matePin) : null, xp = {}, t = today();
+// mateCred is her PIN or her token; saveId (from the phone) makes a save that is sent again count once.
+function apiTugSave(name, pin, mateName, mateCred, mine, hers, saveId) {
+  var kid = duelKid(name, pin), mate = mateName ? tugMate(mateName, mateCred) : null, xp = {}, t = today();
+  var sid = /^[A-Za-z0-9-]{8,40}$/.test(String(saveId || '')) ? 'TS:' + saveId : '', cache = CacheService.getScriptCache();
   if (mate && mate.Name === kid.Name) throw new Error('Two different players, please');
   var players = [[kid, tugResult(mine)]].concat(mate ? [[mate, tugResult(hers)]] : []);
-  var lock = LockService.getScriptLock();
+  var lock = LockService.getScriptLock(), seen = null;
   lock.waitLock(20000);
   try {
-    players.forEach(function (p) {
+    seen = sid ? cache.get(sid) : null;
+    if (!seen) players.forEach(function (p) {
       var k = p[0], r = p[1];
       if (!r.total) return;
       var together = mate && !readTableUncached('Games').some(function (g) { return g.Girl === k.Name && g.Date === t && DUEL_TOGETHER.indexOf(g.Game) >= 0 && Number(g.Total) > 0; });
       xp[k.Name] = duelAddXp(k, r.correct * DUEL.rightXp + (together ? DUEL.togetherXp : 0), r.correct, r.total, r.missed.join(' '), k.Level, 'tug');
       updateReview(k.Name, r.missed, r.right, t);
     });
+    if (sid && !seen) cache.put(sid, JSON.stringify({ xp: xp[kid.Name] || 0, mateXp: mate ? xp[mate.Name] || 0 : null }), TUG.saveSec);
   } finally {
     lock.releaseLock();
   }
+  if (seen) { var was = JSON.parse(seen); return { xp: was.xp, mateXp: was.mateXp, again: true, dash: buildDashboard(findGirl(kid.Name)) }; }
   players.forEach(function (p) { try { duoAfterPractice(p[0].Name); } catch (e) { console.error(e); } });
   return { xp: xp[kid.Name] || 0, mateXp: mate ? xp[mate.Name] || 0 : null, dash: buildDashboard(findGirl(kid.Name)) };
 }

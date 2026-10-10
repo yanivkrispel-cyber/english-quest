@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v10';
+var SETUP_VERSION = 'v11';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
@@ -813,7 +813,7 @@ function summaryHtml(g) {
 function installTriggers() {
   ScriptApp.getProjectTriggers().forEach(function (tr) {
     var f = tr.getHandlerFunction();
-    if (f === 'dailyReminder' || f === 'lastCallReminder' || f === 'parentSummary' || f === 'weeklySummary') ScriptApp.deleteTrigger(tr);
+    if (f === 'dailyReminder' || f === 'lastCallReminder' || f === 'parentSummary' || f === 'weeklySummary' || f === 'warmCache') ScriptApp.deleteTrigger(tr);
   });
   var hour = Number(getSetting('ReminderHour')) || 17;
   ScriptApp.newTrigger('dailyReminder').timeBased().everyDays(1).atHour(hour).inTimezone(TZ).create();
@@ -822,6 +822,18 @@ function installTriggers() {
   var summary = Number(getSetting('ParentSummaryHour'));
   if (summary) ScriptApp.newTrigger('parentSummary').timeBased().everyDays(1).atHour(summary).inTimezone(TZ).create();
   ScriptApp.newTrigger('weeklySummary').timeBased().onWeekDay(ScriptApp.WeekDay.FRIDAY).atHour(12).inTimezone(TZ).create();
+  ScriptApp.newTrigger('warmCache').timeBased().everyMinutes(WARM.everyMin).create();
+}
+
+// Every 10 minutes during the day: refills the tables the cache lost (after 6 hours, or after a write), so
+// the first kid of the morning, or after a quiet hour, does not wait for the sheet. About 2 minutes of the
+// 90 minutes of trigger time a day.
+var WARM = { everyMin: 10, from: 7, to: 22, tables: ['Girls', 'Groups', 'Settings', 'Rewards', 'Assignments', 'Log', 'Games', 'Review', 'Gates', 'Duels', 'Duos', 'Bonus', 'Push'] };
+function warmCache() {
+  var h = Number(Utilities.formatDate(new Date(), TZ, 'H'));
+  if (h < WARM.from || h >= WARM.to) return;
+  ensureSetup();
+  WARM.tables.forEach(readTable);
 }
 
 // ---------- Setup & migrations ----------
@@ -902,14 +914,26 @@ function ensureSetup() {
 function sheet(name) { return SpreadsheetApp.getActive().getSheetByName(name); }
 
 // Two cache levels: TABLES lives for one request; CacheService survives across requests
-// (sheet reads cost 0.3-1s each). Manual edits in the sheet clear it via onEdit.
+// (sheet reads cost 0.3-1s each). Every table stays 6 hours, the most CacheService keeps: each write and
+// each manual edit (onEdit) clears it, and the warmCache trigger refills it during the day.
 var TABLES = {};
-var CACHE_TTL = { Girls: 21600, Rewards: 21600, Settings: 21600, Groups: 21600, Push: 21600, ParentPush: 21600, Assignments: 900, Log: 900, Games: 900, Review: 900, Gates: 900, Duels: 900, Duos: 900, Bonus: 900 };
+var CACHE_SEC = 21600;
 var CHUNK = 30000;
 
 function readTable(name) {
-  if (!TABLES[name]) TABLES[name] = cacheGet(name) || cachePut(name, readTableUncached(name));
+  if (!TABLES[name]) TABLES[name] = cacheGet(name) || cacheFill(name);
   return TABLES[name];
+}
+
+// A read from the sheet goes into the cache only if no write happened while it was being read; a
+// copy from before a write would otherwise stay for hours. invalidate() moves the version stamp.
+function cacheFill(name) {
+  var c = CacheService.getScriptCache(), v0 = null;
+  try { v0 = c.get('V:' + name); } catch (e) {}
+  var rows = readTableUncached(name);
+  cachePut(name, rows);
+  try { if (c.get('V:' + name) !== v0) c.remove('T:' + name); } catch (e) {}
+  return rows;
 }
 
 function cacheGet(name) {
@@ -935,14 +959,18 @@ function cachePut(name, rows) {
     var s = JSON.stringify(rows), obj = {}, n = Math.max(1, Math.ceil(s.length / CHUNK));
     for (var i = 0; i < n; i++) obj['T:' + name + ':' + i] = s.substr(i * CHUNK, CHUNK);
     obj['T:' + name] = String(n);
-    CacheService.getScriptCache().putAll(obj, CACHE_TTL[name] || 600);
+    CacheService.getScriptCache().putAll(obj, CACHE_SEC);
   } catch (e) {}
   return rows;
 }
 
 function invalidate(name) {
   delete TABLES[name];
-  try { CacheService.getScriptCache().remove('T:' + name); } catch (e) {}
+  try {
+    var c = CacheService.getScriptCache();
+    c.put('V:' + name, Date.now() + ':' + Math.random(), CACHE_SEC);
+    c.remove('T:' + name);
+  } catch (e) {}
 }
 
 function clearCache() {
@@ -998,6 +1026,7 @@ function setGirlFields(name, fields) {
       if (col >= 0) sh.getRange(i + 1, col + 1).setValue(fields[f]);
     });
   }
+  invalidate('Girls');
 }
 
 // Moves a kid's assignment to another date (used for a level test done after the day it was given).
@@ -1008,7 +1037,7 @@ function moveAssignment(name, from, to) {
   var head = values[0], g = head.indexOf('Girl'), d = head.indexOf('Date');
   for (var i = 1; i < values.length; i++) {
     var date = values[i][d] instanceof Date ? fmt(values[i][d]) : String(values[i][d]);
-    if (String(values[i][g]).trim() === name && date === from) { sh.getRange(i + 1, d + 1).setValue(to); return; }
+    if (String(values[i][g]).trim() === name && date === from) { sh.getRange(i + 1, d + 1).setValue(to); invalidate('Assignments'); return; }
   }
 }
 
@@ -1022,6 +1051,7 @@ function dropAssignmentsExcept(name, keepDate) {
     var date = values[i][d] instanceof Date ? fmt(values[i][d]) : String(values[i][d]);
     if (String(values[i][g]).trim() === name && date !== keepDate) sh.deleteRow(i + 1);
   }
+  invalidate('Assignments');
 }
 
 // Updates the row whose keyField equals key (by header name), or appends one.
@@ -1036,6 +1066,7 @@ function upsertRow(name, keyField, key, fields) {
       var col = head.indexOf(f);
       if (col >= 0) sh.getRange(i + 1, col + 1).setValue(fields[f]);
     });
+    invalidate(name);
     return;
   }
   var obj = {};
@@ -1054,9 +1085,10 @@ function setSetting(key, value) {
   var sh = sheet('Settings');
   var values = sh.getDataRange().getValues();
   for (var i = 1; i < values.length; i++) {
-    if (values[i][0] === key) { sh.getRange(i + 1, 2).setValue(value); return; }
+    if (values[i][0] === key) { sh.getRange(i + 1, 2).setValue(value); invalidate('Settings'); return; }
   }
   sh.appendRow([key, value]);
+  invalidate('Settings');
 }
 
 function auth(name, pin) {
