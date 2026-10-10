@@ -259,6 +259,14 @@ a{color:inherit}
 .game-tile.rec{border:2px solid rgba(99,102,241,.55)}
 .game-tile.locked{cursor:default;opacity:.6;filter:saturate(.6)}
 
+/* Offline and update bars; the refresh button as the sync light */
+.netbar{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:8px;
+  max-width:calc(100vw - 32px);padding:9px 16px;border:0;border-radius:999px;background:rgba(28,30,45,.9);color:#fff;font:inherit;font-size:13px;font-weight:700;
+  box-shadow:0 14px 30px -12px rgba(20,22,40,.6)}
+.netbar.upd{bottom:auto;top:calc(12px + env(safe-area-inset-top));cursor:pointer;background:linear-gradient(180deg,var(--primary-2),var(--primary))}
+.icon-btn.spin i{animation:spin 1s linear infinite}
+.icon-btn.off{position:relative}
+.icon-btn.off::after{content:'';position:absolute;top:7px;right:7px;width:8px;height:8px;border-radius:50%;background:var(--danger);box-shadow:0 0 0 2px #fff}
 /* Opening animation */
 #app{transition:opacity .45s ease}
 body.splashing #app{opacity:0}
@@ -294,6 +302,7 @@ body.splashing #app{opacity:0}
 .spark{position:absolute;left:var(--x);top:var(--y);width:6px;height:6px;border-radius:50%;background:#fff;opacity:0;pointer-events:none;
   box-shadow:0 0 10px 3px rgba(253,230,138,.85);animation:twinkle 1.7s ease-in-out infinite;animation-delay:var(--t)}
 @keyframes twinkle{50%{opacity:1;transform:scale(1.4)}}
+.splash.quick .portal{animation-duration:.45s}
 .splash.still *{animation:none!important}
 .splash.still img{opacity:1}
 .gscreen{display:flex;flex-direction:column;gap:14px;min-height:calc(100vh - 68px)}
@@ -694,13 +703,61 @@ const store = {
 // Served by Apps Script: google.script.run. Served from GitHub Pages: anonymous JSON API
 // (no Google cookies, so child accounts under 13 are not blocked).
 const API_URL = 'https:' + '/' + '/script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
-function call(fn, ...args){
-  if (window.google && google.script && google.script.run) {
-    return new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(e => rej(e))[fn](...args));
+// Every server call has a time limit (a stuck call never leaves a spinner turning), calls that only read
+// get one quiet second try, and errors from Google itself (not the app's own checks, like "Wrong PIN") read
+// as a short "try again". e.app = the server said no; e.net = the call did not get through.
+const CALL_MS = 15000, CALL_SHORT = { apiDuelPoll: 8000, apiDuelHome: 10000, apiWarm: 10000 };
+const CALL_TWICE = { apiPublic: 1, apiDashboard: 1, apiParent: 1, apiTugCheck: 1 };
+const INFRA = /Service|Exception|lock|too many times|timed out|unavailable|internal error|quota|rate limit/i;
+const netError = kind => Object.assign(new Error(kind === 'timeout' ? 'The server is taking too long. Try again in a moment.'
+  : kind === 'offline' ? 'No internet connection. Check it and try again.' : 'The server is busy right now. Try again in a moment.'), { net: kind });
+function serverError(msg){
+  msg = String(msg || '');
+  return INFRA.test(msg) ? Object.assign(netError('busy'), { raw: msg }) : Object.assign(new Error(msg), { app: true });
+}
+async function call(fn, ...args){
+  const tries = CALL_TWICE[fn] ? 2 : 1;
+  for (let i = 1; ; i++) {
+    try { return await callOnce(fn, args, CALL_SHORT[fn] || CALL_MS); }
+    catch(e){ if (!e.net || i >= tries) throw e; await new Promise(r => setTimeout(r, 800)); }
   }
-  return fetch(API_URL, { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args }) })
-    .then(r => r.json())
-    .then(r => { if (!r.ok) throw new Error(r.error); return r.data; });
+}
+function callOnce(fn, args, ms){
+  if (window.google && google.script && google.script.run) {
+    return new Promise((res, rej) => {
+      const t = setTimeout(() => rej(netError('timeout')), ms);
+      google.script.run.withSuccessHandler(v => { clearTimeout(t); res(v); })
+        .withFailureHandler(e => { clearTimeout(t); rej(serverError(e && e.message || e)); })[fn](...args);
+    });
+  }
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), ms);
+  return fetch(API_URL, { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args }), signal: ctl.signal })
+    .then(r => r.text(), () => { throw netError(ctl.signal.aborted ? 'timeout' : 'offline'); })
+    .then(text => {
+      let r;
+      try { r = JSON.parse(text); } catch(e){ throw netError('busy'); }
+      if (!r.ok) throw serverError(r.error);
+      return r.data;
+    })
+    .finally(() => clearTimeout(t));
+}
+
+// A thin bar while the phone is offline: games still work and their results wait on the phone.
+function netBar(){
+  let b = document.getElementById('netbar');
+  if (navigator.onLine !== false) { if (b) b.remove(); return; }
+  if (b) return;
+  b = document.createElement('div');
+  b.id = 'netbar'; b.className = 'netbar';
+  b.innerHTML = icon('wifi-slash') + '<span>Offline. Games still work, and results wait on this phone.</span>';
+  document.body.appendChild(b);
+}
+window.addEventListener('offline', netBar);
+window.addEventListener('online', () => { netBar(); backOnline(); });
+function backOnline(){
+  if (!session) return;
+  flushPending(); flushTug();
+  if (Date.now() - dashFresh > 60000) refreshDash();
 }
 function toast(msg, err){
   const t = document.createElement('div');
@@ -858,8 +915,9 @@ function renderOnboarding(d){
       <div class="sub" style="color:#3b3f55">${esc(d.word.meaning)}</div>
     </div>
   </div>`;
-  document.getElementById('refresh').onclick = () => { loading(); login(session.name, session.pin); };
-  document.getElementById('logout').onclick = () => { store.del('eq_auth'); session = null; loadHome(); };
+  document.getElementById('refresh').onclick = () => refreshDash(true);
+  document.getElementById('logout').onclick = signOut;
+  syncState(syncNow);
   document.getElementById('gotlevel').onclick = () => openSheet(w);
   ['adopt', 'petedit'].forEach(id => { const b = document.getElementById(id); if (b) b.onclick = petPicker; });
   bindPet(d);
@@ -906,7 +964,7 @@ function adoptSheet(id){
     if (!name) return toast('Give your pet a name', true);
     btn.disabled = true; btn.innerHTML = '<span class="mini-spin"></span>Saving…';
     try {
-      dash = await call('apiSetPet', session.name, session.pin, id, name);
+      setDash(await call('apiSetPet', session.name, session.pin, id, name));
       store.set('eq_pet_' + session.name, { id: dash.pet.id, stage: shownStage(dash.pet) });
       close(); renderDash(); confetti();
       toast(cur ? 'Say hi to ' + dash.pet.name + '!' : 'Welcome home, ' + dash.pet.name + '!');
@@ -1246,7 +1304,7 @@ function finishRound(){
 async function saveRound(R){
   const status = (cls, html) => { const el = document.getElementById('savest'); if (el) { el.className = 'saved ' + cls; el.innerHTML = html; } };
   try {
-    dash = await call('apiGameResult', session.name, session.pin, R.game, R.level, R.correct, R.total, R.missed, R.right);
+    setDash(await call('apiGameResult', session.name, session.pin, R.game, R.level, R.correct, R.total, R.missed, R.right));
     homeStale = true;
     status('', icon('check') + (dash.gameXp ? ' Saved · +' + dash.gameXp + ' XP for ' + esc(dash.pet ? dash.pet.name : 'you') : ' Saved · XP is full for today'));
     checkGrowth();
@@ -1265,7 +1323,7 @@ async function flushPending(){
   if (!q.length) return;
   store.del(pendKey());
   for (let i = 0; i < q.length; i++) {
-    try { dash = await call('apiGameResult', session.name, session.pin, q[i].game, q[i].level, q[i].correct, q[i].total, q[i].missed, q[i].right); }
+    try { setDash(await call('apiGameResult', session.name, session.pin, q[i].game, q[i].level, q[i].correct, q[i].total, q[i].missed, q[i].right)); }
     catch(e){ store.set(pendKey(), q.slice(i).concat(store.get(pendKey()) || [])); return; }
   }
   if (!G && document.getElementById('petimg')) renderDash();
@@ -1934,7 +1992,7 @@ async function saveDuel(R, head){
   try {
     const r = await dcall('apiDuelFinish', code, R);
     if (!DU || DU.code !== code) return;
-    if (r.dash) { dash = r.dash; checkGrowth(); }
+    if (r.dash) { setDash(r.dash); checkGrowth(); }
     DU.xp = r.xp;
     homeStale = true;
     if (r.state === 'done') return duelResult(r);
@@ -2118,9 +2176,42 @@ function takeDuelParam(){
   try { history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash); } catch(e){}
 }
 // Back in the app (from another app or tab): check for invites right away.
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') pollHome(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') return;
+  pollHome();
+  if (session && Date.now() - dashFresh > 5 * 60000 && onDashboard()) refreshDash();
+});
+// The service worker found a newer app: it is ready on the phone, a tap shows it (or the next open does).
+function updateReady(){
+  if (document.getElementById('updbar')) return;
+  const b = document.createElement('button');
+  b.id = 'updbar'; b.className = 'netbar upd';
+  b.innerHTML = icon('arrows-clockwise') + '<span>A new version is ready. Tap to update.</span>';
+  b.onclick = () => location.reload();
+  document.body.appendChild(b);
+}
+
+// After the first dashboard: the game bank and the pictures the app shows next load in the background
+// (and the service worker keeps them on the phone).
+let prefetched = false;
+function prefetch(){
+  if (prefetched) return;
+  prefetched = true;
+  const idle = window.requestIdleCallback || (f => setTimeout(f, 1500));
+  idle(() => {
+    loadBank().catch(() => {});
+    const sw = !IN_APPS_SCRIPT && navigator.serviceWorker && navigator.serviceWorker.controller;
+    if (!sw) return;
+    const abs = u => new URL(u, location.href).href, urls = [abs(ASSETS + 'games.js?v=' + BANK_V)];
+    PETS.forEach(([id]) => ['happy', 'celebrate'].forEach(m => urls.push(abs(petSrc(id, 1, m)))));
+    if (dash && dash.pet) ['happy', 'thinking', 'celebrate', 'oops', 'cool', 'sleepy'].forEach(m => urls.push(abs(petSrc(dash.pet.id, dash.pet.stage, m))));
+    sw.postMessage({ type: 'precache', urls });
+  });
+}
+
 if (!IN_APPS_SCRIPT && 'serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('message', e => {
+    if (e.data && e.data.type === 'eq-update') return updateReady();
     const u = e.data && e.data.url;
     if (!u) return;
     const c = new URL(u, location.href).searchParams.get('duel');
@@ -2549,7 +2640,7 @@ function tugPin(name){
     paint();
     if (pin.length < 4) return;
     pad.classList.add('busy');
-    try { const mate = await call('apiTugCheck', name, pin); ov.remove(); tugStart(mate, pin); }
+    try { const mate = await call('apiTugCheck', name, pin); ov.remove(); tugStart(mate, mate.token || pin); }
     catch(err){ toast(err.message.includes('PIN') ? 'Wrong PIN, try again' : err.message, true); pin = ''; paint(); pad.classList.remove('busy'); dots.classList.remove('shake'); void dots.offsetWidth; dots.classList.add('shake'); }
   };
 }
@@ -2564,12 +2655,12 @@ function tugNext(B, p){
   p.cur = prepare(B, x.id.indexOf('s:') === 0 ? 'spot' : 'match', x);
 }
 
-async function tugStart(mate, matePin){
+async function tugStart(mate, cred){
   app.innerHTML = '<div class="spinner"></div>';
   let B;
   try { B = await loadBank(); } catch(e){ toast(e.message, true); return renderDash(); }
   const me = meAsPlayer(), guest = !mate;
-  const two = [Object.assign({}, me, { pin: session.pin }), guest ? { name: 'Guest', level: me.level, label: me.label, color: '#94a3b8', pet: null, guest: true } : Object.assign({}, mate, { pin: matePin })];
+  const two = [Object.assign({}, me, { pin: session.pin }), guest ? { name: 'Guest', level: me.level, label: me.label, color: '#94a3b8', pet: null, guest: true } : Object.assign({}, mate, { cred })];
   TW = { B, pos: 0, end: Date.now() + TUG_MS, over: false, quitAt: 0,
     p: two.map(x => Object.assign(x, { q: tugQueue(B, x.level), cur: null, frozen: 0, correct: 0, total: 0, missed: [], right: [] })) };
   TW.p.forEach(p => tugNext(B, p));
@@ -2670,15 +2761,40 @@ async function tugEnd(quit){
     const t = e.target.closest('button');
     if (!t) return;
     if (t.dataset.act === 'home') { TW = null; homeStale = true; return renderDash(); }
-    if (t.dataset.act === 'again') { const m = mate ? { name: b.name, level: b.level, label: b.label, color: b.color, pet: b.pet } : null, pin = b.pin; TW = null; return tugStart(m, pin || ''); }
+    if (t.dataset.act === 'again') { const m = mate ? { name: b.name, level: b.level, label: b.label, color: b.color, pet: b.pet } : null; TW = null; return tugStart(m, mate ? mate.cred : ''); }
   };
   const st = document.getElementById('tsave');
+  // The save carries an id, so sending it again (from the queue) counts once.
+  const job = { id: 'tug-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8), mate: mate ? mate.name : '', cred: mate ? mate.cred : '', a: res(a), b: mate ? res(b) : null };
   try {
-    const r = await call('apiTugSave', session.name, session.pin, mate ? mate.name : '', mate ? mate.pin : '', res(a), mate ? res(b) : null);
-    if (r.dash) { dash = r.dash; checkGrowth(); }
+    const r = await call('apiTugSave', session.name, session.pin, job.mate, job.cred, job.a, job.b, job.id);
+    if (r.dash) { setDash(r.dash); checkGrowth(); }
     homeStale = true;
     if (st) { st.className = 'saved'; st.innerHTML = icon('check') + ' Saved · +' + r.xp + ' XP for ' + esc(a.name) + (mate ? ', +' + r.mateXp + ' XP for ' + esc(mate.name) : ''); }
-  } catch(err){ if (st) { st.className = 'saved err'; st.innerHTML = icon('wifi-slash') + ' ' + esc(err.message); } }
+  } catch(err){
+    if (!err.app) { tugKeep(job); if (st) { st.className = 'saved err'; st.innerHTML = icon('wifi-slash') + ' Saved on this phone. It will sync when you are online.'; } }
+    else if (st) { st.className = 'saved err'; st.innerHTML = icon('warning') + ' ' + esc(err.message); }
+  }
+}
+
+// Tug of War results that could not be sent wait on the phone (with the friend's token, never her PIN) and
+// go up on the next sign-in, refresh or when the phone is back online.
+const tugKey = () => 'eq_tugq_' + (session ? session.name : '');
+function tugKeep(job){ store.set(tugKey(), (store.get(tugKey()) || []).concat([job]).slice(-10)); }
+async function flushTug(){
+  if (!session) return;
+  const q = store.get(tugKey()) || [];
+  if (!q.length) return;
+  store.del(tugKey());
+  for (let i = 0; i < q.length; i++) {
+    const j = q[i];
+    try { await call('apiTugSave', session.name, session.pin, j.mate, j.cred, j.a, j.b, j.id); }
+    catch(e){
+      if (!e.app) { store.set(tugKey(), q.slice(i).concat(store.get(tugKey()) || [])); return; }
+      // The friend's token ran out (2 days): at least this kid's result is saved.
+      if (j.mate) try { await call('apiTugSave', session.name, session.pin, '', '', j.a, null, j.id + '-solo'); } catch(e2){}
+    }
+  }
 }
 
 function tugLearn(){
@@ -3076,7 +3192,7 @@ async function saveGate(R){
       <h1>${R.correct}/${R.total}</h1>
       <div class="saved wait" id="gatest"><span class="mini-spin"></span>Opening the gate…</div>
     </div><div class="stack" style="gap:10px" id="gatebtns"></div></div>`;
-  try { dash = await call('apiGateResult', session.name, session.pin, R.correct, R.total, R.missed, R.right); }
+  try { setDash(await call('apiGateResult', session.name, session.pin, R.correct, R.total, R.missed, R.right)); }
   catch(e){
     const st = document.getElementById('gatest');
     st.className = 'saved err'; st.innerHTML = icon('wifi-slash') + ' ' + esc(e.message);
@@ -3204,19 +3320,19 @@ async function certBlob(){
 // The ten pets pop in around a glass portal, orbit it and do a wave; on a phone where a kid is
 // remembered, her own pet then jumps into the middle and says hi. A tap skips it; with reduced
 // motion it is a short still picture. The app loads underneath meanwhile.
-function splashScreen(){
+function splashScreen(quick){
   const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   const saved = store.get('eq_auth'), mine = saved ? store.get('eq_pet_' + saved.name) : null;
   const me = mine && PET_ART[mine.id] ? mine : null;
   const el = document.createElement('div');
-  el.className = 'splash' + (reduce ? ' still' : '');
+  el.className = 'splash' + (reduce ? ' still' : '') + (quick ? ' quick' : '');
   el.innerHTML = `<div class="splash-stage">
-      <div class="orbit">${PETS.map(([id], i) => `<div class="slot" style="--a:${Math.round(i * 360 / PETS.length - 90)}deg">
-        <div class="up"><div class="pop" style="--d:${150 + i * 75}ms"><img src="${petSrc(id, 1, 'happy')}" data-id="${id}" alt="" onload="this.classList.add('ok')"></div></div></div>`).join('')}</div>
+      ${quick ? '' : `<div class="orbit">${PETS.map(([id], i) => `<div class="slot" style="--a:${Math.round(i * 360 / PETS.length - 90)}deg">
+        <div class="up"><div class="pop" style="--d:${150 + i * 75}ms"><img src="${petSrc(id, 1, 'happy')}" data-id="${id}" alt="" onload="this.classList.add('ok')"></div></div></div>`).join('')}</div>`}
       <div class="portal"><div class="portal-in">
         ${me ? `<img class="me" src="${petSrc(me.id, me.stage, 'celebrate')}" alt="" onload="this.classList.add('ok')">` : ''}
         <div class="ptitle">English Quest</div><div class="psub">10 minutes a day</div></div></div>
-      ${Array.from({ length: 14 }, () => `<i class="spark" style="--x:${Math.round(Math.random() * 100)}%;--y:${Math.round(Math.random() * 100)}%;--t:${(Math.random() * 1.7).toFixed(2)}s"></i>`).join('')}
+      ${quick ? '' : Array.from({ length: 14 }, () => `<i class="spark" style="--x:${Math.round(Math.random() * 100)}%;--y:${Math.round(Math.random() * 100)}%;--t:${(Math.random() * 1.7).toFixed(2)}s"></i>`).join('')}
     </div>`;
   document.body.appendChild(el);
   document.body.classList.add('splashing');
@@ -3224,7 +3340,12 @@ function splashScreen(){
   const done = new Promise(r => { minDone = r; });
   const later = (ms, f) => setTimeout(() => { if (!gone) f(); }, ms);
   if (reduce) later(700, minDone);
-  else {
+  else if (quick) {
+    // A short hello: the kid's own pet (or the title shining) and straight in.
+    if (me) { el.classList.add('hello'); el.querySelector('.ptitle').textContent = 'Hi ' + saved.name + '!'; el.querySelector('.psub').textContent = 'Ready to play?'; }
+    else el.classList.add('shine');
+    setTimeout(minDone, 650);
+  } else {
     PETS.forEach(([id]) => { new Image().src = petSrc(id, 1, 'celebrate'); });
     // The wave: each pet cheers and hops in turn.
     el.querySelectorAll('.orbit img').forEach((img, i) => later(1350 + i * 60, () => {
@@ -3251,31 +3372,61 @@ function splashScreen(){
   return { done, close };
 }
 
-// Starts the app behind the opening animation and lifts it when both are ready (at most 9 s).
+// Starts the app behind the opening animation and lifts it when both are ready (at most 9 s). The full
+// animation plays on the first open of the day; later opens get a short hello.
 async function boot(){
-  const s = splashScreen();
+  const day = new Date().toLocaleDateString('en-CA'), quick = store.get('eq_splash_day') === day;
+  if (!quick) store.set('eq_splash_day', day);
+  const s = splashScreen(quick);
+  netBar();
   const ready = start().catch(() => {});
   await Promise.race([Promise.all([s.done, ready]), new Promise(r => setTimeout(r, 9000))]);
   s.close();
+  try { performance.mark('eq-open'); } catch(e){}
 }
 
 // ---------- Home ----------
 async function start(){
   takeDuelParam();
   const saved = store.get('eq_auth'), admin = store.get('eq_admin');
+  const kept = saved && store.get(dashKey(saved.name));
+  if (kept && kept.girl && kept.week) {
+    session = { name: saved.name, pin: saved.pin, keep: true };
+    dash = kept;
+    renderDash();
+    refreshDash();
+    if (pendingDuel && !kept.levelTest) { const c = pendingDuel; pendingDuel = null; openDuel(c); }
+    return;
+  }
   if (saved && await login(saved.name, saved.pin, true)) return;
   if (!saved && admin && await parent(admin, true)) return;
   await loadHome();
 }
 
+// The kids of the group: from the phone at once when known, refreshed in the background.
 async function loadHome(){
+  const key = 'eq_pub_' + groupId(), kept = store.get(key);
+  if (!pub && kept && kept.group && kept.girls) {
+    pub = kept; home();
+    call('apiPublic', groupId()).then(p => {
+      const changed = JSON.stringify(p) !== JSON.stringify(pub);
+      pub = p; store.set(key, p);
+      if (changed && document.querySelector('.who')) home();
+    }).catch(() => {});
+    return;
+  }
   loading();
   const slow = setTimeout(() => app.insertAdjacentHTML('beforeend', '<div class="glass panel" style="text-align:center">Still loading… if this stays, sign out of other Google accounts or open in an incognito window.</div>'), 12000);
-  try { pub = pub || await call('apiPublic', groupId()); clearTimeout(slow); }
+  try { pub = pub || await call('apiPublic', groupId()); store.set(key, pub); clearTimeout(slow); }
   catch(e){
     clearTimeout(slow);
     // A remembered group that no longer exists: forget it and fall back to the default group.
-    if (!new URLSearchParams(location.search).get('g') && store.get('eq_group')) { store.del('eq_group'); return loadHome(); } app.innerHTML = '<div class="glass panel">Could not load: ' + esc(e.message) + '</div>'; return; }
+    if (e.app && !new URLSearchParams(location.search).get('g') && store.get('eq_group')) { store.del('eq_group'); return loadHome(); }
+    app.innerHTML = '<div class="glass panel" style="text-align:center;display:grid;gap:12px">' + esc(e.message) +
+      '<button class="btn btn-primary btn-block" id="homeagain">' + icon('arrows-clockwise') + ' Try again</button></div>';
+    document.getElementById('homeagain').onclick = loadHome;
+    return;
+  }
   home();
 }
 
@@ -3349,20 +3500,82 @@ function pinPad(name){
   });
 }
 
+// Local first: a remembered kid's last dashboard stays on the phone. The next open shows it at once and
+// brings fresh data in the background (the refresh button spins meanwhile, and gets a dot if that fails).
+const dashKey = name => 'eq_dash_' + name;
+let dashFresh = 0, dashSync = null, syncNow = '';
+function setDash(d){
+  if (!d) return;
+  dash = d;
+  dashFresh = Date.now();
+  if (session && session.keep) store.set(dashKey(session.name), d);
+}
+const dashSig = d => JSON.stringify(d, (k, v) => k === 'now' ? undefined : v);
+const onDashboard = () => !G && !DU && !TW && !!document.getElementById('petimg');
+function syncState(s){
+  syncNow = s;
+  const b = document.getElementById('refresh');
+  if (!b) return;
+  b.classList.toggle('spin', s === 'busy');
+  b.classList.toggle('off', s === 'off');
+  b.title = s === 'busy' ? 'Updating…' : s === 'off' ? 'Could not update. Showing what is saved on this phone.' : 'Refresh';
+}
+function refreshDash(manual){
+  if (!session) return Promise.resolve();
+  if (dashSync) return dashSync;
+  const me = session.name;
+  syncState('busy');
+  dashSync = (async () => {
+    try {
+      const d = await call('apiDashboard', session.name, session.pin);
+      if (!session || session.name !== me) return;
+      const changed = dashSig(d) !== dashSig(dash);
+      setDash(d);
+      syncState('');
+      flushPending(); flushTug();
+      if (changed && onDashboard()) { const y = window.scrollY; renderDash(); window.scrollTo(0, y); }
+    } catch(e){
+      // The PIN was changed in the sheet: this phone signs in again.
+      if (e.app && /Wrong PIN/.test(e.message)) { toast('Please sign in again', true); return signOut(); }
+      syncState('off');
+      if (manual) toast(e.message, true);
+    } finally { dashSync = null; }
+  })();
+  return dashSync;
+}
+function signOut(){
+  if (session) store.del(dashKey(session.name));
+  store.del('eq_auth');
+  session = null; dash = null; syncNow = '';
+  loadHome();
+}
+
 async function login(name, pin, silent, remember){
   try {
     const d = await call('apiDashboard', name, pin);
-    session = { name, pin };
-    if (remember) store.set('eq_auth', session);
-    dash = d; renderDash();
-    flushPending();
+    session = { name, pin, keep: !!(remember || silent) };
+    if (remember) store.set('eq_auth', { name, pin });
+    setDash(d); syncNow = ''; renderDash();
+    flushPending(); flushTug();
     if (pendingDuel && !d.levelTest) { const c = pendingDuel; pendingDuel = null; openDuel(c); }
     return true;
   } catch(e){
-    if (silent) store.del('eq_auth');
+    if (silent) {
+      if (!e.app) { offlineStart(); return true; }
+      if (/Wrong PIN/.test(e.message)) store.del('eq_auth'); else toast(e.message, true);
+    }
     else toast(e.message.includes('PIN') ? 'Wrong PIN, try again' : e.message, true);
     return false;
   }
+}
+
+// No connection on an open without a saved dashboard: the kid stays remembered, a tap tries again.
+function offlineStart(){
+  app.innerHTML = `<div class="glass panel" style="text-align:center;display:grid;gap:12px;justify-items:center">
+    <span class="gate-hero" style="--na:#c7d2fe;--nb:#818cf8">${icon('wifi-slash', 'duotone')}</span>
+    <h2>No connection</h2><div class="sub" style="margin:0">Check the internet and try again.</div>
+    <button class="btn btn-primary btn-block" id="startagain">${icon('arrows-clockwise')} Try again</button></div>`;
+  document.getElementById('startagain').onclick = () => { loading(); start(); };
 }
 
 // ---------- Dashboard ----------
@@ -3385,6 +3598,7 @@ function scoreText(d){
 
 function renderDash(){
   G = null; speechStop(); stopDuel();
+  try { performance.mark('eq-dash'); } catch(e){}
   const d = dash, s = d.stats;
   if (d.duels) duelsHome = d.duels;
   if (!d.games) d.games = Object.assign({}, GAMES_DEFAULT);
@@ -3437,8 +3651,9 @@ function renderDash(){
       <div class="sub" style="color:#3b3f55">${esc(d.word.meaning)}</div>
     </div>
   </div>`;
-  document.getElementById('refresh').onclick = () => { loading(); login(session.name, session.pin); };
-  document.getElementById('logout').onclick = () => { store.del('eq_auth'); session = null; loadHome(); };
+  document.getElementById('refresh').onclick = () => refreshDash(true);
+  document.getElementById('logout').onclick = signOut;
+  syncState(syncNow);
   app.querySelectorAll('[data-log]').forEach(b => b.onclick = () => openSheet(d.week.find(w => w.date === b.dataset.log)));
   app.querySelectorAll('[data-game]').forEach(b => b.onclick = () => startGame(b.dataset.game));
   ['adopt', 'petedit'].forEach(id => { const b = document.getElementById(id); if (b) b.onclick = petPicker; });
@@ -3451,6 +3666,7 @@ function renderDash(){
   renderPushCard();
   checkGrowth();
   checkDuoParty();
+  prefetch();
 }
 
 // ---------- Reminders (Web Push) ----------
@@ -3577,7 +3793,7 @@ function openSheet(w){
     e.currentTarget.disabled = true; e.currentTarget.textContent = 'Saving…';
     try {
       const first = !!dash.levelTest, wasOpen = !!dash.journey && dash.journey.gate.state === 'open';
-      dash = await call('apiSubmit', session.name, session.pin, w.date, c, t, level);
+      setDash(await call('apiSubmit', session.name, session.pin, w.date, c, t, level));
       homeStale = true;
       const j = dash.journey;
       close(); renderDash();

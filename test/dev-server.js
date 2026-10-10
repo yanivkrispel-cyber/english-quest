@@ -7,6 +7,9 @@
 // Seeded history (13 days): Aviv and Ziv have a 6-day duo streak (both practicing today makes 7, a
 // milestone) and a Hear it team quest (Ziv struggled with it last week); Ron and Aviv a 2-day one, and
 // Ron already practiced today.
+// Bad networks on purpose: GET /dev/chaos?mode=hang|500|html|busy&n=3 makes the next n API calls hang, fail with
+// a 500, answer with an HTML error page, or report a Google error; /dev/chaos?mode=off stops it. The page gets
+// a service worker too (/test/sw.js is docs/sw.js), to test the caching.
 const fs = require('fs'), path = require('path'), http = require('http');
 const PORT = Number(process.env.PORT) || 8787, LATENCY = Number(process.env.LATENCY ?? 1200);
 const APP = path.join(__dirname, '..');
@@ -55,8 +58,28 @@ figure{margin:0;display:grid;gap:8px;justify-items:center}iframe{border:0;border
 
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css', '.json': 'application/json',
   '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json' };
+let chaos = { mode: 'off', n: 0 };
 http.createServer((req, res) => {
   const url = new URL(req.url, 'http://x');
+  if (url.pathname === '/dev/chaos') {
+    if (url.searchParams.get('mode')) chaos = { mode: url.searchParams.get('mode'), n: Number(url.searchParams.get('n')) || 1 };
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify(chaos));
+  }
+  if (url.pathname === '/test/sw.js') {
+    res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8', 'Cache-Control': 'no-store' });
+    return res.end(fs.readFileSync('docs/sw.js', 'utf8'));
+  }
+  if (req.method === 'POST' && url.pathname === '/exec' && chaos.mode !== 'off' && chaos.n > 0) {
+    chaos.n--;
+    console.log('chaos:', chaos.mode, '(' + chaos.n + ' left)');
+    const mode = chaos.mode;
+    if (chaos.n <= 0) chaos = { mode: 'off', n: 0 };
+    if (mode === 'hang') return setTimeout(() => { try { res.destroy(); } catch (e) {} }, 60000);
+    if (mode === '500') { res.writeHead(500, { 'Content-Type': 'text/html' }); return res.end('<html><body>Internal error</body></html>'); }
+    if (mode === 'html') { res.writeHead(200, { 'Content-Type': 'text/html' }); return res.end('<!doctype html><title>Error</title><p>Sorry, unable to open the file at this time.</p>'); }
+    if (mode === 'busy') { res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify({ ok: false, error: 'Service invoked too many times for one day: urlfetch.' })); }
+  }
   if (req.method === 'POST' && url.pathname === '/exec') {
     let body = '';
     req.on('data', c => { body += c; });
