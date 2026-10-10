@@ -14,8 +14,9 @@ deploy). Phase 1 makes the app stop waiting for the server where it can, and mak
   A "Wrong PIN" answer (the PIN was changed in the sheet) signs the phone out.
 - Back in the app after more than 5 minutes: the dashboard updates in the background.
 - The kid picker (no one remembered) is kept the same way (`eq_pub_<group>`).
-- **Opening animation:** the full one on the first open of the day, a 0.65 s hello with the kid's pet after
-  that (owner's choice). Reduced motion: a still picture, as before.
+- **Opening animation:** the full one on the first open of the day; later opens play the same show faster,
+  about 1.2 s: the pets pop in around the portal, the kid's pet says hi, a quick wave (owner's choice). A tap
+  skips it. Reduced motion: a still picture, as before.
 - No connection on an open without a saved dashboard: a "No connection" screen with Try again; the kid stays
   remembered (before, a failed silent sign-in forgot her).
 
@@ -63,7 +64,7 @@ deploy). Phase 1 makes the app stop waiting for the server where it can, and mak
 | | Before | After |
 |---|---|---|
 | Returning kid, second open of the day: dashboard drawn | after the server, ~1.4 s (live: 2-15 s) | 0.03-0.1 s from the phone |
-| Opening animation | 2.8 s every time | 2.8 s first open of the day, then 0.65 s |
+| Opening animation | 2.8 s every time | 2.8 s first open of the day, then about 1.2 s (same pets, faster) |
 | A call that hangs | spinner forever | message after 15 s (reads: second try, then message) |
 | Server error page / Google error | raw text or a JSON error | "The server is busy right now…" |
 | Pictures on the second open | re-checked over the network | from the phone (0 requests) |

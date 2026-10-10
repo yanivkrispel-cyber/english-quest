@@ -296,6 +296,9 @@ body.splashing #app{opacity:0}
   box-shadow:0 0 10px 3px rgba(253,230,138,.85);animation:twinkle 1.7s ease-in-out infinite;animation-delay:var(--t)}
 @keyframes twinkle{50%{opacity:1;transform:scale(1.4)}}
 .splash.quick .portal{animation-duration:.45s}
+.splash.quick .orbit .pop,.splash.quick .orbit img.hop{animation-duration:.38s}
+.splash.quick.hello .orbit{opacity:.75}
+.splash.quick.hello .me{animation-duration:.45s}
 .splash.still *{animation:none!important}
 .splash.still img{opacity:1}
 .gscreen{display:flex;flex-direction:column;gap:14px;min-height:calc(100vh - 68px)}
@@ -3312,7 +3315,8 @@ async function certBlob(){
 // ---------- Opening animation ----------
 // The ten pets pop in around a glass portal, orbit it and do a wave; on a phone where a kid is
 // remembered, her own pet then jumps into the middle and says hi. A tap skips it; with reduced
-// motion it is a short still picture. The app loads underneath meanwhile.
+// motion it is a short still picture. The app loads underneath meanwhile. Later opens of the same day play the
+// same show faster (about 1.2 s).
 function splashScreen(quick){
   const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   const saved = store.get('eq_auth'), mine = saved ? store.get('eq_pet_' + saved.name) : null;
@@ -3320,39 +3324,36 @@ function splashScreen(quick){
   const el = document.createElement('div');
   el.className = 'splash' + (reduce ? ' still' : '') + (quick ? ' quick' : '');
   el.innerHTML = `<div class="splash-stage">
-      ${quick ? '' : `<div class="orbit">${PETS.map(([id], i) => `<div class="slot" style="--a:${Math.round(i * 360 / PETS.length - 90)}deg">
-        <div class="up"><div class="pop" style="--d:${150 + i * 75}ms"><img src="${petSrc(id, 1, 'happy')}" data-id="${id}" alt="" onload="this.classList.add('ok')"></div></div></div>`).join('')}</div>`}
+      <div class="orbit">${PETS.map(([id], i) => `<div class="slot" style="--a:${Math.round(i * 360 / PETS.length - 90)}deg">
+        <div class="up"><div class="pop" style="--d:${quick ? 60 + i * 32 : 150 + i * 75}ms"><img src="${petSrc(id, 1, 'happy')}" data-id="${id}" alt="" onload="this.classList.add('ok')"></div></div></div>`).join('')}</div>
       <div class="portal"><div class="portal-in">
         ${me ? `<img class="me" src="${petSrc(me.id, me.stage, 'celebrate')}" alt="" onload="this.classList.add('ok')">` : ''}
         <div class="ptitle">English Quest</div><div class="psub">10 minutes a day</div></div></div>
-      ${quick ? '' : Array.from({ length: 14 }, () => `<i class="spark" style="--x:${Math.round(Math.random() * 100)}%;--y:${Math.round(Math.random() * 100)}%;--t:${(Math.random() * 1.7).toFixed(2)}s"></i>`).join('')}
+      ${Array.from({ length: quick ? 8 : 14 }, () => `<i class="spark" style="--x:${Math.round(Math.random() * 100)}%;--y:${Math.round(Math.random() * 100)}%;--t:${(Math.random() * (quick ? .8 : 1.7)).toFixed(2)}s"></i>`).join('')}
     </div>`;
   document.body.appendChild(el);
   document.body.classList.add('splashing');
   let gone = false, minDone;
   const done = new Promise(r => { minDone = r; });
   const later = (ms, f) => setTimeout(() => { if (!gone) f(); }, ms);
+  // The wave: each pet cheers and hops in turn. Then the kid's pet says hi (or the title shines).
+  const wave = (from, step, hold) => el.querySelectorAll('.orbit img').forEach((img, i) => later(from + i * step, () => {
+    img.src = petSrc(img.dataset.id, 1, 'celebrate');
+    img.classList.add('hop');
+    later(hold, () => { img.src = petSrc(img.dataset.id, 1, 'happy'); img.classList.remove('hop'); });
+  }));
+  const hello = () => {
+    if (!me) return el.classList.add('shine');
+    el.classList.add('hello');
+    el.querySelector('.ptitle').textContent = 'Hi ' + saved.name + '!';
+    el.querySelector('.psub').textContent = 'Ready to play?';
+  };
   if (reduce) later(700, minDone);
-  else if (quick) {
-    // A short hello: the kid's own pet (or the title shining) and straight in.
-    if (me) { el.classList.add('hello'); el.querySelector('.ptitle').textContent = 'Hi ' + saved.name + '!'; el.querySelector('.psub').textContent = 'Ready to play?'; }
-    else el.classList.add('shine');
-    setTimeout(minDone, 650);
-  } else {
+  else {
     PETS.forEach(([id]) => { new Image().src = petSrc(id, 1, 'celebrate'); });
-    // The wave: each pet cheers and hops in turn.
-    el.querySelectorAll('.orbit img').forEach((img, i) => later(1350 + i * 60, () => {
-      img.src = petSrc(img.dataset.id, 1, 'celebrate');
-      img.classList.add('hop');
-      later(520, () => { img.src = petSrc(img.dataset.id, 1, 'happy'); img.classList.remove('hop'); });
-    }));
-    later(1950, () => {
-      if (!me) return el.classList.add('shine');
-      el.classList.add('hello');
-      el.querySelector('.ptitle').textContent = 'Hi ' + saved.name + '!';
-      el.querySelector('.psub').textContent = 'Ready to play?';
-    });
-    setTimeout(minDone, me ? 2800 : 2450);
+    // Later opens of the same day: the same show in about 1.2 s.
+    if (quick) { later(380, hello); wave(560, 40, 380); setTimeout(minDone, 1150); }
+    else { wave(1350, 60, 520); later(1950, hello); setTimeout(minDone, me ? 2800 : 2450); }
   }
   const close = () => {
     if (gone) return;
@@ -3366,7 +3367,7 @@ function splashScreen(quick){
 }
 
 // Starts the app behind the opening animation and lifts it when both are ready (at most 9 s). The full
-// animation plays on the first open of the day; later opens get a short hello.
+// animation plays on the first open of the day; later opens play it faster.
 async function boot(){
   const day = new Date().toLocaleDateString('en-CA'), quick = store.get('eq_splash_day') === day;
   if (!quick) store.set('eq_splash_day', day);
