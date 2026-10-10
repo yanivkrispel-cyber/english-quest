@@ -807,7 +807,7 @@ const PETS = [['turtle', 'Shelly'], ['monster', 'Fizz'], ['cat', 'Mochi'], ['cow
   ['donkey', 'Dusty'], ['sheep', 'Cloud'], ['giraffe', 'Zuri'], ['elephant', 'Peanut'], ['lion', 'Leo']];
 // Growth stages drawn so far for each pet. A pet that is further along keeps its last drawn look
 // until the next drawing is added here, and then gets its growing celebration.
-const PET_ART = { turtle: 2, monster: 2, cat: 2, cow: 2, fawn: 2, donkey: 2, sheep: 2, giraffe: 2, elephant: 1, lion: 2 };
+const PET_ART = { turtle: 5, monster: 5, cat: 5, cow: 5, fawn: 5, donkey: 5, sheep: 5, giraffe: 5, elephant: 5, lion: 5 };
 const STAGES = ['Baby', 'Kid', 'Explorer', 'Hero', 'Legend'];
 const petName = id => (PETS.find(p => p[0] === id) || [id, id])[1];
 const shownStage = p => Math.min(p.stage || 1, PET_ART[p.id] || 1);
@@ -984,14 +984,14 @@ function checkGrowth(){
 }
 
 function petGrows(p, from){
-  const ov = document.createElement('div');
+  const now = STAGES[shownStage(p) - 1], ov = document.createElement('div');
   ov.className = 'evolve';
   ov.innerHTML = `<canvas></canvas><div class="flash"></div>
     <div style="position:relative;width:100%;max-width:360px">
       <div class="halo"><img class="a" src="${petSrc(p.id, from, 'happy')}" alt="">
         <img class="b" src="${petSrc(p.id, shownStage(p), 'celebrate')}" alt="" style="opacity:0;transform:scale(.4)"></div>
       <h1 class="reveal hide">${esc(p.name)} is growing!</h1>
-      <div class="sub reveal hide">Now a ${STAGES[shownStage(p) - 1]} · ${p.xp} XP</div>
+      <div class="sub reveal hide">Now ${/^[AEIOU]/.test(now) ? 'an' : 'a'} ${now} · ${p.xp} XP</div>
       <button class="btn btn-teal btn-block mt reveal hide" id="evo-ok">Yay!</button>
     </div>`;
   document.body.appendChild(ov);

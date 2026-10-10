@@ -57,8 +57,9 @@ working rules and the traps learned while building it.
   `window.EQ_GAMES = ...` would break the whole server project.
 - The gate challenge size lives in two places: `GATE_MIX` in `Index.html` must add up to `JOURNEY.items`
   in `Code.js` (15). The server rejects any other total.
-- Pet art is made in the Gemini web app (free, about 20 images a day): one new chat per sheet,
-  otherwise characters bleed into each other. Recipe and prompts: `tools/PETS.md`.
+- Pet art is made in the Gemini web app (free, with a daily limit): one new chat per sheet,
+  otherwise characters bleed into each other; download each sheet from a fresh tab. Recipe, prompts and
+  fixes: `tools/PETS.md`.
 - **The working tree has CRLF line endings** (core.autocrlf). Scripted multi-line replacements must normalize
   `\r\n` first (read, replace with LF, write back with CRLF), or nothing matches.
 - **Duels poll the server about every 2 s.** Keep `apiDuelPoll` to CacheService only (no sheet reads; state changes
@@ -87,8 +88,8 @@ Live and working: groups, kids' app (installable), parent/admin views, kid remin
 notifications (verified end-to-end on the owner's Android phone), weekly emails.
 Phase 1 of the game plan (built 2026-10-09): mini-games (Match it, Hear it, Build it, Spot it) with
 content for A1–C1 in `docs/games.js`, auto-saved scores, spaced review, and 10 pets that grow
-through 5 stages. Art: all 10 pets at stage 1; stage 2 for some (see `PET_ART` in Index.html).
-The remaining stages are made in the Gemini web app, about 20 images a day (`tools/PETS.md`).
+through 5 stages. Art: all 10 pets have all 5 stages (finished 2026-10-10, `PET_ART` in Index.html;
+recipe in `tools/PETS.md`).
 Phase 2 (built 2026-10-09): journey map (a world per level, 30 stations = daily tasks), a gate at the
 end of each world and a level-up ceremony with a shareable certificate. The owner chose an in-app gate
 challenge (15 questions from the next level, 12 to pass) over the self-reported test-english level test;

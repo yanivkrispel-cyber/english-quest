@@ -2,8 +2,9 @@
 
 Ten pets, five growth stages each, six moods per stage. Every stage is one **sticker sheet** (3×2 grid,
 flat gray background, white die-cut outlines), generated for free in the **Gemini web app** (Nano
-Banana, owner's Google account, about 20 images a day), then cut into stickers with
-`tools/cut_sheet.py`.
+Banana, owner's Google account; there is a daily limit, but 42 images went through in one session on
+2026-10-10), then cut into stickers with `tools/cut_sheet.py`. All 10 pets have all 5 stages (done
+2026-10-10).
 
 | Pet id | Name | Stage-2+ scarf |
 |---|---|---|
@@ -34,8 +35,18 @@ the repo in `C:\Dev\EnglishLessons\art\sheets\<pet>-<stage>.jpg`.
 3. Raise `PET_ART[<pet>]` in `src/Index.html` to the new stage. Kids whose pet is already that far
    get the growing celebration the next time they open the app.
 
-Gemini web tips: in a fresh chat, Enter often does not send; click the send arrow (sometimes twice).
-If it answers with a written prompt instead of an image, reply "Please generate this image now".
+Gemini web tips:
+- In a fresh chat, Enter often does not send; click the send arrow (sometimes twice). If it answers
+  with a written prompt instead of an image, reply "Please generate this image now".
+- The Chrome window must be on screen (not minimized or covered, no screensaver): in a hidden window
+  Gemini does not send and screenshots fail.
+- "Download full-sized image" works once per tab. A second download from the same tab (or right after
+  generating) silently does nothing: open the chat's URL in a new tab and download there.
+- A missing accessory in some poses (scarf, backpack, cape, crown) or stray text ("Oops" label) is
+  fixed in the same chat: "Edit this image: add the same ... in pose 5 (the sleeping ..., bottom
+  middle) ... Keep everything else exactly the same: all 6 poses, the 3x2 layout, the white sticker
+  outlines and the flat gray background." Layout problems (3 rows, a 7th sticker, a spec sheet with
+  text) do not fix by editing: start a new chat.
 
 ## Prompt
 
@@ -59,9 +70,12 @@ Stage texts (stage 1 says "a baby <animal>" in the description; later stages "a 
 
 1. **BABY**: a newborn, very small and extra chubby, oversized head, tiny stubby limbs, no clothes and no accessories
 2. **KID**: no longer a baby but a playful young kid: clearly taller, with the head about one third of the total body height, longer arms and legs, a slimmer body, a sporty confident look, wearing a soft <SCARF> scarf knotted around the neck in all 6 poses (also while sleeping)
-3. **EXPLORER**: an adventurous older kid: taller again, the head about a quarter of the body height, athletic, wearing the same <SCARF> scarf and a small brown leather explorer backpack with straps in all 6 poses
-4. **HERO**: a brave young teen hero: tall and confident, wearing the <SCARF> scarf and a short flowing royal-purple cape with a golden star clasp in all 6 poses (no backpack)
-5. **LEGEND**: a grown-up legend: tall, proud and wise but still cute, wearing a gold-trimmed royal-purple cape and a small shiny golden crown in all 6 poses
+3. **EXPLORER**: an adventurous older kid: taller again, the head about a quarter of the body height, athletic, wearing a soft <SCARF> scarf knotted around the neck and a small brown leather explorer backpack with straps, both clearly visible in all 6 poses (also while sleeping)
+4. **HERO**: a brave young teen hero: tall and confident, wearing a soft <SCARF> scarf knotted around the neck and a short flowing royal-purple cape with a golden star clasp, both clearly visible in all 6 poses (also while sleeping), no backpack
+5. **LEGEND**: a grown-up legend: tall, proud and wise but still cute, wearing a gold-trimmed royal-purple cape and a small shiny golden crown, both clearly visible in all 6 poses (also while sleeping)
+
+("both clearly visible ... also while sleeping" matters: without it the sleeping pose often loses the
+accessories, and the crown went missing in 4 of 6 poses twice.)
 
 ## Descriptions
 
