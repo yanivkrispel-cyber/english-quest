@@ -7,6 +7,7 @@ per pet the head top, head width, neck and back; per item its size and attach po
 usage (from app/):
   python tools/wear_fit.py sheet <out.png> <pet[,pet]> <item,item,...> [stages]   # every mood of every stage, dressed
   python tools/wear_fit.py export                                                   # writes the FIT block in src/Index.html
+A Studio base can be shown in a color: base-cape~purple (TINTS below).
 """
 import sys, os, json, math
 from PIL import Image, ImageDraw, ImageFont
@@ -20,6 +21,8 @@ PLACE = {
     'bow-tie': 'neck', 'heart-locket': 'neck', 'pearl-necklace': 'neck', 'crystal-pendant': 'neck',
     'heart-balloon': 'back', 'butterfly-wings': 'back', 'fairy-wings': 'back', 'angel-wings': 'back', 'bat-wings': 'back', 'rainbow-wings': 'back',
     'baby-chick': 'buddy', 'bluebird': 'buddy', 'star-sprite': 'buddy', 'baby-dragon': 'buddy', 'tiny-ghost': 'buddy', 'baby-bunny': 'buddy',
+    # The Studio's bases (white, colored in code; see designSvg in src/Index.html)
+    'base-beanie': 'head', 'base-bow': 'head', 'base-scarf': 'neck', 'base-cape': 'back',
 }
 
 
@@ -49,7 +52,7 @@ def save_wear(d, path=None):
 def layout(fit, wear, isz, pet, stage, mood, items):
     """The layers of a dressed pet in the sticker's own pixels: [(z, id, x, y, w, h, rot, tx, ty)].
     z < 0 is behind the pet. Mirrors petLayers() in src/Index.html."""
-    if mood == 'cool' and any(PLACE.get(i) == 'face' for i in items):
+    if mood == 'cool' and any(PLACE.get(i.split('~')[0]) == 'face' for i in items):
         mood = 'happy'
     W, H = fit['size'][f'{pet}/{stage}']
     ex, ey, d, a, cx, cy = fit['eyes'][f'{pet}/{stage}-{mood}']
@@ -59,8 +62,9 @@ def layout(fit, wear, isz, pet, stage, mood, items):
     P.update(P.get('s' + str(stage), {}))
     out = []
     for it in items:
-        place, I = PLACE[it], wear['items'][it]
-        iw, ih = isz[it]
+        key = it.split('~')[0]  # a Studio base can come with a color: base-cape~pink
+        place, I = PLACE[key], wear['items'][key]
+        iw, ih = isz[key]
         rot = a
         if place == 'head':
             k = -(P['top'] - I.get('dy', 0))
@@ -99,6 +103,23 @@ def layout(fit, wear, isz, pet, stage, mood, items):
     return mood, sorted(out, key=lambda o: o[0])
 
 
+# A few of the Studio's colors, for contact sheets (the app has them all, in STUDIO in src/Index.html).
+TINTS = {'pink': (244, 114, 182), 'red': (229, 57, 69), 'blue': (59, 130, 246), 'purple': (139, 92, 246), 'green': (67, 184, 92),
+         'yellow': (247, 210, 58), 'black': (38, 38, 43), 'orange': (245, 138, 42)}
+
+
+def tinted(item, color):
+    """A white base colored like the app does it (the same ramp as designSvg)."""
+    import numpy as np
+    arr = np.asarray(Image.open(os.path.join(APP, 'docs', 'items', item + '.webp')).convert('RGBA')).astype(np.float32) / 255
+    L, out = arr[..., 0], np.empty_like(arr)
+    for ch in range(3):
+        c = TINTS[color][ch] / 255
+        out[..., ch] = np.interp(L, [0, 0.4, 0.6, 0.8, 0.9, 1.0], [c * 0.3, c * 0.35, c * 0.65, c, c + (1 - c) * 0.18, c + (1 - c) * 0.4])
+    out[..., 3] = arr[..., 3]
+    return Image.fromarray((out * 255).astype('uint8'), 'RGBA')
+
+
 def render(fit, wear, isz, pet, stage, mood, items, scale=1.0, margin=0.35):
     mood, layers = layout(fit, wear, isz, pet, stage, mood, items)
     W, H = fit['size'][f'{pet}/{stage}']
@@ -119,7 +140,7 @@ def render(fit, wear, isz, pet, stage, mood, items, scale=1.0, margin=0.35):
             layer = layer.rotate(-rot, resample=Image.BICUBIC, center=(tx + m, ty + m))
         canvas.alpha_composite(layer)
 
-    img = lambda it: Image.open(os.path.join(APP, 'docs', 'items', it + '.webp')).convert('RGBA')
+    img = lambda it: tinted(it.split('~')[0], it.split('~')[1]) if '~' in it else Image.open(os.path.join(APP, 'docs', 'items', it + '.webp')).convert('RGBA')
     # behind = [from, to]: that band of the item's height is drawn behind the pet (a chain behind the neck, the legs
     # of a headband behind the head), the rest in front.
     for z, it, x, y, w, h, rot, tx, ty, behind in layers:

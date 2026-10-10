@@ -82,6 +82,14 @@ working rules and the traps learned while building it.
   `pet-fit-fix.json`), `tools/wear-fit.json` (how the item sits), then `python tools/wear_fit.py export` (writes FIT into
   Index.html). Without it, petArt shows nothing for a new pet and skips a new item.
 - Coco's grading lives twice (`cocoGrade` in Shop.js and Index.html): change both; test/sim.js fails if they disagree.
+  The Studio's `studioWords` + `studioGrade` are copied **as they are** from Shop.js into Index.html (sim checks 34
+  descriptions). When copying functions by text, keep the newline after each closing `}`: a copy without it glued the
+  next function on (`}function studioGrade(`), and a later replace that searched for `
+}
+` doubled the whole page.
+- Only the **bold** and **duotone** Phosphor weights are loaded: `icon(name, 'fill')` draws nothing.
+- A Studio base (`docs/items/base-*.webp`) is a gray picture the app colors (`designSvg`): Gemini draws it white, without
+  an outline, on a saturated background, and `tools/cut_items.py --white` levels its shading; the outline is drawn in code.
 - Gemini sometimes adds labels or draws grid cells behind a sheet: ask it to edit (remove the words / one flat gray
   background) in the same chat. `cut_items.py` punches gray openings (lenses); use `--no-holes` for creatures and hats.
 - Default PINs are random; the real PINs live only in the private sheet. The repo is public:
@@ -124,7 +132,10 @@ The Wordrobe, phase 1 (built 2026-10-10, spec `specs/wordrobe.md`, proposal and 
 https://claude.ai/artifact/6GkZRhCvB23frmsM37GXvx): coins (points + XP), Coco's shop with Ask Coco (tiles, voice optional),
 38 items in six places, four victory moves, the Streak Shield, the Halloween Drop and its culture card, items on the pet
 everywhere (`petArt`), coins and purchases in the parent view. Opens on `Settings.ShopOpens` (2026-10-24), a teaser
-before it; `Settings.ShopEarly` = names that may shop earlier. Later phases: Say it Wear it, Shine = Memory, Second
-Chance / Word Saver (2); Talking Charms, Living Legends, Runway & Gifts (3).
+before it; `Settings.ShopEarly` = names that may shop earlier. Merged and live 2026-10-10 (@30).
+The Wordrobe, phase 2, the Studio (built 2026-10-10, spec `specs/wordrobe-studio.md`; opens with the shop, the owner's
+choice): Say it Wear it (4 white bases colored in code; designs are tokens), Shine = Memory (every rare and epic item is
+made of words; shine follows their review), Second Chance and Word Saver ("My words"). Phase 3 (not built): Talking
+Charms, Living Legends, Runway & Gifts.
 Ideas not built yet: per-group reminder times, rewards redemption from the app (now via the
 `Redeemed` column), editing groups/kids from the app (now via the sheet).

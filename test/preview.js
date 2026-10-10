@@ -3,7 +3,8 @@
 //   python -m http.server 8765   ->   http://localhost:8765/test/preview.html
 // Aviv has a pet, some games and 30 stations (the gate is open: under 12/15 fails, 12+ passes);
 // Ziv has no pet yet (adoption flow) and a few stations; Ron is new (level test first). Aviv may shop at Coco's
-// (ShopEarly) with 900 extra coins; the mock grades a request roughly (the real rules: test/dev-server.js).
+// (ShopEarly) with 900 extra coins; the mock grades a request roughly (the real rules: test/dev-server.js). The Studio uses the
+// app's own studioGrade; collecting words and the Word Saver are kept in the mock data only.
 const fs = require('fs');
 process.argv.push('--quiet');
 const src = fs.readFileSync('test/sim.js', 'utf8').split('const pins')[0];
@@ -48,12 +49,18 @@ const mock = `<script>window.EQ_ASSETS='../docs/';window.google={script:{run:new
     if(fn==='apiPublic')ok(D.pub);else if(fn==='apiParent')ok(D.parent);else if(fn.indexOf('apiParentPush')===0)ok({instant:true,sent:1});
     else if(fn.indexOf('apiAdmin')===0)ok(D.created);else if(fn==='apiSubmit'&&a[0]==='Ron'){D.ron=D.ronDone;ok(D.ronDone);}else if(fn==='apiSubmit')ok(Object.assign({},D.dash,{justEarned:18}));
     else if(fn==='apiSetPet'){const b=a[0]==='Ziv'?D.ziv:D.dash;D[a[0]==='Ziv'?'ziv':'dash']=Object.assign({},b,{pet:{id:a[2],name:a[3],xp:b.pet?b.pet.xp:0,stage:1,from:0,to:150}});ok(D[a[0]==='Ziv'?'ziv':'dash']);}
-    else if(fn==='apiGameResult'){const key=a[0]==='Ziv'?'ziv':'dash';D[key]=grow(D[key],a[4]*2+(a[4]===a[5]?5:0));ok(D[key]);}
+    else if(fn==='apiGameResult'){const key=a[0]==='Ziv'?'ziv':'dash';D[key]=grow(D[key],a[4]*2+(a[8]||0)+(a[4]===a[5]?5:0));ok(D[key]);}
     else if(fn==='apiShop')ok(D.shop);else if(fn==='apiWear'){D.dash.pet.wear=a[2];D.dash.pet.move=a[3];ok({wear:a[2],move:a[3]});}
     else if(fn==='apiShopBuy'){const it=D.shop.items.find(i=>i.id===a[2]);const w=a[4].map(x=>String(x).toLowerCase());const n=(w.includes('please')?1:0)+(/^(can|could|may)$/.test(w[0])&&w.includes('?')?1:0)+(w.includes('could')||w.includes('may')||w.includes("i'd like")?1:0)+(w[w.length-1]==='thank you!'?1:0);
       const pct=[0,5,10,12,15][n],paid=Math.round(it.price*(100-pct)/100);if(paid>D.shop.coins.balance){g({message:'You need '+(paid-D.shop.coins.balance)+' more coins for the '+it.name});return;}
       it.owned=true;D.shop.coins.balance-=paid;D.shop.coins.spent+=paid;if(it.place==='move')D.shop.move=it.id;else if(it.place!=='upgrade')D.shop.wear=D.shop.wear.filter(e=>{const o=D.shop.items.find(i=>i.id===e.split(':')[0]);return !o||o.place!==it.place;}).concat([a[3]&&it.colors&&a[3]!==it.colors[0]?it.id+':'+a[3]:it.id]);
       D.dash.pet.wear=D.shop.wear;D.dash.pet.move=D.shop.move;D.dash.coins=D.shop.coins.balance;ok(Object.assign({},D.shop,{bought:{id:it.id,name:it.name,paid,price:it.price,pct,n,sentence:a[4].join(' ')}}));}
+    else if(fn==='apiDesign'){const b=D.shop.bases.find(x=>x.id===a[2]),gr=studioGrade(a[3],a[2]);if(!gr.ok){g({message:gr.hint});return;}if(b.price>D.shop.coins.balance){g({message:'You need '+(b.price-D.shop.coins.balance)+' more coins'});return;}
+      const tok=studioToken(gr.spec,!!a[4]&&gr.n>=3);D.shop.items.push({id:tok,name:gr.text,base:b.id,place:b.place,rarity:'design',price:b.price,design:true,perfect:tok.slice(-1)==='p',available:true,owned:true});
+      D.shop.coins.balance-=b.price;D.shop.wear=D.shop.wear.filter(e=>{const o=D.shop.items.find(i=>i.id===e.split(':')[0]);return !o||o.place!==b.place;}).concat([tok]);D.dash.pet.wear=D.shop.wear;D.dash.coins=D.shop.coins.balance;
+      ok(Object.assign({},D.shop,{bought:{id:tok,name:gr.text,price:b.price,paid:b.price,perfect:tok.slice(-1)==='p',n:gr.n,design:true}}));}
+    else if(fn==='apiWords'){Object.values(D.shop.words).forEach(r=>r.words.forEach(w=>{if(a[3].concat(a[4]).indexOf(w[0])>=0)w[2]='ok';}));ok(D.shop);}
+    else if(fn==='apiSaveWord'){const sv=D.dash.games.saved||[];D.dash.games.saved=a[3]?sv.filter(x=>x!==a[2]).concat([a[2]]):sv.filter(x=>x!==a[2]);ok({saved:D.dash.games.saved});}
     else if(fn==='apiGateResult'){D.dash=a[2]>=12?D.gatePass:D.gateFail;ok(D.dash);}
     else if(fn==='apiDashboard'&&a[0]==='Ziv')ok(D.ziv);else if(fn==='apiDashboard'&&a[0]==='Ron')ok(D.ron);else ok(D.dash);},350)}})}})};
 }})}};</script>`;

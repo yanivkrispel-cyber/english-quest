@@ -6,6 +6,8 @@ speaks English, sells only to kids who ask nicely. Proposal and the owner's pick
 https://claude.ai/artifact/6GkZRhCvB23frmsM37GXvx (picks: Ask Coco + moves and upgrades, coins next to
 the points, Coco, voice optional, Halloween Drop launch).
 
+Phase 2, the Studio (Say it Wear it, Shine = Memory, Second Chance, Word Saver): `specs/wordrobe-studio.md`.
+
 Phase 1 (this spec): coins and the opening gift, Coco's shop with Ask Coco, 30 items in six places on the
 pet, four victory moves, the Streak Shield, items on the pet everywhere it appears, the Halloween Drop,
 coins and purchases in the parent view. Later phases (not here): Say it Wear it, Shine = Memory, Second

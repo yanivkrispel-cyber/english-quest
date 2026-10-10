@@ -75,6 +75,13 @@ notifications, and reward points.
   four victory moves, a Streak Shield (one missed day a week is saved), and the Halloween Drop (17 Oct - 7 Nov).
   The pet wears its items everywhere it appears, also on other kids' phones. Opens on `Settings.ShopOpens` (teaser
   before; `ShopEarly` names may shop earlier); the first visit plays the opening gift.
+  Phase 2, the Studio (spec: `specs/wordrobe-studio.md`): **Say it, Wear it**: she describes a white base (beanie, bow,
+  scarf, cape) in English, "a big sparkly purple velvet cape with tiny gold stars", and good English makes it (adjective
+  order, a/an, plural patterns; a hint for every mistake; right the first time = Perfect Fit); colors, materials,
+  patterns and sparkle are drawn in code. **Shine = Memory**: every rare and epic item is made of 4-6 words she
+  collects before buying; it shines while she remembers them (spaced review) and a 20-second polish brings it back.
+  Upgrades: **Second Chance** (a hint and one more try after a mistake, half XP) and **Word Saver** (her own deck,
+  "My words", with practice rounds).
 - Installable app (PWA) on Android / iOS; **phone reminders** at 17:00 and a last call at 20:00
   on days she hasn't practiced.
 
@@ -131,8 +138,9 @@ Phone / browser                     GitHub Pages (docs/)            Google
 | Gates | Timestamp, Girl, Date, From, To, Correct, Total, Passed, Tasks, XP | One row per gate challenge. `Tasks` = tasks the kid had logged by then; the stations of her current world are the tasks after the last passed gate. |
 | Groups | Id, Name, ParentPIN, Goal, GoalReward, Email, Friends | First row is the default group (link without `?g=`). Empty ParentPIN = admin only. `Friends` = `no` keeps the group's kids out of play with other groups. |
 | Duos | Id, Created, A, B, State, Since, Ended, Nudges, Milestones, QuestDone | One row per duo streak (`invited` / `active` / `declined` / `ended`). The streak and the quest are computed from Log and Games; only nudges, reached badges and rewarded weeks are stored. |
-| Shop | Timestamp, Girl, Date, Item, Color, Price, Paid, Manners, Sentence | One row per purchase. Coins = points + XP minus `Paid`. `Manners` = politeness chips lit (0-4), `Sentence` = what she asked. |
-| Wardrobe | Girl, Wear, Move, Updated | What the pet wears (`item` or `item:color`, one per place) and its victory move. |
+| Shop | Timestamp, Girl, Date, Item, Color, Price, Paid, Manners, Sentence, Words | One row per purchase. Coins = points + XP minus `Paid`. `Manners` = politeness chips lit (0-4), `Sentence` = what she asked. `Words` = the words an item made of words was bought with. A Studio design's `Item` is its token (`~cape..big.sparkly.purple.velvet.tiny..gold.stars.p`), `Sentence` = the design. |
+| Wardrobe | Girl, Wear, Move, Updated | What the pet wears (`item`, `item:color` or a design token, one per place) and its victory move. |
+| Words | Girl, Saved, Memory, Updated | `Saved` = the Word Saver's deck (game item ids); `Memory` = `word|box|due` for the words of items made of words (box 5 = hers for good). |
 | Bonus | Timestamp, Girl, Date, Kind, XP, Ref | One-off XP outside the daily game cap (duo badges, team quests); `Ref` keeps each award single. Pet growth counts it. |
 | Duels | Id, Created, Date, Mode, State, Host, Guest, HostLevel, GuestLevel, Seed, Start, Expires, Reply, HostScore, HostMs, HostTrack, GuestScore, GuestMs, GuestTrack, Winner, Ended, Helped | One row per duel, challenge, boss battle or Talk & Tap game (Id = the 4-letter code; Mode `live` / `challenge` / `boss` / `talk`). Tracks: `1:4210,0:9800,…` (right/wrong and ms since the start, `-` unanswered). Talk & Tap tracks are the kid's own picks, `1:4210:2` (the option tapped last). Each player's XP is a `Games` row with Game = `duel`, `boss` or `talk`; Tug of War writes only `Games` rows (Game = `tug`). |
 | Assignments | Girl, Date, Section, Level, Title, URL | One exercise per kid per day, created lazily. |
@@ -152,14 +160,14 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | `src/Push.js` | Web Push: P-256/ES256, VAPID JWT, kid reminders, parent notifications |
 | `src/Duels.js` | Play together: invites, live duels synced by polling, challenges, Boss Battle, Talk & Tap, Tug of War saves, results, Helper stars |
 | `src/Duos.js` | Duo Streak and Team Quest: requests, streak counting, quests, rewards after practice |
-| `src/Shop.js` | The Wordrobe: catalog, coins, Coco's grading of a request (`cocoGrade`, also in Index.html), buying, the wardrobe |
+| `src/Shop.js` | The Wordrobe: catalog, coins, Coco's grading of a request (`cocoGrade`, also in Index.html), buying, the wardrobe; phase 2: items made of words (`SHOP_RECIPES`, memory and shine), the Word Saver, the Studio (`studioWords` + `studioGrade`, copied as they are into Index.html; designs as tokens) |
 | `src/Index.html` | Whole UI (Liquid Glass design, Phosphor icons), works in Pages and Apps Script |
 | `src/Catalog.js` | Generated exercise catalog (`node gen-catalog.js` from `catalog.tsv`) |
 | `src/appsscript.json` | Manifest: V8, Asia/Jerusalem, web app = execute as owner, anyone anonymous |
 | `docs/` | GitHub Pages site: `index.html` (built), `sw.js`, `manifest.webmanifest`, `icons/` |
 | `docs/games.js` | Mini-game content for A1–C1, and the Talk & Tap words with their don't-say words (edited by hand; not in `src/`, so clasp never pushes it; raise `BANK_V` in Index.html after a change) |
 | `docs/pets/`, `docs/pics/` | Pet stickers (`<pet>/<stage>-<mood>.webp`) and A1 picture words |
-| `docs/items/`, `docs/coco/` | Shop items (`<id>.webp`, and two props: `jack-o-lantern`, `gift-box`) and Coco the parrot (`<mood>.webp`) |
+| `docs/items/`, `docs/coco/` | Shop items (`<id>.webp`, and two props: `jack-o-lantern`, `gift-box`), the Studio's gray bases (`base-<id>.webp`) and Coco the parrot (`<mood>.webp`) |
 | `tools/` | Art pipeline: `cut_sheet.py` (sticker sheet → stickers), `pics.py` + `pics_fetch.sh`, `PETS.md` (prompts); shop: `cut_items.py` (item sheets → `docs/items/`), `pet_fit.py` (the eyes of every pet sticker → `pet-fit.json`, fixes in `pet-fit-fix.json`), `wear_fit.py` + `wear-fit.json` (how items sit; contact sheets; `export` writes the FIT block into Index.html) |
 | `test/games-check.js` | Validates `docs/games.js` (shapes, duplicates, pictures on disk, Talk & Tap words) |
 | `build-pages.js` | Builds `docs/index.html` from `src/Index.html` (adds head tags, manifest, icons) |
@@ -168,7 +176,7 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | `test/push-crypto.js` | Verifies the ES256 implementation against Node crypto |
 | `test/preview.js` | Builds `test/preview.html`: the UI with mocked server data, for visual checks |
 | `test/dev-server.js` | Local two-player environment: the real server code with mocked Google services, on port 8787 |
-| `specs/` | Feature specs (`play-together.md`) |
+| `specs/` | Feature specs (`play-together.md`, `wordrobe.md`, `wordrobe-studio.md`, ...) |
 
 ## API (`doPost` body: `{"fn": name, "args": [...]}`)
 
@@ -178,12 +186,13 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | apiWarm() | anyone | Pre-fills the cache while a PIN is typed |
 | apiDashboard(name, pin) | kid | Week, stats, rewards, push key |
 | apiSubmit(name, pin, date, correct, total, level) | kid | Log a task (notifies parents) |
-| apiGameResult(name, pin, game, level, correct, total, missed, right) | kid | Record a mini-game round, update XP and the review list |
+| apiGameResult(name, pin, game, level, correct, total, missed, right, second) | kid | Record a mini-game round, update XP and the review list (`second` = right on the second try, with Second Chance; game `mine` = her saved words) |
 | apiSetPet(name, pin, petId, petName) | kid | Adopt or change the pet (XP stays) |
 | apiGateResult(name, pin, correct, total, missed, right) | kid | Record a gate challenge (only while the gate is open); 12/15 raises the level |
 | apiDuoInvite / Answer / Nudge / End | kid | Duo streaks (see `specs/duo-streak.md`); the duo data comes with `apiDuelHome` and `apiDashboard` |
 | apiDuelHome / Invite / Join / Reply / Cancel / Solo / Poll / Finish / Helped | kid | Play together (see `specs/play-together.md`; Boss Battle: `specs/boss-tug.md`; Talk & Tap: `specs/talk-tap.md`); `apiDuelPoll` is the hot path, every ~2 s during a duel |
 | apiShop / apiShopBuy(item, color, words) / apiWear(wear, move) | kid | The Wordrobe (see `specs/wordrobe.md`): the shop and coins; buy with a request (graded again on the server, which decides the price); what the pet wears |
+| apiDesign(base, text, fresh) / apiWords(item, right, missed) / apiSaveWord(id, on) | kid | The Studio, phase 2 (`specs/wordrobe-studio.md`): make a design (graded again on the server); collect or polish an item's words; save a word to her deck |
 | apiTugCheck / apiTugSave | kid | Tug of War on one phone: checks the second kid's PIN once (returns a 2-day token the phone keeps instead of her PIN), then saves both results (a save id makes a save sent twice count once) |
 | apiPushSubscribe / apiPushMessage | kid / service worker | Register a device / text of the pending notification |
 | apiParent(pin) | parent / admin | Overview of the groups this PIN may see |

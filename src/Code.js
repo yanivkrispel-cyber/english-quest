@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v12';
+var SETUP_VERSION = 'v13';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
@@ -61,8 +61,10 @@ var HEADERS = {
   Duos: ['Id', 'Created', 'A', 'B', 'State', 'Since', 'Ended', 'Nudges', 'Milestones', 'QuestDone'],
   Bonus: ['Timestamp', 'Girl', 'Date', 'Kind', 'XP', 'Ref'],
   // The Wordrobe (Shop.js): purchases, and what each pet wears.
-  Shop: ['Timestamp', 'Girl', 'Date', 'Item', 'Color', 'Price', 'Paid', 'Manners', 'Sentence'],
-  Wardrobe: ['Girl', 'Wear', 'Move', 'Updated']
+  Shop: ['Timestamp', 'Girl', 'Date', 'Item', 'Color', 'Price', 'Paid', 'Manners', 'Sentence', 'Words'],
+  Wardrobe: ['Girl', 'Wear', 'Move', 'Updated'],
+  // The Wordrobe, phase 2: the Word Saver's deck and the memory of the words items are made of (Shop.js).
+  Words: ['Girl', 'Saved', 'Memory', 'Updated']
 };
 
 var WORDS = [
@@ -119,7 +121,7 @@ function api() {
   apiDuelCancel: apiDuelCancel, apiDuelSolo: apiDuelSolo, apiDuelPoll: apiDuelPoll, apiDuelFinish: apiDuelFinish, apiDuelHelped: apiDuelHelped,
   apiDuoInvite: apiDuoInvite, apiDuoAnswer: apiDuoAnswer, apiDuoNudge: apiDuoNudge, apiDuoEnd: apiDuoEnd,
   apiTugCheck: apiTugCheck, apiTugSave: apiTugSave,
-  apiShop: apiShop, apiShopBuy: apiShopBuy, apiWear: apiWear
+  apiShop: apiShop, apiShopBuy: apiShopBuy, apiWear: apiWear, apiWords: apiWords, apiSaveWord: apiSaveWord, apiDesign: apiDesign
   };
 }
 
@@ -196,7 +198,7 @@ function apiPublic(groupId) {
 // Called when a kid taps her name, while she types her PIN: fills the cache.
 function apiWarm() {
   ensureSetup();
-  ['Girls', 'Assignments', 'Log', 'Rewards', 'Groups', 'Games', 'Review', 'Gates', 'Duels', 'Duos', 'Bonus', 'Shop', 'Wardrobe'].forEach(readTable);
+  ['Girls', 'Assignments', 'Log', 'Rewards', 'Groups', 'Games', 'Review', 'Gates', 'Duels', 'Duos', 'Bonus', 'Shop', 'Wardrobe', 'Words'].forEach(readTable);
   return true;
 }
 
@@ -261,10 +263,12 @@ function apiSubmit(name, pin, date, correct, total, levelResult) {
 // ---------- Mini-games & pets ----------
 
 // One finished round. The score is measured by the game itself, so nothing is typed by hand.
-// missed / right: ids of the items answered wrong / right, for the spaced review.
-function apiGameResult(name, pin, game, level, correct, total, missed, right) {
+// missed / right: ids of the items answered wrong / right, for the spaced review. second: items answered right on
+// the second try (the Second Chance upgrade: half XP; they still count as missed for the review). game 'mine' = a
+// round of her saved words (the Word Saver).
+function apiGameResult(name, pin, game, level, correct, total, missed, right, second) {
   var kid = auth(name, pin);
-  if (GAMES.indexOf(game) < 0) throw new Error('Unknown game');
+  if (GAMES.indexOf(game) < 0 && game !== 'mine') throw new Error('Unknown game');
   if (pendingLevelTest(kid)) throw new Error('Take the level test first.');
   correct = Math.round(Number(correct));
   total = Math.round(Number(total));
@@ -272,13 +276,15 @@ function apiGameResult(name, pin, game, level, correct, total, missed, right) {
   if (LEVELS.indexOf(level) < 0) level = kid.Level;
   missed = cleanIds(missed);
   right = cleanIds(right);
+  second = Math.round(Number(second)) || 0;
+  if (second < 0 || second > total - correct || !ownedItems(kid.Name)['second-chance']) second = 0;
   var t = today(), xp;
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
     var used = readTableUncached('Games').filter(function (g) { return g.Girl === kid.Name && g.Date === t; })
       .reduce(function (a, g) { return a + (Number(g.XP) || 0); }, 0);
-    xp = correct * GAME_XP.right + (correct === total && total >= 5 ? GAME_XP.perfect : 0);
+    xp = correct * GAME_XP.right + second * GAME_XP.right / 2 + (correct === total && total >= 5 ? GAME_XP.perfect : 0);
     xp = Math.max(0, Math.min(xp, GAME_XP.dayCap - used));
     appendRow('Games', { Timestamp: new Date(), Girl: kid.Name, Date: t, Game: game, Level: level,
       Correct: correct, Total: total, XP: xp, Missed: missed.join(' ') });
@@ -320,10 +326,10 @@ function petInfo(kid) {
   PET_STAGES.forEach(function (min, i) { if (xp >= min) stage = i + 1; });
   var w = wardrobeOf(kid.Name);
   return { id: kid.Pet, name: kid.PetName || '', xp: xp, stage: stage, from: PET_STAGES[stage - 1], to: PET_STAGES[stage] || null, since: since,
-    wear: w.wear, move: w.move };
+    wear: w.wear, move: w.move, shine: wornShine(kid, w.wear) };
 }
 
-function gameStats(kid, t) {
+function gameStats(kid, t, saver) {
   var rows = readTable('Games').filter(function (g) { return g.Girl === kid.Name; });
   var todayRows = rows.filter(function (g) { return g.Date === t; });
   var week = weekDates(t);
@@ -349,7 +355,8 @@ function gameStats(kid, t) {
     weekAvg: pct(weekRows),
     total: rows.filter(played).length,
     recent: recent,
-    review: dueReview(kid.Name, t)
+    review: dueReview(kid.Name, t),
+    saved: saver ? wordsOf(kid.Name).saved : null
   };
 }
 
@@ -374,9 +381,20 @@ function updateReview(name, missed, right, t) {
     if (e.box >= REVIEW_DAYS.length) { delete map[id]; return; }
     map[id] = { box: e.box + 1, due: addDays(t, REVIEW_DAYS[e.box]) };
   });
-  if (!changed) return;
+  if (changed) writeReview(name, map);
+}
+
+function writeReview(name, map) {
   var ids = Object.keys(map).sort(function (a, b) { return map[a].due < map[b].due ? -1 : 1; }).slice(0, 300);
   upsertRow('Review', 'Girl', name, { Items: ids.map(function (id) { return id + '|' + map[id].box + '|' + map[id].due; }).join(' ') });
+}
+
+// A word saved with the Word Saver comes back tomorrow (unless it is already in her review).
+function reviewAdd(name, id, t) {
+  var map = readReview(name);
+  if (map[id]) return;
+  map[id] = { box: 1, due: addDays(t, REVIEW_DAYS[0]) };
+  writeReview(name, map);
 }
 
 function dueReview(name, t) {
@@ -650,7 +668,7 @@ function buildDashboard(kid) {
 
   var earned = totalPoints(logs, start);
   var redeemed = Number(kid.Redeemed) || 0;
-  var shield = hasShield(kid.Name), run = streakInfo(logs, t, shield);
+  var owned = ownedItems(kid.Name), shield = !!owned['streak-shield'], run = streakInfo(logs, t, shield);
   var balance = earned - redeemed;
   var rewards = rewardsFor(groupOf(kid));
   var next = rewards.filter(function (r) { return r.points > balance; })[0] || null;
@@ -672,8 +690,10 @@ function buildDashboard(kid) {
     levelTest: pending,
     journey: pending ? null : journeyInfo(kid, t),
     pet: petInfo(kid),
-    games: gameStats(kid, t),
+    games: gameStats(kid, t, owned['word-saver']),
     coins: coinsOf(kid).balance,
+    upgrades: upgradesOf(owned),
+    polish: polishInfo(kid),
     shop: { open: shopOpenFor(kid, t), opens: shopOpens(), season: shopSeason(t) },
     push: { key: vapidPublicKey(), devices: readTable('Push').filter(function (s) { return s.Girl === kid.Name; }).length },
     word: wordOfDay(t)
@@ -850,7 +870,7 @@ function installTriggers() {
 // Every 10 minutes during the day: refills the tables the cache lost (after 6 hours, or after a write), so
 // the first kid of the morning, or after a quiet hour, does not wait for the sheet. About 2 minutes of the
 // 90 minutes of trigger time a day.
-var WARM = { everyMin: 10, from: 7, to: 22, tables: ['Girls', 'Groups', 'Settings', 'Rewards', 'Assignments', 'Log', 'Games', 'Review', 'Gates', 'Duels', 'Duos', 'Bonus', 'Push', 'Shop', 'Wardrobe'] };
+var WARM = { everyMin: 10, from: 7, to: 22, tables: ['Girls', 'Groups', 'Settings', 'Rewards', 'Assignments', 'Log', 'Games', 'Review', 'Gates', 'Duels', 'Duos', 'Bonus', 'Push', 'Shop', 'Wardrobe', 'Words'] };
 function warmCache() {
   var h = Number(Utilities.formatDate(new Date(), TZ, 'H'));
   if (h < WARM.from || h >= WARM.to) return;
