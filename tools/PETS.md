@@ -90,6 +90,52 @@ accessories, and the crown went missing in 4 of 6 poses twice.)
 - **elephant**: "Peanut", a ___ elephant, soft powder blue-gray skin, big round ears with pink insides, a short curled trunk, a tiny tuft of hair on top of the head, light cream toenails, a thin tail with a small tuft, rosy cheeks, and huge glossy dark-brown eyes with two white catchlights.
 - **lion**: "Leo", a ___ lion, warm golden-yellow fur, a fluffy orange mane around the face (cub-size at stage 1, big later), a cream muzzle and cream belly, small round ears, a tail with an orange tuft, pink paw pads, rosy cheeks, and huge glossy amber-brown eyes with two white catchlights.
 
+## The Wordrobe: Coco and the shop items
+
+Same Gemini routine (one new chat per sheet, download from a fresh tab). Source sheets: `art/shop/*.jpg`.
+
+**Coco** (`docs/coco/<mood>.webp`, cut like a pet stage: `tools/cut_sheet.py <sheet> <tmp> 1`, then rename
+`1-<mood>.webp` to `<mood>.webp`): the pet prompt above with this character and these poses:
+"Coco", a fashionable young parrot who runs a clothes shop and is a fashion designer: a scarlet macaw with bright red
+feathers, blue and yellow wing feathers, a long red-and-blue tail, a curved cream-white beak, rosy cheeks, huge glossy
+dark-brown eyes with two white catchlights, small round gold-rimmed glasses, and a yellow tailor's measuring tape draped
+around the neck in all 6 poses. Poses: 1) Welcome: one wing open in a warm welcoming gesture. 2) Delighted: clapping both
+wings, eyes squeezed shut. 3) Thinking: one wing tip on the beak, looking up. 4) Oops: a puzzled look, head tilted, one
+wing raised. 5) Sleepy: eyes closed. 6) Cool: black sunglasses instead of the glasses, a thumbs up. (Gemini added labels
+under four poses the first time; "Edit this image: remove the four words ... No text anywhere." fixed it.)
+
+**Items** (`docs/items/<id>.webp`): one sheet of six per kind, cut with
+`python tools/cut_items.py <sheet> docs/items <id1,...,id6> [--size 260] [--no-holes] --preview <png>`
+(ids row by row; `--no-holes` for anything without see-through openings, or gray-ish colors get punched out).
+
+```
+Create an image: a sticker sheet of 6 separate <KIND> for cute cartoon animal characters in a children's app. Each item
+is shown alone, <VIEW>, perfectly centered in its own cell, with NO character, NO head, NO face, NO mannequin and NO body.
+LAYOUT: landscape 3:2 image with exactly 6 items in a neat 3x2 grid (3 columns, 2 rows), with wide empty space between
+items and around the edges. ITEMS in this exact order, left to right, top row first: 1) ... 6) ... STYLE: premium 3D
+render, like Pixar props made of soft matte polymer clay, smooth rounded shapes, subtle clay texture, soft studio
+lighting, rich but gentle colors. Each item is a die-cut sticker with a thick, clean, continuous white outline around
+its whole silhouette. BACKGROUND: one perfectly flat, uniform medium-gray color (#909090) everywhere, no gradient, no
+texture, no floor, no shadows. No text, no letters, no numbers, no labels, no extra symbols or decorations anywhere.
+```
+
+- Head wear: VIEW = "front view, exactly as it would look worn on a character's head facing the viewer", and "Each item
+  seen straight from the front, its bottom edge level as if sitting on a head." Headphones did not fit the pets' heads
+  (the cups land on the face): prefer things that sit on top (hats, headbands, bows).
+- Face wear: VIEW = "straight front view, exactly as it would look worn on a face looking at the viewer", plus
+  "IMPORTANT: none of the items has lenses or glass: every eye opening is completely EMPTY, showing the gray background
+  through it" and "All items the same width, as if made for the same face". Measure the lens centers for
+  `wear-fit.json` (`lens`, `at`).
+- Neck: necklaces "hanging in a soft U shape"; the top of the chain is drawn behind the pet (`behind` in wear-fit).
+- Back: "perfectly symmetrical ... as it would look behind a character facing the viewer ... the empty space between
+  the two wings is just gray background".
+- Buddies: the pet prompt's style ("like a Pixar character"), "small, chubby and very cute, shown alone in a
+  three-quarter view turned slightly to the left, with a happy face and huge glossy dark eyes".
+
+After adding an item: its entry in `tools/wear-fit.json`, a look on contact sheets
+(`python tools/wear_fit.py big <png> "cat/1-happy:<id>,lion/4-celebrate:<id>,sheep/2-sleepy:<id>" x`), then
+`python tools/wear_fit.py export`, and the item in `SHOP_ITEMS` (src/Shop.js).
+
 ## A1 pictures
 
 `docs/pics/` holds the picture words for Match it at A1: Microsoft Fluent Emoji 3D (MIT license),

@@ -356,7 +356,7 @@ function reminderMessage(kid, lastCall) {
   if (lastCall) {
     return { title: 'Last call, ' + kid.Name, body: '10 minutes before the day ends — ' + label + ': ' + a.title };
   }
-  var s = streak(logs, t);
+  var s = streak(logs, t, hasShield(kid.Name));
   return {
     title: kid.Name + ', time for English',
     body: 'Today: ' + label + ' — ' + a.title + (s >= 2 ? ' · keep your ' + s + '-day streak going' : '')

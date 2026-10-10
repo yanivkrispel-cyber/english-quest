@@ -22,7 +22,7 @@ self.addEventListener('activate', e => {
     .then(() => self.clients.claim()));
 });
 
-const isAsset = url => /\/(pets|pics|icons)\//.test(url.pathname) || (/games\.js$/.test(url.pathname) && url.searchParams.has('v'));
+const isAsset = url => /\/(pets|pics|icons|items|coco)\//.test(url.pathname) || (/games\.js$/.test(url.pathname) && url.searchParams.has('v'));
 const isPage = (req, url) => req.mode === 'navigate' || /\/$|\.html$/.test(url.pathname);
 
 self.addEventListener('fetch', e => {

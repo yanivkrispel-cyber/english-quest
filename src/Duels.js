@@ -425,7 +425,7 @@ function talkXp(kid, d, role, r) {
 // The second kid on the same phone proves who she is with her PIN, once; the phone gets a token for the save.
 function apiTugCheck(name, pin) {
   var kid = duelKid(name, pin), p = petInfo(kid);
-  return { name: kid.Name, level: kid.Level, label: LEVEL_LABEL[kid.Level] || kid.Level, color: kid.Color, pet: p ? { id: p.id, stage: p.stage } : null,
+  return { name: kid.Name, level: kid.Level, label: LEVEL_LABEL[kid.Level] || kid.Level, color: kid.Color, pet: petBrief(p),
     token: tugToken(kid) };
 }
 
@@ -499,7 +499,7 @@ function duelHome(kid) {
       var g = findGroup(groupOf(k));
       return { name: k.Name, color: k.Color, level: LEVEL_LABEL[k.Level] || k.Level, ready: !pendingLevelTest(k), online: !!online[k.Name],
         group: groupOf(k) === mine ? '' : (g ? String(g.Name) : ''),
-        pet: pet ? { id: pet.id, stage: pet.stage } : null };
+        pet: petBrief(pet) };
     }),
     incoming: withMe.filter(function (r) { return r.State === 'invited' && r.Guest === name && live(r); }).map(function (r) { return duelView(r, name); }),
     challenges: withMe.filter(function (r) { return r.State === 'challenge' && r.Guest === name && live(r); }).map(function (r) { return duelView(r, name); }),
@@ -518,7 +518,7 @@ function duelHome(kid) {
 // challenge can't be peeked at before playing it... except the host's track, which is the ghost.
 function duelView(d, me) {
   var role = duelRole(d, me), host = findGirl(d.Host), guest = d.Guest ? findGirl(d.Guest) : null;
-  var face = function (k) { var p = k ? petInfo(k) : null; return p ? { id: p.id, stage: p.stage } : null; };
+  var face = function (k) { return petBrief(k ? petInfo(k) : null); };
   var done = d.State === 'done';
   var v = {
     code: d.Id, mode: d.Mode, state: d.State, role: role, seed: Number(d.Seed),

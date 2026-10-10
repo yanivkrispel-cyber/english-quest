@@ -74,6 +74,16 @@ working rules and the traps learned while building it.
   A write that skips it shows stale data for hours, not minutes.
 - Phones run the service worker's copy of the app first: after a deploy, check the new version on the second
   open (or tap the update bar).
+- **A pet picture is an inline SVG now** (`petArt`, the Wordrobe): CSS written for `img` inside a container (`.side img`)
+  does not reach it, and a container rule for its own `svg` (`.map svg` for the road) catches the pet too. Use classes, or
+  `svg:not(.pa)` / `svg.pa`. To change a mood keep the clothes: `paMood(el, mood)`, not `img.src`. SVG elements have no
+  `offsetWidth`: restart an animation with `getBoundingClientRect()`.
+- **New pet art or a new shop item needs the fit data**: `tools/pet_fit.py` (eyes; check the contact sheets, fix in
+  `pet-fit-fix.json`), `tools/wear-fit.json` (how the item sits), then `python tools/wear_fit.py export` (writes FIT into
+  Index.html). Without it, petArt shows nothing for a new pet and skips a new item.
+- Coco's grading lives twice (`cocoGrade` in Shop.js and Index.html): change both; test/sim.js fails if they disagree.
+- Gemini sometimes adds labels or draws grid cells behind a sheet: ask it to edit (remove the words / one flat gray
+  background) in the same chat. `cut_items.py` punches gray openings (lenses); use `--no-holes` for creatures and hats.
 - Default PINs are random; the real PINs live only in the private sheet. The repo is public:
   never commit real PINs, emails or the sheet's contents (tests use fake PINs 4821/7356/2694/1234).
 
@@ -110,5 +120,11 @@ Talk & Tap (phase 4, spec `specs/talk-tap.md`): a duel mode (`talk`) with its ow
 shortened by the server, so a reload resumes the game; home shows "Back to the game"). XP is given at each kid's
 finish from both kids' picks (`talkXp`). Words: `talk` in `docs/games.js` (Match it words only, checked by
 games-check). Dev test: two tabs; a background tab's timers slow down, so drive its picks with `talkPick(i)`.
+The Wordrobe, phase 1 (built 2026-10-10, spec `specs/wordrobe.md`, proposal and the owner's picks:
+https://claude.ai/artifact/6GkZRhCvB23frmsM37GXvx): coins (points + XP), Coco's shop with Ask Coco (tiles, voice optional),
+38 items in six places, four victory moves, the Streak Shield, the Halloween Drop and its culture card, items on the pet
+everywhere (`petArt`), coins and purchases in the parent view. Opens on `Settings.ShopOpens` (2026-10-24), a teaser
+before it; `Settings.ShopEarly` = names that may shop earlier. Later phases: Say it Wear it, Shine = Memory, Second
+Chance / Word Saver (2); Talking Charms, Living Legends, Runway & Gifts (3).
 Ideas not built yet: per-group reminder times, rewards redemption from the app (now via the
 `Redeemed` column), editing groups/kids from the app (now via the sheet).

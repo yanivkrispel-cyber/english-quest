@@ -262,7 +262,7 @@ function duoView(d, me, t) {
 
 function duoPlayer(name) {
   var k = findGirl(name), pet = k ? petInfo(k) : null;
-  return { name: name, color: k ? k.Color : '', level: k ? (LEVEL_LABEL[k.Level] || k.Level) : '', pet: pet ? { id: pet.id, stage: pet.stage } : null };
+  return { name: name, color: k ? k.Color : '', level: k ? (LEVEL_LABEL[k.Level] || k.Level) : '', pet: petBrief(pet) };
 }
 
 // The 17:00 / 20:00 reminder of a kid who hasn't practiced: a partner who already did today.
