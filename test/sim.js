@@ -748,7 +748,7 @@ S = call_('apiShop', 'Aviv');
 check('coins = points + XP', S.coins.earned === D.stats.earned + xpOf('Aviv') && D.coins === S.coins.balance && S.coins.spent === 0,
   S.coins.earned + ' = ' + D.stats.earned + ' + ' + xpOf('Aviv'));
 check('the shop is open on the date', S.open && D.shop.open && D.shop.season === 'halloween', JSON.stringify(D.shop));
-check('the catalog', S.items.length === 43 && S.items.filter(i => i.season === 'halloween').every(i => i.available));
+check('the catalog', S.items.length === 45 && S.items.filter(i => i.season === 'halloween').every(i => i.available));
 
 // Ask Coco: the grade decides the price
 const before = S.coins.balance;
@@ -828,6 +828,151 @@ check('parents see coins and purchases', PA.coins === call_('apiShop', 'Aviv').c
 console.log('shop tab:', sheets.Shop.rows.length - 1, 'rows | wardrobe tab:', sheets.Wardrobe.rows.length - 1, 'rows');
 }
 
+// ---- The Wordrobe, phase 2: Second Chance, Word Saver, Shine = Memory, the Studio ----
+{
+const sp = { Aviv: '2694', Ziv: '4821', Ron: '7356' };
+const call_ = (fn, who, ...args) => run(fn + '(' + [who, sp[who]].concat(args).map(a => JSON.stringify(a)).join(',') + ')');
+const fails = (label, f) => { try { f(); console.log('NOT REJECTED:', label); } catch (e) { console.log(label + ' ok:', e.message); } };
+const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+const year = ctx.__day.slice(0, 4);
+const giveXp = (who, n) => sheets.Bonus.rows.push(sheets.Bonus.rows[0].map(h => ({ Timestamp: new Date(), Girl: who, Date: ctx.__day, Kind: 'test', XP: n, Ref: 'test-' + Math.random() })[h] ?? ''));
+const at = d => { ctx.__day = d; run('clearCache()'); };
+const plus = n => run("addDays('" + ctx.__day + "', " + n + ")");
+at(year + '-10-27');
+giveXp('Ziv', 6000); run('clearCache()');
+if (!call_('apiDashboard', 'Ziv').pet) call_('apiSetPet', 'Ziv', 'fawn', 'Fern');
+let S = call_('apiShop', 'Ziv');
+check('the new upgrades are in the shop', ['second-chance', 'word-saver'].every(id => S.items.some(i => i.id === id && i.place === 'upgrade')));
+check('every rare and epic item is made of words', S.items.filter(i => (i.rarity === 'rare' || i.rarity === 'epic') && i.place !== 'move' && i.place !== 'upgrade').every(i => i.words)
+  && S.items.filter(i => i.words).length === 16, S.items.filter(i => i.words).length);
+check('the Studio has four bases', S.bases.map(b => b.id + ':' + b.place + ':' + b.price).join(' ') === 'beanie:head:150 bow:head:120 scarf:neck:160 cape:back:220');
+
+// Second Chance: half XP for a right second try, only with the upgrade
+const xpRow = () => { const r = sheets.Games.rows, h = r[0]; return Number(r[r.length - 1][h.indexOf('XP')]); };
+at(year + '-10-28');
+call_('apiGameResult', 'Ziv', 'match', 'b1', 3, 5, ['m:b1:a', 'm:b1:b'], ['m:b1:c'], 2);
+check('no Second Chance yet: the second tries earn nothing', xpRow() === 6, xpRow());
+call_('apiShopBuy', 'Ziv', 'second-chance', '', ['Could', 'I', 'have', 'the', 'Second Chance', 'please', '?', 'Thank you!']);
+call_('apiGameResult', 'Ziv', 'match', 'b1', 3, 5, ['m:b1:a', 'm:b1:b'], ['m:b1:c'], 2);
+check('with Second Chance: 3 right (6 XP) + 2 second tries (2 XP)', xpRow() === 8, xpRow());
+call_('apiGameResult', 'Ziv', 'spot', 'b1', 4, 5, ['s:b1:1'], [], 3);
+check('more second tries than misses are ignored', xpRow() === 8, xpRow());
+call_('apiGameResult', 'Ziv', 'build', 'b1', 5, 5, [], [], 0);
+check('a perfect round still gets its bonus', xpRow() === 15, xpRow());
+
+// Word Saver: her own deck; a saved word comes back tomorrow
+fails('save without the Word Saver', () => call_('apiSaveWord', 'Ziv', 'm:b1:reluctant', true));
+call_('apiShopBuy', 'Ziv', 'word-saver', '', ['May', 'I', 'have', 'the', 'Word Saver', '?']);
+let V = call_('apiSaveWord', 'Ziv', 'm:b1:reluctant', true);
+call_('apiSaveWord', 'Ziv', 'l:b1:3', true);
+V = call_('apiSaveWord', 'Ziv', 'm:b1:reluctant', true);
+check('saved once, in order', JSON.stringify(V.saved) === '["m:b1:reluctant","l:b1:3"]', JSON.stringify(V.saved));
+check('a saved word joins the review tomorrow', run("JSON.stringify(readReview('Ziv')['m:b1:reluctant'])") === JSON.stringify({ box: 1, due: plus(1) }));
+fails('save something that is not a game item', () => call_('apiSaveWord', 'Ziv', 'x:<b>', true));
+V = call_('apiSaveWord', 'Ziv', 'l:b1:3', false);
+check('unsave', JSON.stringify(V.saved) === '["m:b1:reluctant"]');
+let D = call_('apiDashboard', 'Ziv');
+check('the dashboard has the deck and the upgrades', JSON.stringify(D.games.saved) === '["m:b1:reluctant"]' && D.upgrades.second && D.upgrades.saver && !D.upgrades.shield,
+  JSON.stringify(D.upgrades));
+D = call_('apiGameResult', 'Ziv', 'mine', 'b1', 2, 2, [], ['m:b1:reluctant']);
+check('a round of her saved words counts', xpRow() === 4 && D.gameXp === 4, xpRow());
+check('kids without the deck do not get it', call_('apiDashboard', 'Ron').games.saved === null);
+
+// Shine = Memory: collect the words, buy, fade, polish, keep for good
+const band = run("kidBand(findGirl('Ziv'))");
+let R = call_('apiShop', 'Ziv').words['rainbow-wings'];
+const words = R.words.map(w => w[0]);
+check('the recipe follows her level', band === 'b' && words.join(' ') === 'vivid soar spectrum plumage' && R.words.every(w => w[2] === 'new' && w[1]),
+  band + ' ' + words.join(' '));
+check('an A1-A2 kid gets the easier words', run("kidBand({ Level: 'a2' }) + kidBand({ Level: 'a1' }) + kidBand({ Level: 'b1-b2' }) + recipeOf('rainbow-wings', 'a').map(function (x) { return x[0]; }).join(' ')") === 'aabrainbow feather sky fly');
+fails('buy an item made of words before collecting them', () => call_('apiShopBuy', 'Ziv', 'rainbow-wings', '', ['Could', 'I', 'have', 'the', 'Rainbow Wings', '?']));
+fails('words that are not in the recipe', () => call_('apiWords', 'Ziv', 'rainbow-wings', ['magic'], []));
+S = call_('apiWords', 'Ziv', 'rainbow-wings', ['vivid', 'soar', 'spectrum', 'plumage'], ['plumage']);
+R = S.words['rainbow-wings'];
+const mem = () => run("JSON.stringify(wordsOf('Ziv', true).memory)");
+const M1 = JSON.parse(mem()), want = { vivid: [2, plus(3)], soar: [2, plus(3)], spectrum: [2, plus(3)], plumage: [1, plus(1)] };
+check('collected: known words come back in 3 days, a missed one tomorrow', Object.keys(want).every(k => M1[k] && M1[k].box === want[k][0] && M1[k].due === want[k][1])
+  && Object.keys(M1).length === 4 && R.words.every(w => w[2] === 'ok'), mem());
+let B = call_('apiShopBuy', 'Ziv', 'rainbow-wings', '', ['Could', 'I', 'please', 'have', 'the', 'Rainbow Wings', '?', 'Thank you!']);
+const shopRow = sheets.Shop.rows.find(r => r[sheets.Shop.rows[0].indexOf('Item')] === 'rainbow-wings' && r[1] === 'Ziv');
+check('bought: worn, its words kept with the purchase', B.wear.indexOf('rainbow-wings') >= 0 && shopRow[sheets.Shop.rows[0].indexOf('Words')] === 'vivid soar spectrum plumage'
+  && B.words['rainbow-wings'].shine === 100);
+const d0 = ctx.__day;
+at(plus(1));
+D = call_('apiDashboard', 'Ziv');
+check('a day later one word waits: the wings fade a little', D.pet.shine['rainbow-wings'] === 93 && D.polish.n === 1 && D.polish.items[0].shine === 93,
+  JSON.stringify(D.pet.shine) + ' ' + JSON.stringify(D.polish));
+at(run("addDays('" + d0 + "', 9)"));
+S = call_('apiShop', 'Ziv');
+check('later, more words wait and it fades more (never below 40)', S.words['rainbow-wings'].shine < 93 && S.words['rainbow-wings'].shine >= 40 && S.polish === 4,
+  S.words['rainbow-wings'].shine + ' / ' + S.polish);
+at(run("addDays('" + d0 + "', 60)"));
+check('a long time later it stops at 40%', call_('apiShop', 'Ziv').words['rainbow-wings'].shine === 40);
+S = call_('apiWords', 'Ziv', '', ['vivid', 'soar', 'spectrum', 'plumage'], []);
+check('polished: it shines again', S.words['rainbow-wings'].shine === 100 && S.polish === 0, JSON.stringify(JSON.parse(mem())));
+for (let i = 0; i < 4; i++) { at(run("addDays('" + ctx.__day + "', 30)")); S = call_('apiWords', 'Ziv', '', ['vivid', 'soar', 'spectrum', 'plumage'], []); }
+check('after the last review the words are hers for good', S.words['rainbow-wings'].words.every(w => w[2] === 'mastered'), mem());
+at(run("addDays('" + ctx.__day + "', 400)"));
+check('and the wings shine forever', call_('apiShop', 'Ziv').words['rainbow-wings'].shine === 100);
+const fz = call_('apiDuelHome', 'Aviv').friends.find(f => f.name === 'Ziv');
+check('other kids see the shine', fz && fz.pet && fz.pet.shine && fz.pet.shine['rainbow-wings'] === 100, JSON.stringify(fz && fz.pet));
+
+// The Studio: grading a description
+const G = (t, b) => run('studioGrade(' + JSON.stringify(t) + ',' + JSON.stringify(b) + ')');
+let g = G('A big sparkly purple velvet cape with tiny gold stars.', 'cape');
+check('a full design', g.ok && g.n === 7 && g.spec.size === 'big' && g.spec.quality === 'sparkly' && g.spec.color === 'purple' && g.spec.material === 'velvet'
+  && g.spec.psize === 'tiny' && g.spec.pcolor === 'gold' && g.spec.pattern === 'stars', JSON.stringify(g.spec));
+g = G('a light blue scarf with dark green polka dots', 'scarf');
+check('two-word colors and polka dots', g.ok && g.spec.color === 'light blue' && g.spec.pcolor === 'dark green' && g.spec.pattern === 'polka dots', JSON.stringify(g.spec));
+const hint = (t, b, has) => { const r = G(t, b); check('hint for "' + t + '"', !r.ok && r.hint.indexOf(has) >= 0, r.hint); };
+hint('a purple big cape', 'cape', '"a big purple cape"');
+hint('a velvet purple cape', 'cape', 'color → material');
+hint('a cape purple', 'cape', 'the color comes before the cape');
+hint('a orange scarf', 'scarf', '"an orange scarf"');
+hint('an pink bow', 'bow', 'Before a consonant sound we say "a": "a pink bow"');
+hint('pink beanie', 'beanie', '"a pink beanie"');
+hint('a pink cape with star', 'cape', '"with stars"');
+hint('a pink cape stars', 'cape', 'Add "with"');
+hint('a purpel cape', 'cape', 'Did you mean "purple"?');
+hint('a pink and blue scarf', 'scarf', 'One color');
+hint('a pink hat', 'beanie', 'not a hat');
+hint('a cape', 'cape', 'Describe it');
+hint('the pink cape', 'cape', '"a pink cape"');
+hint('a pink cape with silver tiny stars', 'cape', '"with tiny silver stars"');
+hint('a pink cape with stars and hearts', 'cape', 'One pattern');
+hint('a pink scarf', 'cape', 'This one is a cape');
+hint('a dark cape', 'cape', 'goes with a color');
+hint('a big huge cape', 'cape', 'Choose "big" or "huge"');
+
+// The Studio: making a design
+at(year + '-10-21');
+fails('the Studio before the opening', () => call_('apiDesign', 'Ziv', 'cape', 'a pink cape', true));
+at(year + '-10-29');
+const coins0 = call_('apiShop', 'Ziv').coins.balance;
+fails('a design with a mistake', () => call_('apiDesign', 'Ziv', 'cape', 'a cape purple', true));
+fails('a base Coco does not have', () => call_('apiDesign', 'Ziv', 'hoodie', 'a pink hoodie', true));
+B = call_('apiDesign', 'Ziv', 'cape', 'a big sparkly purple velvet cape with tiny gold stars', true);
+const tok = B.bought.id;
+check('made: paid, Perfect Fit, worn', tok === '~cape..big.sparkly.purple.velvet.tiny..gold.stars.p' && B.bought.perfect && B.coins.balance === coins0 - 220
+  && B.wear.indexOf(tok) >= 0 && B.wear.indexOf('rainbow-wings') < 0, tok + ' ' + JSON.stringify(B.wear));
+check('the design is in her shop', B.items.some(i => i.id === tok && i.design && i.name === 'a big sparkly purple velvet cape with tiny gold stars'));
+fails('the same design twice', () => call_('apiDesign', 'Ziv', 'cape', 'a big sparkly purple velvet cape with tiny gold stars', false));
+B = call_('apiDesign', 'Ziv', 'scarf', 'an orange scarf', true);
+check('fewer than 3 words: no Perfect Fit', B.bought.perfect === false && B.bought.id === '~scarf....orange......', B.bought.id);
+let W;
+fails('two things on the back', () => call_('apiWear', 'Ziv', [tok, 'rainbow-wings'], ''));
+W = call_('apiWear', 'Ziv', [tok, '~scarf....orange......'], '');
+check('wear her designs', JSON.stringify(W.wear) === JSON.stringify([tok, '~scarf....orange......']), JSON.stringify(W.wear));
+fails('a design she did not make', () => call_('apiWear', 'Ziv', ['~cape....pink.......p'], ''));
+const fz2 = call_('apiDuelHome', 'Aviv').friends.find(f => f.name === 'Ziv');
+check('friends see her designs', fz2 && fz2.pet.wear.indexOf(tok) >= 0);
+at(year + '-10-30');
+const PZ = run("apiParent('1234')").groups[0].girls.find(x => x.girl.name === 'Ziv');
+check('parents see the design sentence', PZ.bought[0].sentence === 'An orange scarf.' && PZ.bought[1].sentence === 'A big sparkly purple velvet cape with tiny gold stars.',
+  JSON.stringify(PZ.bought.map(b => b.sentence)));
+console.log('words tab:', sheets.Words.rows.length - 1, 'rows');
+}
+
 // ---- Ask Coco: the app grades requests exactly like the server ----
 {
 const html = fs.readFileSync('src/Index.html', 'utf8').split('\r\n').join('\n');
@@ -858,4 +1003,28 @@ cases.forEach(([w, n, c]) => {
   if (a === b) same++; else console.log('FAIL: grade differs for', w.join(' '), '\n  server', a, '\n  app   ', b);
 });
 console.log((same === cases.length ? 'ok: ' : 'FAIL: ') + 'the app and the server grade ' + same + '/' + cases.length + ' requests the same');
+}
+
+// ---- The Studio: the app grades designs exactly like the server ----
+{
+const html = fs.readFileSync('src/Index.html', 'utf8').split('\r\n').join('\n');
+const grab = name => { const i = html.indexOf('function ' + name + '('); return html.slice(i, html.indexOf('\n}\n', i) + 2); };
+const app = new vm.Script(grab('studioWords') + grab('studioGrade') + '; studioGrade').runInNewContext({});
+const cases = [
+  ['a big sparkly purple velvet cape with tiny gold stars', 'cape'], ['A cute little pink beanie.', 'beanie'], ['an orange scarf', 'scarf'],
+  ['a light blue scarf with dark green polka dots', 'scarf'], ['a gorgeous huge glowing rainbow silk bow with sparkly white hearts', 'bow'],
+  ['a purple big cape', 'cape'], ['a velvet purple cape', 'cape'], ['a cape purple', 'cape'], ['a orange scarf', 'scarf'], ['an pink bow', 'bow'],
+  ['pink beanie', 'beanie'], ['a pink cape with star', 'cape'], ['a pink cape stars', 'cape'], ['a purpel cape', 'cape'], ['a pink and blue scarf', 'scarf'],
+  ['a pink hat', 'beanie'], ['a cape', 'cape'], ['the pink cape', 'cape'], ['a pink cape with silver tiny stars', 'cape'], ['a pink cape with stars and hearts', 'cape'],
+  ['a pink scarf', 'cape'], ['a dark cape', 'cape'], ['a big huge cape', 'cape'], ['', 'bow'], ['a pink cape with', 'cape'], ['a pink cape with the stars', 'cape'],
+  ['a pink cape with stars hearts', 'cape'], ['a pink stars cape', 'cape'], ['a pink cape with velvet stars', 'cape'], ['a pink cape cape', 'cape'],
+  ['a a pink cape', 'cape'], ['an amazing grey wool beanie with snowflakes', 'beanie'], ['a golden leather bow', 'bow'], ['a pink cape with polka', 'cape'],
+];
+let same = 0;
+cases.forEach(([t, b]) => {
+  const a = JSON.stringify(run('studioGrade(' + JSON.stringify(t) + ',' + JSON.stringify(b) + ')')), c = JSON.stringify(app(t, b));
+  if (a === c) same++; else console.log('FAIL: design grade differs for', t, '\n  server', a, '\n  app   ', c);
+});
+console.log((same === cases.length ? 'ok: ' : 'FAIL: ') + 'the app and the server grade ' + same + '/' + cases.length + ' designs the same');
+cases.slice(23).forEach(([t, b]) => { const g = app(t, b); console.log('  ' + JSON.stringify(t) + ' -> ' + (g.ok ? 'ok n=' + g.n : g.hint)); });
 }

@@ -132,6 +132,14 @@ texture, no floor, no shadows. No text, no letters, no numbers, no labels, no ex
 - Buddies: the pet prompt's style ("like a Pixar character"), "small, chubby and very cute, shown alone in a
   three-quarter view turned slightly to the left, with a happy face and huge glossy dark eyes".
 
+**The Studio's bases** (`docs/items/base-<id>.webp`, phase 2): one sheet of plain white items the app colors in code.
+The same prompt, with these changes: "a sticker sheet of 4 separate plain WHITE clothing accessories ... They are blank
+templates that will be colored later, so every item is pure white: white fabric with soft light-gray shading only, with
+no color, no pattern, no print, no logo", a 2x2 grid, "NO outline: the items have no white sticker border", and a flat
+saturated background ("one perfectly flat, uniform medium blue color (#3b6fd8)"). Cut with
+`python tools/cut_items.py <sheet> docs/items base-beanie,base-bow,base-scarf,base-cape --white --size 400 --preview <png>`
+(the preview shows each base as cut and colored pink). Check the fit with a color: `wear_fit.py big <png> "cat/1-happy" base-cape~purple`.
+
 After adding an item: its entry in `tools/wear-fit.json`, a look on contact sheets
 (`python tools/wear_fit.py big <png> "cat/1-happy:<id>,lion/4-celebrate:<id>,sheep/2-sleepy:<id>" x`), then
 `python tools/wear_fit.py export`, and the item in `SHOP_ITEMS` (src/Shop.js).

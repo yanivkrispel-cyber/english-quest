@@ -45,6 +45,10 @@
     "star-sprite": {"w": 0.95, "spot": "air"},
     "baby-dragon": {"w": 1.05, "spot": "ground"},
     "tiny-ghost": {"w": 1.2, "spot": "air"},
-    "baby-bunny": {"w": 0.85, "spot": "ground"}
+    "baby-bunny": {"w": 0.85, "spot": "ground"},
+    "base-beanie": {"w": 0.9, "at": [0.5, 0.88], "dy": 0.5},
+    "base-bow": {"w": 0.62, "at": [0.5, 0.7], "dy": 0.2, "dx": 0.45, "rot": 14},
+    "base-scarf": {"w": 1.8, "at": [0.5, 0.2], "dy": -0.1, "behind": [0, 0.22]},
+    "base-cape": {"w": 4.3, "at": [0.5, 0.04], "dy": -1.0}
   }
 }
