@@ -22,7 +22,7 @@ window.EQ_MISSIONS.bp = [
       { k: 'mc', q: '"How ___ does it take to get there?" "About an hour."', o: ['long', 'much', 'far'], a: 0, why: 'How long asks about time.' }
     ] },
     { name: 'Complete', items: [
-      { k: 'type', q: '"___ did you go with?" "With my cousin."', a: ['who'], why: 'You went with someone: who is the object, so we use did, and with goes to the end.' },
+      { k: 'type', q: '"___ did you go with?" "With my cousin."', a: ['who', 'whom'], why: 'You went with someone: who is the object, so we use did, and with goes to the end.' },
       { k: 'tf', q: '"Who did tell you about the party?"', a: false, fix: 'Who told you about the party?', why: 'Who is the subject → no did: Who told you?' },
       { k: 'mc', q: '"___ of these jackets is yours?" "The blue one."', o: ['Which', 'What', 'Whose'], a: 0, why: 'Which, when we choose from a small group.' },
       { k: 'type', q: '"___ phone is this?" "It\'s Dan\'s."', a: ['whose'], why: 'Whose asks who something belongs to.' }
@@ -105,7 +105,7 @@ window.EQ_MISSIONS.bp = [
     ] },
     { name: 'Build it', items: [
       { k: 'build', s: 'I didn\'t like the film, but my sister did.', why: 'did = liked the film. We don\'t repeat the whole idea.' },
-      { k: 'spot', s: 'You have a dog, *haven\'t* you?', fix: 'don\'t', why: 'have (= own) takes do in the tag: You have a dog, don\'t you?' },
+      { k: 'spot', s: 'You have a dog, *haven\'t* you?', fix: 'don\'t', why: 'In modern English, have (= own) takes do in the tag: You have a dog, don\'t you?' },
       { k: 'build', s: 'I do like your new haircut!', why: 'do + verb = emphasis: I really like it.' }
     ] }
   ],
@@ -406,6 +406,39 @@ window.EQ_MISSIONS.bp = [
   ],
   use: [
     { k: 'build', s: 'Put your phone away an hour before bed.', why: 'An instruction: put something away.' }
+  ]
+},
+{
+  id: 'bpu02', url: 'https://test-english.com/use-of-english/b1-b2/b1-test-2-multiple-choice-questions/', type: 'use-of-english',
+  title: 'The wallet that came home', dinner: 'What would you do if you found a wallet in the street?',
+  hook: { q: 'In a famous honesty experiment, researchers "lost" wallets in 40 countries. About how many?', o: ['About 170', 'About 1,700', 'About 17,000'], a: 2,
+    reveal: 'About *17,000*! And the surprise: wallets with more money in them were returned *more* often, not less.' },
+  learn: { kind: 'intro', title: 'Newsroom', line: 'Read a news story (it is made up!) and choose the right word for each gap.',
+    predict: { q: 'A man gets his lost wallet back after many years. How long do you think it was lost?', o: ['Twenty years', 'Two weeks', 'One day'] } },
+  steps: [
+    { name: 'The story', items: [
+      { k: 'gaps', title: 'Twenty years later',
+        t: 'In 2004, Daniel Ross lost his wallet on a train. Twenty years later, a parcel [1] at his door. Inside was the wallet, [2] still had his old student card in it. It [3] found behind a seat while workers were repairing the train. The engineer [4] found it, Lisa Grant, spent two weeks searching for Daniel online. "If she [5] so determined, I would never have got it back," Daniel said. Lisa, who has worked for the railway [6] 2010, refused any reward. "I thought about how I [7] feel if it were mine," she explained. "Besides, it\'s [8] to know that kindness still exists."',
+        gaps: [
+          { o: ['arrived', 'has arrived', 'was arriving'], a: 0, why: 'One finished event in the past → arrived.' },
+          { o: ['which', 'who', 'what'], a: 0, why: 'which for things, after a comma.' },
+          { o: ['had been', 'has been', 'was being'], a: 0, why: 'It was found before the parcel came → had been found.' },
+          { o: ['who', 'which', 'whose'], a: 0, why: 'who for people.' },
+          { o: ['hadn\'t been', 'wasn\'t', 'wouldn\'t be'], a: 0, why: 'About the past: If + had (not) + past participle, would have…' },
+          { o: ['since', 'for', 'from'], a: 0, why: 'since + a point in time: since 2010.' },
+          { o: ['would', 'will', 'had'], a: 0, why: 'An imagined situation: how I would feel if it were mine.' },
+          { o: ['nice', 'nicely', 'nicer'], a: 0, why: 'After it\'s we need an adjective: it\'s nice to know.' }
+        ] }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'mc', q: 'By the time we arrived, the concert ___.', o: ['had started', 'has started', 'starts'], a: 0, why: 'It started before we arrived → had started.' },
+      { k: 'mc', q: 'If I ___ about the party, I would have come.', o: ['had known', 'knew', 'have known'], a: 0, why: 'About the past: If I had known…, I would have…' },
+      { k: 'tf', q: '"My sister, who lives in Eilat, is a doctor."', a: true, why: 'Extra information between commas: who lives in Eilat.' },
+      { k: 'type', q: 'I have known her ___ we were five.', a: ['since'], why: 'since + a point in time.' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'The wallet had been lost for twenty years.', why: 'had been + past participle: the past perfect passive.' }
   ]
 }
 ];

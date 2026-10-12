@@ -406,5 +406,38 @@ window.EQ_MISSIONS.b2 = [
   use: [
     { k: 'type', q: 'Fewer homes are available for local people. As a ___, rents go up.', a: ['result'], why: 'As a result introduces a result.' }
   ]
+},
+{
+  id: 'b2u02', url: 'https://test-english.com/use-of-english/b2/b2-english-test-2-multiple-choice-questions/', type: 'use-of-english',
+  title: 'No phones at dinner', dinner: 'Should we have a no-phones rule at our dinner table? Why?',
+  hook: { q: 'In a study, people talked with a phone lying on the table. What happened?', o: ['They felt less connected', 'They talked more', 'Nothing changed'], a: 0,
+    reveal: '*They felt less connected*. Just having a phone on the table, even switched off, made conversations feel less close.' },
+  learn: { kind: 'intro', title: 'Newsroom', line: 'Read a news story (it is made up!) and choose the right word for each gap.',
+    predict: { q: 'A village restaurant bans phones at dinner. How do you think teenagers react?', o: ['They are surprised that they like it', 'They stop going there', 'They don\'t notice'] } },
+  steps: [
+    { name: 'The story', items: [
+      { k: 'gaps', title: 'The village that banned phones',
+        t: 'The small village of Llanmor has made an unusual decision: phones are now banned at the table in its only restaurant. [1] some customers complained at first, most now say they enjoy the change. "Not only [2] people talk more, they also order dessert!" jokes the owner, Megan Price. The idea came from a study [3] suggested that just having a phone on the table makes conversations feel less personal. [4] a result, Megan put a wooden box by the door, [5] diners leave their phones. Teenagers [6] to be the most surprised. "I thought I\'d hate it," says 16-year-old Rhys, "but it was actually nice [7] my family properly." The village council is now considering [8] the rule to the school canteen.',
+        gaps: [
+          { o: ['Although', 'Despite', 'However'], a: 0, why: 'Although + a clause: some customers complained.' },
+          { o: ['do', 'are', 'have'], a: 0, why: 'After Not only at the start, the helper comes first: Not only do people talk more…' },
+          { o: ['which', 'who', 'what'], a: 0, why: 'which (or that) for things: a study which suggested…' },
+          { o: ['As', 'So', 'For'], a: 0, why: 'As a result.' },
+          { o: ['where', 'which', 'when'], a: 0, why: 'A place → where diners leave their phones.' },
+          { o: ['seem', 'seems', 'seeming'], a: 0, why: 'Teenagers (plural) seem to be…' },
+          { o: ['to talk to', 'talking to', 'talk to'], a: 0, why: 'it was nice + to + verb.' },
+          { o: ['extending', 'to extend', 'extend'], a: 0, why: 'consider + -ing.' }
+        ] }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'mc', q: '___ the rain, we went for a walk.', o: ['Despite', 'Although', 'Because'], a: 0, why: 'the rain is a noun → despite.' },
+      { k: 'mc', q: 'Not only ___ she sing, she also plays the guitar.', o: ['does', 'is', 'has'], a: 0, why: 'Not only + do / does + subject + verb.' },
+      { k: 'tf', q: '"I\'m considering to change schools."', a: false, fix: 'I\'m considering changing schools.', why: 'consider + -ing.' },
+      { k: 'type', q: 'It was so loud ___ we couldn\'t hear each other.', a: ['that'], why: 'so + adjective + that.' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'Phones are now banned at the dinner table.', why: 'The passive: are + banned.' }
+  ]
 }
 ];

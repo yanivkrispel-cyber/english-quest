@@ -399,5 +399,38 @@ window.EQ_MISSIONS.a2 = [
   use: [
     { k: 'type', q: 'I love Snowy, ___ she barks a lot at night.', hint: '(and / but / so)', a: ['but'], why: 'but shows a contrast: I love her, but there is a problem.' }
   ]
+},
+{
+  id: 'a2u02', url: 'https://test-english.com/use-of-english/a2/a2-english-test-2-multiple-choice-questions/', type: 'use-of-english',
+  title: 'The dog who takes the bus', dinner: 'Where would you go if you could take a bus anywhere on your own?',
+  hook: { q: 'In Seattle, a dog called Eclipse became famous for…', o: ['riding the bus alone', 'driving a car', 'painting pictures'], a: 0,
+    reveal: '*Riding the bus alone*! Eclipse took the bus to the dog park. Today\'s story is made up, but Eclipse was real.' },
+  learn: { kind: 'intro', title: 'Newsroom', line: 'Read a funny news story (it is made up!) and choose the right word for each gap.',
+    predict: { q: 'A dog gets on a bus alone. Where do you think he is going?', o: ['To the beach', 'To the vet', 'To school'] } },
+  steps: [
+    { name: 'The story', items: [
+      { k: 'gaps', title: 'A passenger with four legs',
+        t: 'Last week, a big brown dog called Max [1] on the number 12 bus in Brighton, all alone. The driver [2] very surprised, but Max sat down quietly [3] a window. "He was [4] than most passengers!" the driver said later. After ten minutes, Max got [5] the bus at the beach. He [6] for his owner, Mrs Lee, who was there with a picnic. "Max [7] the bus to the beach with me every Saturday," she explained, "but this time he [8] go alone!"',
+        gaps: [
+          { o: ['got', 'gets', 'getting'], a: 0, why: 'Last week → past simple: got on the bus.' },
+          { o: ['was', 'were', 'is'], a: 0, why: 'the driver = he → was.' },
+          { o: ['next to', 'between', 'behind of'], a: 0, why: 'next to a window.' },
+          { o: ['quieter', 'more quiet', 'quietest'], a: 0, why: 'quiet → quieter (comparing).' },
+          { o: ['off', 'out', 'down'], a: 0, why: 'get off a bus. (get out of a car)' },
+          { o: ['looked', 'watched', 'saw'], a: 0, why: 'look for = try to find.' },
+          { o: ['takes', 'took', 'is taking'], a: 0, why: 'every Saturday = a habit → takes.' },
+          { o: ['decided to', 'decided', 'decides to'], a: 0, why: 'decide + to + verb; in the past: decided to go.' }
+        ] }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'mc', q: 'I ___ to London last year.', o: ['went', 'go', 'have gone'], a: 0, why: 'last year → past simple: went.' },
+      { k: 'mc', q: 'This bag is ___ than that one.', o: ['heavier', 'heavy', 'more heavy'], a: 0, why: 'heavy → heavier.' },
+      { k: 'tf', q: '"We get on the bus at the station."', a: true, why: 'get on a bus or a train.' },
+      { k: 'type', q: 'Did you ___ the film yesterday?', hint: '(see)', a: ['see'], why: 'Did + the base verb: Did you see…?' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'The dog got off the bus at the beach.', why: 'get off a bus; in the past: got off.' }
+  ]
 }
 ];

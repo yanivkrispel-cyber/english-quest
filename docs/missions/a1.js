@@ -392,5 +392,38 @@ window.EQ_MISSIONS.a1 = [
   use: [
     { k: 'type', q: 'I am a bird, but I ___ fly.', hint: '(can / can\'t)', a: ['can\'t', 'cannot'], why: 'A penguin can\'t fly.' }
   ]
+},
+{
+  id: 'a1u02', url: 'https://test-english.com/use-of-english/a1/a1-english-test-2-multiple-choice-questions/', type: 'use-of-english',
+  title: 'A cat at school', dinner: 'What animal would you like to bring to school?',
+  hook: { q: 'What do we call a baby cat?', o: ['A kitten', 'A puppy', 'A calf'], a: 0,
+    reveal: 'A *kitten*! Today\'s news story is about a cat that goes to school every day. (It is a made-up story!)' },
+  learn: { kind: 'intro', title: 'Newsroom', line: 'Read a funny news story (it is made up!) and choose the right word for each gap.',
+    predict: { q: 'A cat goes to school every day. What do you think she does there?', o: ['She listens to the lessons.', 'She teaches maths.', 'She drives the school bus.'] } },
+  steps: [
+    { name: 'The story', items: [
+      { k: 'gaps', title: 'Lucky goes to school',
+        t: 'Every morning a small black cat [1] to Green Park School. Her name [2] Lucky. She sits [3] the teacher\'s desk and listens to the lessons. The children [4] her very much. Lucky [5] read, but she likes books! At twelve o\'clock she [6] lunch with the children: fish, of course. In the afternoon she sleeps [7] the window. "She is [8] best student," says the teacher.',
+        gaps: [
+          { o: ['goes', 'go', 'going'], a: 0, why: 'she → goes (he, she, it + s).' },
+          { o: ['is', 'are', 'am'], a: 0, why: 'her name = it → is.' },
+          { o: ['on', 'in', 'at'], a: 0, why: 'on the desk = on top of it.' },
+          { o: ['love', 'loves', 'loving'], a: 0, why: 'the children = they → love.' },
+          { o: ['can\'t', 'can', 'does'], a: 0, why: 'Cats can\'t read!' },
+          { o: ['has', 'have', 'is'], a: 0, why: 'she → has lunch.' },
+          { o: ['next to', 'between', 'under of'], a: 0, why: 'next to the window.' },
+          { o: ['our', 'we', 'us'], a: 0, why: 'our + a noun: our best student.' }
+        ] }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'mc', q: 'My brother ___ football every day.', o: ['plays', 'play', 'playing'], a: 0, why: 'he → plays.' },
+      { k: 'mc', q: 'The book is ___ the table.', o: ['on', 'at', 'to'], a: 0, why: 'on the table.' },
+      { k: 'tf', q: '"She have a dog."', a: false, fix: 'She has a dog.', why: 'she → has.' },
+      { k: 'type', q: '___ you like cats?', a: ['do'], why: 'Do you like…?' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'The cat sits on the desk.', why: 'the cat = it → sits.' }
+  ]
 }
 ];
