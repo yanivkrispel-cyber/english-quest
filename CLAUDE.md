@@ -13,7 +13,9 @@ working rules and the traps learned while building it.
 
 ## Change → test → deploy
 1. Edit `src/` (server: `Code.js`, `Push.js`; UI: `Index.html`). Game content: `docs/games.js`
-   (check with `node test/games-check.js`); pet art: see `tools/PETS.md`.
+   (check with `node test/games-check.js`); pet art: see `tools/PETS.md`. Mission content: `docs/missions/<level>.js`
+   (`node test/missions-check.js`, then `node tools/missions-index.js` to rewrite `src/MissionIndex.js`, then record new
+   episodes with `python tools/missions_audio.py` and raise `MISSIONS_V` in Index.html).
 2. `node test/sim.js` (extend it for new server behaviour), `node test/ui-check.js` (Index.html traps) and, for
    crypto, `node test/push-crypto.js`.
 3. Visual check: `node test/preview.js`, serve `app/` (`python -m http.server 8765`), open
@@ -92,6 +94,17 @@ working rules and the traps learned while building it.
   an outline, on a saturated background, and `tools/cut_items.py --white` levels its shading; the outline is drawn in code.
 - Gemini sometimes adds labels or draws grid cells behind a sheet: ask it to edit (remove the words / one flat gray
   background) in the same chat. `cut_items.py` punches gray openings (lenses); use `--no-holes` for creatures and hats.
+- **Missions: the server counts questions from `src/MissionIndex.js`.** After any change to `docs/missions/*.js`, run
+  `node tools/missions-index.js` and push it with the content: a mission whose count differs from the index is refused by
+  `apiMissionResult` (the app then opens the old link for that day, so nothing breaks, but the mission is lost). The count
+  is the app's own `msQuestions`/`msCount`, read from Index.html by the tools. Mission ids are `<level><section><nn>`
+  where nn is the topic's place in `CATALOG`: reordering the catalog breaks them.
+- Mission CSS classes start with `m`/`ms`, and two collided with older ones (`.mbar` of the duo streak, `.mstar` of the
+  map): check `grep -n "\.<name>[{ :.,]"` before adding a class. The single-token `spot`/`teach` questions can only
+  replace one word (`*word*` → `fix`): word-order mistakes need a `build` question instead.
+- Kokoro (the episode voices) lives outside the repo in `C:\Dev\EnglishLessons\kokoro` (`kokoro-v1.0.onnx`,
+  `voices-v1.0.bin`); `pip install kokoro-onnx soundfile` needed several tries on this network (`--retries 10`).
+  `tools/missions-audio.json` remembers what was recorded; only changed parts are recorded again.
 - Default PINs are random; the real PINs live only in the private sheet. The repo is public:
   never commit real PINs, emails or the sheet's contents (tests use fake PINs 4821/7356/2694/1234).
 
@@ -137,5 +150,10 @@ The Wordrobe, phase 2, the Studio (built 2026-10-10, spec `specs/wordrobe-studio
 choice): Say it Wear it (4 white bases colored in code; designs are tokens), Shine = Memory (every rare and epic item is
 made of words; shine follows their review), Second Chance and Word Saver ("My words"). Phase 3 (not built): Talking
 Charms, Living Legends, Runway & Gifts.
+Today's Mission, phase 1 (built 2026-10-12, spec `specs/missions.md`; plan and the owner's picks:
+https://claude.ai/artifact/9ajUGftfHuLqXCPPaZGqJx): the daily task as a mission in the app for the names in
+`Settings.MissionPilot` (empty = nobody; `all` = everyone). Engine in Index.html (`ms*` functions), server in Missions.js,
+54 missions (the first topics of each level, a pilot week) with recorded episodes. Writing (Writer's Desk), the in-app
+level test, the journey story and the family week are phase 2 and 3. Dev: `/dev/mission?who=Aviv&id=a2g01`.
 Ideas not built yet: per-group reminder times, rewards redemption from the app (now via the
 `Redeemed` column), editing groups/kids from the app (now via the sheet).

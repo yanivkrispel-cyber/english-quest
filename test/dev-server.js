@@ -60,7 +60,7 @@ figure{margin:0;display:grid;gap:8px;justify-items:center}iframe{border:0;border
 <figure><iframe src="http://127.0.0.1:${PORT}/test/dev.html"></iframe><figcaption>Phone 2 · 127.0.0.1</figcaption></figure>`);
 
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css', '.json': 'application/json',
-  '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json' };
+  '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json', '.mp3': 'audio/mpeg' };
 let chaos = { mode: 'off', n: 0 };
 http.createServer((req, res) => {
   const url = new URL(req.url, 'http://x');

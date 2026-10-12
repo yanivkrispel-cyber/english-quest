@@ -326,6 +326,7 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
 .mtext{font-size:16px;line-height:1.7;font-weight:500;text-align:left}
 .mstory .w{border-radius:5px;transition:background .15s}
 .mstory .w.on{background:#fde68a}
+.mstory .w.hit{background:#a7f3d0;font-weight:700}
 .mstory .w.pick{cursor:pointer;background:rgba(99,102,241,.08);padding:0 1px}
 .mplay{gap:14px;padding:22px 16px}
 .msbar{height:8px;width:100%;border-radius:6px;background:rgba(28,30,43,.1);overflow:hidden}
@@ -3307,11 +3308,19 @@ function msListen(p, onEnd){
   if (btn) btn.classList.add('talk');
   const a = new Audio(msAudioSrc(p));
   msAudio = a;
-  a.playbackRate = MS.slow ? .8 : 1;
+  // No recording, or it does not start within 9 seconds (offline, a slow line): the phone reads the part aloud.
+  const speak = () => { if (msAudio !== a) return; clearTimeout(guard); try { a.pause(); } catch(e){} msAudio = null; msSpeakLines(MS.m.show.parts[p].lines, done); };
+  const guard = setTimeout(() => { if (a.readyState < 3) speak(); }, 9000);
+  a.defaultPlaybackRate = a.playbackRate = MS.slow ? .8 : 1;
+  a.onloadedmetadata = () => { a.playbackRate = MS && MS.slow ? .8 : 1; };
+  a.onplaying = () => clearTimeout(guard);
   a.ontimeupdate = () => { if (bar && a.duration) bar.style.width = Math.round(a.currentTime / a.duration * 100) + '%'; };
-  a.onended = done;
-  a.onerror = () => { if (msAudio === a) { msAudio = null; msSpeakLines(MS.m.show.parts[p].lines, done); } };
-  a.play().catch(() => { if (msAudio === a && a.error) { msAudio = null; msSpeakLines(MS.m.show.parts[p].lines, done); } });
+  a.onended = () => { clearTimeout(guard); done(); };
+  a.onerror = speak;
+  a.play().catch(err => {
+    if (err && err.name === 'NotAllowedError') { clearTimeout(guard); msAudio = null; if (btn) btn.classList.remove('talk'); return toast('Tap play to listen'); }
+    speak();
+  });
 }
 // No recording: the phone reads the lines, a different voice for each speaker when it has them.
 function msSpeakLines(lines, onEnd){
@@ -3343,7 +3352,7 @@ function msItem(sc){
   let top = '';
   const playPart = sc.ctx.play != null ? sc.ctx.play : it.clip;
   if (playPart != null && MS.m.show) top = `<button class="btn btn-glass btn-sm" data-again="${playPart}" style="align-self:center">${icon('speaker-high')} Listen again</button>`;
-  if (sc.ctx.chunk != null) top = msChunk(sc.ctx.chunk, k === 'find' && !sub.done);
+  if (sc.ctx.chunk != null) top = msChunk(sc.ctx.chunk, k === 'find' && !sub.done, k === 'find' && sub.done ? it.a : null);
   const remind = prevWrong && !sub.done ? msRemind() : '';
   const step = `<div class="qprompt" style="text-align:center">${esc(sc.ctx.step || '')}</div>`;
   let body = '';
@@ -3384,7 +3393,7 @@ function msItem(sc){
   } else if (k === 'sort') {
     const place = sub.place || (sub.place = {}), order = sub.order || (sub.order = shuffled(it.w, 's'));
     const chip = i => { const ok = sub.done ? place[i] === it.w[i][1] : null; return `<button class="tok${sub.sel === i ? ' sel' : ''}${ok === true ? ' fixed' : ok === false ? ' wrongpick' : ''}" data-sortw="${i}"${sub.done ? ' disabled' : ''}>${esc(it.w[i][0])}</button>`; };
-    body = `<div class="glass qcard"><div class="qprompt">${esc(it.q || 'Put each word in its group')}</div><div class="sub" style="margin:0;font-size:13px">Tap a word, then tap its group.</div></div>
+    body = `<div class="glass qcard"><div class="qprompt">${esc(it.q || 'Put each word in its group')}</div><div class="sub" style="margin:0;font-size:13px">Tap one, then tap its group.</div></div>
       <div class="msort" style="--n:${it.g.length}">${it.g.map((g, gi) => `<div class="mbasket" data-basket="${gi}"><b>${esc(g)}</b>${order.filter(i => place[i] === gi).map(chip).join('')}</div>`).join('')}</div>
       <div class="bank">${order.filter(i => place[i] == null).map(chip).join('')}</div>
       ${sub.done ? '' : `<button class="btn btn-primary btn-block" data-check="sort"${Object.keys(place).length === it.w.length ? '' : ' disabled'}>Check ${icon('check')}</button>`}`;
@@ -3416,9 +3425,11 @@ function msItem(sc){
 // Long options one under the other; three short ones in a row.
 const msOptsClass = list => list.some(o => String(o).length > 14) ? ' one' : list.length === 3 && list.every(o => String(o).length <= 11) ? ' three' : list.length === 3 ? ' one' : '';
 function msGap(q){ return esc(q || '').replace(/_{3,}/g, '<span class="gap"></span>'); }
-function msChunk(c, pick){
+// A story card. pick: its words can be tapped (word detective); hit: the answer, shown in green after it.
+function msChunk(c, pick, hit){
   const text = MS.m.story.chunks[c].text;
-  const words = text.split(/(\s+)/).map(x => /\s+/.test(x) ? x : `<span class="w${pick ? ' pick' : ''}" data-w="${esc(x)}">${esc(x)}</span>`).join('');
+  const words = text.split(/(\s+)/).map(x => /\s+/.test(x) ? x
+    : `<span class="w${pick ? ' pick' : ''}${hit && msNorm(x) === msNorm(hit) ? ' hit' : ''}" data-w="${esc(x)}">${esc(x)}</span>`).join('');
   return `<div class="glass mstory" id="mstory"><div class="row-flex between" style="margin-bottom:6px"><span class="qprompt">${esc(MS.m.story.title)}</span>
     <button class="btn btn-glass btn-sm" data-read="${c}">${icon('speaker-high')} Read to me</button></div><div class="mtext">${words}</div></div>`;
 }
@@ -3459,7 +3470,8 @@ function msClick(e){
   const sc = MS.S[MS.si], sub = MS.sub, d = t.dataset;
   if (t.id === 'msquit') {
     if (!(MS.quitAt > Date.now() - 3000)) { MS.quitAt = Date.now(); return toast(MS.review || MS.practice ? 'Tap again to stop.' : 'Tap again to stop. Your mission waits for you here.'); }
-    msLeave(); return renderDash();
+    const prev = MS.preview;
+    msLeave(); return prev ? missionGallery() : renderDash();
   }
   if (t.id === 'msnext') { msTouch(); MS.si++; MS.sub = {}; msKeep(); return msRender(); }
   if (d.say != null) return sayWord(d.say);
@@ -3471,7 +3483,7 @@ function msClick(e){
     msTouch();
     return msListen(sc.p, () => { if (!MS) return; (MS.sub.heard = MS.sub.heard || {})[sc.p] = true; const fb = document.getElementById('fb'); if (fb) fb.textContent = 'Ready for the questions?'; msNextBtn('Questions'); });
   }
-  if (d.flag) { call('apiFlag', session.name, session.pin, MS.id, d.flag, '').catch(() => {}); t.disabled = true; t.textContent = 'Thanks! We will check it.'; return; }
+  if (d.flag) { if (session) call('apiFlag', session.name, session.pin, MS.id, d.flag, '').catch(() => {}); t.disabled = true; t.textContent = session ? 'Thanks! We will check it.' : 'Noted (preview: tell Claude which one).'; return; }
   if (d.ehe) { const box = document.getElementById('mehe'); if (box) box.hidden = !box.hidden; return; }
   if (sc.t === 'hook' && d.guess != null && MS.guess == null) { msTouch(); MS.guess = Number(d.guess); msKeep(); return msRender(); }
   if (sc.t === 'learn' && d.pred != null && MS.sub.pred == null) { MS.sub.pred = Number(d.pred); return msRender(); }
@@ -3577,16 +3589,16 @@ function msFinish(){
     ${m.hook && !MS.review ? `<div class="glass panel"><div class="label">The answer to our question</div><div style="font-weight:700;margin-top:6px">${msMark(m.hook.reveal)}</div>
       ${MS.guess === m.hook.a ? '<div class="sub" style="color:#047857;margin-top:4px">You guessed it!</div>' : ''}</div>` : ''}
     ${missedQ.length ? `<div class="glass panel"><div class="label">These come back in your Mission review</div><ul class="mmissed">${missedQ.map(([it, g]) => `<li>${esc(msShort(it, g))}</li>`).join('')}</ul></div>` : ''}
-    ${m.dinner && !MS.review ? `<div class="today" style="padding:16px 18px"><div class="label" style="color:#3b3f55">Tonight's question at home</div><div style="font-weight:800;font-size:17px;margin-top:4px">${esc(m.dinner)}</div>
+    ${m.dinner && !MS.review && !MS.practice ? `<div class="today" style="padding:16px 18px"><div class="label" style="color:#3b3f55">Tonight's question at home</div><div style="font-weight:800;font-size:17px;margin-top:4px">${esc(m.dinner)}</div>
       <div class="sub" style="color:#3b3f55;font-size:13px">Your parents get it at 9 pm. Answer in English!</div></div>` : ''}
     ${script}
     <div class="stack" style="gap:10px"><button class="btn btn-primary btn-block" id="mshome">Back home</button></div>
   </div>`;
   if (pct >= 80) confetti();
   if (pct >= 80 && dash.pet && dash.pet.move) setTimeout(() => playMove(document.getElementById('resultpet'), dash.pet.move), 450);
-  document.getElementById('mshome').onclick = () => { MS = null; renderDash(); };
+  document.getElementById('mshome').onclick = () => { MS = null; R.preview ? missionGallery() : renderDash(); };
   if (R.review) return msSaveReview(R, correct, total);
-  if (R.practice) { const s = document.getElementById('savest'); s.className = 'saved'; s.innerHTML = icon('check') + ' Practice round · your score from before stays'; MS = null; return; }
+  if (R.practice) { const s = document.getElementById('savest'); s.className = 'saved'; s.innerHTML = icon('check') + (R.preview ? ' Preview · nothing is saved' : ' Practice round · your score from before stays'); MS = null; return; }
   store.del(msKey());
   const args = [R.date, R.id, correct, total, R.missed.slice(), R.right.slice(), Math.max(seconds, 1)];
   MS = null;
@@ -3659,6 +3671,37 @@ async function msSaveReview(R, correct, total){
     queueResult({ game: 'review', level: dash.girl.level, correct, total, missed, right, second: 0 });
     status('err', icon('wifi-slash') + ' Saved on this phone. It will sync when you are online.');
   }
+}
+
+// Mission preview: open the app with ?missions (for the owner and for checking content). Every mission of every level,
+// played as practice with a stand-in pet; nothing is sent to the server.
+const MS_FILES = { a1: 'a1', a2: 'a2', b1: 'b1', 'b1-b2': 'bp', b2: 'b2', c1: 'c1' };
+let msGalleryLevel = 'a2';
+async function missionGallery(){
+  MS = null;
+  if (!dash || !dash.preview) dash = { preview: true, pet: { id: 'fawn', name: 'Fern', stage: 3, xp: 600, wear: [], move: 'spin' }, girl: { name: 'Preview', level: msGalleryLevel, levelLabel: '' }, week: [], games: Object.assign({}, GAMES_DEFAULT), stats: { streak: 0 } };
+  app.innerHTML = '<div class="spinner"></div>';
+  let list = [];
+  try { list = await loadMissions(MS_FILES[msGalleryLevel]); } catch(e){ list = []; }
+  const label = (LEVELS.find(l => l[0] === msGalleryLevel) || [0, ''])[1];
+  app.innerHTML = `<div class="stack">
+    <div class="glass panel"><div class="row-flex between"><h2>Mission preview</h2><span class="chip purple">${list.length} missions</span></div>
+      <div class="sub mt-s" style="font-size:13px">Play any mission as practice. Nothing is saved.</div>
+      <div class="row-flex mt" style="gap:6px;flex-wrap:wrap">${LEVELS.map(([k, l]) => `<button class="btn ${k === msGalleryLevel ? 'btn-primary' : 'btn-glass'} btn-sm" data-glv="${k}">${l}</button>`).join('')}</div></div>
+    <div class="stack" style="gap:10px">${list.map(m => `<button class="soft task clickable" data-prev="${m.id}" style="text-align:left;width:100%;font:inherit;border:0">
+      ${tile(m.type, true)}<div class="task-main"><div class="task-top">${esc((MS_TYPES[m.type] || MS_TYPES.grammar)[0])} · ${msCount(m)} questions · ${m.id}</div>
+      <div class="task-title">${esc(m.title)}</div></div>${icon('caret-right')}</button>`).join('') || '<div class="glass panel sub">No missions for this level yet.</div>'}</div>
+  </div>`;
+  app.querySelectorAll('[data-glv]').forEach(b => b.onclick = () => { msGalleryLevel = b.dataset.glv; dash.girl.level = msGalleryLevel; missionGallery(); });
+  app.querySelectorAll('[data-prev]').forEach(b => b.onclick = () => previewMission(b.dataset.prev, label));
+}
+function previewMission(id, label){
+  const m = (window.EQ_MISSIONS[msFile(id)] || []).find(x => x.id === id);
+  if (!m) return;
+  MS = { m, w: { level: label }, id, date: 'preview', S: msScreens(m), si: 0, res: [], missed: [], right: [], active: 0, last: Date.now(), sub: {}, he: false,
+    practice: true, preview: true, seed: hashStr('preview:' + id + ':' + Date.now()), guess: null };
+  msClock();
+  msRender();
 }
 
 // ---------- Play together: Word Duel and Challenge ----------
@@ -4514,6 +4557,9 @@ function prefetch(){
     if (dash && dash.pet) ['happy', 'thinking', 'celebrate', 'oops', 'cool', 'sleepy'].forEach(m => urls.push(abs(petSrc(dash.pet.id, dash.pet.stage, m))));
     if (dash && dash.pet) wearOf(dash.pet).forEach(e => { if (FIT.items[wearId(e)]) urls.push(abs(itemSrc(wearId(e)))); });
     if (dash && dash.shop) ['happy', 'sleepy', 'celebrate'].forEach(m => urls.push(abs(cocoSrc(m))));
+    // Today's mission (or a catch-up one), so it opens at once on a weak connection. (Recordings stay with the browser.)
+    const mw = dash && dash.week.find(w => w.mission && !w.done && !w.isFuture);
+    if (mw) urls.push(abs(ASSETS + 'missions/' + msFile(mw.mission.id) + '.js?v=' + MISSIONS_V));
     sw.postMessage({ type: 'precache', urls });
   });
 }
@@ -5697,6 +5743,7 @@ async function boot(){
 
 // ---------- Home ----------
 async function start(){
+  if (new URLSearchParams(location.search).has('missions')) return missionGallery();
   takeDuelParam();
   const saved = store.get('eq_auth'), admin = store.get('eq_admin');
   const kept = saved && store.get(dashKey(saved.name));
