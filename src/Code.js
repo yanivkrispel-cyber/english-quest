@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v13';
+var SETUP_VERSION = 'v14';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
@@ -48,7 +48,8 @@ var HEADERS = {
   Review: ['Girl', 'Items'],
   Gates: ['Timestamp', 'Girl', 'Date', 'From', 'To', 'Correct', 'Total', 'Passed', 'Tasks', 'XP'],
   Assignments: ['Girl', 'Date', 'Section', 'Level', 'Title', 'URL'],
-  Log: ['Timestamp', 'Girl', 'Date', 'DoneOn', 'Section', 'Level', 'Title', 'URL', 'Correct', 'Total', 'Percent', 'Points'],
+  // Mission and Seconds: a task played as a mission in the app (Missions.js); empty for the old link.
+  Log: ['Timestamp', 'Girl', 'Date', 'DoneOn', 'Section', 'Level', 'Title', 'URL', 'Correct', 'Total', 'Percent', 'Points', 'Mission', 'Seconds'],
   Rewards: ['Points', 'Reward', 'Group'],
   Settings: ['Key', 'Value'],
   Groups: ['Id', 'Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email', 'Friends'],
@@ -64,7 +65,9 @@ var HEADERS = {
   Shop: ['Timestamp', 'Girl', 'Date', 'Item', 'Color', 'Price', 'Paid', 'Manners', 'Sentence', 'Words'],
   Wardrobe: ['Girl', 'Wear', 'Move', 'Updated'],
   // The Wordrobe, phase 2: the Word Saver's deck and the memory of the words items are made of (Shop.js).
-  Words: ['Girl', 'Saved', 'Memory', 'Updated']
+  Words: ['Girl', 'Saved', 'Memory', 'Updated'],
+  // Today's Mission: "Something wrong here?" reports from the kids, for the owner to check (Missions.js).
+  Flags: ['Timestamp', 'Girl', 'Date', 'Mission', 'Item', 'Note']
 };
 
 var WORDS = [
@@ -121,7 +124,8 @@ function api() {
   apiDuelCancel: apiDuelCancel, apiDuelSolo: apiDuelSolo, apiDuelPoll: apiDuelPoll, apiDuelFinish: apiDuelFinish, apiDuelHelped: apiDuelHelped,
   apiDuoInvite: apiDuoInvite, apiDuoAnswer: apiDuoAnswer, apiDuoNudge: apiDuoNudge, apiDuoEnd: apiDuoEnd,
   apiTugCheck: apiTugCheck, apiTugSave: apiTugSave,
-  apiShop: apiShop, apiShopBuy: apiShopBuy, apiWear: apiWear, apiWords: apiWords, apiSaveWord: apiSaveWord, apiDesign: apiDesign
+  apiShop: apiShop, apiShopBuy: apiShopBuy, apiWear: apiWear, apiWords: apiWords, apiSaveWord: apiSaveWord, apiDesign: apiDesign,
+  apiMissionResult: apiMissionResult, apiFlag: apiFlag
   };
 }
 
@@ -268,7 +272,8 @@ function apiSubmit(name, pin, date, correct, total, levelResult) {
 // round of her saved words (the Word Saver).
 function apiGameResult(name, pin, game, level, correct, total, missed, right, second) {
   var kid = auth(name, pin);
-  if (GAMES.indexOf(game) < 0 && game !== 'mine') throw new Error('Unknown game');
+  // 'review': a round of mission questions she missed (Missions.js), played like a game.
+  if (GAMES.indexOf(game) < 0 && game !== 'mine' && game !== 'review') throw new Error('Unknown game');
   if (pendingLevelTest(kid)) throw new Error('Take the level test first.');
   correct = Math.round(Number(correct));
   total = Math.round(Number(total));
@@ -504,7 +509,8 @@ function parentData(list, isAdmin, who) {
       }
       d.history = history;
       d.recent = logs.filter(function (l) { return l.Girl === k.Name; }).slice(-8).reverse().map(function (l) {
-        return { date: l.Date, doneOn: l.DoneOn, section: l.Section, title: l.Title, url: l.URL, correct: l.Correct, total: l.Total, percent: l.Percent, points: l.Points };
+        return { date: l.Date, doneOn: l.DoneOn, section: l.Section, title: l.Title, url: l.URL, correct: l.Correct, total: l.Total, percent: l.Percent, points: l.Points,
+          mission: l.Mission || '', seconds: Number(l.Seconds) || null };
       });
       d.email = k.Email;
       d.bought = shopBought(readTable('Shop').filter(function (r) { return r.Girl === k.Name; }), 3);
@@ -643,6 +649,7 @@ function buildDashboard(kid) {
   var logs = readTable('Log').filter(function (l) { return l.Girl === kid.Name; });
   var byDate = {};
   logs.forEach(function (l) { byDate[l.Date] = l; });
+  var missions = !pending && missionsOn(kid);
 
   var week = dates.map(function (d) {
     var wd = parseDate(d).getDay();
@@ -655,11 +662,13 @@ function buildDashboard(kid) {
       item.title = assigned[d].title;
       item.url = assigned[d].url;
       item.level = LEVEL_LABEL[assigned[d].level] || '';
+      item.mission = missionView(kid, assigned[d], missions);
     }
     var l = byDate[d];
     if (l) {
       item.done = true;
       item.correct = l.Correct; item.total = l.Total; item.percent = l.Percent; item.points = l.Points;
+      if (l.Mission) item.seconds = Number(l.Seconds) || null;
       item.late = l.DoneOn !== l.Date;
       if (sec === 'level') item.levelResult = LEVEL_LABEL[l.Level] || '';
     }
@@ -781,9 +790,9 @@ function ensureAssignments(kid, dates) {
   try {
     collect(readTableUncached('Assignments'));
     missing = missing.filter(function (d) { return !out[d]; });
-    var first = Object.keys(out).length === 0;
+    var first = Object.keys(out).length === 0, missions = missionsOn(kid);
     missing.forEach(function (d, i) {
-      var a = first && i === 0 ? LEVEL_TEST : nextExercise(sectionFor(d), kid.Level, used);
+      var a = first && i === 0 ? LEVEL_TEST : nextExercise(sectionFor(d), kid.Level, used, missions);
       used[a.url] = true;
       out[d] = a;
       appendRow('Assignments', { Girl: kid.Name, Date: d, Section: a.section, Level: a.level, Title: a.title, URL: a.url });
@@ -794,9 +803,17 @@ function ensureAssignments(kid, dates) {
   return out;
 }
 
-function nextExercise(section, level, used) {
+// missions: the kid is in the missions pilot, so a topic of her level that has a mission comes first
+// (Missions.js); without one left, the usual next topic (a link).
+function nextExercise(section, level, used, missions) {
   var byLevel = CATALOG[section];
   var start = Math.max(0, LEVELS.indexOf(level));
+  if (missions) {
+    var own = byLevel[LEVELS[start]] || [];
+    for (var k = 0; k < own.length; k++) {
+      if (!used[own[k].u] && missionOf(own[k].u)) return { section: section, level: LEVELS[start], title: own[k].t, url: own[k].u };
+    }
+  }
   for (var i = start; i < LEVELS.length; i++) {
     var list = byLevel[LEVELS[i]] || [];
     for (var j = 0; j < list.length; j++) {
@@ -913,7 +930,7 @@ function ensureSetup() {
     if (stray && ss.getSheets().length > 1) ss.deleteSheet(stray);
     clearCache();
 
-    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: 'https://yanivkrispel-cyber.github.io/english-quest/', ShopOpens: SHOP.opens, ShopEarly: '' };
+    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: 'https://yanivkrispel-cyber.github.io/english-quest/', ShopOpens: SHOP.opens, ShopEarly: '', MissionPilot: '' };
     Object.keys(defaults).forEach(function (k) { if (getSetting(k) === null) setSetting(k, defaults[k]); });
     if (getSetting('AppUrl') !== APP_URL) setSetting('AppUrl', APP_URL);
 

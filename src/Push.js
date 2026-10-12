@@ -268,6 +268,12 @@ function parentSummary() {
       if (!l) return k.Name + ' ' + (gate || '—') + games;
       return k.Name + ' ✓' + (l.Section === 'level' ? ' level test' : (l.Percent !== '' ? ' ' + l.Percent + '%' : '')) + games + (gate ? ' · ' + gate : '');
     }).join(' · ');
+    // The dinner question of today's mission (Missions.js): a question in English to ask her at home.
+    var asks = kids.map(function (k) {
+      var l = done[k.Name], m = l && l.Mission ? missionOf(l.URL) : null;
+      return m && m.q ? 'Ask ' + k.Name + ': ' + m.q : '';
+    }).filter(Boolean).slice(0, 3);
+    if (asks.length) body += '\n' + asks.join('\n');
     try { deliver(byWho[who], { title: 'Today: ' + n + '/' + kids.length + ' practiced', body: body }, 'ParentPush'); } catch (e) { console.error(e); }
   });
 }

@@ -301,6 +301,65 @@ body.splashing #app{opacity:0}
 .splash.quick.hello .me{animation-duration:.45s}
 .splash.still *{animation:none!important}
 .splash.still img{opacity:1}
+/* Today's Mission (specs/missions.md) */
+.mparts{display:flex;gap:5px}
+.mparts span{flex:1;padding-top:6px;border-top:6px solid rgba(255,255,255,.7);font-size:10.5px;font-weight:800;text-align:center;color:var(--muted);border-radius:3px;white-space:nowrap}
+.mparts span.on{border-top-color:var(--primary);color:var(--ink)}
+.mparts span.done{border-top-color:#34d399}
+.mcard{padding:18px 16px;display:flex;flex-direction:column;gap:12px}
+.mq{font-size:18px}
+.opts.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.mq .gap,.mtext .gap{display:inline-block;min-width:58px;border-bottom:3px solid var(--primary);margin:0 3px;height:1.1em;vertical-align:-3px}
+.mform{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;font-weight:800}
+.mform span{padding:6px 11px;border-radius:12px;background:rgba(99,102,241,.14);color:#3730a3}
+.mform b{color:var(--muted)}
+.mline{font-size:15px;line-height:1.5;font-weight:600}
+.mex{display:flex;gap:10px;align-items:center;font-weight:700;font-size:15px;line-height:1.45}
+.mex .icon-btn,.mword .icon-btn{width:38px;height:38px;flex:none}
+.mword .icon-btn.sm{width:30px;height:30px;font-size:14px}
+mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3px}
+.mhe{direction:rtl;text-align:right;font-family:system-ui,'Segoe UI',Arial,sans-serif;font-size:15px;line-height:1.6;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.78);margin-top:8px}
+.mhe-btn{align-self:flex-start;font-family:system-ui,'Segoe UI',Arial,sans-serif}
+.mword{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;align-items:center;padding:12px 14px;border-radius:22px}
+.mword img{width:46px;height:46px;object-fit:contain}
+.mstory{padding:16px;border-radius:24px}
+.mtext{font-size:16px;line-height:1.7;font-weight:500;text-align:left}
+.mstory .w{border-radius:5px;transition:background .15s}
+.mstory .w.on{background:#fde68a}
+.mstory .w.pick{cursor:pointer;background:rgba(99,102,241,.08);padding:0 1px}
+.mplay{gap:14px;padding:22px 16px}
+.msbar{height:8px;width:100%;border-radius:6px;background:rgba(28,30,43,.1);overflow:hidden}
+.msbar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#5eead4,#0d9488);transition:width .3s}
+.btn.talk{animation:talk 1s ease-in-out infinite}
+.opt.sel{background:linear-gradient(180deg,#e0e7ff,#c7d2fe);border-color:#a5b4fc}
+.msort{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:8px}
+.mbasket{min-height:120px;padding:10px 6px;border-radius:20px;border:2px dashed rgba(99,102,241,.35);background:rgba(255,255,255,.4);display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer}
+.mbasket b{font-size:13px;text-align:center}
+.mbasket .tok{min-height:34px;font-size:14px;padding:0 10px}
+.tok.sel{outline:3px solid var(--primary);outline-offset:1px}
+.mspell{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.mspell .slot{width:34px;height:44px;border-radius:11px;border:2px dashed rgba(99,102,241,.4);display:grid;place-items:center;font-weight:800;font-size:19px;background:rgba(255,255,255,.55);cursor:pointer}
+.mspell .slot.ok{border-style:solid;border-color:#34d399;background:#d1fae5}
+.mspell .slot.no{border-style:solid;border-color:#fb7185;background:#ffe4e6}
+.mtype{font:inherit;font-weight:800;font-size:18px;width:100%;padding:12px 14px;border-radius:16px;border:2px solid rgba(99,102,241,.45);background:#fff;color:var(--ink);text-align:center}
+.mtype:focus{outline:3px solid rgba(99,102,241,.3)}
+.mremind{border:1.5px dashed rgba(246,160,77,.7);background:rgba(255,247,237,.85)}
+.mremind b{color:#b45309}
+.mgaps .mtext{font-size:15.5px}
+.mgaps .g{display:inline-block;padding:0 7px;border-radius:9px;font-weight:800;background:rgba(28,30,43,.06)}
+.mgaps .g.now{background:rgba(99,102,241,.16);color:#4338ca;outline:1.5px dashed rgba(99,102,241,.6)}
+.mgaps .g.ok{background:rgba(52,211,153,.25);color:#047857}
+.mgaps .g.no{background:rgba(251,113,133,.22);color:#be123c}
+.mflag{background:none;border:0;color:var(--muted);font:inherit;font-size:12.5px;text-decoration:underline;cursor:pointer;padding:6px 0 0}
+.ms-stars{display:flex;justify-content:center;gap:8px}
+.ms-star{width:38px;height:38px;fill:rgba(28,30,43,.12)}
+.ms-star.on{fill:#f6c14d;stroke:#e0a21b;stroke-width:1.2;stroke-linejoin:round}
+.mmissed{margin:8px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:5px;font-size:14px;font-weight:600}
+.mscript{display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.5;margin-top:10px}
+.mscript hr{border:0;border-top:1px dashed rgba(28,30,43,.15);margin:4px 0;width:100%}
+.mdet summary{cursor:pointer}
+.mission-parts{display:flex;gap:4px;margin-top:12px}
+.mission-parts span{flex:1;padding-top:5px;border-top:5px solid rgba(255,255,255,.75);font-size:10px;font-weight:800;text-align:center;color:#3b3f55;border-radius:2px}
 .gscreen{display:flex;flex-direction:column;gap:14px;min-height:calc(100vh - 68px)}
 .gtop{display:flex;align-items:center;gap:12px}
 .gtop h2{flex:1;font-size:20px}
@@ -2608,6 +2667,7 @@ function gamesPanel(d){
       ${k === rec ? '<span class="chip purple">Warm-up</span>' : ''}
       <span class="tile ${GAME_INFO[k].tile}">${icon(GAME_INFO[k].icon, 'duotone')}</span>
       <b>${GAME_INFO[k].name}</b><span class="sub">${GAME_INFO[k].desc}</span></button>`).join('')}</div>
+    ${msDue(d).length ? `<button class="soft mywordsrow mt-s" id="msreview"><span class="tile sm t-target">${icon('arrows-clockwise', 'duotone')}</span><b>Mission review</b><span class="sub">${Math.min(5, msDue(d).length)} questions</span>${icon('caret-right')}</button>` : ''}
     ${mine ? `<button class="soft mywordsrow mt-s" id="mywords"><span class="tile sm t-vocab">${icon('bookmarks-simple', 'duotone')}</span><b>My words</b><span class="sub">${(g.saved || []).length} saved</span>${icon('caret-right')}</button>` : ''}
   </div>`;
 }
@@ -3002,8 +3062,11 @@ async function flushPending(){
   if (!q.length) return;
   store.del(pendKey());
   for (let i = 0; i < q.length; i++) {
-    try { setDash(await call('apiGameResult', session.name, session.pin, q[i].game, q[i].level, q[i].correct, q[i].total, q[i].missed, q[i].right, q[i].second || 0)); }
-    catch(e){ store.set(pendKey(), q.slice(i).concat(store.get(pendKey()) || [])); return; }
+    try {
+      if (q[i].fn === 'mission') setDash(await call('apiMissionResult', session.name, session.pin, ...q[i].args));
+      else setDash(await call('apiGameResult', session.name, session.pin, q[i].game, q[i].level, q[i].correct, q[i].total, q[i].missed, q[i].right, q[i].second || 0));
+    }
+    catch(e){ if (e.app) continue; store.set(pendKey(), q.slice(i).concat(store.get(pendKey()) || [])); return; }
   }
   if (!G && document.getElementById('petimg')) renderDash();
 }
@@ -3034,6 +3097,569 @@ function sayIt(slow){
   } catch(e){}
 }
 function speechStop(){ try { speechSynthesis.cancel(); } catch(e){} }
+
+// ---------- Today's Mission (specs/missions.md) ----------
+// The daily task played in the app, in five parts (Hook, Learn, Practice, Use it, Finish), with the score measured here.
+// Content: docs/missions/<a1|a2|b1|bp|b2|c1>.js sets window.EQ_MISSIONS[file] = [missions]; recordings in docs/missions/audio.
+const MISSIONS_V = 1, MS_PARTS = ['Hook', 'Learn', 'Practice', 'Use it', 'Finish'];
+const MS_TYPES = { grammar: ['Grammar Lab', 7], vocabulary: ['Word Pack', 7], listening: ['Radio Show', 8], reading: ['Story Cards', 8],
+  'use-of-english': ['Newsroom', 7], writing: ['Writer\'s Desk', 9] };
+let MS = null, msTick = null, msAudio = null;
+const msLoads = {};
+const msFile = id => String(id || '').slice(0, 2);
+function loadMissions(file){
+  window.EQ_MISSIONS = window.EQ_MISSIONS || {};
+  if (window.EQ_MISSIONS[file]) return Promise.resolve(window.EQ_MISSIONS[file]);
+  return msLoads[file] = msLoads[file] || new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = ASSETS + 'missions/' + file + '.js?v=' + MISSIONS_V;
+    s.onload = () => window.EQ_MISSIONS[file] ? res(window.EQ_MISSIONS[file]) : rej(new Error('This mission is not ready yet.'));
+    s.onerror = () => { delete msLoads[file]; s.remove(); rej(new Error('Could not load the mission. Check the connection and try again.')); };
+    document.head.appendChild(s);
+  });
+}
+
+// The questions of a mission in playing order, as [item, gap] pairs: a gaps item has one question per gap.
+// tools/missions-index.js runs this same function to count the questions the server expects.
+function msQuestions(m){
+  const out = [], add = it => { if (it.k === 'gaps') it.gaps.forEach((g, j) => out.push([it, j])); else out.push([it, -1]); };
+  ((m.show && m.show.parts) || []).forEach(p => (p.items || []).forEach(add));
+  ((m.story && m.story.chunks) || []).forEach(c => (c.items || []).forEach(add));
+  (m.steps || []).forEach(s => (s.items || []).forEach(add));
+  (m.use || []).forEach(add);
+  return out;
+}
+function msCount(m){ return msQuestions(m).length; }
+
+// The screens, one after the other: hook, learn, each part of an episode with its questions, the story's questions
+// (its card on top), the steps, Use it and the finish. q0 = the number of questions before this one.
+function msScreens(m){
+  const S = [];
+  let q = 0;
+  const addItem = (it, part, ctx) => { S.push({ t: 'q', part, it, q0: q, ctx }); q += it.k === 'gaps' ? it.gaps.length : 1; };
+  if (m.hook) S.push({ t: 'hook', part: 0 });
+  if (m.learn) S.push({ t: 'learn', part: 1 });
+  if (m.show) m.show.parts.forEach((p, i) => { S.push({ t: 'play', part: 2, p: i }); (p.items || []).forEach(it => addItem(it, 2, { play: i, step: 'Part ' + (i + 1) })); });
+  if (m.story) m.story.chunks.forEach((c, i) => (c.items || []).forEach(it => addItem(it, 2, { chunk: i, step: 'Card ' + (i + 1) + ' of ' + m.story.chunks.length })));
+  (m.steps || []).forEach(s => (s.items || []).forEach(it => addItem(it, 2, { step: s.name })));
+  (m.use || []).forEach(it => addItem(it, 3, { step: 'Use it' }));
+  S.push({ t: 'finish', part: 4 });
+  return S;
+}
+
+const msKey = () => 'eq_ms_' + (session ? session.name : '');
+const msQid = n => 'x:' + MS.id + ':' + (n + 1);
+// The real question id of a screen (a review screen keeps the id it has in its own mission).
+const msQidOf = sc => MS.review ? 'x:' + sc.id + ':' + (sc.qn + 1) : msQid(sc.q0);
+const msNorm = s => String(s || '').toLowerCase().replace(/[\u2018\u2019]/g, '\'').replace(/[.!?,;:"]+/g, ' ').replace(/\s+/g, ' ').trim();
+const msSaved = w => { const p = store.get(msKey()); return p && w && w.mission && p.id === w.mission.id && p.date === w.date ? p : null; };
+const msMinutes = w => (MS_TYPES[w.section] || MS_TYPES.grammar)[1];
+
+async function startMission(date, practice){
+  if (!dash) return;
+  const w = dash.week.find(x => x.date === date);
+  if (!w || !w.mission) return;
+  if (w.done && !practice) return;
+  app.innerHTML = '<div class="spinner"></div>';
+  let list;
+  try { list = await loadMissions(msFile(w.mission.id)); }
+  catch(e){ toast(e.message, true); return renderDash(); }
+  const m = list.find(x => x.id === w.mission.id);
+  if (!m || msCount(m) !== w.mission.n) { toast('This mission is being updated. Here is the exercise on the website for today.', true); renderDash(); return openSheet(w); }
+  const saved = practice ? null : msSaved(w);
+  MS = { m, w, id: m.id, date, S: msScreens(m), si: saved ? saved.si : 0, res: saved ? saved.res : [], missed: saved ? saved.missed : [],
+    right: saved ? saved.right : [], active: saved ? saved.active : 0, last: Date.now(), sub: {}, he: false, practice: !!practice,
+    seed: hashStr(session.name + ':' + m.id + ':' + date), guess: saved ? saved.guess : null };
+  if (saved) toast('Welcome back! Your mission goes on from where you stopped.');
+  msClock();
+  msRender();
+}
+
+// Time that counts: the gaps between taps, each at most two minutes (a phone left on the table does not count).
+function msTouch(){
+  if (!MS) return;
+  const now = Date.now();
+  MS.active += Math.min(now - MS.last, 120000);
+  MS.last = now;
+}
+function msClock(){
+  clearInterval(msTick);
+  msTick = setInterval(() => {
+    const el = document.getElementById('msclock');
+    if (!MS || !el) { if (!MS) clearInterval(msTick); return; }
+    const s = Math.floor((MS.active + Math.min(Date.now() - MS.last, 120000)) / 1000);
+    el.innerHTML = icon('timer') + ' ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  }, 1000);
+}
+function msKeep(){
+  if (!MS || MS.practice || MS.review) return;
+  store.set(msKey(), { id: MS.id, date: MS.date, si: MS.si, res: MS.res, missed: MS.missed, right: MS.right, active: MS.active, guess: MS.guess });
+}
+function msStopAudio(){
+  if (msAudio) { try { msAudio.pause(); } catch(e){} msAudio = null; }
+  speechStop();
+}
+function msLeave(){
+  msTouch(); msKeep(); msStopAudio();
+  clearInterval(msTick);
+  MS = null;
+}
+
+function msRender(){
+  if (!MS) return;
+  msStopAudio();
+  if (MS.review && MS.S[MS.si].t !== 'finish') { MS.m = MS.S[MS.si].m; MS.id = MS.S[MS.si].id; }
+  const sc = MS.S[MS.si], m = MS.m, info = MS_TYPES[m.type] || MS_TYPES.grammar;
+  const nq = msCount(m), qNow = sc.t === 'q' ? Math.min(nq, sc.q0 + 1) : null;
+  const sub = MS.review ? 'Mission review · ' + (MS.si + 1) + ' of ' + (MS.S.length - 1)
+    : info[0] + ' · ' + esc(MS.w.level || dash.girl.levelLabel) + (qNow ? ' · question ' + qNow + ' of ' + nq : '');
+  const parts = MS.review ? '' : `<div class="mparts">${MS_PARTS.map((p, i) => `<span class="${i < sc.part ? 'done' : i === sc.part ? 'on' : ''}">${p}</span>`).join('')}</div>`;
+  let body = '', line = '', mood = 'thinking';
+  if (sc.t === 'hook') [body, line, mood] = msHook();
+  else if (sc.t === 'learn') [body, line, mood] = msLearn();
+  else if (sc.t === 'play') [body, line, mood] = msPlay(sc);
+  else if (sc.t === 'q') [body, line, mood] = msItem(sc);
+  else return msFinish();
+  app.innerHTML = `<div class="gscreen mscreen" id="ms">
+    <div class="gtop"><button class="btn btn-glass icon-btn" id="msquit" title="Stop">${icon('x')}</button>
+      <div style="flex:1;min-width:0"><h2>${esc(m.title)}</h2><div class="sub" style="font-size:12px;margin:0">${sub}</div></div>
+      <span class="chip" id="msclock">${icon('timer')} …</span></div>
+    ${parts}
+    ${body}
+    <div class="react">${dash.pet ? petArt(dash.pet, mood, 'gpet', { id: 'gpet' }) : ''}<div class="bubble" id="fb">${line}</div></div>
+    <div id="explain"></div><div style="flex:1"></div><div id="gnext"></div>
+  </div>`;
+  window.scrollTo(0, 0);
+  document.getElementById('ms').onclick = msClick;
+  const ti = document.getElementById('mstype');
+  if (ti) ti.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); msCheckType(); } };
+  if (sc.t === 'q' && sc.it.k === 'hear' && !MS.sub.done) setTimeout(() => sayWord(sc.it.say), 350);
+}
+
+function msNextBtn(label){
+  document.getElementById('gnext').innerHTML = `<button class="btn btn-primary btn-block" id="msnext">${label || 'Next'} ${icon('arrow-right')}</button>`;
+}
+
+function msHook(){
+  const h = MS.m.hook, picked = MS.guess != null;
+  const body = `<div class="glass qcard"><div class="qprompt">Before we start</div><div class="qbig" style="font-size:18px">${esc(h.q)}</div></div>
+    <div class="opts one">${h.o.map((o, i) => `<button class="opt${MS.guess === i ? ' sel' : ''}" data-guess="${i}"${picked ? ' disabled' : ''}>${esc(o)}</button>`).join('')}</div>`;
+  if (picked) setTimeout(() => msNextBtn('Continue'), 0);
+  return [body, picked ? 'Good guess! You will find out at the end.' : 'Take a guess. There is no wrong answer here.', picked ? 'happy' : 'thinking'];
+}
+
+// A Hebrew tip: English inside it is kept left to right (Do you live here? stays in one piece).
+function msHe(s){
+  return String(s || '').split(/([A-Za-z][A-Za-z0-9'’-]*(?:[ .,!?…/+=:–-]+[A-Za-z0-9'’-]+)*[.!?…]*)/)
+    .map((p, i) => i % 2 ? '<bdi dir="ltr">' + esc(p) + '</bdi>' : esc(p)).join('');
+}
+function msMark(s){
+  return esc(s).replace(/\*(.+?)\*/g, '<mark>$1</mark>');
+}
+function msLearn(){
+  const L = MS.m.learn;
+  let body = '';
+  if (L.kind === 'rule') {
+    body = `<div class="glass mcard"><div class="qprompt" style="text-align:center">${esc(L.title || 'The rule')}</div>
+      ${L.form ? `<div class="mform">${L.form.map((f, i) => (i ? '<b>+</b>' : '') + `<span>${esc(f)}</span>`).join('')}</div>` : ''}
+      ${(L.lines || []).map(x => `<div class="mline">${msMark(x)}</div>`).join('')}
+      ${(L.ex || []).map(x => `<div class="mex"><button class="btn btn-glass icon-btn tsay" data-say="${esc(x.replace(/\*/g, ''))}" title="Listen">${icon('speaker-high')}</button><span>${msMark(x)}</span></div>`).join('')}
+      ${L.he ? `<button class="btn btn-glass btn-sm mhe-btn" data-he="1">${MS.he ? 'Hide' : 'בעברית'}</button>${MS.he ? `<div class="mhe" dir="rtl" lang="he">${msHe(L.he)}</div>` : ''}` : ''}
+    </div>`;
+  } else if (L.kind === 'words') {
+    body = `<div class="qprompt" style="text-align:center">${esc(L.title || 'Your new words')}</div><div class="stack" style="gap:8px">${L.words.map(x => `<div class="glass mword">
+      ${x.pic ? `<img src="${picSrc(x.pic)}" alt="">` : `<button class="btn btn-glass icon-btn tsay" data-say="${esc(x.w)}" title="Listen">${icon('speaker-high')}</button>`}
+      <div style="min-width:0"><div class="row-flex" style="gap:8px"><b style="font-size:17px">${esc(x.w)}</b>${x.pic ? `<button class="btn btn-glass icon-btn tsay sm" data-say="${esc(x.w)}" title="Listen">${icon('speaker-high')}</button>` : ''}</div>
+      <div class="sub" style="margin:2px 0 0;font-size:14px">${esc(x.d)}</div>${x.ex ? `<div style="font-size:13.5px;font-style:italic;margin-top:3px">${msMark(x.ex)}</div>` : ''}</div></div>`).join('')}</div>`;
+  } else {
+    const p = L.predict;
+    body = `<div class="glass mcard"><div class="qprompt" style="text-align:center">${esc(L.title || (L.kind === 'keys' ? 'Key words before you listen' : 'Before you read'))}</div>
+      ${L.line ? `<div class="mline" style="text-align:center">${msMark(L.line)}</div>` : ''}
+      ${(L.words || []).map(x => `<div class="mex"><button class="btn btn-glass icon-btn tsay" data-say="${esc(x.w)}" title="Listen">${icon('speaker-high')}</button><span><b>${esc(x.w)}</b> · ${esc(x.d)}</span></div>`).join('')}
+    </div>
+    ${p ? `<div class="glass qcard"><div class="qprompt">Guess first</div><div class="qbig" style="font-size:17px">${esc(p.q)}</div></div>
+      <div class="opts one">${p.o.map((o, i) => `<button class="opt${MS.sub.pred === i ? ' sel' : ''}" data-pred="${i}"${MS.sub.pred != null ? ' disabled' : ''}>${esc(o)}</button>`).join('')}</div>` : ''}`;
+  }
+  const ready = !L.predict || MS.sub.pred != null;
+  if (ready) setTimeout(() => msNextBtn(L.kind === 'rule' ? 'Got it' : L.kind === 'words' ? 'I\'m ready' : 'Let\'s go'), 0);
+  const lines = { rule: 'Read it once. You can tap the speaker to hear it.', words: 'Tap a word to hear it. Then let\'s play!', keys: 'These words are in the show. Listen to them first.', intro: 'What do you think the story is about?' };
+  return [body, L.predict && MS.sub.pred != null ? 'Let\'s see if you are right!' : lines[L.kind] || 'Ready?', 'happy'];
+}
+
+// A part of the Radio Show: the recording (or the phone's voice when it is missing), then its questions.
+function msPlay(sc){
+  const part = MS.m.show.parts[sc.p], heard = !!(MS.sub.heard && MS.sub.heard[sc.p]);
+  const body = `<div class="glass qcard mplay">
+      <div class="qprompt">Part ${sc.p + 1} of ${MS.m.show.parts.length}${part.title ? ' · ' + esc(part.title) : ''}</div>
+      <button class="speak" id="msplay" aria-label="Play">${icon('play')}</button>
+      <div class="msbar"><i id="msbar" style="width:0%"></i></div>
+      <div class="row-flex" style="gap:8px;justify-content:center"><button class="btn btn-glass btn-sm" data-slow="1">${icon('gauge')} ${MS.slow ? 'Normal speed' : 'Slow'}</button></div>
+      <div class="sub" style="font-size:13px">${esc(MS.m.show.cast || '')}</div>
+    </div>`;
+  if (heard) setTimeout(() => msNextBtn('Questions'), 0);
+  return [body, heard ? 'Ready for the questions?' : 'Tap play and listen. You can listen again later.', 'thinking'];
+}
+function msAudioSrc(p){ return ASSETS + 'missions/audio/' + MS.id + '-' + (p + 1) + '.mp3?v=' + MISSIONS_V; }
+function msListen(p, onEnd){
+  msStopAudio();
+  const btn = document.getElementById('msplay'), bar = document.getElementById('msbar');
+  const done = () => { if (btn) btn.classList.remove('talk'); if (bar) bar.style.width = '100%'; if (onEnd) onEnd(); };
+  if (btn) btn.classList.add('talk');
+  const a = new Audio(msAudioSrc(p));
+  msAudio = a;
+  a.playbackRate = MS.slow ? .8 : 1;
+  a.ontimeupdate = () => { if (bar && a.duration) bar.style.width = Math.round(a.currentTime / a.duration * 100) + '%'; };
+  a.onended = done;
+  a.onerror = () => { if (msAudio === a) { msAudio = null; msSpeakLines(MS.m.show.parts[p].lines, done); } };
+  a.play().catch(() => { if (msAudio === a && a.error) { msAudio = null; msSpeakLines(MS.m.show.parts[p].lines, done); } });
+}
+// No recording: the phone reads the lines, a different voice for each speaker when it has them.
+function msSpeakLines(lines, onEnd){
+  if (!('speechSynthesis' in window)) { toast('No sound on this phone. Read it instead.', true); msShowLines(lines); if (onEnd) onEnd(); return; }
+  const vs = (speechSynthesis.getVoices() || []).filter(v => /^en/i.test(v.lang));
+  const cast = MS.m.show.voices ? Object.keys(MS.m.show.voices) : [];
+  let i = 0;
+  const next = () => {
+    if (!MS || i >= lines.length) { if (onEnd && MS) onEnd(); return; }
+    const [who, text] = lines[i++], u = new SpeechSynthesisUtterance(text), k = Math.max(0, cast.indexOf(who));
+    const v = vs.length ? vs[k % vs.length] : voice;
+    if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'en-GB';
+    u.rate = MS.slow ? .75 : .95;
+    u.onend = u.onerror = next;
+    speechSynthesis.speak(u);
+  };
+  speechStop();
+  next();
+}
+function msShowLines(lines){
+  const ex = document.getElementById('explain');
+  if (ex) ex.innerHTML = `<div class="answer-box mscript">${lines.map(([w, t]) => `<div><b>${esc((MS.m.show.names || {})[w] || w)}:</b> ${esc(t)}</div>`).join('')}</div>`;
+}
+
+// One question screen. Its context: the part of the show (a Listen again button) or the story card it belongs to.
+function msItem(sc){
+  const it = sc.it, k = it.k, sub = MS.sub;
+  const prevWrong = sc.q0 >= 2 && MS.res[sc.q0 - 1] === false && MS.res[sc.q0 - 2] === false;
+  let top = '';
+  const playPart = sc.ctx.play != null ? sc.ctx.play : it.clip;
+  if (playPart != null && MS.m.show) top = `<button class="btn btn-glass btn-sm" data-again="${playPart}" style="align-self:center">${icon('speaker-high')} Listen again</button>`;
+  if (sc.ctx.chunk != null) top = msChunk(sc.ctx.chunk, k === 'find' && !sub.done);
+  const remind = prevWrong && !sub.done ? msRemind() : '';
+  const step = `<div class="qprompt" style="text-align:center">${esc(sc.ctx.step || '')}</div>`;
+  let body = '';
+  const shuffled = (arr, salt) => shuffle(arr.map((x, i) => i), rng32((MS.seed ^ hashStr(salt + ':' + sc.q0)) >>> 0));
+  if (k === 'mc' || k === 'hear' || k === 'tf') {
+    const opts = k === 'tf' ? ['Right', 'Wrong'] : it.o, order = k === 'tf' ? [0, 1] : (it.keep ? opts.map((x, i) => i) : shuffled(opts, 'o'));
+    const right = k === 'tf' ? (it.a ? 0 : 1) : it.a;
+    const q = k === 'hear' ? `<div class="speak-row"><button class="speak" data-say="${esc(it.say)}" aria-label="Listen">${icon('speaker-high')}</button></div><div class="qbig" style="font-size:17px">${esc(it.q || 'Which one do you hear?')}</div>`
+      : `${it.pic ? `<img class="qpic" src="${picSrc(it.pic)}" alt="">` : ''}<div class="qbig mq">${msGap(it.q)}</div>${it.say ? `<button class="btn btn-glass btn-sm" data-say="${esc(it.say)}">${icon('speaker-high')} Listen</button>` : ''}`;
+    body = `<div class="glass qcard">${k === 'tf' ? '<div class="qprompt">Is this right?</div>' : ''}${q}</div>
+      <div class="opts${msOptsClass(opts)}">${order.map(i => {
+        const cls = sub.done ? (i === right ? ' ok' : i === sub.pick ? ' no' : '') : '';
+        return `<button class="opt${cls}" data-opt="${i}"${sub.done ? ' disabled' : ''}>${esc(opts[i])}</button>`;
+      }).join('')}</div>`;
+    MS.sub.right = right;
+  } else if (k === 'type') {
+    body = `<div class="glass qcard"><div class="qprompt">Type the missing word${/\s/.test((it.a || [''])[0]) ? 's' : ''}</div><div class="qbig mq">${msGap(it.q)}</div>
+      ${it.hint ? `<div class="sub" style="margin:0">${esc(it.hint)}</div>` : ''}
+      <input class="mtype" id="mstype" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer"${sub.done ? ` disabled value="${esc(sub.typed || '')}"` : ''}></div>
+      ${sub.done ? '' : `<button class="btn btn-primary btn-block" data-check="type">Check ${icon('check')}</button>`}`;
+  } else if (k === 'build') {
+    const words = it.s.split(' '), order = sub.order || (sub.order = (() => { let o = shuffled(words, 'b'); if (o.every((v, i) => words[v] === words[i])) o = o.reverse(); return o; })());
+    const built = sub.built || (sub.built = []);
+    body = `<div class="qprompt" style="text-align:center">${esc(it.q || 'Tap the words in the right order')}</div>
+      <div class="slots" id="slots">${built.map(x => `<button class="tok placed" data-unbuild="${x}"${sub.done ? ' disabled' : ''}>${esc(words[x])}</button>`).join('')}</div>
+      <div class="bank">${order.map(x => `<button class="tok${built.indexOf(x) >= 0 ? ' used' : ''}" data-build="${x}"${sub.done ? ' disabled' : ''}>${esc(words[x])}</button>`).join('')}</div>
+      ${sub.done ? '' : `<button class="btn btn-primary btn-block" data-check="build"${built.length === words.length ? '' : ' disabled'}>Check ${icon('check')}</button>`}`;
+  } else if (k === 'spot' || k === 'teach') {
+    const raw = it.s.split(' '), wrong = raw.findIndex(t => t.indexOf('*') >= 0), toks = raw.map(t => t.replace(/\*/g, ''));
+    MS.sub.wrong = wrong;
+    body = `<div class="glass qcard"><div class="qprompt">${k === 'teach' ? esc(dash.pet ? dash.pet.name : 'Your friend') + ' made a mistake. Tap the wrong word.' : 'One word is wrong. Tap it!'}</div>
+      <div class="sentence">${toks.map((t, i) => {
+        let cls = '', label = esc(t);
+        if (sub.done && i === wrong) { cls = ' fixed'; label = '<s>' + esc(t) + '</s>' + esc(raw[wrong].replace(/\*(.*?)\*/, it.fix || '')); }
+        else if (sub.done && i === sub.pick) cls = ' wrongpick';
+        return `<button class="tok${cls}" data-spot="${i}"${sub.done ? ' disabled' : ''}>${label}</button>`;
+      }).join('')}</div></div>`;
+  } else if (k === 'sort') {
+    const place = sub.place || (sub.place = {}), order = sub.order || (sub.order = shuffled(it.w, 's'));
+    const chip = i => { const ok = sub.done ? place[i] === it.w[i][1] : null; return `<button class="tok${sub.sel === i ? ' sel' : ''}${ok === true ? ' fixed' : ok === false ? ' wrongpick' : ''}" data-sortw="${i}"${sub.done ? ' disabled' : ''}>${esc(it.w[i][0])}</button>`; };
+    body = `<div class="glass qcard"><div class="qprompt">${esc(it.q || 'Put each word in its group')}</div><div class="sub" style="margin:0;font-size:13px">Tap a word, then tap its group.</div></div>
+      <div class="msort" style="--n:${it.g.length}">${it.g.map((g, gi) => `<div class="mbasket" data-basket="${gi}"><b>${esc(g)}</b>${order.filter(i => place[i] === gi).map(chip).join('')}</div>`).join('')}</div>
+      <div class="bank">${order.filter(i => place[i] == null).map(chip).join('')}</div>
+      ${sub.done ? '' : `<button class="btn btn-primary btn-block" data-check="sort"${Object.keys(place).length === it.w.length ? '' : ' disabled'}>Check ${icon('check')}</button>`}`;
+  } else if (k === 'spell') {
+    const letters = it.w.split(''), order = sub.order || (sub.order = shuffled(letters, 'l')), got = sub.got || (sub.got = []);
+    body = `<div class="glass qcard"><div class="qprompt">Spell the word</div><div class="qbig" style="font-size:17px">${esc(it.clue)}</div>
+      <button class="btn btn-glass btn-sm" data-say="${esc(it.w)}">${icon('speaker-high')} Listen</button></div>
+      <div class="mspell">${letters.map((x, i) => `<span class="slot${sub.done ? (sub.ok ? ' ok' : ' no') : ''}" data-unspell="${i}">${got[i] != null ? esc(letters[got[i]]) : ''}</span>`).join('')}</div>
+      <div class="bank">${order.map(i => `<button class="tok${got.indexOf(i) >= 0 ? ' used' : ''}" data-spell="${i}"${sub.done ? ' disabled' : ''}>${esc(letters[i])}</button>`).join('')}</div>
+      ${sub.done ? '' : `<button class="btn btn-primary btn-block" data-check="spell"${got.length === letters.length ? '' : ' disabled'}>Check ${icon('check')}</button>`}`;
+  } else if (k === 'find') {
+    body = `<div class="glass qcard"><div class="qprompt">Word detective</div><div class="qbig" style="font-size:17px">${esc(it.q)}</div><div class="sub" style="margin:0;font-size:13px">Tap the word in the text.</div></div>`;
+  } else if (k === 'gaps') {
+    const g = sub.g || 0, gap = it.gaps[Math.min(g, it.gaps.length - 1)], order = shuffled(gap.o, 'g' + g);
+    let n = 0;
+    const text = esc(it.t).replace(/\[(\d+)\]/g, () => {
+      const j = n++, r = (sub.gres || [])[j];
+      if (r != null) return `<span class="g ${r ? 'ok' : 'no'}">${esc(it.gaps[j].o[it.gaps[j].a])}</span>`;
+      return j === g && !sub.done ? `<span class="g now">&nbsp;${j + 1}&nbsp;</span>` : `<span class="g">&nbsp;${j + 1}&nbsp;</span>`;
+    });
+    body = `<div class="glass mcard mgaps">${it.title ? `<div class="qprompt">${esc(it.title)}</div>` : ''}<div class="mtext">${text}</div></div>
+      ${sub.done ? '' : `<div class="opts${msOptsClass(gap.o)}">${order.map(i => `<button class="opt" data-gap="${i}">${esc(gap.o[i])}</button>`).join('')}</div>`}`;
+  }
+  const hints = { mc: 'Hmm… which one is it?', tf: 'Read it carefully.', type: 'You can do it!', build: 'Let\'s build it together!', spot: 'Can you find it?',
+    teach: dash.pet && it.s ? 'I said: "' + esc(it.s.replace(/\*/g, '')) + '" Is that right?' : 'Can you find the mistake?', sort: 'Where does each word go?', spell: 'Listen and spell it.',
+    hear: 'Listen carefully!', find: 'Look in the text!', gaps: 'Fill the gaps one by one.' };
+  return [top + remind + step + body, sub.done ? (sub.line || '') : (hints[k] || 'Your turn!'), sub.done ? (sub.ok ? 'celebrate' : 'oops') : 'thinking'];
+}
+// Long options one under the other; three short ones in a row.
+const msOptsClass = list => list.some(o => String(o).length > 14) ? ' one' : list.length === 3 && list.every(o => String(o).length <= 11) ? ' three' : list.length === 3 ? ' one' : '';
+function msGap(q){ return esc(q || '').replace(/_{3,}/g, '<span class="gap"></span>'); }
+function msChunk(c, pick){
+  const text = MS.m.story.chunks[c].text;
+  const words = text.split(/(\s+)/).map(x => /\s+/.test(x) ? x : `<span class="w${pick ? ' pick' : ''}" data-w="${esc(x)}">${esc(x)}</span>`).join('');
+  return `<div class="glass mstory" id="mstory"><div class="row-flex between" style="margin-bottom:6px"><span class="qprompt">${esc(MS.m.story.title)}</span>
+    <button class="btn btn-glass btn-sm" data-read="${c}">${icon('speaker-high')} Read to me</button></div><div class="mtext">${words}</div></div>`;
+}
+function msRemind(){
+  const L = MS.m.learn || {};
+  const x = L.kind === 'rule' ? msMark((L.lines || [])[0] || '') + (L.ex && L.ex[0] ? '<br>' + msMark(L.ex[0]) : '')
+    : L.kind === 'words' ? 'Tap a word in the Learn card to hear it again, or think about the example sentences.'
+    : MS.m.show ? 'Tap Listen again before you answer.' : 'Look back at the text before you answer.';
+  return `<div class="answer-box mremind"><b>Remember:</b> ${x}</div>`;
+}
+
+// Read to me: the phone reads the story card; the word it is saying lights up where the phone tells us.
+function msReadAloud(c){
+  if (!('speechSynthesis' in window)) return toast('No sound on this device');
+  const box = document.getElementById('mstory');
+  if (!box) return;
+  const spans = [...box.querySelectorAll('.w')], text = spans.map(s => s.dataset.w).join(' ');
+  const starts = [];
+  let pos = 0;
+  spans.forEach(s => { starts.push(pos); pos += s.dataset.w.length + 1; });
+  speechStop();
+  const u = new SpeechSynthesisUtterance(text);
+  if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = 'en-GB';
+  u.rate = .9;
+  u.onboundary = e => {
+    if (e.name && e.name !== 'word') return;
+    let k = starts.length - 1;
+    while (k > 0 && starts[k] > e.charIndex) k--;
+    spans.forEach((s, i) => s.classList.toggle('on', i === k));
+  };
+  u.onend = () => spans.forEach(s => s.classList.remove('on'));
+  speechSynthesis.speak(u);
+}
+
+function msClick(e){
+  const t = e.target.closest('button, [data-basket], [data-unspell], .w.pick');
+  if (!t || !MS) return;
+  const sc = MS.S[MS.si], sub = MS.sub, d = t.dataset;
+  if (t.id === 'msquit') {
+    if (!(MS.quitAt > Date.now() - 3000)) { MS.quitAt = Date.now(); return toast(MS.review || MS.practice ? 'Tap again to stop.' : 'Tap again to stop. Your mission waits for you here.'); }
+    msLeave(); return renderDash();
+  }
+  if (t.id === 'msnext') { msTouch(); MS.si++; MS.sub = {}; msKeep(); return msRender(); }
+  if (d.say != null) return sayWord(d.say);
+  if (d.he) { MS.he = !MS.he; return msRender(); }
+  if (d.read != null) return msReadAloud(Number(d.read));
+  if (d.again != null) { const b = t; b.classList.add('talk'); return msListen(Number(d.again), () => b.classList.remove('talk')); }
+  if (d.slow) { MS.slow = !MS.slow; return msRender(); }
+  if (t.id === 'msplay') {
+    msTouch();
+    return msListen(sc.p, () => { if (!MS) return; (MS.sub.heard = MS.sub.heard || {})[sc.p] = true; const fb = document.getElementById('fb'); if (fb) fb.textContent = 'Ready for the questions?'; msNextBtn('Questions'); });
+  }
+  if (d.flag) { call('apiFlag', session.name, session.pin, MS.id, d.flag, '').catch(() => {}); t.disabled = true; t.textContent = 'Thanks! We will check it.'; return; }
+  if (d.ehe) { const box = document.getElementById('mehe'); if (box) box.hidden = !box.hidden; return; }
+  if (sc.t === 'hook' && d.guess != null && MS.guess == null) { msTouch(); MS.guess = Number(d.guess); msKeep(); return msRender(); }
+  if (sc.t === 'learn' && d.pred != null && MS.sub.pred == null) { MS.sub.pred = Number(d.pred); return msRender(); }
+  if (sc.t !== 'q' || sub.done) return;
+  const it = sc.it;
+  if (d.opt != null) return msDone(Number(d.opt) === sub.right, { pick: Number(d.opt) });
+  if (d.build != null) { sub.built.push(Number(d.build)); return msRender(); }
+  if (d.unbuild != null) { sub.built.splice(sub.built.indexOf(Number(d.unbuild)), 1); return msRender(); }
+  if (d.check === 'build') { const words = it.s.split(' '); return msDone(sub.built.map(x => words[x]).join(' ') === it.s, {}); }
+  if (d.check === 'type') return msCheckType();
+  if (d.spot != null) return msDone(Number(d.spot) === sub.wrong, { pick: Number(d.spot) });
+  if (d.sortw != null) { const i = Number(d.sortw); if (sub.place[i] != null) { delete sub.place[i]; sub.sel = null; } else sub.sel = sub.sel === i ? null : i; return msRender(); }
+  if (d.basket != null && sub.sel != null) { sub.place[sub.sel] = Number(d.basket); sub.sel = null; return msRender(); }
+  if (d.check === 'sort') return msDone(it.w.every((w, i) => sub.place[i] === w[1]), {});
+  if (d.spell != null) { const i = Number(d.spell); if (sub.got.indexOf(i) < 0) sub.got.push(i); return msRender(); }
+  if (d.unspell != null) { sub.got.splice(Number(d.unspell), 1); return msRender(); }
+  if (d.check === 'spell') { const ok = sub.got.map(i => it.w[i]).join('') === it.w; sub.ok = ok; return msDone(ok, {}); }
+  if (t.classList.contains('pick') && it.k === 'find') return msDone(msNorm(t.dataset.w) === msNorm(it.a), { picked: t.dataset.w });
+  if (d.gap != null && it.k === 'gaps') {
+    const g = sub.g || 0, ok = Number(d.gap) === it.gaps[g].a;
+    (sub.gres = sub.gres || [])[g] = ok;
+    msRecord(sc.q0 + g, ok);
+    if (g + 1 < it.gaps.length) { sub.g = g + 1; msRender(); return msGapFeedback(ok, it.gaps[g]); }
+    return msDone(null, {});
+  }
+}
+function msCheckType(){
+  const sc = MS && MS.S[MS.si];
+  if (!sc || sc.t !== 'q' || MS.sub.done) return;
+  const el = document.getElementById('mstype'), v = el ? el.value : '';
+  if (!msNorm(v)) { if (el) el.focus(); return; }
+  return msDone(sc.it.a.some(a => msNorm(a) === msNorm(v)), { typed: v });
+}
+function msRecord(n, ok){
+  MS.res[n] = ok;
+  const id = msQid(n);
+  MS.missed = MS.missed.filter(x => x !== id); MS.right = MS.right.filter(x => x !== id);
+  (ok ? MS.right : MS.missed).push(id);
+  msTouch(); msKeep();
+}
+function msGapFeedback(ok, gap){
+  const fb = document.getElementById('fb');
+  if (fb) { fb.className = 'bubble ' + (ok ? 'ok' : 'no'); fb.textContent = ok ? pick(['Yes!', 'Right!', 'Good!']) : 'The answer is "' + gap.o[gap.a] + '".'; }
+  petReact(ok ? 'celebrate' : 'oops');
+  if (!ok && gap.why) document.getElementById('explain').innerHTML = `<div class="answer-box">${esc(gap.why)}</div>`;
+}
+// An answered question: the score, the pet, the explanation (Hebrew on request) and Next.
+function msDone(ok, extra){
+  const sc = MS.S[MS.si], it = sc.it;
+  Object.assign(MS.sub, extra, { done: true });
+  if (it.k === 'gaps') {
+    const n = (MS.sub.gres || []).filter(Boolean).length;
+    ok = n === it.gaps.length;
+    MS.sub.ok = ok;
+    MS.sub.line = ok ? 'All the gaps are right!' : n + ' of ' + it.gaps.length + ' gaps right.';
+  } else {
+    MS.sub.ok = ok;
+    MS.sub.line = ok ? pick(['Correct!', 'Great!', 'Yes! You got it!', 'Perfect!', 'Well done!']) : pick(['Oops! Let\'s look at the answer.', 'Almost! Here is the answer.', 'Not quite. Now you know!']);
+    msRecord(sc.q0, ok);
+  }
+  msRender();
+  const answer = msAnswerText(it);
+  const why = it.k === 'gaps' ? it.gaps.map((g, j) => (MS.sub.gres || [])[j] ? '' : `<div>${j + 1}. <b>${esc(g.o[g.a])}</b>${g.why ? ' · ' + esc(g.why) : ''}</div>`).join('') : '';
+  document.getElementById('explain').innerHTML = `<div class="answer-box">${ok || it.k === 'gaps' ? '' : answer}${it.k === 'gaps' ? why : esc(it.why || '')}
+    ${it.he ? `<button class="mflag" data-ehe="1">בעברית</button><div class="mhe" id="mehe" dir="rtl" lang="he" hidden>${msHe(it.he)}</div>` : ''}
+    <div><button class="mflag" data-flag="${esc(msQidOf(sc))}">Something wrong here?</button></div></div>`;
+  petReact(MS.sub.ok ? 'celebrate' : 'oops');
+  msNextBtn(MS.si + 1 >= MS.S.length - 1 ? (MS.review ? 'Finish' : 'See my score') : 'Next');
+}
+// The question with its answer filled in (a capital letter when the gap starts the sentence).
+const msFill = (q, a) => { const t = String(q || '').replace(/_{3,}/, a); return t.charAt(0).toUpperCase() + t.slice(1); };
+function msAnswerText(it){
+  if (it.k === 'mc' || it.k === 'hear') return `<b>${esc(it.full || (/_{3,}/.test(it.q || '') ? msFill(it.q, it.o[it.a]) : it.o[it.a]))}</b><br>`;
+  if (it.k === 'tf') return it.a ? `<b>${esc(String(it.q).replace(/^["“]|["”]$/g, ''))}</b> is right.<br>` : `<b>${esc(it.fix || 'It was wrong.')}</b><br>`;
+  if (it.k === 'type') return `<b>${esc(it.full || msFill(it.q, it.a[0]))}</b><br>`;
+  if (it.k === 'build') return `<b>${esc(it.s)}</b><br>`;
+  if (it.k === 'spot' || it.k === 'teach') return `<b>${esc(it.s.replace(/\*(.*?)\*/, it.fix || '').replace(/\s+/g, ' ').trim())}</b><br>`;
+  if (it.k === 'sort') return it.g.map((g, gi) => `<b>${esc(g)}:</b> ${esc(it.w.filter(w => w[1] === gi).map(w => w[0]).join(', '))}`).join('<br>') + '<br>';
+  if (it.k === 'spell') return `<b>${esc(it.w)}</b><br>`;
+  if (it.k === 'find') return `<b>${esc(it.a)}</b><br>`;
+  return '';
+}
+
+// The end: the score, the hook's answer, what comes back, the dinner question, and the save.
+function msFinish(){
+  clearInterval(msTick);
+  msTouch();
+  const m = MS.m, total = MS.review ? MS.S.length - 1 : msCount(m), correct = MS.res.filter(x => x === true).length;
+  const pct = total ? Math.round(correct / total * 100) : 0, stars = 1 + (pct >= 80 ? 1 : 0) + (pct === 100 ? 1 : 0);
+  const mood = pct >= 80 ? 'celebrate' : pct >= 50 ? 'happy' : 'oops', R = MS, seconds = Math.round(MS.active / 1000);
+  const missedQ = msQuestions(m).filter((x, i) => MS.res[i] === false && !MS.review).slice(0, 6);
+  const star = on => `<svg viewBox="0 0 24 24" class="ms-star${on ? ' on' : ''}" aria-hidden="true"><path d="M12 3.6l2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8z"/></svg>`;
+  const script = m.show ? `<details class="glass panel mdet"><summary><b>Read what you heard</b></summary><div class="mscript">${m.show.parts.map(p => p.lines.map(([w, t]) => `<div><b>${esc((m.show.names || {})[w] || w)}:</b> ${esc(t)}</div>`).join('')).join('<hr>')}</div></details>` : '';
+  app.innerHTML = `<div class="gscreen">
+    <div class="result">
+      ${dash.pet ? petArt(dash.pet, mood, 'pet-img', { id: 'resultpet' }) : ''}
+      <div class="ms-stars" aria-label="${stars} of 3 stars">${star(stars >= 1)}${star(stars >= 2)}${star(stars >= 3)}</div>
+      <h1>${correct}/${total}</h1>
+      <h2>${pct === 100 ? 'Perfect mission!' : pct >= 80 ? 'Great job!' : pct >= 50 ? 'Nice work!' : 'Good try. Keep going!'}</h2>
+      <div class="saved wait" id="savest"><span class="mini-spin"></span>Saving…</div>
+      ${MS.review || MS.practice ? '' : `<div class="sub" style="font-size:13px">${pct}% · ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')} minutes</div>`}
+    </div>
+    ${m.hook && !MS.review ? `<div class="glass panel"><div class="label">The answer to our question</div><div style="font-weight:700;margin-top:6px">${msMark(m.hook.reveal)}</div>
+      ${MS.guess === m.hook.a ? '<div class="sub" style="color:#047857;margin-top:4px">You guessed it!</div>' : ''}</div>` : ''}
+    ${missedQ.length ? `<div class="glass panel"><div class="label">These come back in your Mission review</div><ul class="mmissed">${missedQ.map(([it, g]) => `<li>${esc(msShort(it, g))}</li>`).join('')}</ul></div>` : ''}
+    ${m.dinner && !MS.review ? `<div class="today" style="padding:16px 18px"><div class="label" style="color:#3b3f55">Tonight's question at home</div><div style="font-weight:800;font-size:17px;margin-top:4px">${esc(m.dinner)}</div>
+      <div class="sub" style="color:#3b3f55;font-size:13px">Your parents get it at 9 pm. Answer in English!</div></div>` : ''}
+    ${script}
+    <div class="stack" style="gap:10px"><button class="btn btn-primary btn-block" id="mshome">Back home</button></div>
+  </div>`;
+  if (pct >= 80) confetti();
+  if (pct >= 80 && dash.pet && dash.pet.move) setTimeout(() => playMove(document.getElementById('resultpet'), dash.pet.move), 450);
+  document.getElementById('mshome').onclick = () => { MS = null; renderDash(); };
+  if (R.review) return msSaveReview(R, correct, total);
+  if (R.practice) { const s = document.getElementById('savest'); s.className = 'saved'; s.innerHTML = icon('check') + ' Practice round · your score from before stays'; MS = null; return; }
+  store.del(msKey());
+  const args = [R.date, R.id, correct, total, R.missed.slice(), R.right.slice(), Math.max(seconds, 1)];
+  MS = null;
+  msSave(args);
+}
+function msShort(it, g){
+  if (it.k === 'gaps') return it.gaps[g].o[it.gaps[g].a] + ' · ' + (it.title || 'the text');
+  const a = msAnswerText(it).replace(/<br>/g, ' ').replace(/<[^>]+>/g, '');
+  const div = document.createElement('div'); div.innerHTML = a;
+  return div.textContent.trim();
+}
+async function msSave(args){
+  const status = (cls, html) => { const el = document.getElementById('savest'); if (el) { el.className = 'saved ' + cls; el.innerHTML = html; } };
+  try {
+    const wasOpen = !!dash.journey && dash.journey.gate.state === 'open';
+    setDash(await call('apiMissionResult', session.name, session.pin, ...args));
+    homeStale = true;
+    const j = dash.journey;
+    status('', icon('check') + ' Saved · +' + esc(dash.justEarned) + ' points');
+    celebrate(dash.justEarned, j ? 'Station ' + Math.min(j.stations, j.goal) + ' of ' + j.goal + ' · ' + j.name : '');
+    if (j && !wasOpen && j.gate.state === 'open') setTimeout(() => toast('The gate to ' + j.gate.nextLabel + ' is open! Take the challenge on your map.'), 2300);
+  } catch(e){
+    if (e.app) { status('err', icon('warning') + ' ' + esc(e.message)); return; }
+    queueResult({ fn: 'mission', args });
+    status('err', icon('wifi-slash') + ' Saved on this phone. It will sync when you are online.');
+  }
+}
+
+// Mission review: the questions she missed come back, five at a time, after 1, 3, 7 and 21 days (game XP).
+const msDue = d => ((d.games && d.games.review) || []).filter(id => /^x:/.test(id));
+async function startMissionReview(){
+  const ids = msDue(dash).slice(0, 5);
+  if (!ids.length) return;
+  app.innerHTML = '<div class="spinner"></div>';
+  const S = [];
+  try {
+    for (const id of ids) {
+      const [, mid, n] = id.split(':'), list = await loadMissions(msFile(mid)), m = list.find(x => x.id === mid);
+      if (!m) continue;
+      const scr = msScreens(m).find(s => s.t === 'q' && s.q0 < Number(n) && s.q0 + (s.it.k === 'gaps' ? s.it.gaps.length : 1) >= Number(n));
+      if (!scr) continue;
+      let it = scr.it;
+      if (it.k === 'gaps') {
+        const j = Number(n) - 1 - scr.q0, g = it.gaps[j];
+        let c = 0;
+        const q = it.t.replace(/\[(\d+)\]/g, () => { const k = c++; return k === j ? '___' : it.gaps[k].o[it.gaps[k].a]; });
+        it = { k: 'mc', q, o: g.o, a: g.a, why: g.why || '', he: g.he };
+      }
+      S.push(Object.assign({}, scr, { it, m, id: mid, qn: Number(n) - 1 }));
+    }
+  } catch(e){ toast(e.message, true); return renderDash(); }
+  if (!S.length) { toast('Nothing to review right now', true); return renderDash(); }
+  S.forEach((s, i) => { s.q0 = i; s.part = 2; });
+  S.push({ t: 'finish', part: 4 });
+  MS = { review: true, m: S[0].m, w: { level: dash.girl.levelLabel }, id: S[0].id, S, si: 0, res: [], missed: [], right: [], active: 0, last: Date.now(), sub: {}, he: false,
+    seed: hashStr(session.name + ':review:' + dash.today), guess: null };
+  msClock();
+  msRender();
+}
+async function msSaveReview(R, correct, total){
+  const status = (cls, html) => { const el = document.getElementById('savest'); if (el) { el.className = 'saved ' + cls; el.innerHTML = html; } };
+  const missed = [], right = [];
+  R.S.forEach((s, i) => { if (s.t !== 'q') return; const id = 'x:' + s.id + ':' + (s.qn + 1); (R.res[i] ? right : missed).push(id); });
+  MS = null;
+  try {
+    setDash(await call('apiGameResult', session.name, session.pin, 'review', dash.girl.level, correct, total, missed, right, 0));
+    homeStale = true;
+    status('', icon('check') + (dash.gameXp ? ' Saved · +' + dash.gameXp + ' XP' : ' Saved · XP is full for today'));
+  } catch(e){
+    queueResult({ game: 'review', level: dash.girl.level, correct, total, missed, right, second: 0 });
+    status('err', icon('wifi-slash') + ' Saved on this phone. It will sync when you are online.');
+  }
+}
 
 // ---------- Play together: Word Duel and Challenge ----------
 // Spec: specs/play-together.md. Both phones build the same game sequence from the duel's seed;
@@ -5282,6 +5908,7 @@ function scoreText(d){
 }
 
 function renderDash(){
+  if (MS) msLeave();
   G = null; speechStop(); stopDuel();
   try { performance.mark('eq-dash'); } catch(e){}
   const d = dash, s = d.stats;
@@ -5341,6 +5968,9 @@ function renderDash(){
   document.getElementById('logout').onclick = signOut;
   syncState(syncNow);
   app.querySelectorAll('[data-log]').forEach(b => b.onclick = () => openSheet(d.week.find(w => w.date === b.dataset.log)));
+  app.querySelectorAll('[data-mission]').forEach(b => b.onclick = () => startMission(b.dataset.mission));
+  const mr = document.getElementById('msreview');
+  if (mr) mr.onclick = startMissionReview;
   app.querySelectorAll('[data-game]').forEach(b => b.onclick = () => startGame(b.dataset.game));
   ['adopt', 'petedit'].forEach(id => { const b = document.getElementById(id); if (b) b.onclick = petPicker; });
   bindPet(d);
@@ -5418,6 +6048,7 @@ async function renderPushCard(){
 }
 
 function todayCard(t){
+  if (t.mission) return missionCard(t);
   return `<div class="today iri">
     <div class="row-flex between"><span class="label" style="color:#3b3f55">Today · ${t.day}</span>
       ${t.level ? `<span class="chip">${esc(t.level)}</span>` : ''}</div>
@@ -5431,13 +6062,30 @@ function todayCard(t){
   </div>`;
 }
 
+// Today's task as a mission: what it is, how long, and Start (or Continue after a break).
+function missionCard(t){
+  const info = MS_TYPES[t.section] || MS_TYPES.grammar, saved = msSaved(t);
+  const left = saved ? Math.max(1, t.mission.n - (saved.res || []).filter(x => x != null).length) : 0;
+  return `<div class="today iri">
+    <div class="row-flex between"><span class="label" style="color:#3b3f55">Today's mission · ${t.day}</span>
+      ${t.level ? `<span class="chip">${esc(t.level)}</span>` : ''}</div>
+    <div class="row-flex mt-s" style="gap:10px">${tile(t.section)}<b>${esc(info[0])}</b></div>
+    <h2>${esc(t.title)}</h2>
+    ${t.done ? `<div class="done-badge"><div class="big-check">${BIG_CHECK}</div>
+        <div><b style="font-size:20px">${esc(scoreText(t))}</b><div class="sub" style="color:#3b3f55">+${esc(t.points)} points${t.seconds ? ' · ' + Math.max(1, Math.round(t.seconds / 60)) + ' min' : ''} · great job!</div></div></div>`
+      : `<div class="sub" style="color:#3b3f55">About ${info[1]} minutes · ${t.mission.n} questions · your score saves by itself</div>
+        <div class="mission-parts">${MS_PARTS.map(p => `<span>${p}</span>`).join('')}</div>
+        <button class="btn btn-primary btn-block mt" data-mission="${t.date}">${saved ? 'Continue · ' + left + ' questions left' : 'Start mission'} ${icon('play')}</button>`}
+  </div>`;
+}
+
 function taskRow(w){
   const state = w.done ? 'done' : w.isFuture ? 'future' : w.isToday ? 'today' : 'missed';
   const box = w.done ? CHECK : w.isFuture ? icon('lock-simple') : '';
   const end = w.done ? `<span class="chip purple">${esc(scoreText(w))}</span>`
     : state === 'missed' ? ((dash && dash.stats && (dash.stats.saved || []).indexOf(w.date) >= 0) ? `<span class="chip teal" title="Saved by your Streak Shield">${icon('shield-check')} Saved</span>` : '') + '<span class="chip red">Catch up</span>'
     : state === 'today' ? '<span class="chip teal">Today</span>' : '';
-  const click = (state === 'missed' || state === 'today') ? `data-log="${w.date}"` : '';
+  const click = (state === 'missed' || state === 'today') ? (w.mission ? `data-mission="${w.date}"` : `data-log="${w.date}"`) : '';
   return `<div class="soft task ${state} ${click ? 'clickable' : ''}" ${click}>
     <div class="box">${box}</div>
     ${tile(w.section, true)}
@@ -5817,7 +6465,7 @@ function girlCard(g, isAdmin){
     <details><summary>Recent activity ▾</summary>
       <div class="recent">${g.recent.length ? g.recent.map(r => `<div><span>${fmtDate(r.doneOn)}</span>
         <span><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title)}</a></span>
-        <b>${r.section === 'level' ? 'Level' : esc(r.correct) + '/' + esc(r.total)}</b><span>+${esc(r.points)}</span></div>`).join('') : '<div>No activity yet</div>'}</div>
+        <b>${r.section === 'level' ? 'Level' : esc(r.correct) + '/' + esc(r.total)}</b>${r.mission && r.seconds ? `<span title="Played in the app">${Math.max(1, Math.round(r.seconds / 60))} min</span>` : ''}<span>+${esc(r.points)}</span></div>`).join('') : '<div>No activity yet</div>'}</div>
     </details>
     ${g.bought && g.bought.length ? `<details><summary>Coco's shop ▾</summary><div class="recent">${g.bought.map(b => `<div><span>${fmtDate(b.date)}</span>
       <span>"${esc(b.sentence)}"</span><b>${esc(b.design ? (b.perfect ? 'Studio design · Perfect Fit' : 'Studio design') : b.name)}</b><span>${coinsTxt(b.paid)}</span></div>`).join('')}</div></details>` : ''}
