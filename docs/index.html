@@ -923,7 +923,11 @@ svg.pa{display:block;overflow:visible}
 .gplay{-webkit-user-select:none;user-select:none}
 .gplay input{-webkit-user-select:text;user-select:text}
 button{touch-action:manipulation}
-#msclock,#dtimer{font-variant-numeric:tabular-nums}
+#msclock,#dtimer,#ttime{font-variant-numeric:tabular-nums}
+.gtop .gsnd{width:38px;height:38px;font-size:16px;flex:none}
+.gplay .gtop .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tugscreen{-webkit-user-select:none;user-select:none;touch-action:manipulation}
+.tughalf{overflow:hidden}
 .gplay .gtop h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:18px}
 .gplay .mtext{scrollbar-width:thin;scrollbar-color:rgba(99,102,241,.35) transparent}
 .gplay .mtext::-webkit-scrollbar{width:4px}
@@ -963,7 +967,7 @@ button{touch-action:manipulation}
 .mgaps .gz>span{grid-area:1/1;white-space:nowrap}
 .mgaps .gl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;white-space:nowrap}
 @media (orientation:portrait),(min-height:501px){
-  html:has(.gplay),html:has(.gplay) body{height:100%;overflow:hidden;overscroll-behavior:none}
+  html:has(.gplay),html:has(.gplay) body,html:has(.tugscreen),html:has(.tugscreen) body{height:100%;overflow:hidden;overscroll-behavior:none}
   html:has(.gplay) #app{height:100vh;height:100dvh;padding:calc(10px + env(safe-area-inset-top)) 16px calc(12px + env(safe-area-inset-bottom));display:flex;flex-direction:column}
   .gscreen.gplay{flex:1;min-height:0;gap:10px}
   .gplay .gstage{flex:1 1 0;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;margin:0 -16px -8px;padding:6px 16px 18px}
@@ -2874,10 +2878,43 @@ function holdSlots(){
   s.style.minHeight = s.offsetHeight + 'px';
   s.innerHTML = kept;
 }
-// A short buzz on Android phones (iPhones ignore it): one for right, two for wrong.
+// A short buzz on Android phones (iPhones ignore it): one for right, two for wrong. And the soft answer sound.
 function buzz(ok){
   try { if (navigator.vibrate) navigator.vibrate(ok ? 18 : [30, 60, 30]); } catch(e){}
+  chime(ok);
 }
+// Answer sounds, made in code (no files): two soft rising notes for right, a soft low note for wrong.
+// The speaker button in the game header turns them off; the choice stays on the phone.
+let audioCtx = null;
+const soundOn = () => store.get('eq_sound') !== 'off';
+function chime(ok){
+  if (!soundOn()) return;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const t0 = audioCtx.currentTime + .01;
+    const note = (f, at, len, vol, type) => {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = type; o.frequency.value = f;
+      g.gain.setValueAtTime(0, t0 + at);
+      g.gain.linearRampToValueAtTime(vol, t0 + at + .015);
+      g.gain.exponentialRampToValueAtTime(.0005, t0 + at + len);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(t0 + at); o.stop(t0 + at + len + .02);
+    };
+    if (ok) { note(784, 0, .22, .07, 'sine'); note(1175, .09, .32, .06, 'sine'); }
+    else { note(247, 0, .3, .07, 'triangle'); note(220, .12, .34, .05, 'triangle'); }
+  } catch(e){}
+}
+const soundBtn = () => `<button class="btn btn-glass icon-btn gsnd" data-snd="1" title="${soundOn() ? 'Sound on' : 'Sound off'}" aria-label="Sound">${icon(soundOn() ? 'speaker-high' : 'speaker-slash')}</button>`;
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('[data-snd]');
+  if (!b) return;
+  e.stopPropagation();
+  store.set('eq_sound', soundOn() ? 'off' : 'on');
+  document.querySelectorAll('[data-snd]').forEach(x => { x.outerHTML = soundBtn(); });
+  if (soundOn()) chime(true);
+}, true);
 // Scrolls a text box (never the page) so that el is in sight.
 function keepInView(box, el){
   if (!box || !el || box.scrollHeight <= box.clientHeight) return;
@@ -2916,7 +2953,7 @@ function renderItem(){
     <div class="gtop"><button class="btn btn-glass icon-btn" id="gquit" title="Stop">${icon('x')}</button>
       <div style="flex:1;min-width:0"><h2>${G.duel ? G.duel.title : G.gate ? 'Gate challenge' : info.name}</h2><div class="sub" style="font-size:12px;margin:0">${G.duel
         ? info.name + ' · level ' + esc(G.duel.label) : G.gate ? info.name + ' · level ' + esc(dash.journey.gate.nextLabel) : G.game === 'mine' ? 'My words · ' + info.name : 'Level ' + esc(dash.girl.levelLabel)} · ${G.i + 1} of ${n}</div></div>
-      ${G.duel ? `<span class="chip" id="dtimer">${icon('timer')} ${duelClockText()}</span>` : `<span class="tile ${info.tile}">${icon(info.icon, 'duotone')}</span>`}</div>
+      ${soundBtn()}${G.duel ? `<span class="chip" id="dtimer">${icon('timer')} ${duelClockText()}</span>` : `<span class="tile ${info.tile}">${icon(info.icon, 'duotone')}</span>`}</div>
     ${G.duel ? duelRaceCard() : `<div class="gprog" id="gprog">${gameBars()}</div>`}
     <div class="gstage enter">${body}</div>
     <div class="gdock">
@@ -3349,7 +3386,7 @@ function msRender(){
   app.innerHTML = `<div class="gscreen mscreen gplay" id="ms">
     <div class="gtop"><button class="btn btn-glass icon-btn" id="msquit" title="Stop">${icon('x')}</button>
       <div style="flex:1;min-width:0"><h2>${esc(m.title)}</h2><div class="sub" style="font-size:12px;margin:0">${sub}</div></div>
-      <span class="chip" id="msclock">${msClockText()}</span></div>
+      ${soundBtn()}<span class="chip" id="msclock">${msClockText()}</span></div>
     ${parts}
     <div class="gstage${same ? '' : ' enter'}">${body}</div>
     <div class="gdock">
@@ -4943,19 +4980,21 @@ function talkRender(){
   const it = T.items[k], them = duelThem(v) || { name: 'your friend' }, describe = talkDescriber(k) === v.role;
   const picks = talkPicks(v, T.mine, talkTheirs()).slice(0, k);
   window.scrollTo(0, 0);
-  app.innerHTML = `<div class="gscreen talk" id="talk">
+  const [stage, react] = describe ? talkDescribeHtml(it, them, T) : talkListenHtml(it, them);
+  app.innerHTML = `<div class="gscreen talk gplay" id="talk">
     <div class="gtop"><button class="btn btn-glass icon-btn" id="tquit" title="Stop">${icon('x')}</button>
       <div style="flex:1;min-width:0"><h2>Talk &amp; Tap</h2><div class="sub" style="font-size:12px;margin:0">Word ${k + 1} of ${TALK_ITEMS} · ${describe ? 'you describe' : 'you listen'}</div></div>
-      <span class="chip orange" id="tstreak" title="Team streak">${icon('fire')} ${talkStreak(picks).s}</span><span class="chip" id="dtimer">${icon('timer')} ${duelClockText()}</span></div>
+      ${soundBtn()}<span class="chip orange" id="tstreak" title="Team streak">${icon('fire')} ${talkStreak(picks).s}</span><span class="chip" id="dtimer">${icon('timer')} ${duelClockText()}</span></div>
     <div class="gprog">${Array.from({ length: TALK_ITEMS }, (_, j) => `<i class="${j < k ? (picks[j].ok ? 'ok' : 'no') : j === k ? 'on' : ''}"></i>`).join('')}</div>
-    ${describe ? talkDescribeHtml(it, them, T) : talkListenHtml(it, them)}
+    <div class="gstage enter">${stage}</div>
+    <div class="gdock">${react}</div>
   </div>`;
   document.getElementById('talk').onclick = talkClick;
 }
 
 function talkDescribeHtml(it, them, T){
   const help = T.starters[it.topic] || TALK_HELP;
-  return `<div class="glass qcard talkcard">
+  return [`<div class="glass qcard talkcard">
       <div class="qprompt">Describe this word to ${esc(them.name)}</div>
       ${it.pic ? `<img class="qpic" src="${picSrc(it.word)}" alt="">` : ''}
       <div class="tword">${esc(it.word)}</div>
@@ -4965,8 +5004,8 @@ function talkDescribeHtml(it, them, T){
     <button class="soft drow" id="thelp"><span class="tile sm t-star">${icon('lightbulb', 'duotone')}</span>
       <span class="drow-main"><b>Need help?</b><small>Sentence starters and what it means</small></span>${icon(T.help ? 'caret-up' : 'caret-down')}</button>
     <div class="glass thelp" id="thelpbox"${T.help ? '' : ' hidden'}>${help.map(s => `<div class="st">${esc(s)}</div>`).join('')}
-      ${it.def ? `<div class="sub" style="margin:4px 0 0;font-size:13px"><b style="color:var(--ink)">It means:</b> ${talkMarked(it)}</div>` : ''}</div>
-    <div class="react">${dash.pet ? `${petArt(dash.pet, 'thinking', 'gpet')}` : ''}<div class="bubble">${esc(TALK_TIPS[(DU.view.seed + T.shown) % TALK_TIPS.length])}</div></div>`;
+      ${it.def ? `<div class="sub" style="margin:4px 0 0;font-size:13px"><b style="color:var(--ink)">It means:</b> ${talkMarked(it)}</div>` : ''}</div>`,
+    `<div class="react">${dash.pet ? `${petArt(dash.pet, 'thinking', 'gpet')}` : ''}<div class="bubble">${esc(TALK_TIPS[(DU.view.seed + T.shown) % TALK_TIPS.length])}</div></div>`];
 }
 
 // The meaning with the don't-say words marked, so the one describing knows not to read them out.
@@ -4975,12 +5014,12 @@ function talkMarked(it){
 }
 
 function talkListenHtml(it, them){
-  return `<div class="glass qcard tlisten"><span class="ear">${icon('ear', 'duotone')}</span>
+  return [`<div class="glass qcard tlisten"><span class="ear">${icon('ear', 'duotone')}</span>
       <div class="qbig">${esc(them.name)} is describing a word. Which one?</div></div>
     <div class="opts">${it.options.map((o, i) => `<button class="opt" data-pick="${i}">${esc(o)}</button>`).join('')}</div>
     <div class="label" style="text-align:center">Ask in English</div>
-    <div class="tasks">${TALK_ASK.map(a => `<span class="chip">${esc(a)}</span>`).join('')}</div>
-    <div class="react">${dash.pet ? `${petArt(dash.pet, 'happy', 'gpet')}` : ''}<div class="bubble">A wrong pick sends the team streak back to 0.</div></div>`;
+    <div class="tasks">${TALK_ASK.map(a => `<span class="chip">${esc(a)}</span>`).join('')}</div>`,
+    `<div class="react">${dash.pet ? `${petArt(dash.pet, 'happy', 'gpet')}` : ''}<div class="bubble">A wrong pick sends the team streak back to 0.</div></div>`];
 }
 
 function talkClick(e){
@@ -5028,6 +5067,7 @@ function talkFlash(k, p){
     <div class="tfs">${p.ok ? icon('fire') + ' Team streak ' + streak : 'The streak starts again'}</div></div>`;
   document.body.appendChild(ov);
   try { navigator.vibrate && navigator.vibrate(p.ok ? 40 : [70, 50, 70]); } catch(e){}
+  chime(p.ok);
   const st = document.getElementById('tstreak');
   if (st) st.innerHTML = icon('fire') + ' ' + streak;
   setTimeout(() => {
@@ -5248,9 +5288,11 @@ function tugClick(e){
     TW.pos += i === 0 ? 1 : -1;
     tugRope();
     try { navigator.vibrate && navigator.vibrate(30); } catch(err){}
+    chime(true);
     setTimeout(() => { p.busy = false; if (!TW || TW.over) return; tugNext(TW.B, p); tugHalf(i); }, 450);
   } else {
     t.classList.add('no', 'shake');
+    chime(false);
     p.frozen = Date.now() + TUG_FREEZE;
     const fz = half.querySelector('.tfreeze');
     if (fz) { fz.hidden = false; fz.innerHTML = `<b>${icon('snowflake', 'duotone')} Frozen</b><span>${it.game === 'match' ? esc(it.answer) : esc(fixedSentence(it))}</span>`; }
