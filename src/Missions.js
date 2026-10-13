@@ -4,10 +4,9 @@
 
 var MISSION = { minSeconds: 30, flagsPerDay: 20 };
 
-// Settings.MissionPilot: names (comma separated) or "all". Everybody else keeps the link to test-english.com.
+// Today's Mission is every kid's daily task; Girls.Missions = no keeps her on the link to test-english.com (the old way).
 function missionsOn(kid) {
-  var list = String(getSetting('MissionPilot') || '').toLowerCase().split(',').map(function (s) { return s.trim(); });
-  return list.indexOf('all') >= 0 || list.indexOf(String(kid.Name).toLowerCase()) >= 0;
+  return String(kid.Missions || '').trim().toLowerCase() !== 'no';
 }
 
 function missionOf(url) {
@@ -15,7 +14,7 @@ function missionOf(url) {
   return idx.hasOwnProperty(url) ? idx[url] : null;
 }
 
-// What the app needs to open a day's mission, or null (no mission for that topic, or the kid is not in the pilot).
+// What the app needs to open a day's mission, or null (no mission for that topic, or missions are off for the kid).
 function missionView(kid, a, on) {
   if (!a || !on) return null;
   var m = missionOf(a.url);
@@ -28,7 +27,7 @@ function apiMissionResult(name, pin, date, missionId, correct, total, missed, ri
   var kid = auth(name, pin);
   var t = today();
   if (pendingLevelTest(kid)) throw new Error('Take the level test first.');
-  if (!missionsOn(kid)) throw new Error('Missions are not open for you yet.');
+  if (!missionsOn(kid)) throw new Error('Your daily task is on test-english.com.');
   if (weekDates(t).indexOf(date) < 0 || date > t || date < kidStart(kid)) throw new Error('You can only log tasks from this week.');
   var a = ensureAssignments(kid, [date])[date];
   var m = a && missionOf(a.url);

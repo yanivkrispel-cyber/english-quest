@@ -151,9 +151,9 @@ choice): Say it Wear it (4 white bases colored in code; designs are tokens), Shi
 made of words; shine follows their review), Second Chance and Word Saver ("My words"). Phase 3 (not built): Talking
 Charms, Living Legends, Runway & Gifts.
 Today's Mission, phase 1 (built 2026-10-12, spec `specs/missions.md`; plan and the owner's picks:
-https://claude.ai/artifact/9ajUGftfHuLqXCPPaZGqJx): the daily task as a mission in the app for the names in
-`Settings.MissionPilot` (empty = nobody; `all` = everyone). Engine in Index.html (`ms*` functions), server in Missions.js,
-54 missions (the first topics of each level, a pilot week) with recorded episodes. Writing (Writer's Desk), the in-app
-level test, the journey story and the family week are phase 2 and 3. Dev: `/dev/mission?who=Aviv&id=a2g01`.
+https://claude.ai/artifact/9ajUGftfHuLqXCPPaZGqJx): the daily task as a mission in the app, for every kid since 2026-10-13
+(`Girls.Missions = no` keeps a kid on the old link; the add-kid form offers it). Engine in Index.html (`ms*` functions),
+server in Missions.js, 59 missions (the first week of each level) with recorded episodes. Writing (Writer's Desk), the
+in-app level test, the journey story and the family week are phase 2 and 3. Dev: `/dev/mission?who=Aviv&id=a2g01`.
 Ideas not built yet: per-group reminder times, rewards redemption from the app (now via the
 `Redeemed` column), editing groups/kids from the app (now via the sheet).

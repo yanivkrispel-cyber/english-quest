@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v14';
+var SETUP_VERSION = 'v15';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
@@ -43,7 +43,8 @@ var WORLDS = { a1: 'Sunny Meadow', a2: 'Whisper Woods', b1: 'Crystal Caves', 'b1
 
 // The sheet tab for kids is still called "Girls" (it predates groups).
 var HEADERS = {
-  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince'],
+  // Missions: "no" keeps her daily task on test-english.com (the old link); empty = Today's Mission in the app.
+  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince', 'Missions'],
   Games: ['Timestamp', 'Girl', 'Date', 'Game', 'Level', 'Correct', 'Total', 'XP', 'Missed'],
   Review: ['Girl', 'Items'],
   Gates: ['Timestamp', 'Girl', 'Date', 'From', 'To', 'Correct', 'Total', 'Passed', 'Tasks', 'XP'],
@@ -571,7 +572,8 @@ function apiAdminAddGroup(pin, name, email) {
   return data;
 }
 
-function apiAdminAddKid(pin, name, age, groupId, level) {
+// missions: 'no' keeps the new kid's daily task on test-english.com (the old way); otherwise Today's Mission.
+function apiAdminAddKid(pin, name, age, groupId, level, missions) {
   ensureSetup();
   if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can add kids');
   name = String(name || '').trim();
@@ -584,7 +586,8 @@ function apiAdminAddKid(pin, name, age, groupId, level) {
   lock.waitLock(20000);
   try {
     var count = readTable('Girls').length;
-    appendRow('Girls', { Name: name, Age: Number(age) || '', PIN: kidPin, Level: level, Email: '', Redeemed: 0, Color: COLORS[count % COLORS.length], Group: groupId });
+    appendRow('Girls', { Name: name, Age: Number(age) || '', PIN: kidPin, Level: level, Email: '', Redeemed: 0, Color: COLORS[count % COLORS.length], Group: groupId,
+      Missions: String(missions || '').trim().toLowerCase() === 'no' ? 'no' : '' });
   } finally {
     lock.releaseLock();
   }
@@ -803,7 +806,7 @@ function ensureAssignments(kid, dates) {
   return out;
 }
 
-// missions: the kid is in the missions pilot, so a topic of her level that has a mission comes first
+// missions: Today's Mission is on for the kid, so a topic of her level that has a mission comes first
 // (Missions.js); without one left, the usual next topic (a link).
 function nextExercise(section, level, used, missions) {
   var byLevel = CATALOG[section];
@@ -930,9 +933,13 @@ function ensureSetup() {
     if (stray && ss.getSheets().length > 1) ss.deleteSheet(stray);
     clearCache();
 
-    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: 'https://yanivkrispel-cyber.github.io/english-quest/', ShopOpens: SHOP.opens, ShopEarly: '', MissionPilot: '' };
+    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: 'https://yanivkrispel-cyber.github.io/english-quest/', ShopOpens: SHOP.opens, ShopEarly: '' };
     Object.keys(defaults).forEach(function (k) { if (getSetting(k) === null) setSetting(k, defaults[k]); });
     if (getSetting('AppUrl') !== APP_URL) setSetting('AppUrl', APP_URL);
+    // v15: Today's Mission is every kid's daily task (Girls.Missions = no keeps the old link), so the pilot setting goes.
+    var st = sheet('Settings'), sv = st.getDataRange().getValues();
+    for (var si = sv.length - 1; si >= 1; si--) if (sv[si][0] === 'MissionPilot') st.deleteRow(si + 1);
+    invalidate('Settings');
 
     // v3: groups. The existing family becomes the first (default) group.
     if (readTableUncached('Groups').length === 0) {
