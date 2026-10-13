@@ -107,7 +107,7 @@ function doGet() {
   ensureSetup();
   return HtmlService.createHtmlOutputFromFile('Index')
     .setTitle('English Quest')
-    .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content')
     .setFaviconUrl('https://fonts.gstatic.com/s/e/notoemoji/latest/1f31f/72.png');
 }
 

@@ -245,4 +245,5 @@ node test/dev-server.js   # two players locally (seeded duo history): /test/dev.
                           # the shop: Aviv may shop early; /dev/coins?who=Aviv&n=1500, /dev/day?d=2026-10-24 (opening, Halloween)
                           # bad networks: /dev/chaos?mode=hang|500|html|busy&n=2 ; the page gets the service worker
                           # missions: /dev/mission?who=Aviv&id=a2l01 (turns missions on for her, makes it today's task)
+                          # the play frame: /test/fit.html measures every mission screen in two phone sizes
 ```

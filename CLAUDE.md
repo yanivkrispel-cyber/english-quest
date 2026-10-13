@@ -74,6 +74,12 @@ working rules and the traps learned while building it.
   first (a new `tugQueue()` broke Tug of War in testing). `node test/ui-check.js` catches it.
 - The cache keeps tables 6 hours: every write must call `invalidate(table)` when it is done (the helpers do).
   A write that skips it shows stale data for hours, not minutes.
+- **Play screens are a fixed full-screen frame** (`.gscreen.gplay`: the header, `.gstage` for the question, `.gdock` for
+  the pet, the feedback and the main button): the page never scrolls, and nothing may move when a button is tapped. The
+  main button lives in the dock slot (`#gnext`; missions set `MS.check` / `MS.ready` instead of drawing a button), anything
+  that shows up later needs its room kept from the start (`holdSlots`, the gap sizers, the sort placeholders), and a long
+  text gets the height that is left on a new screen (`fitText`). After a layout or content change, open
+  `http://localhost:8787/test/fit.html` (dev server): "page scrolls on" must stay 0.
 - Phones run the service worker's copy of the app first: after a deploy, check the new version on the second
   open (or tap the update bar).
 - **A pet picture is an inline SVG now** (`petArt`, the Wordrobe): CSS written for `img` inside a container (`.side img`)
