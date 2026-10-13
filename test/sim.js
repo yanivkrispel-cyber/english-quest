@@ -48,7 +48,7 @@ const ctx = {
 };
 const props = ctx.PropertiesService.getScriptProperties(); ctx.PropertiesService.getScriptProperties = () => props;
 vm.createContext(ctx);
-for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js']) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
+for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js']) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
 // Each call is a fresh request: per-request table memo resets, CacheService persists.
 const run = s => { if (typeof ctx.TABLES === 'object') vm.runInContext('TABLES = {}', ctx); return vm.runInContext(s, ctx); };
 let day = '2026-10-08';
@@ -1027,4 +1027,77 @@ cases.forEach(([t, b]) => {
 });
 console.log((same === cases.length ? 'ok: ' : 'FAIL: ') + 'the app and the server grade ' + same + '/' + cases.length + ' designs the same');
 cases.slice(23).forEach(([t, b]) => { const g = app(t, b); console.log('  ' + JSON.stringify(t) + ' -> ' + (g.ok ? 'ok n=' + g.n : g.hint)); });
+}
+
+
+// ---- Today's Mission: the pilot switch, missions as daily tasks, measured results, review, flags ----
+{
+const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+const fails = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + label); } catch (e) { console.log('ok: ' + label + ' is rejected: ' + e.message); } };
+const rows = name => sheets[name].rows.slice(1).map(r => Object.fromEntries(sheets[name].rows[0].map((h, i) => [h, r[i]])));
+// The first topic of a section at a level that has a mission, or null.
+const firstMission = (section, level) => run("(function () { var l = CATALOG['" + section + "']['" + level + "'] || []; for (var i = 0; i < l.length; i++) { var m = missionOf(l[i].u); if (m) return m; } return null; })()");
+check('the server knows the missions', run('Object.keys(MISSION_INDEX).length') > 0 && run("missionOf('https://test-english.com/vocabulary/a2/words-with-prepositions-a2-english-vocabulary/').id") === 'a2v01');
+// Start on a day whose next day (the first day after the level test) has missions at A2.
+let start = run("addDays('" + ctx.__day + "', 30)");
+while (!firstMission(run("sectionFor('" + run("addDays('" + start + "', 1)") + "')"), 'a2') || !firstMission(run("sectionFor('" + run("addDays('" + start + "', 2)") + "')"), 'a2')) start = run("addDays('" + start + "', 1)");
+ctx.__day = start;
+const G = run("apiAdminAddGroup('1234','Mission family','')");
+const gid = G.created.link.split('g=')[1];
+const T = run("apiAdminAddKid('1234','Tali','12','" + gid + "','a2')").created, U = run("apiAdminAddKid('1234','Uri','13','" + gid + "','b1')").created;
+const tali = (fn, ...a) => run(fn + '(' + ['Tali', T.pin].concat(a).map(x => JSON.stringify(x)).join(',') + ')');
+const uri = (fn, ...a) => run(fn + '(' + ['Uri', U.pin].concat(a).map(x => JSON.stringify(x)).join(',') + ')');
+tali('apiSubmit', tali('apiDashboard').levelTest.date, '', '', 'a2');
+uri('apiSubmit', uri('apiDashboard').levelTest.date, '', '', 'b1');
+
+// Day 1. Not in the pilot: the link as before.
+ctx.__day = run("addDays('" + start + "', 1)");
+run("setSetting('MissionPilot', '')");
+let D = tali('apiDashboard'), day = D.week.find(w => w.isToday);
+const m1 = firstMission(day.section, 'a2');
+check('without the pilot: no mission, the link as before', !day.mission && /test-english\.com/.test(day.url), JSON.stringify(day));
+// In the pilot: the same assignment opens as a mission (its topic is the first one, and it has a mission).
+run("setSetting('MissionPilot', 'uri, TALI')");
+D = tali('apiDashboard'); day = D.week.find(w => w.isToday);
+check('in the pilot: the same topic opens as a mission', day.mission && day.mission.id === m1.id && day.mission.n === m1.n, JSON.stringify(day.mission) + ' ' + day.section);
+const other = m1.id === 'a2g01' ? 'a2g02' : 'a2g01';
+fails('a mission that is not the day\'s', () => tali('apiMissionResult', day.date, other, 10, m1.n, [], [], 200));
+fails('a wrong number of questions', () => tali('apiMissionResult', day.date, m1.id, 5, m1.n - 2, [], [], 200));
+fails('a mission played too fast', () => tali('apiMissionResult', day.date, m1.id, 5, m1.n, [], [], 12));
+fails('a score above the total', () => tali('apiMissionResult', day.date, m1.id, m1.n + 1, m1.n, [], [], 200));
+run("setSetting('MissionPilot', 'Tali')");
+fails('a kid who is not in the pilot', () => uri('apiMissionResult', day.date, m1.id, 5, m1.n, [], [], 200));
+const q = n => 'x:' + m1.id + ':' + n, good = m1.n - 2;
+const R = tali('apiMissionResult', day.date, m1.id, good, m1.n, [q(3), q(5), 'x:b1g01:2'], [q(1)], 412);
+const L = rows('Log').filter(r => r.Girl === 'Tali' && r.Date === day.date)[0], pct = Math.round(good / m1.n * 100), pts = 10 + (pct >= 80 ? 5 : 0) + 3;
+check('the Log row: measured score, the mission and its time', L && L.Mission === m1.id && Number(L.Seconds) === 412 && Number(L.Correct) === good &&
+  Number(L.Total) === m1.n && Number(L.Percent) === pct && Number(L.Points) === pts && L.Section === day.section, JSON.stringify(L));
+check('points like any task: 10, +5 for 80%+, +3 on the day', R.justEarned === pts, R.justEarned + ' vs ' + pts);
+check('the day shows as done, with its time', R.week.find(w => w.date === day.date).done && R.week.find(w => w.date === day.date).seconds === 412);
+const rev = run("readReview('Tali')");
+check('the missed questions go to the review (only this mission\'s)', rev[q(3)] && rev[q(5)] && !rev['x:b1g01:2'] && !rev[q(1)], JSON.stringify(rev));
+fails('the same day twice', () => tali('apiMissionResult', day.date, m1.id, good, m1.n, [], [], 300));
+// The parents' evening summary carries the dinner question.
+run("appendRow('ParentPush', { Who: 'admin', Endpoint: 'https://push.example/mission-admin', Created: new Date(), Agent: 'test', Instant: 'no' })");
+run('parentSummary()');
+const msg = JSON.parse(cacheStore[run("endpointKey('https://push.example/mission-admin')")] || '{}');
+check('the 21:00 summary asks the dinner question', (msg.body || '').indexOf('Ask Tali: ' + m1.q) >= 0, msg.body);
+const P = run("apiParent('1234')").groups.find(g => g.id === gid).girls.find(x => x.girl.name === 'Tali');
+check('parents see the mission and its minutes', P.recent[0].mission === m1.id && P.recent[0].seconds === 412, JSON.stringify(P.recent[0]));
+check('a kid outside the pilot still logs a link as before', uri('apiSubmit', day.date, 7, 10, null).justEarned === 13);
+
+// Day 2: a new assignment in the pilot takes a topic that has a mission.
+ctx.__day = run("addDays('" + day.date + "', 1)");
+D = tali('apiDashboard'); day = D.week.find(w => w.isToday);
+const m2 = firstMission(day.section, 'a2');
+check('a new day in the pilot gets a topic with a mission', day.mission && day.mission.id === m2.id, JSON.stringify(day));
+check('the missed questions are due the next day', D.games.review.indexOf(q(3)) >= 0 && D.games.review.indexOf(q(5)) >= 0, JSON.stringify(D.games.review));
+const GR = tali('apiGameResult', 'review', 'a2', 1, 2, [q(5)], [q(3)], 0);
+const rev2 = run("readReview('Tali')");
+check('a Mission review round moves the questions on, with game XP', rev2[q(3)].box === 2 && rev2[q(5)].box === 1 && GR.gameXp === 2, JSON.stringify(rev2));
+fails('a review round longer than 10 questions', () => tali('apiGameResult', 'review', 'a2', 10, 14, [], [], 0));
+tali('apiFlag', m1.id, q(3), 'the <b>answer</b> looks wrong');
+const F = rows('Flags').filter(r => r.Girl === 'Tali')[0];
+check('"Something wrong here?" is kept for the owner', F && F.Mission === m1.id && F.Item === q(3) && F.Note === 'the banswer/b looks wrong', JSON.stringify(F));
+run("setSetting('MissionPilot', '')");
 }

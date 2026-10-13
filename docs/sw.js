@@ -22,12 +22,17 @@ self.addEventListener('activate', e => {
     .then(() => self.clients.claim()));
 });
 
-const isAsset = url => /\/(pets|pics|icons|items|coco)\//.test(url.pathname) || (/games\.js$/.test(url.pathname) && url.searchParams.has('v'));
+// Mission content files (docs/missions/*.js) are versioned with ?v= like the game bank. Their recordings (.mp3) are left
+// to the browser: audio asks for byte ranges, and a whole file from here can leave the player stuck (Safari above all).
+// Without a connection the app reads the episode aloud instead.
+const isAudio = url => /\.mp3$/.test(url.pathname);
+const isAsset = url => /\/(pets|pics|icons|items|coco)\//.test(url.pathname) || (/games\.js$/.test(url.pathname) && url.searchParams.has('v')) ||
+  (/\/missions\/[^/]+\.js$/.test(url.pathname) && url.searchParams.has('v'));
 const isPage = (req, url) => req.mode === 'navigate' || /\/$|\.html$/.test(url.pathname);
 
 self.addEventListener('fetch', e => {
   const req = e.request, url = new URL(req.url);
-  if (req.method !== 'GET' || url.origin !== location.origin) return;
+  if (req.method !== 'GET' || url.origin !== location.origin || isAudio(url)) return;
   if (isAsset(url)) return e.respondWith(fromPhoneFirst(req));
   if (isPage(req, url)) return e.respondWith(pageNowThenFresh(e, req, url));
   e.respondWith(fetch(req).then(res => {

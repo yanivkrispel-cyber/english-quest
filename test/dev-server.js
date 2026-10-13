@@ -60,7 +60,7 @@ figure{margin:0;display:grid;gap:8px;justify-items:center}iframe{border:0;border
 <figure><iframe src="http://127.0.0.1:${PORT}/test/dev.html"></iframe><figcaption>Phone 2 · 127.0.0.1</figcaption></figure>`);
 
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css', '.json': 'application/json',
-  '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json' };
+  '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json', '.mp3': 'audio/mpeg' };
 let chaos = { mode: 'off', n: 0 };
 http.createServer((req, res) => {
   const url = new URL(req.url, 'http://x');
@@ -76,6 +76,34 @@ http.createServer((req, res) => {
     global.devRun("appendRow('Bonus', JSON.parse(__body))");
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(global.devCtx.__body);
+  }
+  // Today's task as a given mission (specs/missions.md): /dev/mission?who=Aviv&id=a2l01 puts her in the pilot, makes today's
+  // assignment that mission's topic and clears today's log, so it can be played again.
+  if (url.pathname === '/dev/mission') {
+    global.devCtx.__who = url.searchParams.get('who') || 'Aviv';
+    global.devCtx.__mid = url.searchParams.get('id') || '';
+    const out = global.devRun(`(function () {
+      var url = Object.keys(MISSION_INDEX).filter(function (u) { return MISSION_INDEX[u].id === __mid; })[0];
+      if (!url) return 'no mission ' + __mid;
+      var hit = null;
+      Object.keys(CATALOG).forEach(function (s) { Object.keys(CATALOG[s]).forEach(function (l) { CATALOG[s][l].forEach(function (e) { if (e.u === url) hit = { s: s, l: l, t: e.t }; }); }); });
+      var pilot = String(getSetting('MissionPilot') || '');
+      if (pilot.toLowerCase().split(',').indexOf(__who.toLowerCase()) < 0) setSetting('MissionPilot', pilot ? pilot + ',' + __who : __who);
+      var t = today(), A = sheet('Assignments').rows, L = sheet('Log').rows;
+      var col = function (rows, n) { return rows[0].indexOf(n); };
+      var found = false;
+      for (var i = 1; i < A.length; i++) {
+        if (A[i][col(A, 'Girl')] === __who && A[i][col(A, 'Date')] === t) {
+          A[i][col(A, 'Section')] = hit.s; A[i][col(A, 'Level')] = hit.l; A[i][col(A, 'Title')] = hit.t; A[i][col(A, 'URL')] = url; found = true;
+        }
+      }
+      if (!found) appendRow('Assignments', { Girl: __who, Date: t, Section: hit.s, Level: hit.l, Title: hit.t, URL: url });
+      for (var j = L.length - 1; j >= 1; j--) if (L[j][col(L, 'Girl')] === __who && L[j][col(L, 'Date')] === t) L.splice(j, 1);
+      clearCache();
+      return __who + ' today: ' + __mid + ' (' + hit.t + ')';
+    })()`);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ ok: out }));
   }
   if (url.pathname === '/dev/chaos') {
     if (url.searchParams.get('mode')) chaos = { mode: url.searchParams.get('mode'), n: Number(url.searchParams.get('n')) || 1 };
