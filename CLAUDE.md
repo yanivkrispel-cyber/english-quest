@@ -79,7 +79,9 @@ working rules and the traps learned while building it.
   main button lives in the dock slot (`#gnext`; missions set `MS.check` / `MS.ready` instead of drawing a button), anything
   that shows up later needs its room kept from the start (`holdSlots`, the gap sizers, the sort placeholders), and a long
   text gets the height that is left on a new screen (`fitText`). After a layout or content change, open
-  `http://localhost:8787/test/fit.html` (dev server): "page scrolls on" must stay 0.
+  `http://localhost:8787/test/fit.html` (dev server): "page scrolls on" must stay 0. Talk & Tap is in the frame too; Tug of
+  War has its own fixed screen. Answer sounds: `buzz(ok)` vibrates and calls `chime(ok)` (Web Audio, no files); the speaker
+  button in the game header (`soundBtn()`) mutes them (`eq_sound` in local storage).
 - Phones run the service worker's copy of the app first: after a deploy, check the new version on the second
   open (or tap the update bar).
 - **A pet picture is an inline SVG now** (`petArt`, the Wordrobe): CSS written for `img` inside a container (`.side img`)
