@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const src = fs.readFileSync(path.join(__dirname, 'src', 'Index.html'), 'utf8');
 const head = [
-  '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">',
+  '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">',
   '<title>English Quest</title>',
   '<meta name="theme-color" content="#ece6e0">',
   '<meta name="apple-mobile-web-app-capable" content="yes">',

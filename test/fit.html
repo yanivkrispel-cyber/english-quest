@@ -1,0 +1,64 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Play frame fit</title>
+<style>
+body{margin:0;background:#2b2b33;color:#eee;font:14px/1.45 system-ui,sans-serif;padding:12px}
+.row{display:flex;gap:16px;align-items:flex-start}
+iframe{border:0;border-radius:18px;background:#fff}
+pre{white-space:pre-wrap;margin:12px 0 0}
+</style>
+<!-- Every screen of every mission in two phone sizes, before and after answering (served by test/dev-server.js:
+     http://localhost:8787/test/fit.html). "page" must stay 0: the play frame never scrolls the page. "stage" counts
+     screens whose question area needs its own scrolling (long texts, the small phone). -->
+<div class="row"><iframe id="f1" width="360" height="640"></iframe><iframe id="f2" width="390" height="740"></iframe></div>
+<pre id="out">Loading…</pre>
+<script>
+const SIZES = ['360x640', '390x740'], out = document.getElementById('out');
+const load = f => new Promise(r => { f.onload = r; f.src = 'dev.html?missions'; });
+async function ready(f){
+  for (let i = 0; i < 80; i++) {
+    try { if (f.contentWindow.eval('typeof fitText') === 'function' && f.contentDocument.querySelector('[data-prev]')) return; } catch(e){}
+    await new Promise(r => setTimeout(r, 250));
+  }
+  throw new Error('the app did not open in ' + f.id);
+}
+async function audit(f){
+  const w = f.contentWindow, d = w.document, ev = s => w.eval(s);
+  ev("sayWord = function(){}; speechStop = function(){}; HTMLMediaElement.prototype.play = function(){ return Promise.resolve(); }; if (window.speechSynthesis) speechSynthesis.speak = function(){}; navigator.vibrate = function(){ return true; };");
+  const m = () => { const st = d.querySelector('.gstage'); return { page: d.scrollingElement.scrollHeight - w.innerHeight, stage: st ? st.scrollHeight - st.clientHeight : 0 }; };
+  const rows = [];
+  for (const lv of ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1']) {
+    await ev(`loadMissions(MS_FILES['${lv}'])`);
+    for (const id of ev(`(window.EQ_MISSIONS[MS_FILES['${lv}']] || []).map(m => m.id)`)) {
+      ev(`previewMission('${id}', '')`);
+      const n = ev('MS.S.length');
+      for (let si = 0; si < n - 1; si++) {
+        ev(`MS.si = ${si}; MS.sub = {}; MS.guess = null; MS.drawn = -1; msRender()`);
+        const t = ev('MS.S[MS.si].t'), k = ev("MS.S[MS.si].it ? MS.S[MS.si].it.k : ''"), a = m();
+        if (t === 'q') { try { ev('msDone(false)'); } catch(e){} }
+        else if (t === 'hook') ev('MS.guess = 0; msRender()');
+        else if (t === 'learn') ev('MS.sub.pred = 0; msRender()');
+        rows.push({ key: t + (k ? ':' + k : ''), id: id + '#' + si, a, b: m() });
+      }
+    }
+  }
+  return rows;
+}
+function report(size, rows){
+  const by = {};
+  rows.forEach(r => { const b = by[r.key] || (by[r.key] = { n: 0, a: 0, b: 0, max: 0 }); b.n++; if (r.a.stage > 1) b.a++; if (r.b.stage > 1) b.b++; b.max = Math.max(b.max, r.a.stage); });
+  const page = rows.filter(r => r.a.page > 0 || r.b.page > 0);
+  return `${size}: ${rows.length} screens · page scrolls on ${page.length}${page.length ? ' (' + page.slice(0, 5).map(r => r.id).join(', ') + ')' : ''} · the question area scrolls on ${rows.filter(r => r.a.stage > 1).length} before answering, ${rows.filter(r => r.b.stage > 1).length} after\n`
+    + Object.entries(by).filter(([, v]) => v.a || v.b).map(([k, v]) => `  ${k}: ${v.a} of ${v.n} before (up to ${v.max}px), ${v.b} after`).join('\n');
+}
+(async () => {
+  try {
+    const frames = [document.getElementById('f1'), document.getElementById('f2')];
+    await Promise.all(frames.map(load));
+    await Promise.all(frames.map(ready));
+    const text = [];
+    for (let i = 0; i < frames.length; i++) { out.textContent = 'Measuring ' + SIZES[i] + '…'; text.push(report(SIZES[i], await audit(frames[i]))); }
+    out.textContent = text.join('\n\n');
+  } catch(e){ out.textContent = 'Failed: ' + e.message; }
+})();
+</script>

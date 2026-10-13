@@ -49,7 +49,7 @@ global.devRun = run; global.devCtx = ctx; global.devPushLog = pushLog;
 // The app with the API pointed at this server and the art loaded from ../docs/ (rebuilt on every load,
 // so edits to src/Index.html show up without restarting and losing the game state).
 const devPage = () => fs.readFileSync('src/Index.html', 'utf8')
-  .replace('<base target="_top">', '<meta name="viewport" content="width=device-width, initial-scale=1"><script>window.EQ_ASSETS=\'../docs/\';</script>')
+  .replace('<base target="_top">', '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"><script>window.EQ_ASSETS=\'../docs/\';</script>')
   .replace(/const API_URL = .*;/, "const API_URL = '/exec';");
 if (!devPage().includes("const API_URL = '/exec';")) throw new Error('API_URL not found in Index.html');
 fs.writeFileSync('test/dev.html', devPage());
