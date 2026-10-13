@@ -6409,10 +6409,11 @@ function manageBody(p){
       <select class="input" id="nk-level">${p.levels.map(l => `<option value="${l.id}" ${l.id === 'a2' ? 'selected' : ''}>Start ${l.label}</option>`).join('')}</select>
     </div>
     <select class="input mt-s" id="nk-group">${p.groups.map(g => `<option value="${esc(g.id)}">${esc(g.name)}</option>`).join('')}</select>
+    <select class="input mt-s" id="nk-missions"><option value="">Daily task: Today's Mission in the app</option><option value="no">Daily task: test-english.com (the old way)</option></select>
     <button class="btn btn-primary btn-block mt-s" id="nk-btn">${icon('user-plus')} Add kid</button>
     <div class="sub mt-s" style="font-size:12px">A PIN is created automatically. New kids take the level test first; their daily tasks and the games open after it.</div>
     <a class="btn btn-glass btn-block mt" href="${esc(p.sheetUrl)}" target="_blank" rel="noopener">Open Google Sheet ${icon('arrow-up-right')}</a>
-    <div class="sub mt-s" style="font-size:12px">Edit PINs, levels, reminder emails, redeemed points, goals and rewards in the sheet.</div>
+    <div class="sub mt-s" style="font-size:12px">Edit PINs, levels, reminder emails, redeemed points, goals and rewards in the sheet. Missions = no on a kid's row keeps their daily task on test-english.com.</div>
   </div>`;
 }
 
@@ -6470,7 +6471,7 @@ function renderParent(p, pin){
     busy(btn, true, '<span class="mini-spin"></span>Adding…');
     try {
       renderParent(await call('apiAdminAddKid', pin, document.getElementById('nk-name').value, document.getElementById('nk-age').value,
-        document.getElementById('nk-group').value, document.getElementById('nk-level').value), pin);
+        document.getElementById('nk-group').value, document.getElementById('nk-level').value, document.getElementById('nk-missions').value), pin);
     } catch(err){ toast(err.message, true); busy(btn, false, label); }
   };
 }

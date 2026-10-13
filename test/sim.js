@@ -1030,7 +1030,7 @@ cases.slice(23).forEach(([t, b]) => { const g = app(t, b); console.log('  ' + JS
 }
 
 
-// ---- Today's Mission: the pilot switch, missions as daily tasks, measured results, review, flags ----
+// ---- Today's Mission: on by default (Girls.Missions = no keeps the link), missions as daily tasks, measured results, review, flags ----
 {
 const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
 const fails = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + label); } catch (e) { console.log('ok: ' + label + ' is rejected: ' + e.message); } };
@@ -1045,28 +1045,32 @@ ctx.__day = start;
 const G = run("apiAdminAddGroup('1234','Mission family','')");
 const gid = G.created.link.split('g=')[1];
 const T = run("apiAdminAddKid('1234','Tali','12','" + gid + "','a2')").created, U = run("apiAdminAddKid('1234','Uri','13','" + gid + "','b1')").created;
+run("apiAdminAddKid('1234','Vered','12','" + gid + "','a2','no')");
+const girl = n => rows('Girls').find(r => r.Name === n);
+check('a new kid gets missions by default; the admin can keep one on the old link', !girl('Tali').Missions && girl('Vered').Missions === 'no' &&
+  run("missionsOn(findGirl('Tali'))") === true && run("missionsOn(findGirl('Vered'))") === false, girl('Tali').Missions + '|' + girl('Vered').Missions);
 const tali = (fn, ...a) => run(fn + '(' + ['Tali', T.pin].concat(a).map(x => JSON.stringify(x)).join(',') + ')');
 const uri = (fn, ...a) => run(fn + '(' + ['Uri', U.pin].concat(a).map(x => JSON.stringify(x)).join(',') + ')');
 tali('apiSubmit', tali('apiDashboard').levelTest.date, '', '', 'a2');
 uri('apiSubmit', uri('apiDashboard').levelTest.date, '', '', 'b1');
 
-// Day 1. Not in the pilot: the link as before.
+// Day 1. Missions = no (the old way): the link as before.
 ctx.__day = run("addDays('" + start + "', 1)");
-run("setSetting('MissionPilot', '')");
+run("setGirlField('Tali', 'Missions', 'no')");
 let D = tali('apiDashboard'), day = D.week.find(w => w.isToday);
 const m1 = firstMission(day.section, 'a2');
-check('without the pilot: no mission, the link as before', !day.mission && /test-english\.com/.test(day.url), JSON.stringify(day));
-// In the pilot: the same assignment opens as a mission (its topic is the first one, and it has a mission).
-run("setSetting('MissionPilot', 'uri, TALI')");
+check('with Missions = no: no mission, the link as before', !day.mission && /test-english\.com/.test(day.url), JSON.stringify(day));
+// By default (Missions empty): the same assignment opens as a mission (its topic is the first one, and it has a mission).
+run("setGirlField('Tali', 'Missions', '')");
 D = tali('apiDashboard'); day = D.week.find(w => w.isToday);
-check('in the pilot: the same topic opens as a mission', day.mission && day.mission.id === m1.id && day.mission.n === m1.n, JSON.stringify(day.mission) + ' ' + day.section);
+check('by default: the same topic opens as a mission', day.mission && day.mission.id === m1.id && day.mission.n === m1.n, JSON.stringify(day.mission) + ' ' + day.section);
 const other = m1.id === 'a2g01' ? 'a2g02' : 'a2g01';
 fails('a mission that is not the day\'s', () => tali('apiMissionResult', day.date, other, 10, m1.n, [], [], 200));
 fails('a wrong number of questions', () => tali('apiMissionResult', day.date, m1.id, 5, m1.n - 2, [], [], 200));
 fails('a mission played too fast', () => tali('apiMissionResult', day.date, m1.id, 5, m1.n, [], [], 12));
 fails('a score above the total', () => tali('apiMissionResult', day.date, m1.id, m1.n + 1, m1.n, [], [], 200));
-run("setSetting('MissionPilot', 'Tali')");
-fails('a kid who is not in the pilot', () => uri('apiMissionResult', day.date, m1.id, 5, m1.n, [], [], 200));
+run("setGirlField('Uri', 'Missions', ' No ')");
+fails('a kid with Missions = no', () => uri('apiMissionResult', day.date, m1.id, 5, m1.n, [], [], 200));
 const q = n => 'x:' + m1.id + ':' + n, good = m1.n - 2;
 const R = tali('apiMissionResult', day.date, m1.id, good, m1.n, [q(3), q(5), 'x:b1g01:2'], [q(1)], 412);
 const L = rows('Log').filter(r => r.Girl === 'Tali' && r.Date === day.date)[0], pct = Math.round(good / m1.n * 100), pts = 10 + (pct >= 80 ? 5 : 0) + 3;
@@ -1084,13 +1088,13 @@ const msg = JSON.parse(cacheStore[run("endpointKey('https://push.example/mission
 check('the 21:00 summary asks the dinner question', (msg.body || '').indexOf('Ask Tali: ' + m1.q) >= 0, msg.body);
 const P = run("apiParent('1234')").groups.find(g => g.id === gid).girls.find(x => x.girl.name === 'Tali');
 check('parents see the mission and its minutes', P.recent[0].mission === m1.id && P.recent[0].seconds === 412, JSON.stringify(P.recent[0]));
-check('a kid outside the pilot still logs a link as before', uri('apiSubmit', day.date, 7, 10, null).justEarned === 13);
+check('a kid with Missions = no still logs a link as before', uri('apiSubmit', day.date, 7, 10, null).justEarned === 13);
 
-// Day 2: a new assignment in the pilot takes a topic that has a mission.
+// Day 2: a new assignment takes a topic that has a mission.
 ctx.__day = run("addDays('" + day.date + "', 1)");
 D = tali('apiDashboard'); day = D.week.find(w => w.isToday);
 const m2 = firstMission(day.section, 'a2');
-check('a new day in the pilot gets a topic with a mission', day.mission && day.mission.id === m2.id, JSON.stringify(day));
+check('a new day gets a topic with a mission', day.mission && day.mission.id === m2.id, JSON.stringify(day));
 check('the missed questions are due the next day', D.games.review.indexOf(q(3)) >= 0 && D.games.review.indexOf(q(5)) >= 0, JSON.stringify(D.games.review));
 const GR = tali('apiGameResult', 'review', 'a2', 1, 2, [q(5)], [q(3)], 0);
 const rev2 = run("readReview('Tali')");
@@ -1099,5 +1103,8 @@ fails('a review round longer than 10 questions', () => tali('apiGameResult', 're
 tali('apiFlag', m1.id, q(3), 'the <b>answer</b> looks wrong');
 const F = rows('Flags').filter(r => r.Girl === 'Tali')[0];
 check('"Something wrong here?" is kept for the owner', F && F.Mission === m1.id && F.Item === q(3) && F.Note === 'the banswer/b looks wrong', JSON.stringify(F));
-run("setSetting('MissionPilot', '')");
+// v15 removes the old pilot setting from a sheet that still has it.
+run("setSetting('MissionPilot', 'all'); PropertiesService.getScriptProperties().setProperty('setup', 'v14'); CacheService.getScriptCache().put('SETUP', 'v14', 60); ensureSetup()");
+check('the v15 setup removes the old MissionPilot setting', run("getSetting('MissionPilot')") === null && run("getSetting('ReminderHour')") !== null &&
+  run("PropertiesService.getScriptProperties().getProperty('setup')") === 'v15');
 }

@@ -77,7 +77,7 @@ http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(global.devCtx.__body);
   }
-  // Today's task as a given mission (specs/missions.md): /dev/mission?who=Aviv&id=a2l01 puts her in the pilot, makes today's
+  // Today's task as a given mission (specs/missions.md): /dev/mission?who=Aviv&id=a2l01 turns missions on for her, makes today's
   // assignment that mission's topic and clears today's log, so it can be played again.
   if (url.pathname === '/dev/mission') {
     global.devCtx.__who = url.searchParams.get('who') || 'Aviv';
@@ -87,8 +87,7 @@ http.createServer((req, res) => {
       if (!url) return 'no mission ' + __mid;
       var hit = null;
       Object.keys(CATALOG).forEach(function (s) { Object.keys(CATALOG[s]).forEach(function (l) { CATALOG[s][l].forEach(function (e) { if (e.u === url) hit = { s: s, l: l, t: e.t }; }); }); });
-      var pilot = String(getSetting('MissionPilot') || '');
-      if (pilot.toLowerCase().split(',').indexOf(__who.toLowerCase()) < 0) setSetting('MissionPilot', pilot ? pilot + ',' + __who : __who);
+      if (!missionsOn(findGirl(__who))) setGirlField(__who, 'Missions', '');
       var t = today(), A = sheet('Assignments').rows, L = sheet('Log').rows;
       var col = function (rows, n) { return rows[0].indexOf(n); };
       var found = false;

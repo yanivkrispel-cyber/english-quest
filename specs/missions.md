@@ -1,9 +1,9 @@
-# Today's Mission (phase 1: the pilot)
+# Today's Mission (phase 1)
 
 The daily task moves from a link to test-english.com into the app. The plan, the competitor check and the owner's
 picks: https://claude.ai/artifact/9ajUGftfHuLqXCPPaZGqJx (picks in its db at `picks/owner`: Hebrew help on demand,
 writing checked by Coco and sent to the parents, speaking as an optional bonus, a story for the journey, a family week
-and a dinner question). Phase 1 is the engine, five mission types and a pilot week of content for all six levels.
+and a dinner question). Phase 1 is the engine, five mission types and a first week of content for all six levels.
 
 ## What stays the same
 
@@ -13,12 +13,13 @@ and a dinner question). Phase 1 is the engine, five mission types and a pilot we
 - The topic map is test-english.com's (`CATALOG`): a mission covers one catalog topic at one level, in the same order.
   The site's terms forbid copying its material, so every text, recording and question is written from scratch.
 
-## The pilot switch
+## Who gets missions
 
-`Settings.MissionPilot`: names (comma separated) or `all`. Only those kids get missions; everybody else keeps the link
-exactly as before. Empty by default, so a deploy changes nothing until a name is added.
+Every kid, by default (the owner's choice on 2026-10-13, after a one-day pilot behind `Settings.MissionPilot`, which
+SETUP v15 removed). `Girls.Missions = no` keeps a kid on the link exactly as before; the admin's add-kid form offers it
+("Daily task: test-english.com"), and the sheet takes it for anyone else.
 
-For a kid in the pilot, `nextExercise` first takes the next topic at her level that has a mission and that she has not
+For a kid with missions on, `nextExercise` first takes the next topic at her level that has a mission and that she has not
 had yet (`MISSION_INDEX`), then falls back to the old order (a link). An assignment made before (a catch-up day) shows its
 mission too when its topic has one.
 
@@ -54,7 +55,7 @@ question shows a reminder card.
 
 ## Saving
 
-`apiMissionResult(name, pin, date, mission, correct, total, missed, right, seconds)`: only for a kid in the pilot, only
+`apiMissionResult(name, pin, date, mission, correct, total, missed, right, seconds)`: only for a kid with missions on, only
 the mission of that day's assignment, `total` must be the mission's count, at least 30 seconds, once per day. It writes
 the `Log` row (new columns `Mission` and `Seconds`), puts the missed questions into the review, notifies the parents and
 returns the dashboard. A result that cannot be sent waits on the phone like a game round. A mission left halfway is
@@ -66,7 +67,7 @@ and the daily cap). "Something wrong here?" under an explanation sends `apiFlag`
 
 ## Content and audio
 
-Pilot week: for every level the first three grammar and listening topics, the first two vocabulary topics and the first
+The first week: for every level the first three grammar and listening topics, the first two vocabulary topics and the first
 reading topic (54 missions); that covers what any kid gets in the coming week, since the app started on 2026-10-08.
 Writing (Friday) keeps its link until phase 2. Listening episodes are recorded with Kokoro (`tools/missions_audio.py`,
 kokoro-onnx, Apache 2.0) into `docs/missions/audio/<mission>-<part>.mp3`.
