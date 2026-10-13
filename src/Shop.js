@@ -210,7 +210,7 @@ function apiShopBuy(name, pin, itemId, color, words) {
     }
     bought = { id: it.id, name: it.name, color: color, price: it.price, paid: paid, pct: g.pct, chips: g.chips, n: g.n, sentence: sentence };
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   var view = shopView(findGirl(kid.Name));
   view.bought = bought;
@@ -246,7 +246,7 @@ function apiWear(name, pin, wear, move) {
   try {
     saveWardrobe(kid.Name, list, move);
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   return { wear: list, move: move };
 }
@@ -496,7 +496,7 @@ function apiWords(name, pin, itemId, right, missed) {
     });
     saveWordsRow(kid.Name, w);
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   return shopView(findGirl(kid.Name));
 }
@@ -521,7 +521,7 @@ function apiSaveWord(name, pin, id, on) {
     } else if (!on && i >= 0) w.saved.splice(i, 1);
     saveWordsRow(kid.Name, w);
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   return { saved: w.saved };
 }
@@ -554,7 +554,7 @@ function apiDesign(name, pin, base, text, fresh) {
     saveWardrobe(kid.Name, w.wear, w.move);
     bought = { id: token, name: designText(g.spec), price: b[2], paid: b[2], perfect: perfect, n: g.n, design: true };
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   var view = shopView(findGirl(kid.Name));
   view.bought = bought;

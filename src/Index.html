@@ -256,6 +256,7 @@ a{color:inherit}
 .netbar{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:8px;
   max-width:calc(100vw - 32px);padding:9px 16px;border:0;border-radius:999px;background:rgba(28,30,45,.9);color:#fff;font:inherit;font-size:13px;font-weight:700;
   box-shadow:0 14px 30px -12px rgba(20,22,40,.6)}
+html:has(.gplay) .netbar,html:has(.tugscreen) .netbar{display:none}
 .netbar.upd{bottom:auto;top:calc(12px + env(safe-area-inset-top));cursor:pointer;background:linear-gradient(180deg,var(--primary-2),var(--primary))}
 .icon-btn.spin i{animation:spin 1s linear infinite}
 .icon-btn.off{position:relative}
@@ -1018,7 +1019,7 @@ const API_URL = 'https:' + '/' + '/script.google.com/macros/s/AKfycbzN95JPrZcVFt
 // Every server call has a time limit (a stuck call never leaves a spinner turning), calls that only read
 // get one quiet second try, and errors from Google itself (not the app's own checks, like "Wrong PIN") read
 // as a short "try again". e.app = the server said no; e.net = the call did not get through.
-const CALL_MS = 15000, CALL_SHORT = { apiDuelPoll: 8000, apiDuelHome: 10000, apiWarm: 10000 };
+const CALL_MS = 15000, CALL_SHORT = { apiDuelPoll: 8000, apiDuelHome: 10000, apiWarm: 10000, apiGameResult: 25000, apiMissionResult: 25000 };
 const CALL_TWICE = { apiPublic: 1, apiDashboard: 1, apiParent: 1, apiTugCheck: 1 };
 const INFRA = /Service|Exception|lock|too many times|timed out|unavailable|internal error|quota|rate limit/i;
 const netError = kind => Object.assign(new Error(kind === 'timeout' ? 'The server is taking too long. Try again in a moment.'
@@ -3032,7 +3033,7 @@ function secondTry(it, el){
     const wrong = [...app.querySelectorAll('.opt')].filter(b => !b.disabled && b.dataset.v !== it.answer);
     if (wrong.length > 1) { const k = wrong[Math.floor(Math.random() * wrong.length)]; k.disabled = true; k.classList.add('gone'); }
     say('Two left. Which one is it?');
-    if (it.game === 'listen') setTimeout(() => sayIt(true), 450);
+    if (it.game === 'listen') setTimeout(() => { if (G && G.items[G.i] === it) sayIt(true); }, 450);
   } else if (it.game === 'spot') {
     el.disabled = true; el.classList.add('wrongpick', 'shake');
     const toks = [...app.querySelectorAll('.sentence .tok')], first = it.wrong < toks.length / 2;
@@ -3202,18 +3203,24 @@ async function openMyWords(){
 // Rounds that could not be sent wait on the phone and go up on the next sign-in.
 const pendKey = () => 'eq_pending_' + session.name;
 function queueResult(R){ store.set(pendKey(), (store.get(pendKey()) || []).concat([R]).slice(-20)); }
+let flushing = false;
 async function flushPending(){
-  if (!session) return;
-  const q = store.get(pendKey()) || [];
-  if (!q.length) return;
-  store.del(pendKey());
-  for (let i = 0; i < q.length; i++) {
-    try {
-      if (q[i].fn === 'mission') setDash(await call('apiMissionResult', session.name, session.pin, ...q[i].args));
-      else setDash(await call('apiGameResult', session.name, session.pin, q[i].game, q[i].level, q[i].correct, q[i].total, q[i].missed, q[i].right, q[i].second || 0));
+  if (!session || flushing) return;
+  const key = pendKey();
+  if (!(store.get(key) || []).length) return;
+  flushing = true;
+  try {
+    let q;
+    while ((q = store.get(key) || []).length) {
+      const r = q[0];
+      try {
+        if (r.fn === 'mission') setDash(await call('apiMissionResult', session.name, session.pin, ...r.args));
+        else setDash(await call('apiGameResult', session.name, session.pin, r.game, r.level, r.correct, r.total, r.missed, r.right, r.second || 0));
+      }
+      catch(e){ if (!e.app) return; }
+      store.set(key, (store.get(key) || []).slice(1));
     }
-    catch(e){ if (e.app) continue; store.set(pendKey(), q.slice(i).concat(store.get(pendKey()) || [])); return; }
-  }
+  } finally { flushing = false; }
   if (!G && document.getElementById('petimg')) renderDash();
 }
 
@@ -3232,7 +3239,7 @@ function sayIt(slow){
   const btn = document.getElementById('say'), tr = document.getElementById('transcript');
   if (!('speechSynthesis' in window)) { if (tr) tr.innerHTML = `<div class="answer-box">No sound on this device, so read it: <b>${esc(it.say)}</b></div>`; return; }
   try {
-    speechSynthesis.cancel();
+    speechStop();
     const u = new SpeechSynthesisUtterance(it.say);
     u.lang = voice ? voice.lang : 'en-GB';
     if (voice) u.voice = voice;
@@ -3242,7 +3249,8 @@ function sayIt(slow){
     speechSynthesis.speak(u);
   } catch(e){}
 }
-function speechStop(){ try { speechSynthesis.cancel(); } catch(e){} }
+let speechGen = 0;
+function speechStop(){ speechGen++; try { speechSynthesis.cancel(); } catch(e){} }
 
 // ---------- Today's Mission (specs/missions.md) ----------
 // The daily task played in the app, in five parts (Hook, Learn, Practice, Use it, Finish), with the score measured here.
@@ -3399,7 +3407,7 @@ function msRender(){
   document.getElementById('ms').onclick = msClick;
   const ti = document.getElementById('mstype');
   if (ti) ti.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); msCheckType(); } };
-  if (sc.t === 'q' && sc.it.k === 'hear' && !MS.sub.done) setTimeout(() => sayWord(sc.it.say), 350);
+  if (sc.t === 'q' && sc.it.k === 'hear' && !MS.sub.done) { const sub = MS.sub; setTimeout(() => { if (MS && MS.sub === sub && !sub.done) sayWord(sc.it.say); }, 350); }
 }
 
 const msNextHtml = label => `<button class="btn btn-primary btn-block" id="msnext">${label || 'Next'} ${icon('arrow-right')}</button>`;
@@ -3528,8 +3536,9 @@ function msSpeakLines(lines, onEnd){
   if (!('speechSynthesis' in window)) { toast('No sound on this phone. Read it instead.', true); msShowLines(lines); if (onEnd) onEnd(); return; }
   const vs = (speechSynthesis.getVoices() || []).filter(v => /^en/i.test(v.lang));
   const cast = MS.m.show.voices ? Object.keys(MS.m.show.voices) : [];
-  let i = 0;
+  let i = 0, gen;
   const next = () => {
+    if (gen !== speechGen) return;
     if (!MS || i >= lines.length) { if (onEnd && MS) onEnd(); return; }
     const [who, text] = lines[i++], u = new SpeechSynthesisUtterance(text), k = Math.max(0, cast.indexOf(who));
     const v = vs.length ? vs[k % vs.length] : voice;
@@ -3539,6 +3548,7 @@ function msSpeakLines(lines, onEnd){
     speechSynthesis.speak(u);
   };
   speechStop();
+  gen = speechGen;
   next();
 }
 function msShowLines(lines){
@@ -3832,6 +3842,8 @@ async function msSave(args){
   } catch(e){
     if (e.app) { status('err', icon('warning') + ' ' + esc(e.message)); return; }
     queueResult({ fn: 'mission', args });
+    const w = dash && dash.week.find(x => x.date === args[0]);
+    if (w) Object.assign(w, { done: true, waiting: true, correct: args[2], total: args[3], percent: Math.round(args[2] / args[3] * 100), seconds: args[6] });
     status('err', icon('wifi-slash') + ' Saved on this phone. It will sync when you are online.');
   }
 }
@@ -5146,7 +5158,7 @@ function talkLearn(rows, me){
 function sayWord(text){
   if (!('speechSynthesis' in window)) return toast('No sound on this device');
   try {
-    speechSynthesis.cancel();
+    speechStop();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = voice ? voice.lang : 'en-GB';
     if (voice) u.voice = voice;
@@ -6333,7 +6345,7 @@ function missionCard(t){
     <div class="row-flex mt-s" style="gap:10px">${tile(t.section)}<b>${esc(info[0])}</b></div>
     <h2>${esc(t.title)}</h2>
     ${t.done ? `<div class="done-badge"><div class="big-check">${BIG_CHECK}</div>
-        <div><b style="font-size:20px">${esc(scoreText(t))}</b><div class="sub" style="color:#3b3f55">+${esc(t.points)} points${t.seconds ? ' · ' + Math.max(1, Math.round(t.seconds / 60)) + ' min' : ''} · great job!</div></div></div>`
+        <div><b style="font-size:20px">${esc(scoreText(t))}</b><div class="sub" style="color:#3b3f55">${t.waiting ? 'Saved on this phone · the points come when you are online' : '+' + esc(t.points) + ' points' + (t.seconds ? ' · ' + Math.max(1, Math.round(t.seconds / 60)) + ' min' : '') + ' · great job!'}</div></div></div>`
       : `<div class="sub" style="color:#3b3f55">About ${info[1]} minutes · ${t.mission.n} questions · your score saves by itself</div>
         <div class="mission-parts">${MS_PARTS.map(p => `<span>${p}</span>`).join('')}</div>
         <button class="btn btn-primary btn-block mt" data-mission="${t.date}">${saved ? 'Continue · ' + left + ' questions left' : 'Start mission'} ${icon('play')}</button>`}

@@ -64,7 +64,7 @@ function apiDuelInvite(name, pin, guestName, mode) {
       duelSave(d, true);
     }
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   if (!joined && guest && mode !== 'challenge') {
     try { pushToKid(guest.Name, duelMessage('invite', d)); } catch (e) { console.error(e); }
@@ -92,7 +92,7 @@ function apiDuelJoin(name, pin, code) {
     else if (d.State === 'declined') throw new Error('This invite has expired');
     else if (d.State === 'expired') throw new Error('This invite has expired');
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   return duelView(d, kid.Name);
 }
@@ -112,7 +112,7 @@ function apiDuelReply(name, pin, code, reply) {
     else d.Expires = String(Math.max(Number(d.Expires), Date.now()) + DUEL.waitMin * 60000);
     duelSave(d);
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   return duelView(d, kid.Name);
 }
@@ -126,7 +126,7 @@ function apiDuelCancel(name, pin, code) {
     if (d.Host !== kid.Name) throw new Error('Only ' + d.Host + ' can cancel this invite');
     if (d.State === 'invited' || d.State === 'solo') { d.State = 'cancelled'; d.Ended = new Date().toISOString(); duelSave(d); }
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   return duelView(d, kid.Name);
 }
@@ -145,7 +145,7 @@ function apiDuelSolo(name, pin, code) {
     d.Expires = String(Date.now() + DUEL.challengeHours * 3600000);
     duelSave(d);
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   return duelView(d, kid.Name);
 }
@@ -174,7 +174,7 @@ function apiDuelPoll(name, pin, code, progress) {
       d = duelFresh(code);
       if (d.State === 'playing') duelTimeout(d, now); else duelExpire(d, now);
     } finally {
-      lock.releaseLock();
+      unlock(lock);
     }
   }
   var other = role === 'host' ? d.Guest : d.Host;
@@ -217,7 +217,7 @@ function apiDuelFinish(name, pin, code, result) {
     if (d.Mode === 'talk') p.p = r.track;
     CacheService.getScriptCache().put('DP:' + d.Id + ':' + kid.Name, JSON.stringify(p), DUEL.cacheSec);
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   try {
     if (opened && d.Guest) pushToKid(d.Guest, duelMessage('challenge', d));
@@ -244,7 +244,7 @@ function apiDuelHelped(name, pin, code, itemId) {
     var list = String(d.Helped || '').split(' ').filter(String), entry = kid.Name + ':' + itemId;
     if (list.indexOf(entry) < 0 && list.length < 20) { list.push(entry); d.Helped = list.join(' '); duelSave(d); }
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   var out = duelView(d, kid.Name);
   out.helper = duelHelperStars(kid.Name);
@@ -471,7 +471,7 @@ function apiTugSave(name, pin, mateName, mateCred, mine, hers, saveId) {
     });
     if (sid && !seen) cache.put(sid, JSON.stringify({ xp: xp[kid.Name] || 0, mateXp: mate ? xp[mate.Name] || 0 : null }), TUG.saveSec);
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   if (seen) { var was = JSON.parse(seen); return { xp: was.xp, mateXp: was.mateXp, again: true, dash: buildDashboard(findGirl(kid.Name)) }; }
   players.forEach(function (p) { try { duoAfterPractice(p[0].Name); } catch (e) { console.error(e); } });

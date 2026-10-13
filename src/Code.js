@@ -148,16 +148,25 @@ function publicUrl() {
   return getSetting('PublicUrl') || getSetting('AppUrl');
 }
 
-// Brute-force guard: 8 wrong PINs for the same key lock it for 15 minutes.
+// Brute-force guard: 8 wrong PINs for the same key lock it for 15 minutes, and 30 within a day lock it for a day, so a
+// 4-digit PIN can't be found by guessing slowly (about 770 tries a day otherwise).
 function checkPin(key, ok) {
-  var c = CacheService.getScriptCache(), k = 'F:' + key;
-  var fails = Number(c.get(k)) || 0;
+  var c = CacheService.getScriptCache(), k = 'F:' + key, kd = 'D:' + key;
+  var fails = Number(c.get(k)) || 0, daily = Number(c.get(kd)) || 0;
   if (fails >= 8) throw new Error('Too many attempts — try again in 15 minutes');
+  if (daily >= 30) throw new Error('Too many attempts today — try again tomorrow');
   if (!ok) {
     c.put(k, String(fails + 1), 900);
+    c.put(kd, String(daily + 1), 86400);
     throw new Error('Wrong PIN');
   }
   if (fails) c.remove(k);
+}
+
+// Releases the script lock after pushing pending sheet writes: Apps Script may hold them until the
+// run ends, and the request waiting on the lock reads the sheet right away.
+function unlock(lock) {
+  try { SpreadsheetApp.flush(); } finally { lock.releaseLock(); }
 }
 
 // ---------- Groups ----------
@@ -256,7 +265,7 @@ function apiSubmit(name, pin, date, correct, total, levelResult) {
     };
     appendRow('Log', entry);
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   try { notifyCompletion(kid, entry); } catch (e) { console.error(e); }
   try { duoAfterPractice(kid.Name); } catch (e) { console.error(e); }
@@ -296,7 +305,7 @@ function apiGameResult(name, pin, game, level, correct, total, missed, right, se
       Correct: correct, Total: total, XP: xp, Missed: missed.join(' ') });
     updateReview(kid.Name, missed, right, t);
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   try { duoAfterPractice(kid.Name); } catch (e) { console.error(e); }
   var dash = buildDashboard(findGirl(kid.Name));
@@ -469,7 +478,7 @@ function apiGateResult(name, pin, correct, total, missed, right) {
     if (passed) setGirlField(kid.Name, 'Level', j.gate.next);
     updateReview(kid.Name, missed, right, t);
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   try { notifyGate(kid, row); } catch (e) { console.error(e); }
   var dash = buildDashboard(findGirl(kid.Name));
@@ -486,7 +495,8 @@ function apiParent(pin) {
 
 function parentAccess(pin) {
   pin = String(pin).trim();
-  var isAdmin = pin === String(getSetting('AdminPIN')).trim();
+  var admin = String(getSetting('AdminPIN') || '').trim();
+  var isAdmin = !!admin && pin === admin;
   var group = isAdmin ? null : groups().filter(function (g) { return String(g.ParentPIN || '').trim() && String(g.ParentPIN).trim() === pin; })[0];
   checkPin('parent', isAdmin || !!group);
   return { isAdmin: isAdmin, group: group };
@@ -565,7 +575,7 @@ function apiAdminAddGroup(pin, name, email) {
     parentPin = uniqueParentPin();
     appendRow('Groups', { Id: id, Name: name, ParentPIN: parentPin, Goal: 1500, GoalReward: 'Pizza party for the group', Email: String(email || '').trim() });
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   var data = apiParent(pin);
   data.created = { type: 'group', name: name, pin: parentPin, link: groupLink(id) };
@@ -589,7 +599,7 @@ function apiAdminAddKid(pin, name, age, groupId, level, missions) {
     appendRow('Girls', { Name: name, Age: Number(age) || '', PIN: kidPin, Level: level, Email: '', Redeemed: 0, Color: COLORS[count % COLORS.length], Group: groupId,
       Missions: String(missions || '').trim().toLowerCase() === 'no' ? 'no' : '' });
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   var data = apiParent(pin);
   data.created = { type: 'kid', name: name, pin: kidPin, link: groupLink(groupId), group: findGroup(groupId).Name };
@@ -801,7 +811,7 @@ function ensureAssignments(kid, dates) {
       appendRow('Assignments', { Girl: kid.Name, Date: d, Section: a.section, Level: a.level, Title: a.title, URL: a.url });
     });
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   return out;
 }
@@ -823,8 +833,18 @@ function nextExercise(section, level, used, missions) {
       if (!used[list[j].u]) return { section: section, level: LEVELS[i], title: list[j].t, url: list[j].u };
     }
   }
-  // Everything done: repeat from the kid's level.
-  var lv = byLevel[LEVELS[start]] ? LEVELS[start] : Object.keys(byLevel)[0];
+  // No list at her level or above (C1 has no Use of English): the nearest level below, in order.
+  for (var b = start - 1; b >= 0 && !byLevel[LEVELS[start]]; b--) {
+    var lower = byLevel[LEVELS[b]] || [];
+    for (var m = 0; m < lower.length; m++) {
+      if (!used[lower[m].u]) return { section: section, level: LEVELS[b], title: lower[m].t, url: lower[m].u };
+    }
+    if (lower.length) break;
+  }
+  // Everything done: repeat from the kid's level (or the nearest level below that has the section).
+  var lv = LEVELS[start];
+  for (var c = start; c >= 0 && !byLevel[lv]; c--) lv = LEVELS[c];
+  if (!byLevel[lv]) lv = Object.keys(byLevel)[0];
   var pick = byLevel[lv][Math.floor(Math.random() * byLevel[lv].length)];
   return { section: section, level: lv, title: pick.t, url: pick.u };
 }
@@ -971,7 +991,7 @@ function ensureSetup() {
     props.setProperty('setup', SETUP_VERSION);
     cache.put('SETUP', SETUP_VERSION, 21600);
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
 }
 
@@ -1041,7 +1061,7 @@ function invalidate(name) {
 
 function clearCache() {
   TABLES = {};
-  try { CacheService.getScriptCache().removeAll(Object.keys(HEADERS).map(function (n) { return 'T:' + n; })); } catch (e) {}
+  Object.keys(HEADERS).forEach(invalidate);
 }
 
 // Simple trigger: any manual edit in the spreadsheet (PIN, level, rewards...) drops the cache.

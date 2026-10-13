@@ -38,7 +38,7 @@ function apiDuoInvite(name, pin, partnerName) {
       note = { to: mate.Name, msg: duoMessage('ask', kid.Name) };
     }
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   try { pushToKid(note.to, note.msg); } catch (e) { console.error(e); }
   return duoHome(kid);
@@ -53,14 +53,16 @@ function apiDuoAnswer(name, pin, id, accept) {
     if (d.B !== kid.Name) throw new Error('This request is not for you');
     if (d.State !== 'invited') throw new Error('This request is no longer open');
     if (accept) {
-      if (duoCount(duoRows(), kid.Name) >= DUO.max) throw new Error('You can have up to ' + DUO.max + ' duo streaks');
+      var rows = duoRows();
+      if (duoCount(rows, kid.Name) >= DUO.max) throw new Error('You can have up to ' + DUO.max + ' duo streaks');
+      if (duoCount(rows, d.A) >= DUO.max) throw new Error(d.A + ' already has ' + DUO.max + ' duo streaks');
       d.State = 'active'; d.Since = today();
     } else {
       d.State = 'declined'; d.Ended = new Date().toISOString();
     }
     duoSave(d);
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   if (accept) { try { pushToKid(d.A, duoMessage('yes', kid.Name)); } catch (e) { console.error(e); } }
   return duoHome(kid);
@@ -83,7 +85,7 @@ function apiDuoNudge(name, pin, id) {
     duoSave(d);
     s = duoStreak(d, t);
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   var did = !!practiceDays(kid.Name)[t];
   try {
@@ -103,7 +105,7 @@ function apiDuoEnd(name, pin, id) {
     if (!duoHas(d, kid.Name)) throw new Error('This duo streak is not yours');
     if (d.State === 'active' || d.State === 'invited') { d.State = 'ended'; d.Ended = new Date().toISOString(); duoSave(d); }
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   return duoHome(kid);
 }
@@ -138,7 +140,7 @@ function duoAfterPractice(name) {
       if (changed) { d.Milestones = reached.join(' '); d.QuestDone = weeks.slice(-12).join(' '); duoSave(d); }
     });
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   notes.forEach(function (n) { n.to.forEach(function (k) { try { pushToKid(k, n.msg); } catch (e) { console.error(e); } }); });
 }

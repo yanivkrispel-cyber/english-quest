@@ -130,7 +130,7 @@ function vapidKeys() {
         props.setProperties({ VAPID_D: d, VAPID_PUB: b64url([4].concat(bigToBytes(kp.x, 32), bigToBytes(kp.y, 32))) });
       }
     } finally {
-      lock.releaseLock();
+      unlock(lock);
     }
   }
   VAPID_MEMO = { d: BigInt('0x' + d), pub: props.getProperty('VAPID_PUB') };
@@ -204,7 +204,7 @@ function removeSubscriptions(endpoints, sheetName) {
     }
     invalidate(sheetName);
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
 }
 
@@ -320,7 +320,7 @@ function apiParentPushSubscribe(pin, endpoint, agent, welcome) {
       appendRow('ParentPush', { Who: who, Endpoint: endpoint, Created: today(), Agent: String(agent || '').slice(0, 120), Instant: 'yes' });
     }
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   var res = { instant: instant === 'yes' };
   if (welcome) {
@@ -404,7 +404,7 @@ function apiPushSubscribe(name, pin, endpoint, agent, welcome) {
     if (found) invalidate('Push');
     else appendRow('Push', { Girl: kid.Name, Endpoint: endpoint, Created: today(), Agent: String(agent || '').slice(0, 120) });
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   var res = { devices: readTable('Push').filter(function (s) { return s.Girl === kid.Name; }).length };
   if (welcome) {

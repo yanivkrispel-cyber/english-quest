@@ -30,7 +30,7 @@ const cacheMock = {
 const ctx = {
   console, Math, JSON, Date: SimDate, Number, String, Object, Array, BigInt, parseInt,
   UrlFetchApp: { fetchAll: reqs => reqs.map(o => { pushLog.push({ url: o.url, auth: o.headers.Authorization }); const c = pushStatus(o.url); return { getResponseCode: () => c }; }) },
-  SpreadsheetApp: { getActive: () => ({ getSheetByName: n => sheets[n] || null, insertSheet: mkSheet, getSheets: () => Object.values(sheets),
+  SpreadsheetApp: { flush(){}, getActive: () => ({ getSheetByName: n => sheets[n] || null, insertSheet: mkSheet, getSheets: () => Object.values(sheets),
     deleteSheet(){}, setSpreadsheetTimeZone(){}, getUrl: () => 'SHEET' }) },
   Utilities: { formatDate: d => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jerusalem' }).format(d),
     DigestAlgorithm: { SHA_256: 'sha256' }, Charset: { UTF_8: 'utf8' }, getUuid: () => crypto.randomUUID(),
@@ -67,7 +67,7 @@ try { run(`apiSubmit('Aviv','2694','2026-10-08','','','a2')`); } catch(e){ conso
 try { run(`apiDashboard('Aviv','1111')`); } catch(e){ console.log('pin ok:', e.message); }
 for (let i = 0; i < 9; i++) { try { run(`apiDashboard('Ron','0000')`); } catch(e){ if (i === 8) console.log('lockout:', e.message); } }
 try { run(`apiDashboard('Ron','7356')`); } catch(e){ console.log('locked even with right pin:', e.message); }
-Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
+Object.keys(cacheStore).filter(k => (k.startsWith('F:') || k.startsWith('D:'))).forEach(k => delete cacheStore[k]);
 console.log('doPost:', run(`doPost({postData:{contents:JSON.stringify({fn:'apiDashboard',args:['Aviv','2694']})}}).getContent()`).slice(0, 80));
 console.log('doPost bad:', run(`doPost({postData:{contents:JSON.stringify({fn:'installTriggers',args:[]})}}).getContent()`));
 // simulate days
@@ -1107,4 +1107,34 @@ check('"Something wrong here?" is kept for the owner', F && F.Mission === m1.id 
 run("setSetting('MissionPilot', 'all'); PropertiesService.getScriptProperties().setProperty('setup', 'v14'); CacheService.getScriptCache().put('SETUP', 'v14', 60); ensureSetup()");
 check('the v15 setup removes the old MissionPilot setting', run("getSetting('MissionPilot')") === null && run("getSetting('ReminderHour')") !== null &&
   run("PropertiesService.getScriptProperties().getProperty('setup')") === 'v15');
+}
+
+// ---- Audit fixes: C1 Fridays, the duo limit, slow PIN guessing, an empty admin PIN ----
+{
+const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+const c1 = run("JSON.stringify(nextExercise('use-of-english', 'c1', {}, true))");
+check('C1 has no Use of English: the first B2 one, not a random A1 test', JSON.parse(c1).level === 'b2' && JSON.parse(c1).url.indexOf('/b2/') > 0, c1);
+const D = sheets.Duos.rows, h = D[0];
+const duoRow = (id, a, b, state) => D.push(h.map(k => ({ Id: id, Created: new Date().toISOString(), A: a, B: b, State: state, Since: ctx.__day })[k] ?? ''));
+['Ana', 'Bea', 'Cai', 'Dov'].forEach((n, i) => duoRow('lim' + i, 'Ron', n, 'active'));
+duoRow('lim9', 'Ron', 'Aviv', 'invited');
+run('clearCache()');
+let msg = '';
+try { run("apiDuoAnswer('Aviv', '2694', 'lim9', true)"); } catch (e) { msg = e.message; }
+check('a request from a kid who already has 4 duos cannot be accepted', /Ron already has 4/.test(msg), msg);
+let daily = '';
+for (let i = 0; i < 31; i++) {
+  Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
+  try { run("checkPin('girl:slow', false)"); } catch (e) { daily = e.message; }
+}
+check('30 wrong PINs in a day lock the name until tomorrow', /today/.test(daily), daily);
+Object.keys(cacheStore).filter(k => k.startsWith('F:') || k.startsWith('D:')).forEach(k => delete cacheStore[k]);
+sheets.Settings.rows.forEach(r => { if (r[0] === 'AdminPIN') r[1] = ''; });
+run('clearCache()');
+let empty = '';
+try { run("parentAccess('')"); empty = 'admin'; } catch (e) { empty = e.message; }
+check('an empty AdminPIN cell never opens the admin view', empty !== 'admin', empty);
+sheets.Settings.rows.forEach(r => { if (r[0] === 'AdminPIN') r[1] = '1234'; });
+Object.keys(cacheStore).filter(k => k.startsWith('F:') || k.startsWith('D:')).forEach(k => delete cacheStore[k]);
+run('clearCache()');
 }

@@ -56,7 +56,7 @@ function apiMissionResult(name, pin, date, missionId, correct, total, missed, ri
     appendRow('Log', entry);
     updateReview(kid.Name, missed, right, t);
   } finally {
-    lock.releaseLock();
+    unlock(lock);
   }
   try { notifyCompletion(kid, entry); } catch (e) { console.error(e); }
   try { duoAfterPractice(kid.Name); } catch (e) { console.error(e); }
