@@ -15,7 +15,8 @@ working rules and the traps learned while building it.
 1. Edit `src/` (server: `Code.js`, `Push.js`; UI: `Index.html`). Game content: `docs/games.js`
    (check with `node test/games-check.js`); pet art: see `tools/PETS.md`. Mission content: `docs/missions/<level>.js`
    (`node test/missions-check.js`, then `node tools/missions-index.js` to rewrite `src/MissionIndex.js`, then record new
-   episodes with `python tools/missions_audio.py` and raise `MISSIONS_V` in Index.html).
+   episodes with `python tools/missions_audio.py` and raise `MISSIONS_V` in Index.html). Talk with Coco scripts:
+   `docs/talk/<level>.js` (`node test/talk-check.js`, then `python tools/talk_audio.py` and raise `TALK_V`).
 2. `node test/sim.js` (extend it for new server behaviour), `node test/ui-check.js` (Index.html traps) and, for
    crypto, `node test/push-crypto.js`.
 3. Visual check: `node test/preview.js`, serve `app/` (`python -m http.server 8765`), open
@@ -113,6 +114,9 @@ working rules and the traps learned while building it.
 - Kokoro (the episode voices) lives outside the repo in `C:\Dev\EnglishLessons\kokoro` (`kokoro-v1.0.onnx`,
   `voices-v1.0.bin`); `pip install kokoro-onnx soundfile` needed several tries on this network (`--retries 10`).
   `tools/missions-audio.json` remembers what was recorded; only changed parts are recorded again.
+- **Talk & Tap owns the names `talk*` / `TALK`** (Duels.js, Index.html). Talk with Coco is `chat*` / `CHAT` in code
+  (`src/Chat.js`, tab `Chats`, `dash.chat`); a server `var TALK` in another file silently broke the Talk & Tap duel.
+  Its content keeps the outside names (`docs/talk/`, `EQ_TALK`, `test/talk-check.js`).
 - Default PINs are random; the real PINs live only in the private sheet. The repo is public:
   never commit real PINs, emails or the sheet's contents (tests use fake PINs 4821/7356/2694/1234).
 
@@ -171,3 +175,10 @@ The friends' pilot (built 2026-10-26, spec `specs/pilot.md`, server `Pilot.js`, 
 (`PHE` / `T()`; the admin stays English), feedback (tab Feedback), teacher review (`?missions&t=<Settings.TeacherCode>`), the
 admin Pilot card. 183 missions. Writing days give a mission instead of a link. Shown name: English with Coco. Mission
 writers can check a staging file alone: `MISSIONS_ONLY=<file> MISSIONS_FILE=<path> node test/missions-check.js`.
+
+Talk with Coco (built 2026-10-26 overnight, spec `specs/talk.md`, server `src/Chat.js`, SETUP v17): scripted spoken talks,
+one after Use it in every mission and one home scene a day; recorded Coco lines, the phone's speech recognition matched to
+the script by keywords, tiles and a Hebrew hint; a bonus only. Preview: `?talk` (and the button in `?missions`). Stage 0 gate on
+the admin's Pilot card. Writing rules for new scripts: `tools/TALK-WRITING.md`. Live @35 on 2026-10-27 with 2,689 of 4,502
+clips recorded (the recording run was stopped for low memory); the rest play in the phone's voice until
+`python tools/talk_audio.py` finishes them (it resumes where it stopped), then raise `TALK_V`, build Pages and push.

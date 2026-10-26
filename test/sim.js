@@ -48,7 +48,7 @@ const ctx = {
 };
 const props = ctx.PropertiesService.getScriptProperties(); ctx.PropertiesService.getScriptProperties = () => props;
 vm.createContext(ctx);
-for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js']) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
+for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js']) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
 // Each call is a fresh request: per-request table memo resets, CacheService persists.
 const run = s => { if (typeof ctx.TABLES === 'object') vm.runInContext('TABLES = {}', ctx); return vm.runInContext(s, ctx); };
 let day = '2026-10-08';
@@ -1160,4 +1160,33 @@ const w = run("JSON.stringify(nextExercise('writing', 'a2', {}, true))");
 check('a writing day gives a mission to a kid with missions', !!run('missionOf(' + JSON.stringify(JSON.parse(w).url) + ')'), w);
 const c1 = run("JSON.stringify(nextExercise('use-of-english', 'c1', {}, true))");
 check('C1 (no Use of English) gets a grammar mission', JSON.parse(c1).section === 'grammar' && !!run('missionOf(' + JSON.stringify(JSON.parse(c1).url) + ')'), c1);
+}
+
+// ---- Talk to Coco (Chat.js) ----
+{
+const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+const fails = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + label); } catch (e) { console.log('ok: ' + label + ' is rejected: ' + e.message); } };
+const rows = name => sheets[name].rows.slice(1).map(r => Object.fromEntries(sheets[name].rows[0].map((h, i) => [h, r[i]])));
+const C = (id, turns, voice, tiles, said, sec) => run(`apiChatResult('Aviv', '2694', ${JSON.stringify(id)}, ${turns}, ${voice}, ${tiles}, true, ${JSON.stringify(said || [])}, ${sec || 60})`);
+const coins0 = run("coinsOf(findGirl('Aviv')).earned");
+fails('a talk with a made-up id', () => C('xa1g01', 4, 4, 0));
+fails('more answers than turns', () => C('ta1g01', 4, 4, 1));
+fails('a talk of nine turns', () => C('ta1g01', 9, 9, 0));
+fails('a talk that took five seconds', () => C('ta1g01', 4, 4, 0, [], 5));
+const d1 = C('ta1g01', 4, 3, 1, ['yes i am happy', '=SUM(1) she is small', 'my shirt is blue']);
+check('a mission talk gives 3 XP a spoken answer and 1 a tile', d1.chatXp === 10, d1.chatXp);
+const r1 = rows('Chats').slice(-1)[0];
+check('the row keeps the summary and what was heard, cleaned', r1.Talk === 'ta1g01' && r1.Where === 'mission' && r1.Voice === 3 && r1.Tiles === 1 && r1.Mic === 'yes' &&
+  r1.Said === 'yes i am happy | SUM(1) she is small | my shirt is blue', JSON.stringify(r1));
+check('the same talk again the same day gives nothing', C('ta1g01', 4, 4, 0).chatXp === 0);
+const d2 = C('sa101', 4, 4, 0, ['chocolate please', 'a big one please', 'i have five coins and i want two ice creams']);
+check('a home scene all aloud gets the bonus', d2.chatXp === 15 && d2.chat.homeToday === true, d2.chatXp);
+check('a second home scene the same day is practice', C('sa102', 3, 3, 0).chatXp === 0);
+const d3 = C('ta1g02', 4, 4, 0);
+check('the day cap holds (30)', d3.chatXp === 5 && d3.chat.todayXp === 30, d3.chatXp);
+check('the dashboard counts the week and keeps the longest sentence', d3.chat.week === 5 && d3.chat.weekVoice === 5 && d3.chat.voiceDays === 1 &&
+  d3.chat.best === 'i have five coins and i want two ice creams' && d3.chat.homeDone.indexOf('sa101') >= 0, JSON.stringify(d3.chat));
+check('talk XP is coins and pet XP', run("coinsOf(findGirl('Aviv')).earned") - coins0 === 30);
+const b = run("apiPilotStats('1234')").chat.find(k => k.name === 'Aviv');
+check('the admin board shows who talks aloud', b && b.week === 1 && b.talks === 5 && b.micPct === 100 && b.voicePct > 80, JSON.stringify(b));
 }

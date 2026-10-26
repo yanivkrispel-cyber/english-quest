@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v16';
+var SETUP_VERSION = 'v17';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
@@ -72,7 +72,9 @@ var HEADERS = {
   Flags: ['Timestamp', 'Girl', 'Date', 'Mission', 'Item', 'Note'],
   // The friends' pilot (Pilot.js): in-app level tests (form A first, B the retest) and parents' feedback.
   Placements: ['Timestamp', 'Girl', 'Date', 'Form', 'Start', 'Level', 'Correct', 'Total', 'Detail'],
-  Feedback: ['Timestamp', 'Who', 'Group', 'Date', 'Score', 'Text']
+  Feedback: ['Timestamp', 'Who', 'Group', 'Date', 'Score', 'Text'],
+  // Talk to Coco (Talk.js): one row per talk; Voice / Tiles = answers said aloud / tapped, Said = what the phone heard.
+  Chats: ['Timestamp', 'Girl', 'Date', 'Talk', 'Where', 'Level', 'Turns', 'Voice', 'Tiles', 'Mic', 'XP', 'Seconds', 'Said']
 };
 
 var WORDS = [
@@ -132,7 +134,8 @@ function api() {
   apiShop: apiShop, apiShopBuy: apiShopBuy, apiWear: apiWear, apiWords: apiWords, apiSaveWord: apiSaveWord, apiDesign: apiDesign,
   apiMissionResult: apiMissionResult, apiFlag: apiFlag,
   apiJoinCheck: apiJoinCheck, apiJoin: apiJoin, apiPlacement: apiPlacement, apiFeedback: apiFeedback,
-  apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite
+  apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
+  apiChatResult: apiChatResult
   };
 }
 
@@ -334,6 +337,7 @@ function petInfo(kid) {
   readTable('Games').forEach(function (g) { if (g.Girl === kid.Name) xp += Number(g.XP) || 0; });
   readTable('Gates').forEach(function (g) { if (g.Girl === kid.Name) xp += Number(g.XP) || 0; });
   readTable('Bonus').forEach(function (b) { if (b.Girl === kid.Name) xp += Number(b.XP) || 0; });
+  readTable('Chats').forEach(function (r) { if (r.Girl === kid.Name) xp += Number(r.XP) || 0; });
   var stage = 1;
   PET_STAGES.forEach(function (min, i) { if (xp >= min) stage = i + 1; });
   var w = wardrobeOf(kid.Name);
@@ -711,6 +715,7 @@ function buildDashboard(kid) {
     pet: petInfo(kid),
     placement: placementInfo(kid),
     games: gameStats(kid, t, owned['word-saver']),
+    chat: pending ? null : chatInfo(kid, t),
     coins: coinsOf(kid).balance,
     upgrades: upgradesOf(owned),
     polish: polishInfo(kid),

@@ -30,7 +30,7 @@ async function audit(f){
   for (const lv of ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1']) {
     await ev(`loadMissions(MS_FILES['${lv}'])`);
     for (const id of ev(`(window.EQ_MISSIONS[MS_FILES['${lv}']] || []).map(m => m.id)`)) {
-      ev(`previewMission('${id}', '')`);
+      await ev(`previewMission('${id}', '')`);
       const n = ev('MS.S.length');
       for (let si = 0; si < n - 1; si++) {
         ev(`MS.si = ${si}; MS.sub = {}; MS.guess = null; MS.drawn = -1; msRender()`);

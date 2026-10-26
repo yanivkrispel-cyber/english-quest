@@ -907,6 +907,35 @@ svg.pa{display:block;overflow:visible}
 .mywordsrow b{flex:1}
 .mywordsrow .sub{margin:0;font-size:12.5px}
 @media (prefers-reduced-motion:reduce){.pa .pa-tw,.pa .pa-bob,.pa .pa-pulse{animation:none}}
+/* Talk with Coco (specs/talk.md): the talk in the play frame; the stage scrolls to the newest line. */
+.t-chat{background:linear-gradient(145deg,#5eead4,#0d9488);--tc:#0d9488}
+.ctlog{max-height:none;overflow:visible;margin-top:0;gap:8px}
+.ctlog .cb span{font-size:15px}
+.ctlog .cb.coco img{width:38px;height:38px}
+.ctsay{border:0;background:none;padding:0 0 0 2px;color:#6366f1;font-size:15px;cursor:pointer;vertical-align:-2px}
+.ctdots{display:inline-flex;gap:4px;align-items:center;min-height:19px}
+.ctdots i{width:7px;height:7px;border-radius:50%;background:#fff;opacity:.5;animation:ctdot 1s infinite}
+.ctdots i:nth-child(2){animation-delay:.15s}
+.ctdots i:nth-child(3){animation-delay:.3s}
+@keyframes ctdot{50%{opacity:1;transform:translateY(-3px)}}
+.cttiles{display:grid;gap:8px}
+.cttiles .opt{min-height:48px;font-size:15px;text-align:left}
+.mhe.ct{margin-top:0}
+.ctnote{font-size:13px;text-align:center;margin:0}
+.ctbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
+.ctside{height:44px;font-size:14px;font-weight:700}
+.ctside.on{background:linear-gradient(180deg,#e0e7ff,#c7d2fe)}
+.ctmic{width:64px;height:64px;border-radius:50%;border:0;display:grid;place-items:center;font-size:28px;color:#fff;cursor:pointer;
+  background:linear-gradient(145deg,#818cf8,#4f46e5);box-shadow:0 10px 22px rgba(79,70,229,.35)}
+.ctmic[disabled]{opacity:.45;box-shadow:none;cursor:default}
+.ctmic.ready{animation:talk 1.4s ease-in-out infinite}
+.ctmic.listening{background:linear-gradient(145deg,#5eead4,#0d9488);box-shadow:0 0 0 8px rgba(45,212,191,.25);animation:talk 1s ease-in-out infinite}
+.ctmic.off{background:rgba(148,163,184,.6);box-shadow:none}
+.ctsum{margin-top:4px}
+.ctintro{direction:rtl;text-align:center;font-family:system-ui,'Segoe UI',Arial,sans-serif;font-size:13.5px;color:var(--faint);line-height:1.5}
+.ctflag{margin:-2px 0 2px 46px}
+.chatcard .coco-face{width:60px;height:60px;object-fit:contain;flex:none;filter:drop-shadow(0 8px 8px rgba(38,40,80,.2))}
+@media (prefers-reduced-motion:reduce){.ctmic.ready,.ctmic.listening,.ctdots i{animation:none}}
 /* The play frame (the games, the missions, the gate challenge, duels): a full-screen app with no page scrolling.
    The header, the stage (the question; a long text scrolls inside its own box) and the dock (the pet, the feedback and
    the main button, whose place is kept from the start) stay put, so nothing moves when a button is tapped. A phone
@@ -3223,6 +3252,7 @@ async function flushPending(){
   for (let i = 0; i < q.length; i++) {
     try {
       if (q[i].fn === 'mission') setDash(await call('apiMissionResult', session.name, session.pin, ...q[i].args));
+      else if (q[i].fn === 'chat') setDash(await call('apiChatResult', session.name, session.pin, ...q[i].args));
       else setDash(await call('apiGameResult', session.name, session.pin, q[i].game, q[i].level, q[i].correct, q[i].total, q[i].missed, q[i].right, q[i].second || 0));
     }
     catch(e){ if (e.app) continue; store.set(pendKey(), q.slice(i).concat(store.get(pendKey()) || [])); return; }
@@ -3260,6 +3290,45 @@ function speechStop(){ try { speechSynthesis.cancel(); } catch(e){} }
 // ---------- Today's Mission (specs/missions.md) ----------
 // The daily task played in the app, in five parts (Hook, Learn, Practice, Use it, Finish), with the score measured here.
 // Content: docs/missions/<a1|a2|b1|bp|b2|c1>.js sets window.EQ_MISSIONS[file] = [missions]; recordings in docs/missions/audio.
+// ---- Talk to Coco (specs/talk.md): short scripted voice talks with Coco, after Use it in a mission and once a day on home ----
+// What she said, in the words the scripts use: lower case, no punctuation, numbers up to twenty as words, short forms opened.
+const CHAT_NUM = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve',
+  'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'];
+const CHAT_SHORT = { "i'm": 'i am', "you're": 'you are', "we're": 'we are', "they're": 'they are', "it's": 'it is', "that's": 'that is',
+  "what's": 'what is', "where's": 'where is', "who's": 'who is', "there's": 'there is', "he's": 'he is', "she's": 'she is', "let's": 'let us',
+  "i've": 'i have', "you've": 'you have', "we've": 'we have', "they've": 'they have', "i'd": 'i would', "you'd": 'you would', "we'd": 'we would',
+  "i'll": 'i will', "you'll": 'you will', "we'll": 'we will', "it'll": 'it will', "they'll": 'they will', "don't": 'do not', "doesn't": 'does not',
+  "didn't": 'did not', "isn't": 'is not', "aren't": 'are not', "wasn't": 'was not', "weren't": 'were not', "can't": 'can not', 'cannot': 'can not',
+  "couldn't": 'could not', "won't": 'will not', "wouldn't": 'would not', "shouldn't": 'should not', "haven't": 'have not', "hasn't": 'has not',
+  "hadn't": 'had not', "mustn't": 'must not', 'gonna': 'going to', 'wanna': 'want to', 'yeah': 'yes', 'yep': 'yes', 'nope': 'no' };
+function chatNorm(s){
+  return ' ' + String(s || '').toLowerCase().replace(/[‘’`]/g, '\'').replace(/[^a-z0-9' ]+/g, ' ').split(' ').filter(Boolean)
+    .map(w => CHAT_SHORT[w] || (/^\d+$/.test(w) && +w <= 20 ? CHAT_NUM[+w] : w.replace(/'s$/, '').replace(/'/g, ''))).join(' ') + ' ';
+}
+// One keyword (a_b = the words "a b" together) against what she said: the word itself or a simple ending (apples, liked,
+// playing, bigger; make -> making, baked; try -> tried, tries).
+const CHAT_END = ['', 's', 'es', 'd', 'ed', 'ing', 'er', 'ers', 'est', 'ly'];
+function chatHit(said, kw){
+  const k = kw.split('_').join(' ');
+  if (k.indexOf(' ') >= 0) return said.indexOf(' ' + k + ' ') >= 0;
+  const e = /e$/.test(k) ? k.slice(0, -1) : null, y = /[^aeiou]y$/.test(k) ? k.slice(0, -1) + 'i' : null;
+  return said.split(' ').some(w => w && ((w.indexOf(k) === 0 && CHAT_END.indexOf(w.slice(k.length)) >= 0)
+    || (e && w.indexOf(e) === 0 && ['ing', 'ed', 'er', 'ers', 'est'].indexOf(w.slice(e.length)) >= 0)
+    || (y && w.indexOf(y) === 0 && ['es', 'ed', 'er', 'est'].indexOf(w.slice(y.length)) >= 0)));
+}
+// Fewer words than this, and nothing in the script fits: Coco asks for a little more (once), then takes it.
+const CHAT_MIN = { a1: 1, a2: 2, b1: 3, bp: 3, b2: 4, c1: 5 };
+// A branch fits when every group of its keywords has a word in what she said, and none of its "not" words (n) is there.
+function chatFits(said, b){
+  return (b.k || []).every(g => g.split(' ').some(kw => kw && chatHit(said, kw)))
+    && !String(b.n || '').split(' ').some(kw => kw && chatHit(said, kw));
+}
+// -> { b: the first branch that fits (-1: none), n: how many words she said }. test/talk-check.js runs these same functions.
+function chatMatch(turn, text){
+  const said = chatNorm(text), n = said.trim() ? said.trim().split(' ').length : 0;
+  return { b: n ? (turn.a || []).findIndex(x => chatFits(said, x)) : -1, n };
+}
+
 const MISSIONS_V = 2, MS_PARTS = ['Hook', 'Learn', 'Practice', 'Use it', 'Finish'];
 const MS_TYPES = { grammar: ['Grammar Lab', 7], vocabulary: ['Word Pack', 7], listening: ['Radio Show', 8], reading: ['Story Cards', 8],
   'use-of-english': ['Newsroom', 7], writing: ['Writer\'s Desk', 9] };
@@ -3289,6 +3358,15 @@ function msQuestions(m){
   return out;
 }
 function msCount(m){ return msQuestions(m).length; }
+// The talk with Coco (when the mission has one) comes right before the finish.
+function msAddChat(S, chat){
+  if (chat) S.splice(S.length - 1, 0, { t: 'chat', part: 3, chat });
+  return S;
+}
+function msChat(sc){
+  chatOpen(sc.chat, { where: 'mission', level: msFile(MS.id), practice: !!MS.practice, preview: !!MS.preview,
+    onDone: () => { if (!MS) return; msTouch(); MS.si++; MS.sub = {}; msKeep(); msRender(); } });
+}
 
 // The screens, one after the other: hook, learn, each part of an episode with its questions, the story's questions
 // (its card on top), the steps, Use it and the finish. q0 = the number of questions before this one.
@@ -3326,7 +3404,8 @@ async function startMission(date, practice){
   const m = list.find(x => x.id === w.mission.id);
   if (!m || msCount(m) !== w.mission.n) { toast('This mission is being updated. Here is the exercise on the website for today.', true); renderDash(); return openSheet(w); }
   const saved = practice ? null : msSaved(w);
-  MS = { m, w, id: m.id, date, S: msScreens(m), si: saved ? saved.si : 0, res: saved ? saved.res : [], missed: saved ? saved.missed : [],
+  const chat = await chatForMission(m.id);
+  MS = { m, w, id: m.id, date, S: msAddChat(msScreens(m), chat), si: saved ? saved.si : 0, res: saved ? saved.res : [], missed: saved ? saved.missed : [],
     right: saved ? saved.right : [], active: saved ? saved.active : 0, last: Date.now(), sub: {}, he: false, practice: !!practice,
     seed: hashStr(session.name + ':' + m.id + ':' + date), guess: saved ? saved.guess : null };
   if (saved) toast('Welcome back! Your mission goes on from where you stopped.');
@@ -3372,6 +3451,7 @@ function msRender(){
   msStopAudio();
   if (MS.review && MS.S[MS.si].t !== 'finish') { MS.m = MS.S[MS.si].m; MS.id = MS.S[MS.si].id; }
   const sc = MS.S[MS.si], m = MS.m, info = MS_TYPES[m.type] || MS_TYPES.grammar;
+  if (sc.t === 'chat') return msChat(sc);
   const nq = msCount(m), qNow = sc.t === 'q' ? Math.min(nq, sc.q0 + 1) : null;
   const sub = MS.review ? 'Mission review · ' + (MS.si + 1) + ' of ' + (MS.S.length - 1)
     : info[0] + ' · ' + esc(MS.w.level || dash.girl.levelLabel) + (qNow ? ' · question ' + qNow + ' of ' + nq : '');
@@ -3920,21 +4000,338 @@ async function missionGallery(){
   app.innerHTML = `<div class="stack">
     <div class="glass panel"><div class="row-flex between"><h2>Mission preview</h2><span class="chip purple">${list.length} missions</span></div>
       ${TEACHER ? '<div class="sub mt-s" style="font-size:13px"><b>Teacher review.</b> Play any mission. Under each answer, tap <b>Something wrong here?</b> and write a short note: it goes straight to the owner.</div>' : '<div class="sub mt-s" style="font-size:13px">Play any mission as practice. Nothing is saved.</div>'}
-      <div class="row-flex mt" style="gap:6px;flex-wrap:wrap">${LEVELS.map(([k, l]) => `<button class="btn ${k === msGalleryLevel ? 'btn-primary' : 'btn-glass'} btn-sm" data-glv="${k}">${l}</button>`).join('')}</div></div>
+      <div class="row-flex mt" style="gap:6px;flex-wrap:wrap">${LEVELS.map(([k, l]) => `<button class="btn ${k === msGalleryLevel ? 'btn-primary' : 'btn-glass'} btn-sm" data-glv="${k}">${l}</button>`).join('')}</div>
+      <button class="btn btn-glass btn-block mt" id="tochats">${icon('chats-circle')} Talk with Coco: the home talks</button></div>
     <div class="stack" style="gap:10px">${list.map(m => `<button class="soft task clickable" data-prev="${m.id}" style="text-align:left;width:100%;font:inherit;border:0">
       ${tile(m.type, true)}<div class="task-main"><div class="task-top">${esc((MS_TYPES[m.type] || MS_TYPES.grammar)[0])} · ${msCount(m)} questions · ${m.id}</div>
       <div class="task-title">${esc(m.title)}</div></div>${icon('caret-right')}</button>`).join('') || '<div class="glass panel sub">No missions for this level yet.</div>'}</div>
   </div>`;
   app.querySelectorAll('[data-glv]').forEach(b => b.onclick = () => { msGalleryLevel = b.dataset.glv; dash.girl.level = msGalleryLevel; missionGallery(); });
   app.querySelectorAll('[data-prev]').forEach(b => b.onclick = () => previewMission(b.dataset.prev, label));
+  document.getElementById('tochats').onclick = chatGallery;
 }
-function previewMission(id, label){
+async function previewMission(id, label){
   const m = (window.EQ_MISSIONS[msFile(id)] || []).find(x => x.id === id);
   if (!m) return;
-  MS = { m, w: { level: label }, id, date: 'preview', S: msScreens(m), si: 0, res: [], missed: [], right: [], active: 0, last: Date.now(), sub: {}, he: false,
+  const chat = await chatForMission(m.id);
+  MS = { m, w: { level: label }, id, date: 'preview', S: msAddChat(msScreens(m), chat), si: 0, res: [], missed: [], right: [], active: 0, last: Date.now(), sub: {}, he: false,
     practice: true, preview: true, seed: hashStr('preview:' + id + ':' + Date.now()), guess: null };
   msClock();
   msRender();
+}
+
+// ---- Talk to Coco: the talk screen (specs/talk.md) ----
+// Coco says each line (a recording, or the phone's voice without one), the kid answers aloud with the mic button
+// (the phone's own speech recognition; nothing is recorded or sent but the words it heard), or with a tile. Every answer
+// moves the talk on; there is no wrong answer. A mission talk comes after Use it; a home scene once a day from home.
+const TALK_V = 1;
+const CHAT_PET = {
+  start: ['Your turn soon! Tap the mic and talk.', 'Talk to Coco! I am right here.', 'Speak English with Coco. You can do it!'],
+  voice: ['You said it!', 'Wow, great English!', 'Coco understood you!', 'So cool! Keep going!', 'Yes! Out loud!'],
+  tile: ['Nice pick! Next time, say it out loud.', 'Good one! Try the mic next time.', 'Nice! You can say it too.'],
+  listen: ['I am listening too…', 'Shh… Coco is listening.'],
+  again: ['Try again, a little louder.', 'Speak close to the phone.'],
+  end: ['You talked in English!', 'What a talk!', 'Coco loved talking with you!']
+};
+const CHAT_BANK = {
+  again: "Sorry, I didn't catch that. Can you say it again?",
+  more: 'Ooh, tell me a little more!',
+  tiles: 'Here are some ideas. Say one out loud, or tap it!'
+};
+let CT = null, ctAudio = null, ctRec = null;
+const chatLoads = {};
+const chatCanListen = () => !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+const chatPick = list => list[Math.floor(Math.random() * list.length)];
+
+function loadChat(file){
+  window.EQ_TALK = window.EQ_TALK || {};
+  if (window.EQ_TALK[file]) return Promise.resolve(window.EQ_TALK[file]);
+  return chatLoads[file] = chatLoads[file] || new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = ASSETS + 'talk/' + file + '.js?v=' + TALK_V;
+    s.onload = () => window.EQ_TALK[file] ? res(window.EQ_TALK[file]) : rej(new Error('The talks are not ready yet.'));
+    s.onerror = () => { delete chatLoads[file]; s.remove(); rej(new Error('Could not load the talk. Check the connection and try again.')); };
+    document.head.appendChild(s);
+  });
+}
+// A mission's talk, or null (not written, or the file did not load in time: the mission goes on without it).
+async function chatForMission(id){
+  try {
+    const list = await Promise.race([loadChat(msFile(id)), sleep(6000).then(() => [])]);
+    return (list || []).find(s => s.id === 't' + id) || null;
+  } catch(e){ return null; }
+}
+// Today's home scene: the first one of her level she has not had, then round again.
+function chatScene(list, info){
+  const scenes = list.filter(s => /^s/.test(s.id)), done = (info && info.homeDone) || [];
+  if (!scenes.length) return null;
+  return scenes.find(s => done.indexOf(s.id) < 0) || scenes[((info && info.homeCount) || 0) % scenes.length];
+}
+
+// opts: { where: 'mission' | 'home', level: file key, practice, preview, onDone(result) }
+function chatOpen(s, opts){
+  chatStop();
+  CT = Object.assign({ s, i: 0, log: [], voice: 0, tiles: 0, said: [], tries: 0, more: false, tilesOn: false, he: false, mic: chatCanListen(),
+    phase: 'coco', t0: Date.now(), heard: {}, pet: chatPick(CHAT_PET.start) }, opts);
+  if (!CT.mic) CT.tilesOn = true;
+  chatRender();
+  chatCoco(s.turns[0].c, chatClip(0, 'c'), () => chatAsk());
+}
+const chatClip = (i, k) => CT.s.id + '-' + (i + 1) + k;
+function chatTurn(){ return CT && CT.s.turns[CT.i]; }
+
+function chatRender(){
+  if (!CT) return;
+  const s = CT.s, u = chatTurn(), lv = (LEVELS.find(l => MS_FILES[l[0]] === CT.level) || [0, ''])[1];
+  const end = CT.phase === 'end', listening = CT.phase === 'listen', busy = CT.phase === 'coco' || CT.phase === 'wait';
+  const sub = 'Talk with Coco · ' + esc(lv) + (end ? ' · done' : ' · ' + (CT.i + 1) + ' of ' + s.turns.length);
+  const bub = (b, k) => b.who === 'coco'
+    ? `<div class="cb coco"><img src="${cocoSrc(b.mood || 'happy')}" alt=""><span>${esc(b.text)}${b.clip ? ` <button class="ctsay" data-ctsay="${k}" title="Hear it again">${icon('speaker-high')}</button>` : ''}</span></div>
+       ${CT.preview && TEACHER && b.flag ? `<div class="row-flex ctflag" style="gap:6px"><button class="mflag" data-ctflag="${esc(b.flag)}">Something wrong here?</button></div>` : ''}`
+    : `<div class="cb me"><span>${esc(b.text)}${b.tile ? '' : ` ${icon('microphone')}`}</span></div>`;
+  const tiles = !end && u && CT.tilesOn ? `<div class="cttiles">${u.t.map((t, k) => `<button class="opt" data-cttile="${k}"${busy ? ' disabled' : ''}>${esc(t)}</button>`).join('')}</div>` : '';
+  const hint = !end && u && CT.he ? `<div class="mhe ct" dir="rtl" lang="he">${msHe(u.he)}</div>` : '';
+  const note = !end && !CT.mic ? `<div class="sub ctnote">${icon('microphone-slash')} This phone can't listen here. Tap an answer, and say it out loud too!</div>` : '';
+  const slot = end ? `<button class="btn btn-primary btn-block" id="ctdone">${CT.where === 'mission' ? 'Continue' : 'Finish'} ${icon('arrow-right')}</button>`
+    : `<div class="ctbar">
+        <button class="btn btn-glass ctside${CT.he ? ' on' : ''}" id="cthe" title="A hint in Hebrew">עברית</button>
+        ${CT.mic ? `<button class="ctmic${listening ? ' listening' : ''}${CT.phase === 'ask' ? ' ready' : ''}" id="ctmic"${busy ? ' disabled' : ''} aria-label="Tap and speak">${icon(listening ? 'waveform' : 'microphone', 'bold')}</button>`
+          : `<span class="ctmic off">${icon('microphone-slash', 'bold')}</span>`}
+        <button class="btn btn-glass ctside${CT.tilesOn ? ' on' : ''}" id="ctideas" title="Ideas">${icon('lightbulb')} Ideas</button>
+      </div>`;
+  app.innerHTML = `<div class="gscreen mscreen gplay" id="ct">
+    <div class="gtop"><button class="btn btn-glass icon-btn" id="ctquit" title="Stop">${icon('x')}</button>
+      <div style="flex:1;min-width:0"><h2>${esc(s.title)}</h2><div class="sub" style="font-size:12px;margin:0">${sub}</div></div>
+      <span class="tile sm t-chat">${icon('chats-circle', 'duotone')}</span></div>
+    <div class="gstage ctstage">
+      <div class="ctintro" dir="rtl" lang="he">${msHe(s.he)}</div>
+      <div class="chat ctlog" id="ctlog">${CT.log.map(bub).join('')}${listening ? `<div class="cb me"><span class="ctdots"><i></i><i></i><i></i></span></div>` : ''}</div>
+      ${end ? chatSummary() : ''}${hint}${tiles}${note}
+    </div>
+    <div class="gdock">
+      <div class="react">${dash && dash.pet ? petArt(dash.pet, end ? 'celebrate' : 'happy', 'gpet', { id: 'gpet' }) : ''}<div class="bubble" id="fb">${esc(CT.pet)}</div></div>
+      <div class="gslot" id="gnext">${slot}</div>
+    </div>
+  </div>`;
+  const st = app.querySelector('#ct .gstage');
+  if (st) st.scrollTop = st.scrollHeight;
+  document.getElementById('ct').onclick = chatClick;
+}
+function chatSummary(){
+  const n = CT.s.turns.length;
+  return `<div class="glass panel ctsum"><div class="label">You talked with Coco</div>
+    <div class="row-flex mt-s" style="gap:14px;flex-wrap:wrap"><span><b>${CT.voice}</b> out loud</span><span><b>${CT.tiles}</b> with a tile</span><span><b>${n}</b> questions</span></div>
+    <div class="sub mt-s" id="ctsave" style="font-size:13px">${CT.practice ? (CT.preview ? 'Preview · nothing is saved' : 'Practice talk · no bonus today') : '<span class="mini-spin"></span> Saving…'}</div></div>`;
+}
+
+function chatClick(e){
+  const t = e.target.closest('button');
+  if (!t || !CT) return;
+  if (MS) msTouch();
+  const d = t.dataset;
+  if (t.id === 'ctquit') {
+    if (!(CT.quitAt > Date.now() - 3000)) { CT.quitAt = Date.now(); return toast(CT.where === 'mission' ? 'Tap again to stop. Your mission waits for you here.' : 'Tap again to stop.'); }
+    const where = CT.where, prev = CT.preview;
+    chatStop(); CT = null;
+    if (where === 'mission') { msLeave(); return prev ? missionGallery() : renderDash(); }
+    return prev ? chatGallery() : renderDash();
+  }
+  if (t.id === 'ctdone') { const done = CT.onDone; chatStop(); const r = CT; CT = null; return done && done(r); }
+  if (t.id === 'ctmic') return chatListen();
+  if (t.id === 'ctideas') { CT.tilesOn = !CT.tilesOn || !CT.mic; return chatRender(); }
+  if (t.id === 'cthe') { CT.he = !CT.he; return chatRender(); }
+  if (d.cttile != null && CT.phase === 'ask') return chatAnswer(chatTurn().t[Number(d.cttile)], 'tile');
+  if (d.ctsay != null) { const b = CT.log[Number(d.ctsay)]; if (b && CT.phase !== 'listen') chatPlay(b.text, b.clip); return; }
+  if (d.ctflag && CT.preview && TEACHER) {
+    t.parentElement.innerHTML = '<input class="input" id="ctnote" placeholder="What is wrong? A short note" style="flex:1;min-width:0;height:36px"><button class="mflag" data-ctsend="' + esc(d.ctflag) + '">Send</button>';
+    const n = document.getElementById('ctnote'); if (n) n.focus();
+    return;
+  }
+  if (d.ctsend) {
+    const n = document.getElementById('ctnote');
+    call('apiTeacherFlag', TEACHER, CT.s.id, d.ctsend, n ? n.value : '').then(() => toast('Note sent. Thank you!')).catch(err => toast(err.message, true));
+    t.parentElement.innerHTML = '<span class="mflag">Sent</span>';
+  }
+}
+
+// Coco says a line: it goes into the talk, then plays; then = what comes next.
+function chatCoco(text, clip, then, mood){
+  CT.log.push({ who: 'coco', text, clip, mood, flag: clip && !/^bank/.test(clip) ? 'c:' + clip.replace(/-/g, ':') : '' });
+  CT.phase = 'coco';
+  chatRender();
+  chatPlay(text, clip, () => { if (CT) then(); });
+}
+function chatAsk(){
+  CT.phase = 'ask';
+  chatRender();
+}
+// A recording from docs/talk/audio, or the phone's voice when it cannot play (no file yet, offline).
+function chatPlay(text, clip, onEnd){
+  chatStopAudio();
+  let done = false;
+  const finish = () => { if (done) return; done = true; clearTimeout(guard); if (onEnd) onEnd(); };
+  const guard = setTimeout(finish, 20000);
+  const phone = () => {
+    if (!('speechSynthesis' in window)) return finish();
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      if (voice) u.voice = voice;
+      u.lang = voice ? voice.lang : 'en-GB';
+      u.rate = CT && ['a1', 'a2'].indexOf(CT.level) >= 0 ? 0.85 : 0.95;
+      u.onend = finish; u.onerror = finish;
+      speechSynthesis.speak(u);
+    } catch(e){ finish(); }
+  };
+  if (!clip) return phone();
+  const a = ctAudio = new Audio(ASSETS + 'talk/audio/' + clip + '.mp3?v=' + TALK_V);
+  a.onended = finish;
+  a.onerror = () => { if (ctAudio === a) phone(); };
+  const p = a.play();
+  if (p && p.catch) p.catch(() => { if (ctAudio === a) phone(); });
+}
+function chatStopAudio(){
+  if (ctAudio) { try { ctAudio.onended = ctAudio.onerror = null; ctAudio.pause(); } catch(e){} ctAudio = null; }
+  speechStop();
+}
+function chatStop(){
+  chatStopAudio();
+  if (ctRec) { try { ctRec.onresult = ctRec.onerror = ctRec.onend = null; ctRec.abort(); } catch(e){} ctRec = null; }
+}
+
+// The mic: the phone's speech recognition, English, a few guesses; the guess that fits the script wins.
+function chatListen(){
+  if (!CT || CT.phase !== 'ask') return;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { CT.mic = false; CT.tilesOn = true; return chatRender(); }
+  chatStopAudio();
+  let got = false;
+  const r = ctRec = new SR();
+  r.lang = 'en-US'; r.interimResults = false; r.maxAlternatives = 4; r.continuous = false;
+  CT.phase = 'listen'; CT.pet = chatPick(CHAT_PET.listen);
+  chatRender();
+  r.onresult = e => {
+    got = true;
+    const u = chatTurn(), alts = Array.from(e.results[0] || []).map(x => String(x.transcript || '').trim()).filter(Boolean);
+    let best = alts[0] || '';
+    for (const a of alts) { if (chatMatch(u, a).b >= 0) { best = a; break; } }
+    ctRec = null;
+    if (!CT) return;
+    if (!best) return chatMissed();
+    chatAnswer(best, 'voice');
+  };
+  r.onerror = e => {
+    got = true; ctRec = null;
+    if (!CT) return;
+    if (e && (e.error === 'not-allowed' || e.error === 'service-not-allowed' || e.error === 'audio-capture')) {
+      CT.mic = false; CT.tilesOn = true; CT.phase = 'ask';
+      toast('The microphone is off. Tap an answer, and say it out loud too!', true);
+      return chatRender();
+    }
+    chatMissed();
+  };
+  r.onend = () => { if (!got && CT && CT.phase === 'listen') { ctRec = null; chatMissed(); } };
+  try { r.start(); } catch(e){ ctRec = null; CT.phase = 'ask'; chatRender(); }
+  // A phone that never answers (a permission prompt left open, a lost connection): after 12 s Coco asks again.
+  setTimeout(() => { if (ctRec === r) { try { r.abort(); } catch(e){} setTimeout(() => { if (ctRec === r) { ctRec = null; if (CT && CT.phase === 'listen') chatMissed(); } }, 600); } }, 12000);
+}
+// Nothing heard: Coco asks again; after the second time the ideas open.
+function chatMissed(){
+  CT.tries++;
+  CT.pet = chatPick(CHAT_PET.again);
+  if (CT.tries >= 2 && !CT.tilesOn) { CT.tilesOn = true; return chatCoco(CHAT_BANK.tiles, 'bank-tiles', chatAsk, 'thinking'); }
+  chatCoco(CHAT_BANK.again, 'bank-again', chatAsk, 'thinking');
+}
+
+// An answer (what the phone heard, or a tile): Coco's reply for the branch that fits, then the next question.
+function chatAnswer(text, via){
+  const u = chatTurn(), r = chatMatch(u, text);
+  CT.log.push({ who: 'me', text, tile: via === 'tile' });
+  if (via === 'voice' && r.b < 0 && r.n < CHAT_MIN[CT.level] && !CT.more) {
+    CT.more = true;
+    return chatCoco(CHAT_BANK.more, 'bank-more', chatAsk, 'thinking');
+  }
+  if (via === 'voice') { CT.voice++; CT.said.push(text); buzz(true); CT.pet = chatPick(CHAT_PET.voice); }
+  else { CT.tiles++; CT.pet = chatPick(CHAT_PET.tile); }
+  const reply = r.b >= 0 ? u.a[r.b].r : u.o, clip = chatClip(CT.i, r.b >= 0 ? 'r' + (r.b + 1) : 'o');
+  CT.tries = 0; CT.more = false; CT.he = false;
+  if (CT.mic) CT.tilesOn = false;
+  chatCoco(reply, clip, () => {
+    CT.i++;
+    if (CT.i < CT.s.turns.length) return chatCoco(chatTurn().c, chatClip(CT.i, 'c'), chatAsk);
+    chatCoco(CT.s.end, CT.s.id + '-e', chatEnd, 'celebrate');
+  }, 'happy');
+}
+
+function chatEnd(){
+  CT.phase = 'end';
+  CT.pet = chatPick(CHAT_PET.end);
+  CT.seconds = Math.round((Date.now() - CT.t0) / 1000);
+  chatRender();
+  if (CT.voice === CT.s.turns.length) confetti();
+  if (CT.practice) return;
+  chatSave([CT.s.id, CT.s.turns.length, CT.voice, CT.tiles, CT.mic, CT.said.slice(), Math.max(CT.seconds, 1)]);
+}
+async function chatSave(args){
+  const status = html => { const el = document.getElementById('ctsave'); if (el) el.innerHTML = html; };
+  try {
+    setDash(await call('apiChatResult', session.name, session.pin, ...args));
+    homeStale = true;
+    const xp = dash.chatXp || 0;
+    status(icon('check') + (xp ? ' Saved · +' + xp + ' XP and coins' : ' Saved'));
+  } catch(e){
+    if (e.app) return status(icon('warning') + ' ' + esc(e.message));
+    queueResult({ fn: 'chat', args });
+    status(icon('wifi-slash') + ' Saved on this phone. It will sync when you are online.');
+  }
+}
+
+// Home: today's scene.
+async function startChat(){
+  if (!dash || !dash.chat) return;
+  app.innerHTML = '<div class="spinner"></div>';
+  const file = MS_FILES[dash.girl.level] || 'a2';
+  let s;
+  try { s = chatScene(await loadChat(file), dash.chat); }
+  catch(e){ toast(e.message, true); return renderDash(); }
+  if (!s) { toast('No talks for your level yet.', true); return renderDash(); }
+  chatOpen(s, { where: 'home', level: file, practice: !!dash.chat.homeToday, onDone: () => renderDash() });
+}
+function chatCard(d){
+  const c = d.chat;
+  if (!c || d.levelTest) return '';
+  return `<div class="glass panel chatcard">
+    <div class="row-flex" style="gap:12px"><img class="coco-face" src="${cocoSrc(c.homeToday ? 'celebrate' : 'happy')}" alt="">
+      <div style="flex:1;min-width:0"><div class="row-flex between"><h2>Talk with Coco</h2>${c.weekVoice ? `<span class="chip teal">${icon('microphone')} ${c.weekVoice} this week</span>` : ''}</div>
+      <div class="sub" style="font-size:13px">${c.homeToday ? 'Done for today. Want to talk again? (practice)' : 'A new little talk every day. Speak English out loud, about 3 minutes.'}</div></div></div>
+    <button class="btn ${c.homeToday ? 'btn-glass' : 'btn-primary'} btn-block mt" id="chatgo">${icon('microphone')} ${c.homeToday ? 'Talk again' : 'Start talking'}</button>
+  </div>`;
+}
+
+// The gallery of home scenes (the mission talks play inside the missions), for the teacher and the owner.
+async function chatGallery(){
+  CT = null;
+  if (!dash || !dash.preview) return missionGallery();
+  app.innerHTML = '<div class="spinner"></div>';
+  const file = MS_FILES[msGalleryLevel];
+  let list = [];
+  try { list = await loadChat(file); } catch(e){ list = []; }
+  const scenes = list.filter(s => /^s/.test(s.id)), talks = list.length - scenes.length;
+  app.innerHTML = `<div class="stack">
+    <div class="glass panel"><div class="row-flex between"><h2>Talk with Coco</h2><span class="chip purple">${scenes.length} home talks</span></div>
+      <div class="sub mt-s" style="font-size:13px">The daily talks from the home screen. ${talks} more talks come at the end of the missions (play a mission to hear its talk).${TEACHER ? ' Under each line of Coco, <b>Something wrong here?</b> sends a note to the owner.' : ''}</div>
+      <div class="row-flex mt" style="gap:6px;flex-wrap:wrap">${LEVELS.map(([k, l]) => `<button class="btn ${k === msGalleryLevel ? 'btn-primary' : 'btn-glass'} btn-sm" data-clv="${k}">${l}</button>`).join('')}</div>
+      <button class="btn btn-glass btn-block mt" id="tomissions">${icon('arrow-left')} Missions</button></div>
+    <div class="stack" style="gap:10px">${scenes.map(s => `<button class="soft task clickable" data-cprev="${s.id}" style="text-align:left;width:100%;font:inherit;border:0">
+      <span class="tile t-chat">${icon('chats-circle', 'duotone')}</span><div class="task-main"><div class="task-top">${s.turns.length} questions · ${s.id}</div>
+      <div class="task-title">${esc(s.title)}</div></div>${icon('caret-right')}</button>`).join('') || '<div class="glass panel sub">No talks for this level yet.</div>'}</div>
+  </div>`;
+  app.querySelectorAll('[data-clv]').forEach(b => b.onclick = () => { msGalleryLevel = b.dataset.clv; dash.girl.level = msGalleryLevel; chatGallery(); });
+  document.getElementById('tomissions').onclick = missionGallery;
+  app.querySelectorAll('[data-cprev]').forEach(b => b.onclick = () => {
+    const s = list.find(x => x.id === b.dataset.cprev);
+    if (s) chatOpen(s, { where: 'home', level: file, practice: true, preview: true, onDone: chatGallery });
+  });
 }
 
 // ---------- Play together: Word Duel and Challenge ----------
@@ -4793,6 +5190,8 @@ function prefetch(){
     // Today's mission (or a catch-up one), so it opens at once on a weak connection. (Recordings stay with the browser.)
     const mw = dash && dash.week.find(w => w.mission && !w.done && !w.isFuture);
     if (mw) urls.push(abs(ASSETS + 'missions/' + msFile(mw.mission.id) + '.js?v=' + MISSIONS_V));
+    // Her level's talks with Coco (the mission's talk and today's home scene); Coco's face for the talk screen.
+    if (dash && dash.chat) { urls.push(abs(ASSETS + 'talk/' + (MS_FILES[dash.girl.level] || 'a2') + '.js?v=' + TALK_V)); ['happy', 'thinking', 'celebrate'].forEach(m => urls.push(abs(cocoSrc(m)))); }
     sw.postMessage({ type: 'precache', urls });
   });
 }
@@ -6306,6 +6705,9 @@ async function pilotLoad(pin, open, code){
       <button class="btn ${s.invite.open ? 'btn-glass' : 'btn-primary'} btn-sm" id="pilotopen">${s.invite.open ? icon('lock-simple') + ' Close' : icon('lock-simple-open') + ' Open'}</button>
       <button class="btn btn-glass btn-sm" data-copy="${esc(pilotInviteText(link))}">${icon('copy')} Copy invite</button>
       <a class="btn btn-teal btn-sm" href="${esc(waLink(pilotInviteText(link)))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} WhatsApp</a></div>
+    ${s.chat && s.chat.length ? `<div class="label mt">Talk with Coco · ${s.chat.filter(k => k.week >= 3).length} of ${s.chat.length} talk aloud 3+ days this week</div>
+    <div class="stack mt-s" style="gap:6px">${s.chat.map(k => `<div class="soft" style="padding:8px 12px;border-radius:12px;font-size:13px"><div class="row-flex between"><b>${esc(k.name)}</b>
+      <span>${k.talks} talks · ${k.voicePct}% aloud · mic ${k.micPct}% · days ${k.week} (last week ${k.lastWeek})</span></div>${k.said ? `<div class="sub" style="font-size:12px">"${esc(k.said)}"</div>` : ''}</div>`).join('')}</div>` : ''}
     <div class="label mt">Teacher review · ${s.teacherFlags} notes</div>
     <div class="sub" style="font-size:12px;word-break:break-all" dir="ltr">${esc(tlink)}</div>
     <button class="btn btn-glass btn-sm mt-s" data-copy="${esc(tlink)}">${icon('copy')} Copy teacher link</button>
@@ -6340,6 +6742,7 @@ function placeToday(){
 async function start(){
   const qs = new URLSearchParams(location.search);
   if (qs.has('missions')) { const t = qs.get('t') || store.get('eq_teacher'); if (t) await teacherStart(t); return missionGallery(); }
+  if (qs.has('talk')) { const t = qs.get('t') || store.get('eq_teacher'); if (t) await teacherStart(t); await missionGallery(); return chatGallery(); }
   if (qs.get('join')) return renderJoin(qs.get('join'));
   takeDuelParam();
   const saved = store.get('eq_auth'), admin = store.get('eq_admin');
@@ -6552,6 +6955,7 @@ function scoreText(d){
 }
 
 function renderDash(){
+  if (CT) { chatStop(); CT = null; }
   if (MS) msLeave();
   G = null; speechStop(); stopDuel();
   try { performance.mark('eq-dash'); } catch(e){}
@@ -6585,6 +6989,7 @@ function renderDash(){
 
     ${retestCard(d)}
     ${today ? todayCard(today) : ''}
+    ${chatCard(d)}
     ${gamesPanel(d)}
     ${togetherCard()}
     <div id="pushcard"></div>
@@ -6615,6 +7020,7 @@ function renderDash(){
   app.querySelectorAll('[data-log]').forEach(b => b.onclick = () => openSheet(d.week.find(w => w.date === b.dataset.log)));
   app.querySelectorAll('[data-mission]').forEach(b => b.onclick = () => startMission(b.dataset.mission));
   const rt = document.getElementById('retest'); if (rt) rt.onclick = () => placeIntro('B');
+  const cg = document.getElementById('chatgo'); if (cg) cg.onclick = startChat;
   const mr = document.getElementById('msreview');
   if (mr) mr.onclick = startMissionReview;
   app.querySelectorAll('[data-game]').forEach(b => b.onclick = () => startGame(b.dataset.game));
@@ -7108,8 +7514,10 @@ function girlCard(g, isAdmin){
       ${isAdmin && g.push ? `<span class="chip ${g.push.devices ? 'teal' : ''}">${icon('bell')} ${g.push.devices}</span>` : ''}
       ${isAdmin && g.push && g.push.devices ? `<button class="chip" style="cursor:pointer" data-testpush="${esc(g.girl.name)}">${icon('paper-plane-tilt')} Test</button>` : ''}
       <span class="chip">${s.total} ${T('tasks total', 'משימות בסך הכול')}</span>
+      ${g.chat && g.chat.week ? `<span class="chip teal" title="Talk with Coco this week">${icon('microphone')} ${g.chat.weekVoice}/${g.chat.week} ${T('talks out loud', 'שיחות בקול')}</span>` : ''}
     </div>
     ${placementLine(g)}
+    ${g.chat && g.chat.best ? `<div class="sub mt-s" style="font-size:13px">${icon('chats-circle')} ${T('Said to Coco this week:', 'משפט מהשיחה עם קוקו השבוע:')} <bdi dir="ltr">"${esc(g.chat.best)}"</bdi></div>` : ''}
     <div class="strip">${g.week.map(w => {
       const st = w.beforeStart ? 'future' : w.done ? 'done' : w.isFuture ? 'future' : w.isToday ? 'pending' : 'missed';
       const v = w.done ? (w.section === 'level' ? (w.levelResult || '✓') : (w.percent !== '' ? w.percent + '%' : '✓')) : st === 'missed' ? '✕' : '';

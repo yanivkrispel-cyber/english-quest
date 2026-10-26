@@ -258,7 +258,7 @@ function coinsOf(kid, shopRows) {
   var name = kid.Name;
   var logs = readTable('Log').filter(function (l) { return l.Girl === name; });
   var earned = totalPoints(logs, kidStart(kid)), spent = 0;
-  ['Games', 'Gates', 'Bonus'].forEach(function (t) {
+  ['Games', 'Gates', 'Bonus', 'Chats'].forEach(function (t) {
     readTable(t).forEach(function (r) { if (r.Girl === name) earned += Number(r.XP) || 0; });
   });
   (shopRows || readTable('Shop')).forEach(function (r) { if (r.Girl === name) spent += Number(r.Paid) || 0; });

@@ -139,6 +139,7 @@ function apiPilotStats(pin) {
   var active = {};
   logs.forEach(function (l) { (active[l.Girl] = active[l.Girl] || {})[String(l.DoneOn || l.Date)] = true; });
   games.forEach(function (g) { (active[g.Girl] = active[g.Girl] || {})[String(g.Date)] = true; });
+  readTable('Chats').forEach(function (r) { (active[r.Girl] = active[r.Girl] || {})[String(r.Date)] = true; });
   var fams = groups().filter(function (g) { return String(g.Joined || ''); }).map(function (g) {
     var joined = String(g.Joined).slice(0, 10);
     var kids = kidsIn(String(g.Id)).map(function (k) {
@@ -159,6 +160,7 @@ function apiPilotStats(pin) {
     totals: { families: fams.length, kids: all.length, placed: all.filter(function (k) { return k.placed; }).length,
       firstMission: all.filter(function (k) { return k.missions > 0; }).length, active7: all.filter(function (k) { return k.last7 >= 4; }).length },
     feedback: fb.slice(-12).reverse().map(function (f) { return { group: f.Group, date: f.Date, score: f.Score, text: f.Text }; }),
+    chat: chatBoard(t),
     teacherFlags: flags.filter(function (f) { return f.Girl === 'Teacher'; }).length,
     teacherCode: String(getSetting('TeacherCode') || ''),
     base: String(getSetting('PublicUrl') || ''),
