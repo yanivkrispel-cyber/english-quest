@@ -7,7 +7,7 @@
 // - pictures, icons and the versioned game bank (games.js?v=N): from the phone once they are there, since
 //   they never change under the same address;
 // - anything else of this site: network first, the phone's copy when offline.
-const SHELL = 'eq-shell-v5', ASSETS = 'eq-assets-v1';
+const SHELL = 'eq-shell-v6', ASSETS = 'eq-assets-v2';
 const API_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 
 self.addEventListener('install', e => {
@@ -88,7 +88,7 @@ self.addEventListener('message', e => {
 
 self.addEventListener('push', e => {
   e.waitUntil((async () => {
-    let msg = { title: 'English Quest', body: 'Your 10 minutes of English are waiting.' };
+    let msg = { title: 'English with Coco', body: 'Your 10 minutes of English are waiting.' };
     try {
       const sub = await self.registration.pushManager.getSubscription();
       const r = await fetch(API_URL, {

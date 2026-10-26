@@ -419,7 +419,7 @@ function apiPushSubscribe(name, pin, endpoint, agent, welcome) {
 // Called by the service worker when a push arrives.
 function apiPushMessage(endpoint) {
   var hit = CacheService.getScriptCache().get(endpointKey(String(endpoint || '')));
-  return hit ? JSON.parse(hit) : { title: 'English Quest', body: 'Your 10 minutes of English are waiting.' };
+  return hit ? JSON.parse(hit) : { title: 'English with Coco', body: 'Your 10 minutes of English are waiting.' };
 }
 
 function apiAdminTestPush(pin, name) {

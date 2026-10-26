@@ -48,7 +48,7 @@ const ctx = {
 };
 const props = ctx.PropertiesService.getScriptProperties(); ctx.PropertiesService.getScriptProperties = () => props;
 vm.createContext(ctx);
-for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js']) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
+for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js']) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
 // Each call is a fresh request: per-request table memo resets, CacheService persists.
 const run = s => { if (typeof ctx.TABLES === 'object') vm.runInContext('TABLES = {}', ctx); return vm.runInContext(s, ctx); };
 let day = '2026-10-08';
@@ -1106,5 +1106,58 @@ check('"Something wrong here?" is kept for the owner', F && F.Mission === m1.id 
 // v15 removes the old pilot setting from a sheet that still has it.
 run("setSetting('MissionPilot', 'all'); PropertiesService.getScriptProperties().setProperty('setup', 'v14'); CacheService.getScriptCache().put('SETUP', 'v14', 60); ensureSetup()");
 check('the v15 setup removes the old MissionPilot setting', run("getSetting('MissionPilot')") === null && run("getSetting('ReminderHour')") !== null &&
-  run("PropertiesService.getScriptProperties().getProperty('setup')") === 'v15');
+  run("PropertiesService.getScriptProperties().getProperty('setup')") === run('SETUP_VERSION'));
+}
+
+// ---- the friends' pilot (Pilot.js) ----
+{
+const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+const fails = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + label); } catch (e) { console.log('ok: ' + label + ' is rejected: ' + e.message); } };
+const rows = name => sheets[name].rows.slice(1).map(r => Object.fromEntries(sheets[name].rows[0].map((h, i) => [h, r[i]])));
+const J = (code, data) => run('JSON.stringify(apiJoin(' + JSON.stringify(code) + ',' + JSON.stringify(data) + '))');
+const fam = { family: 'Levi', parent: 'Dana', parentPin: '5566', email: '', consent: true, kids: [{ name: 'Shira', grade: 5 }, { name: 'Tali', grade: 9 }] };
+run("setSetting('InviteCode', 'friends'); setSetting('InviteOpen', 'no')");
+check('a closed invite link says so', run("apiJoinCheck('friends').ok") === false);
+fails('joining on a closed link', () => J('friends', fam));
+run("setSetting('InviteOpen', 'yes')");
+fails('joining with a wrong code', () => J('nope', fam));
+fails('joining without consent', () => J('friends', Object.assign({}, fam, { consent: false })));
+fails('joining with a 3-digit parent code', () => J('friends', Object.assign({}, fam, { parentPin: '123' })));
+fails('joining with the admin PIN as parent code', () => J('friends', Object.assign({}, fam, { parentPin: '1234' })));
+const r = JSON.parse(J('friends', fam));
+const g = rows('Groups').find(x => x.Id === r.groupId);
+check('a family joins: group with its parent code, consent and join time', g && g.ParentPIN === '5566' && g.Consent && g.Joined && g.Parent === 'Dana', JSON.stringify(g));
+check('a taken kid name gets the family initial', r.kids[1].name === 'Tali L.' && r.kids[0].name === 'Shira', JSON.stringify(r.kids));
+const noa = rows('Girls').find(x => x.Name === 'Shira');
+check('the grade sets the starting level', noa.Level === 'a2' && rows('Girls').find(x => x.Name === 'Tali L.').Level === 'b1-b2');
+fails('a second family with the same parent code', () => J('friends', Object.assign({}, fam, { family: 'Cohen', kids: [{ name: 'Yael', grade: 4 }] })));
+const nd = run(`apiDashboard('Shira', '${r.kids[0].pin}')`);
+check('a new kid starts with the in-app level test', !!nd.levelTest && nd.girl.inApp === true);
+fails('a level test that is not finished', () => run(`apiPlacement('Shira', '${r.kids[0].pin}', 'A', 'a2', 1, 3, '{}')`));
+const pd = run(`apiPlacement('Shira', '${r.kids[0].pin}', 'A', 'b1', 14, 20, JSON.stringify({ start: 'a2', blocks: [] }))`);
+check('the level test sets the level and opens the app', !pd.levelTest && pd.girl.level === 'b1' && pd.placement && pd.placement.a.label === 'B1' && !pd.placement.due, JSON.stringify(pd.placement));
+fails('a second first test', () => run(`apiPlacement('Shira', '${r.kids[0].pin}', 'A', 'a2', 14, 20, '{}')`));
+const day0 = ctx.__day; ctx.__day = run(`addDays('${day0}', 26)`); run('clearCache()');
+check('the retest is due after four weeks', run(`apiDashboard('Shira', '${r.kids[0].pin}')`).placement.due === true);
+const rd = run(`apiPlacement('Shira', '${r.kids[0].pin}', 'B', 'b1-b2', 17, 20, '{}')`);
+check('the retest is kept and does not change the level', rd.placement.b.label === 'B1+' && rd.girl.level === 'b1' && !rd.placement.due);
+ctx.__day = day0;
+run(`apiFeedback('5566', 'The kids love the duel', 5)`);
+check('a parent\'s feedback is kept', rows('Feedback').some(f => f.Who === r.groupId && f.Score === 5 && /duel/.test(f.Text)));
+fails('feedback with a wrong parent code', () => run(`apiFeedback('9999', 'hi', 3)`));
+run("setSetting('TeacherCode', '424242')");
+fails('a teacher note with a wrong code', () => run(`apiTeacherFlag('111111', 'a2g01', 'x:a2g01:2', 'hm')`));
+Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
+run(`apiTeacherFlag('424242', 'a2g01', 'x:a2g01:2', 'two answers work here')`);
+check('the teacher\'s note goes to Flags', rows('Flags').some(f => f.Girl === 'Teacher' && f.Note === 'two answers work here'));
+const st = run(`apiPilotStats('1234')`);
+const lf = st.families.find(f => f.id === r.groupId);
+check('the admin board lists the family and its funnel', lf && lf.kids.length === 2 && lf.kids[0].placed && st.totals.placed >= 1 && st.feedback.length >= 1 && st.teacherFlags >= 1, JSON.stringify(st.totals));
+fails('the board for a parent', () => run(`apiPilotStats('5566')`));
+check('the admin closes the invite link', run(`apiPilotInvite('1234', false, '')`).invite.open === false);
+// Writing Fridays: a kid with missions gets a mission (Use of English or grammar), not a link.
+const w = run("JSON.stringify(nextExercise('writing', 'a2', {}, true))");
+check('a writing day gives a mission to a kid with missions', !!run('missionOf(' + JSON.stringify(JSON.parse(w).url) + ')'), w);
+const c1 = run("JSON.stringify(nextExercise('use-of-english', 'c1', {}, true))");
+check('C1 (no Use of English) gets a grammar mission', JSON.parse(c1).section === 'grammar' && !!run('missionOf(' + JSON.stringify(JSON.parse(c1).url) + ')'), c1);
 }

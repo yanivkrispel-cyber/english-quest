@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v15';
+var SETUP_VERSION = 'v16';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
@@ -53,7 +53,8 @@ var HEADERS = {
   Log: ['Timestamp', 'Girl', 'Date', 'DoneOn', 'Section', 'Level', 'Title', 'URL', 'Correct', 'Total', 'Percent', 'Points', 'Mission', 'Seconds'],
   Rewards: ['Points', 'Reward', 'Group'],
   Settings: ['Key', 'Value'],
-  Groups: ['Id', 'Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email', 'Friends'],
+  // Parent, Joined, Consent: a family that joined on its own from the invite link (Pilot.js).
+  Groups: ['Id', 'Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email', 'Friends', 'Parent', 'Joined', 'Consent'],
   Push: ['Girl', 'Endpoint', 'Created', 'Agent'],
   ParentPush: ['Who', 'Endpoint', 'Created', 'Agent', 'Instant'],
   // Play together (Duels.js): one row per duel or challenge.
@@ -68,7 +69,10 @@ var HEADERS = {
   // The Wordrobe, phase 2: the Word Saver's deck and the memory of the words items are made of (Shop.js).
   Words: ['Girl', 'Saved', 'Memory', 'Updated'],
   // Today's Mission: "Something wrong here?" reports from the kids, for the owner to check (Missions.js).
-  Flags: ['Timestamp', 'Girl', 'Date', 'Mission', 'Item', 'Note']
+  Flags: ['Timestamp', 'Girl', 'Date', 'Mission', 'Item', 'Note'],
+  // The friends' pilot (Pilot.js): in-app level tests (form A first, B the retest) and parents' feedback.
+  Placements: ['Timestamp', 'Girl', 'Date', 'Form', 'Start', 'Level', 'Correct', 'Total', 'Detail'],
+  Feedback: ['Timestamp', 'Who', 'Group', 'Date', 'Score', 'Text']
 };
 
 var WORDS = [
@@ -106,7 +110,7 @@ var WORDS = [
 function doGet() {
   ensureSetup();
   return HtmlService.createHtmlOutputFromFile('Index')
-    .setTitle('English Quest')
+    .setTitle('English with Coco')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content')
     .setFaviconUrl('https://fonts.gstatic.com/s/e/notoemoji/latest/1f31f/72.png');
 }
@@ -126,7 +130,9 @@ function api() {
   apiDuoInvite: apiDuoInvite, apiDuoAnswer: apiDuoAnswer, apiDuoNudge: apiDuoNudge, apiDuoEnd: apiDuoEnd,
   apiTugCheck: apiTugCheck, apiTugSave: apiTugSave,
   apiShop: apiShop, apiShopBuy: apiShopBuy, apiWear: apiWear, apiWords: apiWords, apiSaveWord: apiSaveWord, apiDesign: apiDesign,
-  apiMissionResult: apiMissionResult, apiFlag: apiFlag
+  apiMissionResult: apiMissionResult, apiFlag: apiFlag,
+  apiJoinCheck: apiJoinCheck, apiJoin: apiJoin, apiPlacement: apiPlacement, apiFeedback: apiFeedback,
+  apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite
   };
 }
 
@@ -686,7 +692,8 @@ function buildDashboard(kid) {
   var next = rewards.filter(function (r) { return r.points > balance; })[0] || null;
 
   return {
-    girl: { name: kid.Name, level: kid.Level, levelLabel: LEVEL_LABEL[kid.Level] || kid.Level, color: kid.Color },
+    // inApp: the level test is played in the app (Pilot.js); kids on the old link keep test-english.com's test.
+    girl: { name: kid.Name, level: kid.Level, levelLabel: LEVEL_LABEL[kid.Level] || kid.Level, color: kid.Color, inApp: missionsOn(kid) },
     today: t,
     week: week,
     stats: {
@@ -702,6 +709,7 @@ function buildDashboard(kid) {
     levelTest: pending,
     journey: pending ? null : journeyInfo(kid, t),
     pet: petInfo(kid),
+    placement: placementInfo(kid),
     games: gameStats(kid, t, owned['word-saver']),
     coins: coinsOf(kid).balance,
     upgrades: upgradesOf(owned),
@@ -812,9 +820,14 @@ function nextExercise(section, level, used, missions) {
   var byLevel = CATALOG[section];
   var start = Math.max(0, LEVELS.indexOf(level));
   if (missions) {
-    var own = byLevel[LEVELS[start]] || [];
-    for (var k = 0; k < own.length; k++) {
-      if (!used[own[k].u] && missionOf(own[k].u)) return { section: section, level: LEVELS[start], title: own[k].t, url: own[k].u };
+    // Writing has no missions yet, and C1 has no Use of English: a kid with missions gets a Use of English (or a
+    // grammar) mission that day instead of a link out of the app.
+    var tries = section === 'writing' || section === 'use-of-english' ? [section, 'use-of-english', 'grammar'] : [section];
+    for (var s = 0; s < tries.length; s++) {
+      var own = (CATALOG[tries[s]] || {})[LEVELS[start]] || [];
+      for (var k = 0; k < own.length; k++) {
+        if (!used[own[k].u] && missionOf(own[k].u)) return { section: tries[s], level: LEVELS[start], title: own[k].t, url: own[k].u };
+      }
     }
   }
   for (var i = start; i < LEVELS.length; i++) {
@@ -844,7 +857,7 @@ function dailyReminder() {
       to: k.Email,
       subject: k.Name + ', your 10 minutes of English are waiting!',
       htmlBody: '<p>Hi ' + k.Name + ',</p><p>Today: <b>' + SECTIONS[a.section].label + '</b> — ' + a.title + '</p>' +
-        '<p><a href="' + groupLink(groupOf(k)) + '">Open English Quest</a> and keep your streak going.</p>'
+        '<p><a href="' + groupLink(groupOf(k)) + '">Open English with Coco</a> and keep your streak going.</p>'
     });
   });
 }
@@ -854,10 +867,10 @@ function weeklySummary() {
   var data = parentData(groups(), true, 'admin');
   var owner = Session.getEffectiveUser().getEmail();
   if (owner) {
-    MailApp.sendEmail({ to: owner, subject: 'English Quest — weekly summary ' + data.today, htmlBody: data.groups.map(summaryHtml).join('<hr>') });
+    MailApp.sendEmail({ to: owner, subject: 'English with Coco — weekly summary ' + data.today, htmlBody: data.groups.map(summaryHtml).join('<hr>') });
   }
   data.groups.forEach(function (g) {
-    if (g.email) MailApp.sendEmail({ to: g.email, subject: 'English Quest — ' + g.name + ' weekly summary', htmlBody: summaryHtml(g) });
+    if (g.email) MailApp.sendEmail({ to: g.email, subject: 'English with Coco — ' + g.name + ' weekly summary', htmlBody: summaryHtml(g) });
   });
 }
 
@@ -869,7 +882,7 @@ function summaryHtml(g) {
       d.games.weekRounds + (d.games.weekAvg === null ? '' : ' (' + d.games.weekAvg + '%)') + '</td></tr>';
   }).join('');
   return '<h3>' + g.name + '</h3><table cellpadding="6" border="1" style="border-collapse:collapse"><tr><th>Name</th><th>Week</th><th>Avg</th><th>Streak</th><th>Points</th><th>Level</th><th>Games</th></tr>' +
-    rows + '</table><p>Group goal: ' + g.goal.total + ' / ' + g.goal.goal + '</p><p><a href="' + g.link + '">Open English Quest</a></p>';
+    rows + '</table><p>Group goal: ' + g.goal.total + ' / ' + g.goal.goal + '</p><p><a href="' + g.link + '">Open English with Coco</a></p>';
 }
 
 function installTriggers() {
@@ -933,7 +946,8 @@ function ensureSetup() {
     if (stray && ss.getSheets().length > 1) ss.deleteSheet(stray);
     clearCache();
 
-    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: 'https://yanivkrispel-cyber.github.io/english-quest/', ShopOpens: SHOP.opens, ShopEarly: '' };
+    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: 'https://yanivkrispel-cyber.github.io/english-quest/', ShopOpens: SHOP.opens, ShopEarly: '',
+      InviteCode: Math.random().toString(36).slice(2, 8), InviteOpen: 'no', TeacherCode: String(100000 + Math.floor(Math.random() * 900000)) };
     Object.keys(defaults).forEach(function (k) { if (getSetting(k) === null) setSetting(k, defaults[k]); });
     if (getSetting('AppUrl') !== APP_URL) setSetting('AppUrl', APP_URL);
     // v15: Today's Mission is every kid's daily task (Girls.Missions = no keeps the old link), so the pilot setting goes.

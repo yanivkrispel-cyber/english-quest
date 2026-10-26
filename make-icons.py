@@ -5,6 +5,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 OUT = os.path.join(os.path.dirname(__file__), "docs", "icons")
 FONT = "C:/Windows/Fonts/segoeuib.ttf"
 TOP, BOTTOM = (139, 143, 251), (60, 199, 182)
+COCO = os.path.join(os.path.dirname(__file__), "docs", "coco", "happy.webp")
 
 
 def gradient(size):
@@ -27,12 +28,12 @@ def icon(size, maskable=False, rounded=True):
     glow = Image.new("RGBA", (s, s), (255, 255, 255, 0))
     glow.putalpha(alpha.filter(ImageFilter.GaussianBlur(s * 0.08)))
     bg = Image.alpha_composite(bg, glow)
-    d = ImageDraw.Draw(bg)
-    # maskable icons keep the text inside the central 60% safe zone
-    font = ImageFont.truetype(FONT, int(s * (0.30 if maskable else 0.40)))
-    box = d.textbbox((0, 0), "EQ", font=font)
-    w, h = box[2] - box[0], box[3] - box[1]
-    d.text(((s - w) / 2 - box[0], (s - h) / 2 - box[1]), "EQ", font=font, fill=(255, 255, 255, 255))
+    # Coco the parrot is the logo; maskable icons keep him inside the central safe zone.
+    coco = Image.open(COCO).convert("RGBA")
+    box = int(s * (0.62 if maskable else 0.84))
+    k = box / max(coco.size)
+    coco = coco.resize((round(coco.width * k), round(coco.height * k)), Image.LANCZOS)
+    bg.alpha_composite(coco, ((s - coco.width) // 2, (s - coco.height) // 2 + int(s * 0.02)))
     if rounded and not maskable:
         mask = Image.new("L", (s, s), 0)
         ImageDraw.Draw(mask).rounded_rectangle((0, 0, s - 1, s - 1), radius=int(s * 0.22), fill=255)
@@ -53,8 +54,8 @@ def badge(size):
     img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     font = ImageFont.truetype(FONT, int(s * 0.52))
-    box = d.textbbox((0, 0), "EQ", font=font)
-    d.text(((s - (box[2] - box[0])) / 2 - box[0], (s - (box[3] - box[1])) / 2 - box[1]), "EQ", font=font, fill=(255, 255, 255, 255))
+    box = d.textbbox((0, 0), "C", font=font)
+    d.text(((s - (box[2] - box[0])) / 2 - box[0], (s - (box[3] - box[1])) / 2 - box[1]), "C", font=font, fill=(255, 255, 255, 255))
     return img.resize((size, size), Image.LANCZOS)
 
 

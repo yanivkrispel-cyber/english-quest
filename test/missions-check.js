@@ -4,7 +4,8 @@
 //   require('./missions-check.js').load()  -> { missions, count } for tools/missions-index.js
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..');
-const FILES = ['a1', 'a2', 'b1', 'bp', 'b2', 'c1'];
+// MISSIONS_ONLY=<file> checks one level file alone (parallel writers on other levels can't break the run).
+const FILES = process.env.MISSIONS_ONLY ? [process.env.MISSIONS_ONLY] : ['a1', 'a2', 'b1', 'bp', 'b2', 'c1'];
 const LEVEL_OF = { a1: 'a1', a2: 'a2', b1: 'b1', bp: 'b1-b2', b2: 'b2', c1: 'c1' };
 const SECTION_OF = { g: 'grammar', v: 'vocabulary', l: 'listening', r: 'reading', u: 'use-of-english', w: 'writing' };
 // Words in a reading text and in an episode (all its lines), at most, per level.
@@ -23,7 +24,8 @@ function appCount() {
 function load() {
   const window = {};
   FILES.forEach(f => {
-    const p = path.join(ROOT, 'docs/missions', f + '.js');
+    // MISSIONS_FILE=<path> (with MISSIONS_ONLY) checks a staging file in that level's format instead.
+    const p = process.env.MISSIONS_FILE || path.join(ROOT, 'docs/missions', f + '.js');
     if (fs.existsSync(p)) new vm.Script(fs.readFileSync(p, 'utf8'), { filename: p }).runInNewContext({ window });
   });
   return { missions: window.EQ_MISSIONS || {}, count: appCount() };

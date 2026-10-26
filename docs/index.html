@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-<title>English Quest</title>
+<title>English with Coco</title>
 <meta name="theme-color" content="#ece6e0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="English Quest">
+<meta name="apple-mobile-web-app-title" content="Coco">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -487,6 +487,8 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
 .gate-hero{width:120px;height:120px;border-radius:38px;display:grid;place-items:center;font-size:60px;color:#fff;
   background:linear-gradient(145deg,var(--na),var(--nb));box-shadow:0 24px 40px -18px var(--nb),inset 0 1px 0 rgba(255,255,255,.55)}
 /* Level up */
+.he{direction:rtl;text-align:right}
+.helist{margin:6px 0 0;padding-inline-start:20px;display:grid;gap:6px}
 .lvbadge{position:absolute;inset:30px;border-radius:50%;display:grid;place-items:center;font-size:66px;font-weight:800;color:#fff;letter-spacing:-1px;
   background:linear-gradient(145deg,var(--wa),var(--wb));border:4px solid rgba(255,255,255,.7);box-shadow:0 0 60px rgba(253,230,138,.35),inset 0 2px 0 rgba(255,255,255,.5);
   transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
@@ -1211,14 +1213,14 @@ function renderOnboarding(d){
   <div class="stack">
     ${dashHeader(d)}
     ${petCard(d)}
-    <div class="today iri">
+    ${d.girl.inApp ? placeToday() : `<div class="today iri">
       <div class="row-flex between"><span class="label" style="color:#3b3f55">Step 1 · Your level</span><span class="chip">20–30 min</span></div>
       <div class="row-flex mt-s" style="gap:10px">${tile('level')}<b>${esc(lt.title)}</b></div>
       <h2>Let's find your English level</h2>
       <div class="sub" style="color:#3b3f55">Answer the questions on test-english.com. At the end you will see your level (A1, A2, B1…). Come back here and tap <b>I got my level</b>.</div>
       <div class="btns"><a class="btn btn-teal" href="${esc(lt.url)}" target="_blank" rel="noopener">Start ${icon('arrow-up-right')}</a>
         <button class="btn btn-primary" id="gotlevel">I got my level ${icon('check')}</button></div>
-    </div>
+    </div>`}
     <div class="glass panel">
       <div class="row-flex between"><h2>Opens after the test</h2><span class="chip">${icon('lock-simple')} Locked</span></div>
       <div class="sub mt-s" style="font-size:13px">Your daily task, the four games, your journey map and the rewards open as soon as we know your level.</div>
@@ -1237,7 +1239,8 @@ function renderOnboarding(d){
   document.getElementById('refresh').onclick = () => refreshDash(true);
   document.getElementById('logout').onclick = signOut;
   syncState(syncNow);
-  document.getElementById('gotlevel').onclick = () => openSheet(w);
+  const gl = document.getElementById('gotlevel'); if (gl) gl.onclick = () => openSheet(w);
+  const pgo = document.getElementById('placego'); if (pgo) pgo.onclick = () => placeIntro('A');
   ['adopt', 'petedit'].forEach(id => { const b = document.getElementById(id); if (b) b.onclick = petPicker; });
   bindPet(d);
   if (d.push && d.push.key) pushKey = d.push.key;
@@ -2951,8 +2954,8 @@ function renderItem(){
   const hint = { match: 'Hmm… which one is it?', listen: 'Listen carefully!', build: 'Let\'s build it together!', spot: 'Can you find it?' }[game];
   app.innerHTML = `<div class="gscreen gplay" id="gs">
     <div class="gtop"><button class="btn btn-glass icon-btn" id="gquit" title="Stop">${icon('x')}</button>
-      <div style="flex:1;min-width:0"><h2>${G.duel ? G.duel.title : G.gate ? 'Gate challenge' : info.name}</h2><div class="sub" style="font-size:12px;margin:0">${G.duel
-        ? info.name + ' · level ' + esc(G.duel.label) : G.gate ? info.name + ' · level ' + esc(dash.journey.gate.nextLabel) : G.game === 'mine' ? 'My words · ' + info.name : 'Level ' + esc(dash.girl.levelLabel)} · ${G.i + 1} of ${n}</div></div>
+      <div style="flex:1;min-width:0"><h2>${G.duel ? G.duel.title : G.place ? (G.place.form === 'A' ? 'Level test' : 'Progress check') : G.gate ? 'Gate challenge' : info.name}</h2><div class="sub" style="font-size:12px;margin:0">${G.duel
+        ? info.name + ' · level ' + esc(G.duel.label) : G.place ? info.name : G.gate ? info.name + ' · level ' + esc(dash.journey.gate.nextLabel) : G.game === 'mine' ? 'My words · ' + info.name : 'Level ' + esc(dash.girl.levelLabel)} · ${G.i + 1} of ${n}</div></div>
       ${soundBtn()}${G.duel ? `<span class="chip" id="dtimer">${icon('timer')} ${duelClockText()}</span>` : `<span class="tile ${info.tile}">${icon(info.icon, 'duotone')}</span>`}</div>
     ${G.duel ? duelRaceCard() : `<div class="gprog" id="gprog">${gameBars()}</div>`}
     <div class="gstage enter">${body}</div>
@@ -2978,7 +2981,7 @@ function onGameClick(e){
   if (t.dataset.hint) return bossSendHint();
   if (t.id === 'gquit') {
     // Leaving the gate challenge or a duel halfway takes a second tap; nothing is saved then.
-    if ((G.gate || G.duel) && !(G.quitAt > Date.now() - 3000)) { G.quitAt = Date.now(); return toast(G.duel ? 'Tap again to leave the duel.' : 'Tap again to leave. This try won\'t count.'); }
+    if ((G.gate || G.place || G.duel) && !(G.quitAt > Date.now() - 3000)) { G.quitAt = Date.now(); return toast(G.duel ? 'Tap again to leave the duel.' : 'Tap again to leave. This try won\'t count.'); }
     const gate = G.gate;
     if (G.duel) stopDuel();
     G = null; speechStop();
@@ -3074,6 +3077,8 @@ function answered(ok, explain){
   fb.textContent = half ? pick(['Yes! Second time lucky!', 'You got it this time!', 'Nice fix!']) : ok ? pick(['Correct!', 'Great!', 'Yes! You got it!', 'Perfect!', 'Well done!'])
     : pick(['Oops! Let\'s look at the answer.', 'Almost! Here is the answer.', 'Not quite. Now you know!']);
   petReact(ok ? 'celebrate' : 'oops');
+  // The level test moves on by itself: no explanations, no Next button.
+  if (G.place) { setTimeout(() => { if (G && G.items[G.i] === it) { G.i++; renderItem(); } }, ok ? 900 : 1500); return; }
   const learn = it.game === 'listen' || it.game === 'spot';
   if (ok) {
     xpPop(half);
@@ -3096,7 +3101,7 @@ function petReact(mood){
 
 function xpPop(half){
   const earned = G.right.length * 2 + (G.half ? G.half.size : 0);
-  if (G.gate || dash.games.todayXp + earned > dash.games.dayCap) return;
+  if (G.gate || G.place || dash.games.todayXp + earned > dash.games.dayCap) return;
   const img = document.getElementById('gpet'), r = img ? img.getBoundingClientRect() : { left: window.innerWidth - 90, top: 30 };
   const s = document.createElement('div');
   s.className = 'xp-pop';
@@ -3107,6 +3112,7 @@ function xpPop(half){
 }
 
 function finishRound(){
+  if (G.place) return placeNext();
   if (G.gate) return finishGate();
   if (G.duel) return finishDuel();
   const correct = G.res.filter(Boolean).length, total = G.res.length, pct = total ? correct / total : 0;
@@ -3254,7 +3260,7 @@ function speechStop(){ try { speechSynthesis.cancel(); } catch(e){} }
 // ---------- Today's Mission (specs/missions.md) ----------
 // The daily task played in the app, in five parts (Hook, Learn, Practice, Use it, Finish), with the score measured here.
 // Content: docs/missions/<a1|a2|b1|bp|b2|c1>.js sets window.EQ_MISSIONS[file] = [missions]; recordings in docs/missions/audio.
-const MISSIONS_V = 1, MS_PARTS = ['Hook', 'Learn', 'Practice', 'Use it', 'Finish'];
+const MISSIONS_V = 2, MS_PARTS = ['Hook', 'Learn', 'Practice', 'Use it', 'Finish'];
 const MS_TYPES = { grammar: ['Grammar Lab', 7], vocabulary: ['Word Pack', 7], listening: ['Radio Show', 8], reading: ['Story Cards', 8],
   'use-of-english': ['Newsroom', 7], writing: ['Writer\'s Desk', 9] };
 let MS = null, msTick = null, msAudio = null;
@@ -3696,6 +3702,17 @@ function msClick(e){
     msTouch();
     return msListen(sc.p, () => { if (!MS) return; (MS.sub.heard = MS.sub.heard || {})[sc.p] = true; const fb = document.getElementById('fb'); if (fb) fb.textContent = 'Ready for the questions?'; msNextBtn('Questions'); });
   }
+  if (d.flag && MS.preview && TEACHER) {
+    t.parentElement.innerHTML = '<input class="input" id="tnote" placeholder="What is wrong? A short note" style="flex:1;min-width:0;height:36px"><button class="mflag" data-tsend="' + esc(d.flag) + '">Send</button>';
+    const n = document.getElementById('tnote'); if (n) n.focus();
+    return;
+  }
+  if (d.tsend) {
+    const n = document.getElementById('tnote');
+    call('apiTeacherFlag', TEACHER, MS.id, d.tsend, n ? n.value : '').then(() => toast('Note sent. Thank you!')).catch(e => toast(e.message, true));
+    t.parentElement.innerHTML = '<span class="mflag">Sent</span>';
+    return;
+  }
   if (d.flag) { if (session) call('apiFlag', session.name, session.pin, MS.id, d.flag, '').catch(() => {}); t.disabled = true; t.textContent = session ? 'Thanks! We will check it.' : 'Noted (preview: tell Claude which one).'; return; }
   if (d.ehe) { const box = document.getElementById('mehe'); if (box) box.hidden = !box.hidden; return; }
   if (sc.t === 'hook' && d.guess != null && MS.guess == null) { msTouch(); MS.guess = Number(d.guess); msKeep(); return msRender(); }
@@ -3902,7 +3919,7 @@ async function missionGallery(){
   const label = (LEVELS.find(l => l[0] === msGalleryLevel) || [0, ''])[1];
   app.innerHTML = `<div class="stack">
     <div class="glass panel"><div class="row-flex between"><h2>Mission preview</h2><span class="chip purple">${list.length} missions</span></div>
-      <div class="sub mt-s" style="font-size:13px">Play any mission as practice. Nothing is saved.</div>
+      ${TEACHER ? '<div class="sub mt-s" style="font-size:13px"><b>Teacher review.</b> Play any mission. Under each answer, tap <b>Something wrong here?</b> and write a short note: it goes straight to the owner.</div>' : '<div class="sub mt-s" style="font-size:13px">Play any mission as practice. Nothing is saved.</div>'}
       <div class="row-flex mt" style="gap:6px;flex-wrap:wrap">${LEVELS.map(([k, l]) => `<button class="btn ${k === msGalleryLevel ? 'btn-primary' : 'btn-glass'} btn-sm" data-glv="${k}">${l}</button>`).join('')}</div></div>
     <div class="stack" style="gap:10px">${list.map(m => `<button class="soft task clickable" data-prev="${m.id}" style="text-align:left;width:100%;font:inherit;border:0">
       ${tile(m.type, true)}<div class="task-main"><div class="task-top">${esc((MS_TYPES[m.type] || MS_TYPES.grammar)[0])} · ${msCount(m)} questions · ${m.id}</div>
@@ -4147,7 +4164,7 @@ function codeSheet(){
       <button class="mrow" data-open="live"><span class="tile t-grammar">${icon('sword', 'duotone')}</span><span class="drow-main"><b>Word Duel code</b><small>Play together now</small></span>${icon('caret-right')}</button>
       <button class="mrow" data-open="challenge"><span class="tile t-read">${icon('ghost', 'duotone')}</span><span class="drow-main"><b>Challenge code</b><small>You play now, your friend within 24 hours</small></span>${icon('caret-right')}</button>
     </div>
-    <div class="sub mt-s" style="font-size:12px">You get a 4-letter code to send on WhatsApp. The first friend who enters it in English Quest plays with you.</div>
+    <div class="sub mt-s" style="font-size:12px">You get a 4-letter code to send on WhatsApp. The first friend who enters it in English with Coco plays with you.</div>
   </div>`;
   document.body.appendChild(ov);
   const close = () => ov.remove();
@@ -4369,7 +4386,7 @@ function lobbyUpdate(v){
 
 function codeShare(v){
   const link = appBase() + '?duel=' + v.code;
-  const text = dash.girl.name + ' invites you to ' + modeInvite(v) + ' on English Quest! 🎮\nOpen the app, tap Play together, then Code, and enter ' + v.code + '.\nOr tap: ' + link;
+  const text = dash.girl.name + ' invites you to ' + modeInvite(v) + ' on English with Coco! 🎮\nOpen the app, tap Play together, then Code, and enter ' + v.code + '.\nOr tap: ' + link;
   return `<div class="glass panel" style="text-align:center;padding:16px">
     <div class="label">Send this code to your friend</div>
     <div class="codebig">${esc(v.code)}</div>
@@ -5681,7 +5698,7 @@ function renderMap(){
         ${n ? `<path d="${road(pts.slice(0, n + 1))}" fill="none" stroke="url(#wroad)" stroke-width="16" stroke-linecap="round"/>` : ''}
       </svg>
       ${deco}
-      <span class="chip mtag" style="${at(180, 36)}">${icon(g.next ? 'lock-simple' : 'sparkle')} ${g.next ? 'Next: ' + esc(g.nextName) + ' · ' + esc(g.nextLabel) : 'The top of English Quest'}</span>
+      <span class="chip mtag" style="${at(180, 36)}">${icon(g.next ? 'lock-simple' : 'sparkle')} ${g.next ? 'Next: ' + esc(g.nextName) + ' · ' + esc(g.nextLabel) : 'The top of English with Coco'}</span>
       <span class="chip mtag ${g.state === 'open' ? 'purple' : ''}" style="${at(180, 80)}">${esc(gateTag)}</span>
       <button class="mgate ${g.state}" id="mgate" style="${at(180, TOP)};--na:${nl.c[0]};--nb:${nl.c[1]}" aria-label="Gate">${icon(gateIcon, 'duotone')}</button>
       ${nodes}
@@ -5692,7 +5709,7 @@ function renderMap(){
   const gate = () => {
     if (g.state === 'open') return gateIntro();
     toast(g.state === 'wait' ? 'The gate opens again on ' + dayLabel(g.until)
-      : g.state === 'top' ? (j.stations >= N ? 'You reached the summit of English Quest!' : 'The summit of English Quest. Keep going!') : gateNote(j));
+      : g.state === 'top' ? (j.stations >= N ? 'You reached the summit of English with Coco!' : 'The summit of English with Coco. Keep going!') : gateNote(j));
   };
   document.getElementById('back').onclick = renderDash;
   document.getElementById('mgate').onclick = gate;
@@ -5832,7 +5849,7 @@ function levelUp(r){
 // Share the certificate picture (phones), or download it and open WhatsApp with the text.
 async function shareLevel(){
   const j = dash.journey, name = dash.girl.name;
-  const text = `🎉 ${name} reached level ${j.label} in English Quest! World ${j.world}, ${j.name}, is now open 🌟`;
+  const text = `🎉 ${name} reached level ${j.label} in English with Coco! World ${j.world}, ${j.name}, is now open 🌟`;
   let file = null;
   try { file = new File([await certBlob()], 'English-Quest-' + j.label.replace('+', '-plus') + '.jpg', { type: 'image/jpeg' }); } catch(e){}
   try {
@@ -5911,7 +5928,7 @@ function splashScreen(quick){
         <div class="up"><div class="pop" style="--d:${quick ? 60 + i * 32 : 150 + i * 75}ms"><img src="${petSrc(id, 1, 'happy')}" data-id="${id}" alt="" onload="this.classList.add('ok')"></div></div></div>`).join('')}</div>
       <div class="portal"><div class="portal-in">
         ${me ? petArt(me, 'celebrate', 'me') : ''}
-        <div class="ptitle">English Quest</div><div class="psub">10 minutes a day</div></div></div>
+        <div class="ptitle">English with Coco</div><div class="psub">10 minutes a day</div></div></div>
       ${Array.from({ length: quick ? 8 : 14 }, () => `<i class="spark" style="--x:${Math.round(Math.random() * 100)}%;--y:${Math.round(Math.random() * 100)}%;--t:${(Math.random() * (quick ? .8 : 1.7)).toFixed(2)}s"></i>`).join('')}
     </div>`;
   document.body.appendChild(el);
@@ -5962,9 +5979,368 @@ async function boot(){
   try { performance.mark('eq-open'); } catch(e){}
 }
 
+// ---------- The friends' pilot (Pilot.js, specs/pilot.md) ----------
+// Hebrew screens for parents (dir="rtl"); the kids' side stays in English.
+
+// The in-app level test: adaptive blocks of five game items (Match it, Hear it, Spot it, Build it and one more). 4 or 5
+// right moves up a level, 2 or fewer moves down, 3 stops there; at most five blocks. Form A uses half of the items and
+// the retest (form B) the other half, so the second test has new questions.
+const PLACE_LV = ['a1', 'a2', 'b1', 'b2', 'c1'], PLACE_MAX = 5;
+const placeForm = (id, form) => (hashStr(id) % 2 === 0) === (form === 'A');
+const placeStartLv = lv => lv === 'b1-b2' ? 'b1' : PLACE_LV.indexOf(lv) >= 0 ? lv : 'a2';
+function placeBlock(B, lv, form, n){
+  const items = [];
+  ['match', 'listen', 'spot', 'build', n % 2 ? 'spot' : 'listen'].forEach(game => {
+    const pool = shuffle(bankItems(B, game, lv).filter(x => x.kind !== 'pic' && placeForm(x.id, form) && !G.place.used.has(x.id)));
+    if (pool[0]) { G.place.used.add(pool[0].id); items.push(prepare(B, game, pool[0])); }
+  });
+  return shuffle(items);
+}
+function placeIntro(form){
+  const retest = form !== 'A';
+  app.innerHTML = `<div class="gscreen">
+    <div class="gtop"><button class="btn btn-glass icon-btn" id="pback">${icon('arrow-left')}</button><h2>${retest ? 'Progress check' : 'Your level'}</h2><span></span></div>
+    <div class="result">
+      <span class="gate-hero">${icon('target', 'duotone')}</span>
+      <h1 style="font-size:28px">${retest ? 'How much have you grown?' : 'Let\'s find your level'}</h1>
+      <div class="sub" style="max-width:320px;margin:0">${retest ? 'The same kind of test as on your first day, with new questions. Your parents will see how much you improved.'
+        : 'Short rounds from the four games. When a round is easy, the next one is harder. Just do your best: there is no pass or fail.'}</div>
+      <div class="row-flex" style="gap:8px;flex-wrap:wrap;justify-content:center">
+        <span class="chip">${icon('timer')} About 8 minutes</span><span class="chip">${icon('list-numbers')} 15 to 25 questions</span></div>
+    </div>
+    <button class="btn btn-primary btn-block" id="pstart">${icon('play')} Start</button>
+  </div>`;
+  document.getElementById('pback').onclick = renderDash;
+  document.getElementById('pstart').onclick = () => startPlacement(form);
+}
+async function startPlacement(form){
+  app.innerHTML = '<div class="spinner"></div>';
+  let B;
+  try { B = await loadBank(); } catch(e){ toast(e.message, true); return renderDash(); }
+  const lv = placeStartLv(dash.girl.level);
+  G = { place: { form, lv, start: lv, blocks: [], used: new Set(), B }, items: [], i: 0, res: [], missed: [], right: [], built: [], locked: false };
+  G.items = placeBlock(B, lv, form, 0);
+  if (G.items.length < 4) { G = null; toast('Could not prepare the test. Try again later.', true); return renderDash(); }
+  window.scrollTo(0, 0);
+  renderItem();
+}
+// After each block: up, down or done.
+function placeNext(){
+  const P = G.place, from = P.blocks.reduce((a, b) => a + b.n, 0), res = G.res.slice(from);
+  const score = Math.round(res.filter(Boolean).length * 5 / Math.max(1, res.length));
+  P.blocks.push({ lv: P.lv, n: res.length, right: res.filter(Boolean).length, score });
+  const k = PLACE_LV.indexOf(P.lv), tried = lv => P.blocks.some(b => b.lv === lv);
+  let next = null;
+  if (score >= 4 && k < PLACE_LV.length - 1 && !tried(PLACE_LV[k + 1])) next = PLACE_LV[k + 1];
+  else if (score <= 2 && k > 0 && !tried(PLACE_LV[k - 1])) next = PLACE_LV[k - 1];
+  if (next && P.blocks.length < PLACE_MAX) {
+    const more = placeBlock(P.B, next, P.form, P.blocks.length);
+    if (more.length >= 4) {
+      P.lv = next; G.items = G.items.concat(more);
+      toast(score >= 4 ? 'Great! A little harder now.' : 'Let\'s try a few different ones.');
+      return renderItem();
+    }
+  }
+  finishPlacement();
+}
+// The level: the highest block with 3 of 5 or more. A strong B1 with a near miss at B2, or a bare pass at B2, is B1+.
+function placeLevel(blocks){
+  const ok = blocks.filter(b => b.score >= 3).map(b => PLACE_LV.indexOf(b.lv));
+  if (!ok.length) return 'a1';
+  const top = PLACE_LV[Math.max(...ok)], at = blocks.find(b => b.lv === top), b2 = blocks.find(b => b.lv === 'b2');
+  if (top === 'b1' && at.score >= 4 && b2 && b2.score === 2) return 'b1-b2';
+  if (top === 'b2' && at.score === 3) return 'b1-b2';
+  return top;
+}
+function finishPlacement(){
+  const P = G.place, by = {};
+  G.items.forEach((x, k) => { if (k < G.res.length) { const s = by[x.game] = by[x.game] || [0, 0]; s[1]++; if (G.res[k]) s[0]++; } });
+  const R = { form: P.form, level: placeLevel(P.blocks), correct: G.res.filter(Boolean).length, total: G.res.length,
+    detail: { start: P.start, blocks: P.blocks, games: by } };
+  store.set(seenKey(), (store.get(seenKey()) || []).concat(G.items.map(x => x.id)).slice(-60));
+  G = null;
+  savePlacement(R);
+}
+async function savePlacement(R){
+  app.innerHTML = `<div class="gscreen"><div class="result">
+      ${dash.pet ? petArt(dash.pet, 'thinking', 'pet-img') : `<span class="gate-hero">${icon('target', 'duotone')}</span>`}
+      <h1>${R.correct}/${R.total}</h1>
+      <div class="saved wait" id="plst"><span class="mini-spin"></span>Finding your level…</div>
+    </div><div class="stack" style="gap:10px" id="plbtns"></div></div>`;
+  const before = dash.placement && dash.placement.a;
+  try { setDash(await call('apiPlacement', session.name, session.pin, R.form, R.level, R.correct, R.total, JSON.stringify(R.detail))); }
+  catch(e){
+    const st = document.getElementById('plst');
+    st.className = 'saved err'; st.innerHTML = icon('wifi-slash') + ' ' + esc(e.message);
+    document.getElementById('plbtns').innerHTML = `<button class="btn btn-primary btn-block" id="plretry">${icon('arrows-clockwise')} Try again</button>`;
+    document.getElementById('plretry').onclick = () => savePlacement(R);
+    return;
+  }
+  const lv = look(R.level), retest = R.form !== 'A';
+  app.innerHTML = `<div class="gscreen" style="--na:${lv.c[0]};--nb:${lv.c[1]}"><div class="result">
+      ${dash.pet ? petArt(dash.pet, 'celebrate', 'pet-img') : `<span class="gate-hero">${icon('trophy', 'duotone')}</span>`}
+      <div class="label">${retest ? 'Progress check' : 'Your level'}</div>
+      <div style="width:96px;height:96px;margin:6px auto;border-radius:50%;display:grid;place-items:center;font-size:38px;font-weight:800;color:#fff;background:linear-gradient(135deg,${lv.c[0]},${lv.c[1]})">${esc(levelLabel(R.level))}</div>
+      <h2>${retest ? (before ? 'First test: ' + esc(before.label) + ' · Now: ' + esc(levelLabel(R.level)) : 'Well done!') : 'Welcome to ' + esc((dash.journey && dash.journey.name) || 'your world') + '!'}</h2>
+      <div class="sub" style="max-width:320px;margin:0">${retest ? 'Your parents can see this in their view. Keep going!'
+        : 'Your daily missions and the four games are ready, at your level. Every day you practise, your pet grows.'}</div>
+    </div>
+    <div class="stack" style="gap:10px"><button class="btn btn-primary btn-block" id="plgo">${icon('play')} Let's go</button></div></div>`;
+  confetti();
+  document.getElementById('plgo').onclick = renderDash;
+}
+// About four weeks after the first test, home offers the retest.
+function retestCard(d){
+  const p = d.placement;
+  if (!p || !p.due || !d.girl.inApp) return '';
+  return `<div class="glass panel"><div class="row-flex between"><h2>Progress check</h2><span class="chip purple">${icon('target')} ${esc(p.a.label)}</span></div>
+    <div class="sub mt-s" style="font-size:13px">Four weeks of practice! Take the level test again (new questions) and see how much you grew.</div>
+    <button class="btn btn-primary btn-block mt-s" id="retest">${icon('chart-line-up')} Start the progress check</button></div>`;
+}
+
+// ---------- Join: a family signs up from the owner's invite link (?join=<code>) ----------
+const GRADES = [[3, 'ג'], [4, 'ד'], [5, 'ה'], [6, 'ו'], [7, 'ז'], [8, 'ח'], [9, 'ט'], [10, 'י'], [11, 'יא'], [12, 'יב']];
+let JOIN = null;
+async function renderJoin(code){
+  loading();
+  let ok = false;
+  try { ok = (await call('apiJoinCheck', code)).ok; } catch(e){ ok = null; }
+  if (!ok) {
+    app.innerHTML = `<div class="glass panel he" dir="rtl" lang="he" style="display:grid;gap:12px;text-align:center">
+      <h2>${ok === null ? 'אין חיבור כרגע' : 'הקישור לא פעיל'}</h2>
+      <div class="sub">${ok === null ? 'בדקו את החיבור לאינטרנט ונסו שוב.' : 'ההרשמה בקישור הזה סגורה. בקשו קישור חדש ממי ששלח לכם.'}</div>
+      ${ok === null ? `<button class="btn btn-primary btn-block" id="jagain">${icon('arrows-clockwise')} נסו שוב</button>` : ''}</div>`;
+    const b = document.getElementById('jagain'); if (b) b.onclick = () => renderJoin(code);
+    return;
+  }
+  JOIN = JOIN || { code, kids: [{ name: '', grade: '' }], consent: false };
+  joinWelcome();
+}
+function joinWelcome(){
+  app.innerHTML = `<div class="stack he" dir="rtl" lang="he">
+    <div class="glass panel">
+      <div class="label">פיילוט משפחות · 4 שבועות בחינם</div>
+      <h1 style="margin-top:6px">אנגלית, 10 דקות ביום</h1>
+      <div class="sub mt-s">אפליקציה שהילדים רוצים לחזור אליה: משימה יומית קצרה ברמה של הילד, משחקים, חיית מחמד שגדלה ומשחק עם חברים.</div>
+    </div>
+    <div class="glass panel">
+      <h2>מה מקבלים</h2>
+      <ul class="helist">
+        <li><b>משימה יומית של 6 עד 9 דקות</b> בדקדוק, אוצר מילים, האזנה וקריאה, ברמה שנקבעת במבחן קצר בהתחלה.</li>
+        <li><b>ארבעה משחקים קצרים</b> שמחזירים את הטעויות של הילד עד שהן נלמדות.</li>
+        <li><b>משחק עם חברים</b>: דו קרב, משחק דיבור ואתגר משותף.</li>
+        <li><b>אתם רואים כל יום</b> מה הילד עשה, ומקבלים ב-21:00 סיכום עם שאלה באנגלית לארוחת הערב.</li>
+      </ul>
+      <div class="sub" style="font-size:13px">התוכן נכתב בעזרת בינה מלאכותית ונבדק על ידי מורה לאנגלית.</div>
+    </div>
+    <div class="glass panel">
+      <h2>פרטיות</h2>
+      <ul class="helist">
+        <li>שומרים רק את השם הפרטי של הילד, הכיתה, התשובות וההתקדמות. מכם: שם, וכתובת מייל אם תבחרו.</li>
+        <li>אין פרסומות. לא מקליטים קול ולא שומרים הקלטות. לא מעבירים מידע לאף אחד.</li>
+        <li>אפשר לבקש מחיקה מלאה של כל המידע בכל רגע, בהודעה למי ששלח לכם את הקישור.</li>
+        <li>הילדים יכולים לשחק עם ילדים ממשפחות אחרות בפיילוט. רואים רק שם פרטי, ואין צ'אט חופשי.</li>
+      </ul>
+      <label class="row-flex mt-s" style="gap:10px;align-items:flex-start;cursor:pointer">
+        <input type="checkbox" id="jconsent" ${JOIN.consent ? 'checked' : ''} style="width:22px;height:22px;flex:none;margin-top:2px">
+        <span>אני ההורה, קראתי ואני מסכים/ה לשימוש במידע כמו שכתוב כאן.</span></label>
+    </div>
+    <button class="btn btn-primary btn-block" id="jnext">בואו נתחיל ${icon('arrow-left')}</button>
+  </div>`;
+  document.getElementById('jconsent').onchange = e => { JOIN.consent = e.target.checked; };
+  document.getElementById('jnext').onclick = () => {
+    if (!JOIN.consent) return toast('צריך לסמן את האישור כדי להמשיך', true);
+    joinForm();
+  };
+}
+function joinForm(){
+  const kidRow = (k, i) => `<div class="row-flex" style="gap:8px">
+      <input class="input" data-kname="${i}" placeholder="שם פרטי באנגלית, למשל Noa" value="${esc(k.name)}" autocomplete="off" style="flex:1;min-width:0" dir="auto">
+      <select class="input" data-kgrade="${i}" style="width:96px"><option value="">כיתה</option>${GRADES.map(([g, l]) => `<option value="${g}" ${String(k.grade) === String(g) ? 'selected' : ''}>${l}</option>`).join('')}</select>
+      ${JOIN.kids.length > 1 ? `<button class="btn btn-glass icon-btn" data-kdel="${i}" title="הסרה">${icon('x')}</button>` : ''}</div>`;
+  app.innerHTML = `<div class="stack he" dir="rtl" lang="he">
+    <div class="glass panel" style="display:grid;gap:10px">
+      <h2>המשפחה</h2>
+      <input class="input" id="jfam" placeholder="שם המשפחה" value="${esc(JOIN.family || '')}" autocomplete="family-name">
+      <input class="input" id="jpar" placeholder="השם שלך" value="${esc(JOIN.parent || '')}" autocomplete="given-name">
+      <input class="input" id="jpin" inputmode="numeric" maxlength="4" placeholder="קוד הורה: 4 ספרות שתבחרו" value="${esc(JOIN.parentPin || '')}" dir="ltr" style="text-align:right">
+      <div class="sub" style="font-size:12px">עם הקוד הזה נכנסים לאזור ההורים (המנעול במסך הבית). כדאי לבחור קוד שהילדים לא יודעים.</div>
+      <input class="input" id="jmail" type="email" placeholder="מייל לסיכום שבועי (לא חובה)" value="${esc(JOIN.email || '')}" dir="ltr" style="text-align:right">
+    </div>
+    <div class="glass panel" style="display:grid;gap:10px">
+      <h2>הילדים</h2>
+      <div class="sub" style="font-size:12px">השם מופיע באפליקציה, ולכן באנגלית. לפי הכיתה נקבעת נקודת ההתחלה של מבחן הרמה.</div>
+      ${JOIN.kids.map(kidRow).join('')}
+      ${JOIN.kids.length < 5 ? `<button class="btn btn-glass btn-block" id="jaddkid">${icon('user-plus')} הוספת ילד</button>` : ''}
+    </div>
+    <button class="btn btn-primary btn-block" id="jsend">${icon('check')} פתיחת המשפחה</button>
+    <button class="btn btn-glass btn-block" id="jback">${icon('arrow-right')} חזרה</button>
+  </div>`;
+  const keep = () => {
+    JOIN.family = document.getElementById('jfam').value; JOIN.parent = document.getElementById('jpar').value;
+    JOIN.parentPin = document.getElementById('jpin').value.replace(/\D/g, ''); JOIN.email = document.getElementById('jmail').value;
+    app.querySelectorAll('[data-kname]').forEach(el => { JOIN.kids[el.dataset.kname].name = el.value; });
+    app.querySelectorAll('[data-kgrade]').forEach(el => { JOIN.kids[el.dataset.kgrade].grade = el.value; });
+  };
+  const add = document.getElementById('jaddkid');
+  if (add) add.onclick = () => { keep(); JOIN.kids.push({ name: '', grade: '' }); joinForm(); };
+  app.querySelectorAll('[data-kdel]').forEach(b => b.onclick = () => { keep(); JOIN.kids.splice(Number(b.dataset.kdel), 1); joinForm(); });
+  document.getElementById('jback').onclick = () => { keep(); joinWelcome(); };
+  document.getElementById('jsend').onclick = async () => {
+    keep();
+    const kids = JOIN.kids.filter(k => k.name.trim());
+    if (!JOIN.family.trim() || !JOIN.parent.trim()) return toast('כתבו שם משפחה ואת השם שלכם', true);
+    if (!/^\d{4}$/.test(JOIN.parentPin)) return toast('קוד ההורה צריך להיות 4 ספרות', true);
+    if (!kids.length) return toast('הוסיפו לפחות ילד אחד', true);
+    if (kids.some(k => !/^[A-Za-z][A-Za-z .'-]*$/.test(k.name.trim()))) return toast('כתבו את שמות הילדים באותיות באנגלית', true);
+    if (kids.some(k => !k.grade)) return toast('בחרו כיתה לכל ילד', true);
+    const b = document.getElementById('jsend'); b.disabled = true; b.innerHTML = '<span class="mini-spin"></span> פותחים…';
+    try {
+      const r = await call('apiJoin', JOIN.code, { family: JOIN.family, parent: JOIN.parent, parentPin: JOIN.parentPin, email: JOIN.email,
+        consent: true, kids: kids.map(k => ({ name: k.name.trim(), grade: Number(k.grade) })) });
+      JOIN = null;
+      store.set('eq_joined', r);
+      joinDone(r);
+    } catch(e){ b.disabled = false; b.innerHTML = icon('check') + ' פתיחת המשפחה'; toast(e.message, true); }
+  };
+}
+const kidInvite = (r, k) => `היי ${k.name}! 👋\nזה הקישור לאפליקציית האנגלית שלך:\n${r.link}\n\nבוחרים את השם שלך ומקלידים את הקוד: ${k.pin}\nמתחילים במבחן רמה קצר (בערך 8 דקות), ואז נפתחות המשימות, המשחקים והחיה שלך.\n10 דקות ביום, בהצלחה! 💪`;
+function joinDone(r){
+  const ios = isIos();
+  app.innerHTML = `<div class="stack he" dir="rtl" lang="he">
+    <div class="today iri">
+      <div class="label" style="color:#3b3f55">המשפחה נפתחה</div>
+      <h1 style="margin-top:4px">${esc(r.family)}</h1>
+      <div class="sub" style="color:#3b3f55">שמרו את ההודעה הזאת. הקוד שלכם לאזור ההורים: <b dir="ltr">${esc(r.parentPin)}</b></div>
+    </div>
+    <div class="glass panel" style="display:grid;gap:12px">
+      <h2>הקודים של הילדים</h2>
+      ${r.kids.map(k => `<div class="soft" style="padding:12px;border-radius:14px;display:grid;gap:8px">
+        <div class="row-flex between"><b dir="ltr">${esc(k.name)}</b><span class="chip purple">${icon('key')} <span dir="ltr">${esc(k.pin)}</span></span></div>
+        <div class="row-flex" style="gap:8px;flex-wrap:wrap">
+          <a class="btn btn-teal btn-sm" href="${esc(waLink(kidInvite(r, k)))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} שליחה בוואטסאפ</a>
+          <button class="btn btn-glass btn-sm" data-copy="${esc(kidInvite(r, k))}">${icon('copy')} העתקה</button>
+          <button class="btn btn-primary btn-sm" data-here="${esc(k.name)}">${icon('device-mobile')} לפתוח בטלפון הזה</button></div></div>`).join('')}
+      <div class="sub" style="font-size:12px">לכל ילד שולחים את ההודעה שלו לטלפון שלו. אם הוא משתמש בטלפון שלכם, לחצו "לפתוח בטלפון הזה".</div>
+    </div>
+    <div class="glass panel" style="display:grid;gap:8px">
+      <h2>להתקין כמו אפליקציה</h2>
+      ${ios ? `<ol class="helist"><li>פותחים את הקישור ב-<bdi>Safari</bdi>.</li><li>לוחצים על כפתור השיתוף (ריבוע עם חץ למעלה).</li><li>בוחרים "הוספה למסך הבית".</li><li>פותחים מהאייקון החדש ומאשרים התראות. באייפון התראות עובדות רק אחרי ההתקנה.</li></ol>`
+        : `<ol class="helist"><li>פותחים את הקישור ב-<bdi>Chrome</bdi>.</li><li>לוחצים על שלוש הנקודות למעלה.</li><li>בוחרים "התקנת אפליקציה" או "הוספה למסך הבית".</li><li>פותחים מהאייקון החדש ומאשרים התראות.</li></ol>`}
+    </div>
+    <div class="glass panel" style="display:grid;gap:8px">
+      <h2>אזור ההורים</h2>
+      <div class="sub">שם רואים מה כל ילד עשה, ומפעילים התראות: עדכון כשהילד מסיים, וסיכום ב-21:00.</div>
+      <button class="btn btn-primary btn-block" id="jparent">${icon('lock-simple')} כניסה לאזור ההורים</button>
+    </div>
+  </div>`;
+  app.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(b.dataset.copy));
+  app.querySelectorAll('[data-here]').forEach(b => b.onclick = () => {
+    store.set('eq_group', r.groupId); store.del('eq_joined'); pub = null;
+    history.replaceState(null, '', location.pathname + '?g=' + encodeURIComponent(r.groupId));
+    loadHome().then(() => pinPad(b.dataset.here));
+  });
+  document.getElementById('jparent').onclick = () => {
+    store.set('eq_group', r.groupId);
+    history.replaceState(null, '', location.pathname + '?g=' + encodeURIComponent(r.groupId));
+    parent(r.parentPin, true, true);
+  };
+}
+
+// ---------- Parents' feedback (Hebrew) ----------
+function feedbackCard(){
+  return `<div class="glass panel he" dir="rtl" lang="he" id="fbcard" style="display:grid;gap:10px">
+    <h2>ספרו לנו</h2>
+    <div class="sub" style="font-size:13px">זה פיילוט, וכל מילה שלכם עוזרת. מה עובד, מה מעצבן, מה הילדים אומרים?</div>
+    <div class="row-flex" style="gap:6px" id="fbstars">${[1, 2, 3, 4, 5].map(n => `<button class="btn btn-glass icon-btn" data-star="${n}" title="${n}">${icon('star')}</button>`).join('')}</div>
+    <textarea class="input" id="fbtext" rows="3" placeholder="כמה הילדים נהנים? מה הייתם משנים?" style="resize:vertical"></textarea>
+    <button class="btn btn-primary btn-block" id="fbsend">${icon('paper-plane-tilt')} שליחה</button>
+  </div>`;
+}
+function bindFeedback(pin){
+  const card = document.getElementById('fbcard');
+  if (!card) return;
+  let score = 0;
+  card.querySelectorAll('[data-star]').forEach(b => b.onclick = () => {
+    score = Number(b.dataset.star);
+    card.querySelectorAll('[data-star]').forEach(x => x.classList.toggle('btn-primary', Number(x.dataset.star) <= score));
+  });
+  document.getElementById('fbsend').onclick = async () => {
+    const text = document.getElementById('fbtext').value;
+    if (!text.trim() && !score) return toast('כתבו משהו או בחרו ציון', true);
+    const b = document.getElementById('fbsend'); b.disabled = true;
+    try { await call('apiFeedback', pin, text, score); card.innerHTML = '<h2>תודה רבה!</h2><div class="sub">קיבלנו. אם ביקשתם משהו, נחזור אליכם.</div>'; }
+    catch(e){ b.disabled = false; toast(e.message, true); }
+  };
+}
+// A Hebrew line under each kid in a parent's view: the level test, before and after.
+function placementLine(g){
+  const p = g.placement;
+  if (!p || !p.a) return '';
+  return `<div class="he sub mt-s" dir="rtl" lang="he" style="font-size:13px">מבחן רמה: <bdi>${esc(p.a.label)}</bdi> (${fmtDate(p.a.date)})${p.b ? ` · אחרי 4 שבועות: <bdi>${esc(p.b.label)}</bdi>` : ''}</div>`;
+}
+
+// ---------- The admin's pilot board ----------
+function pilotCard(){
+  return `<div class="glass panel" id="pilotcard"><div class="row-flex between"><h2>Pilot</h2><button class="btn btn-glass btn-sm" id="pilotload">${icon('chart-bar')} Show</button></div>
+    <div class="sub mt-s" style="font-size:13px">Families who joined from the invite link: the funnel, activity per week, feedback and the teacher's notes.</div></div>`;
+}
+const pilotInviteText = link => `היי! בניתי לבנות שלי אפליקציה לאנגלית, 10 דקות ביום, והן לא מוותרות עליה 🦜\nאני מחפש כמה משפחות שינסו אותה 4 שבועות בחינם ויגידו לי את האמת.\nההרשמה לוקחת 3 דקות:\n${link}`;
+async function pilotLoad(pin, open, code){
+  const card = document.getElementById('pilotcard');
+  card.innerHTML = '<div class="spinner"></div>';
+  let s;
+  try { s = open == null ? await call('apiPilotStats', pin) : await call('apiPilotInvite', pin, open, code || ''); }
+  catch(e){ card.innerHTML = '<div class="sub">' + esc(e.message) + '</div>'; return; }
+  // The public app address from Settings; the page's own address when testing locally.
+  const base = /^https?:/.test(s.base || '') && !/^(localhost|127.)/.test(location.hostname) ? s.base : location.origin + location.pathname;
+  const link = base + '?join=' + encodeURIComponent(s.invite.code), tlink = base + '?missions&t=' + encodeURIComponent(s.teacherCode);
+  const T = s.totals, dots = k => k.weeks.map(n => `<i style="display:inline-block;width:22px;text-align:center;font-weight:800;color:${n >= 4 ? 'var(--teal,#14b8a6)' : n ? 'var(--ink)' : 'var(--muted)'}">${n}</i>`).join('');
+  card.innerHTML = `<div class="row-flex between"><h2>Pilot</h2><button class="btn btn-glass icon-btn" id="pilotref">${icon('arrows-clockwise')}</button></div>
+    <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">
+      <span class="chip purple">${T.families} families</span><span class="chip">${T.kids} kids</span><span class="chip">${T.placed} level tests</span>
+      <span class="chip">${T.firstMission} first mission</span><span class="chip teal">${T.active7} active 4+ of 7 days</span></div>
+    <div class="label mt">Invite link · ${s.invite.open ? 'open' : 'closed'}</div>
+    <div class="sub" style="font-size:12px;word-break:break-all" dir="ltr">${esc(link)}</div>
+    <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">
+      <button class="btn ${s.invite.open ? 'btn-glass' : 'btn-primary'} btn-sm" id="pilotopen">${s.invite.open ? icon('lock-simple') + ' Close' : icon('lock-simple-open') + ' Open'}</button>
+      <button class="btn btn-glass btn-sm" data-copy="${esc(pilotInviteText(link))}">${icon('copy')} Copy invite</button>
+      <a class="btn btn-teal btn-sm" href="${esc(waLink(pilotInviteText(link)))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} WhatsApp</a></div>
+    <div class="label mt">Teacher review · ${s.teacherFlags} notes</div>
+    <div class="sub" style="font-size:12px;word-break:break-all" dir="ltr">${esc(tlink)}</div>
+    <button class="btn btn-glass btn-sm mt-s" data-copy="${esc(tlink)}">${icon('copy')} Copy teacher link</button>
+    <div class="label mt">Families (days active in weeks 1 to 4)</div>
+    <div class="stack mt-s" style="gap:8px">${s.families.length ? s.families.map(f => `<div class="soft" style="padding:10px 12px;border-radius:12px">
+      <div class="row-flex between"><b>${esc(f.name)}</b><span class="sub" style="font-size:12px">day ${f.day} · ${esc(f.parent)}${f.feedback ? ' · ' + f.feedback + ' notes' : ''}</span></div>
+      ${f.kids.map(k => `<div class="row-flex between mt-s" style="font-size:13px"><span>${esc(k.name)} · ${esc(k.level)}${k.placed ? '' : ' · <b style="color:var(--orange,#f59e0b)">no test yet</b>'}${k.missions ? ' · ' + k.missions + ' missions' : ''}</span><span>${dots(k)}</span></div>`).join('')}
+    </div>`).join('') : '<div class="sub">Nobody has joined yet.</div>'}</div>
+    ${s.feedback.length ? `<div class="label mt">Feedback</div><div class="stack mt-s he" dir="rtl" lang="he" style="gap:6px">${s.feedback.map(f => `<div class="soft" style="padding:8px 12px;border-radius:12px;font-size:13px"><b>${esc(f.group)}</b> · ${fmtDate(f.date)}${f.score ? ' · ' + f.score + '/5' : ''}<div>${esc(f.text)}</div></div>`).join('')}</div>` : ''}`;
+  card.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(b.dataset.copy));
+  document.getElementById('pilotref').onclick = () => pilotLoad(pin);
+  document.getElementById('pilotopen').onclick = () => pilotLoad(pin, !s.invite.open);
+}
+
+// ---------- Teacher review: ?missions&t=<code> ----------
+let TEACHER = null;
+async function teacherStart(code){
+  try { await call('apiTeacherCheck', code); TEACHER = code; store.set('eq_teacher', code); }
+  catch(e){ TEACHER = null; toast(e.message.includes('PIN') ? 'This teacher link is not valid' : e.message, true); }
+}
+
+function placeToday(){
+  return `<div class="today iri">
+      <div class="row-flex between"><span class="label" style="color:#3b3f55">Step 1 · Your level</span><span class="chip">About 8 min</span></div>
+      <h2>Let's find your English level</h2>
+      <div class="sub" style="color:#3b3f55">Short rounds from the four games, right here in the app. Then your missions, the games and your pet open.</div>
+      <div class="btns"><button class="btn btn-primary" id="placego">${icon('play')} Start</button></div>
+    </div>`;
+}
+
 // ---------- Home ----------
 async function start(){
-  if (new URLSearchParams(location.search).has('missions')) return missionGallery();
+  const qs = new URLSearchParams(location.search);
+  if (qs.has('missions')) { const t = qs.get('t') || store.get('eq_teacher'); if (t) await teacherStart(t); return missionGallery(); }
+  if (qs.get('join')) return renderJoin(qs.get('join'));
   takeDuelParam();
   const saved = store.get('eq_auth'), admin = store.get('eq_admin');
   const kept = saved && store.get(dashKey(saved.name));
@@ -6012,7 +6388,7 @@ function home(){
   app.innerHTML = `
   <div class="glass panel">
     <div class="row-flex between">
-      <div><h1>English Quest</h1><div class="sub">${esc(pub.group.name)} · 10 minutes a day</div></div>
+      <div><h1>English with Coco</h1><div class="sub">${esc(pub.group.name)} · 10 minutes a day</div></div>
       <button class="btn btn-glass icon-btn" id="pbtn" title="Parent">${icon('lock-simple')}</button>
     </div>
     <div class="word-card mt">
@@ -6207,6 +6583,7 @@ function renderDash(){
       </div>
     </div>
 
+    ${retestCard(d)}
     ${today ? todayCard(today) : ''}
     ${gamesPanel(d)}
     ${togetherCard()}
@@ -6237,6 +6614,7 @@ function renderDash(){
   syncState(syncNow);
   app.querySelectorAll('[data-log]').forEach(b => b.onclick = () => openSheet(d.week.find(w => w.date === b.dataset.log)));
   app.querySelectorAll('[data-mission]').forEach(b => b.onclick = () => startMission(b.dataset.mission));
+  const rt = document.getElementById('retest'); if (rt) rt.onclick = () => placeIntro('B');
   const mr = document.getElementById('msreview');
   if (mr) mr.onclick = startMissionReview;
   app.querySelectorAll('[data-game]').forEach(b => b.onclick = () => startGame(b.dataset.game));
@@ -6460,15 +6838,17 @@ async function copyText(text){
 const waLink = text => 'https:' + '/' + '/api.whatsapp.com/send?text=' + encodeURIComponent(text);
 
 function groupMessage(g, word){
-  return `Good morning! ☀️ English Quest is waiting for you 💜\n10 minutes a day — open the link, pick your name, do today's task and log your score.\n\n🔗 ${g.link}\n\n📝 Word of the day: ${word.word} — ${word.meaning}\n` +
+  if (PHE) return `בוקר טוב! ☀️ המשימה של היום מחכה 💜\n10 דקות ביום: פותחים את הקישור, בוחרים שם, ועושים את המשימה של היום.\n\n🔗 ${g.link}\n\n📝 המילה של היום: ${word.word} (${word.meaning})\n` +
+    g.girls.map(k => `🔥 ${k.girl.name}: ${k.stats.weekDone}/${k.stats.weekTotal} השבוע, ${k.stats.balance} נקודות`).join('\n');
+  return `Good morning! ☀️ English with Coco is waiting for you 💜\n10 minutes a day — open the link, pick your name, do today's task and log your score.\n\n🔗 ${g.link}\n\n📝 Word of the day: ${word.word} — ${word.meaning}\n` +
     g.girls.map(k => `🔥 ${k.girl.name}: ${k.stats.weekDone}/${k.stats.weekTotal} this week, ${k.stats.balance} pts`).join('\n');
 }
 
 function createdCard(c){
   if (!c) return '';
   const text = c.type === 'group'
-    ? `English Quest — ${c.name}\nLink for the kids: ${c.link}\nParent PIN (tap the lock on the home screen): ${c.pin}`
-    : `Hi ${c.name}! 👋 Your English Quest link: ${c.link}\nTap your name and enter your PIN: ${c.pin}\nStart with the level test (about 20 minutes), then your daily tasks and the games open.`;
+    ? `English with Coco — ${c.name}\nLink for the kids: ${c.link}\nParent PIN (tap the lock on the home screen): ${c.pin}`
+    : `Hi ${c.name}! 👋 Your English with Coco link: ${c.link}\nTap your name and enter your PIN: ${c.pin}\nStart with the level test (about 20 minutes), then your daily tasks and the games open.`;
   return `<div class="today iri" id="created">
     <div class="label" style="color:#3b3f55">${c.type === 'group' ? 'Group created' : 'Kid added to ' + esc(c.group)}</div>
     <h2>${esc(c.name)}</h2>
@@ -6498,7 +6878,7 @@ function accHead(tileCls, ic, title, sub){
 
 function groupBlock(g, p, i){
   const done = g.girls.reduce((a, k) => a + k.stats.weekDone, 0), total = g.girls.reduce((a, k) => a + k.stats.weekTotal, 0);
-  const sub = `${g.girls.length} ${g.girls.length === 1 ? 'kid' : 'kids'} · ${done}/${total} this week` +
+  const sub = (PHE ? `${g.girls.length === 1 ? 'ילד אחד' : g.girls.length + ' ילדים'} · ${done}/${total} השבוע` : `${g.girls.length} ${g.girls.length === 1 ? 'kid' : 'kids'} · ${done}/${total} this week`) +
     (p.isAdmin ? (g.parentPin ? ` · ${icon('key')} ${esc(g.parentPin)}` : ' · admin only') : '');
   return accordion('g:' + g.id, accOpen('g:' + g.id, p.groups.length === 1),
     accHead('t-grammar', 'users-three', esc(g.name), sub), groupBody(g, p, i));
@@ -6508,21 +6888,21 @@ function groupBody(g, p, i){
   const goal = g.goal, pct = Math.min(100, Math.round(goal.total / goal.goal * 100));
   return `
     <div class="today">
-      <div class="label" style="color:#3b3f55">Group goal</div>
+      <div class="label" style="color:#3b3f55">${T('Group goal', 'יעד משותף')}</div>
       <h2>${rtext(goal.reward)}</h2>
       <div class="bar mt-s"><i style="width:${Math.max(3, pct)}%"></i></div>
-      <div class="sub mt-s" style="color:#3b3f55"><b>${goal.total}</b> / ${goal.goal} points together</div>
+      <div class="sub mt-s" style="color:#3b3f55"><b>${goal.total}</b> / ${goal.goal} ${T('points together', 'נקודות ביחד')}</div>
     </div>
-    ${g.girls.length ? g.girls.map(k => girlCard(k, p.isAdmin)).join('') : '<div class="glass panel sub" style="text-align:center">No kids in this group yet</div>'}
+    ${g.girls.length ? g.girls.map(k => girlCard(k, p.isAdmin)).join('') : `<div class="glass panel sub" style="text-align:center">${T('No kids in this group yet', 'עדיין אין ילדים')}</div>`}
     <div class="glass panel">
-      <h2>Share with the kids</h2>
+      <h2>${T('Share with the kids', 'הקישור לילדים')}</h2>
       <div class="row-flex mt-s" style="gap:8px">
         <input class="input" readonly value="${esc(g.link)}">
         <button class="btn btn-glass icon-btn" data-copy="${esc(g.link)}" title="Copy link">${icon('link-simple')}</button>
       </div>
       <textarea class="mt-s" data-msg="${i}">${esc(groupMessage(g, p.word))}</textarea>
       <div class="row-flex mt-s">
-        <button class="btn btn-glass btn-sm" data-copymsg="${i}">${icon('copy')} Copy</button>
+        <button class="btn btn-glass btn-sm" data-copymsg="${i}">${icon('copy')} ${T('Copy', 'העתקה')}</button>
         <a class="btn btn-teal btn-sm" target="_blank" rel="noopener" data-wa="${i}" href="#">${icon('whatsapp-logo')} WhatsApp</a>
       </div>
     </div>`;
@@ -6532,8 +6912,8 @@ const hourLabel = h => String(h).padStart(2, '0') + ':00';
 
 // ---------- Parent notifications ----------
 function notifyCard(p){
-  return accordion('notify', accOpen('notify', !p.push.devices.length), accHead('t-star', 'bell-simple-ringing', 'Notifications',
-    `Daily summary at ${hourLabel(p.push.summaryHour)} · task updates`), '<div class="glass panel" id="parentpush"><div class="sub" style="margin:0">Checking this device…</div></div>');
+  return accordion('notify', accOpen('notify', !p.push.devices.length), accHead('t-star', 'bell-simple-ringing', T('Notifications', 'התראות'),
+    T(`Daily summary at ${hourLabel(p.push.summaryHour)} · task updates`, `סיכום יומי ב-${hourLabel(p.push.summaryHour)} · עדכון על כל משימה`)), `<div class="glass panel" id="parentpush"><div class="sub" style="margin:0">${T('Checking this device…', 'בודקים את הטלפון…')}</div></div>`);
 }
 
 async function subscribeDevice(){
@@ -6550,14 +6930,14 @@ async function renderParentPush(p, pin){
   let st;
   try { st = await pushState(); } catch(e){ st = { state: 'unsupported' }; }
   const note = text => el.innerHTML = `<div class="sub" style="margin:0;font-size:13px">${text}</div>`;
-  if (st.state === 'install') return note(`On iPhone, notifications work from the installed app: tap Share, then <b>Add to Home Screen</b>, and open it from there.`);
-  if (st.state === 'unsupported') return note('This browser can’t receive notifications. Open the installed app on your phone.');
-  if (st.state === 'denied') return note('Notifications are blocked for this app. Allow them in the phone’s settings for English Quest, then come back.');
+  if (st.state === 'install') return note(T(`On iPhone, notifications work from the installed app: tap Share, then <b>Add to Home Screen</b>, and open it from there.`, `באייפון התראות עובדות רק מהאפליקציה המותקנת: לוחצים על שיתוף, בוחרים <b>הוספה למסך הבית</b>, ופותחים משם.`));
+  if (st.state === 'unsupported') return note(T('This browser can’t receive notifications. Open the installed app on your phone.', 'הדפדפן הזה לא מקבל התראות. פתחו את האפליקציה המותקנת בטלפון.'));
+  if (st.state === 'denied') return note(T('Notifications are blocked for this app. Allow them in the phone’s settings for English with Coco, then come back.', 'ההתראות חסומות. אפשרו אותן בהגדרות הטלפון לאפליקציה הזאת, וחזרו לכאן.'));
   const device = st.state === 'on' ? p.push.devices.find(d => d.e === st.sub.endpoint) : null;
 
   if (!device) {
-    el.innerHTML = `<div class="sub" style="margin:0;font-size:13px">Get a summary every evening at ${hourLabel(p.push.summaryHour)} and an update whenever a kid finishes a task.</div>
-      <button class="btn btn-primary btn-block mt" id="pp-on">${icon('bell')} Turn on on this phone</button>`;
+    el.innerHTML = `<div class="sub" style="margin:0;font-size:13px">${T(`Get a summary every evening at ${hourLabel(p.push.summaryHour)} and an update whenever a kid finishes a task.`, `סיכום בכל ערב ב-${hourLabel(p.push.summaryHour)}, ועדכון בכל פעם שילד מסיים משימה.`)}</div>
+      <button class="btn btn-primary btn-block mt" id="pp-on">${icon('bell')} ${T('Turn on on this phone', 'הפעלה בטלפון הזה')}</button>`;
     document.getElementById('pp-on').onclick = async e => {
       const btn = e.currentTarget;
       btn.disabled = true; btn.innerHTML = '<span class="mini-spin"></span>Turning on…';
@@ -6574,14 +6954,14 @@ async function renderParentPush(p, pin){
 
   el.innerHTML = `
     <div class="row-flex between">
-      <div><b style="font-size:15px">Task updates</b><div class="sub" style="margin-top:2px;font-size:12px">A notification whenever a kid finishes a task</div></div>
+      <div><b style="font-size:15px">${T('Task updates', 'עדכון על משימות')}</b><div class="sub" style="margin-top:2px;font-size:12px">${T('A notification whenever a kid finishes a task', 'התראה בכל פעם שילד מסיים משימה')}</div></div>
       <div class="toggle ${device.instant ? '' : 'off'}" id="pp-instant" role="switch" aria-checked="${device.instant}"></div>
     </div>
     <div class="row-flex between mt">
-      <div><b style="font-size:15px">Evening summary</b><div class="sub" style="margin-top:2px;font-size:12px">Every day at ${hourLabel(p.push.summaryHour)}</div></div>
-      <span class="chip teal">${icon('check')} On</span>
+      <div><b style="font-size:15px">${T('Evening summary', 'סיכום ערב')}</b><div class="sub" style="margin-top:2px;font-size:12px">${T('Every day at', 'כל יום ב-')}${T(' ', '')}${hourLabel(p.push.summaryHour)}</div></div>
+      <span class="chip teal">${icon('check')} ${T('On', 'פועל')}</span>
     </div>
-    <button class="btn btn-glass btn-block mt" id="pp-test">${icon('paper-plane-tilt')} Send a test notification</button>`;
+    <button class="btn btn-glass btn-block mt" id="pp-test">${icon('paper-plane-tilt')} ${T('Send a test notification', 'שליחת התראת בדיקה')}</button>`;
   const tg = document.getElementById('pp-instant');
   tg.onclick = async () => {
     const next = !device.instant;
@@ -6638,23 +7018,29 @@ function manageBody(p){
   </div>`;
 }
 
+// A parent (not the admin) sees this view in Hebrew, right to left; the admin keeps English.
+let PHE = false;
+const T = (en, he) => PHE ? he : en;
 function renderParent(p, pin){
+  PHE = !p.isAdmin;
   app.innerHTML = `
-  <div class="stack">
+  <div class="stack"${PHE ? ' dir="rtl" lang="he"' : ''}>
     <div class="row-flex between">
-      <div><h1>${p.isAdmin ? 'Admin view' : 'Parent view'}</h1><div class="sub">${p.isAdmin ? p.groups.length + ' groups · ' + fmtDate(p.today) : 'English Quest'}</div></div>
+      <div><h1>${p.isAdmin ? 'Admin view' : 'אזור ההורים'}</h1><div class="sub">${p.isAdmin ? p.groups.length + ' groups · ' + fmtDate(p.today) : 'English with Coco'}</div></div>
       <div class="row-flex" style="gap:8px">
         <button class="btn btn-glass icon-btn" id="refresh">${icon('arrows-clockwise')}</button>
-        <button class="btn btn-glass icon-btn" id="logout" title="Exit">${icon('sign-out')}</button>
+        <button class="btn btn-glass icon-btn" id="logout" title="${T('Exit', 'יציאה')}">${icon('sign-out')}</button>
       </div>
     </div>
     ${createdCard(p.created)}
     ${p.groups.map((g, i) => groupBlock(g, p, i)).join('')}
     ${notifyCard(p)}
-    ${p.isAdmin ? settingsCard(p) + manageCard(p) : ''}
+    ${p.isAdmin ? pilotCard() + settingsCard(p) + manageCard(p) : feedbackCard()}
   </div>`;
   app.querySelectorAll('details.acc').forEach(d => d.addEventListener('toggle', () => store.set('eq_acc_' + d.dataset.acc, d.open)));
   renderParentPush(p, pin);
+  bindFeedback(pin);
+  const pl = document.getElementById('pilotload'); if (pl) pl.onclick = () => pilotLoad(pin);
   document.getElementById('refresh').onclick = () => parent(pin, true);
   document.getElementById('logout').onclick = () => { store.del('eq_admin'); loadHome(); };
   app.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(b.dataset.copy));
@@ -6708,11 +7094,11 @@ function girlCard(g, isAdmin){
   return `<div class="glass panel">
     <div class="row-flex between">
       <div class="row-flex">${petFace(g.pet, g.girl.color, g.girl.name)}
-        <div><h2>${esc(g.girl.name)}</h2><span class="sub" style="font-size:13px">Level ${esc(g.girl.levelLabel)}${g.pet ? ' · ' + esc(g.pet.name) + ' the ' + STAGES[g.pet.stage - 1] : ''}${g.email ? ' · reminders on' : ''}</span></div></div>
+        <div><h2>${esc(g.girl.name)}</h2><span class="sub" style="font-size:13px">${T('Level', 'רמה')} <bdi>${esc(g.girl.levelLabel)}</bdi>${g.pet ? ' · ' + esc(g.pet.name) + ' the ' + STAGES[g.pet.stage - 1] : ''}${g.email ? ' · reminders on' : ''}</span></div></div>
       <span class="chip orange">${icon('star')} ${s.balance}</span>
     </div>
     <div class="row-flex mt-s" style="flex-wrap:wrap;gap:8px">
-      ${g.levelTest ? `<span class="chip orange">${icon('target')} Level test pending</span>` : `<span class="chip purple">${s.weekDone}/${s.weekTotal} this week</span>`}
+      ${g.levelTest ? `<span class="chip orange">${icon('target')} ${T('Level test pending', 'עוד לא עשה מבחן רמה')}</span>` : `<span class="chip purple">${s.weekDone}/${s.weekTotal} ${T('this week', 'השבוע')}</span>`}
       ${g.journey ? journeyChip(g.journey) : ''}
       ${isAdmin && g.pin ? `<span class="chip">${icon('key')} ${esc(g.pin)}</span>` : ''}
       <span class="chip">${icon('target')} ${s.avg == null ? '–' : s.avg + '%'}</span>
@@ -6721,20 +7107,21 @@ function girlCard(g, isAdmin){
       ${g.games ? `<span class="chip" title="Mini-games this week">${icon('game-controller')} ${g.games.weekRounds}${g.games.weekAvg != null ? ' · ' + g.games.weekAvg + '%' : ''}</span>` : ''}
       ${isAdmin && g.push ? `<span class="chip ${g.push.devices ? 'teal' : ''}">${icon('bell')} ${g.push.devices}</span>` : ''}
       ${isAdmin && g.push && g.push.devices ? `<button class="chip" style="cursor:pointer" data-testpush="${esc(g.girl.name)}">${icon('paper-plane-tilt')} Test</button>` : ''}
-      <span class="chip">${s.total} tasks total</span>
+      <span class="chip">${s.total} ${T('tasks total', 'משימות בסך הכול')}</span>
     </div>
+    ${placementLine(g)}
     <div class="strip">${g.week.map(w => {
       const st = w.beforeStart ? 'future' : w.done ? 'done' : w.isFuture ? 'future' : w.isToday ? 'pending' : 'missed';
       const v = w.done ? (w.section === 'level' ? (w.levelResult || '✓') : (w.percent !== '' ? w.percent + '%' : '✓')) : st === 'missed' ? '✕' : '';
       return `<div class="cell ${st}" title="${esc(w.title || w.label)}"><div>${w.day}</div><div>${icon((SEC[w.section] || SEC.grammar)[0], 'duotone')}</div><div class="v">${esc(v)}</div></div>`;
     }).join('')}</div>
-    ${g.history.length > 1 ? `<div class="label mt">Weekly completion</div>
+    ${g.history.length > 1 ? `<div class="label mt">${T('Weekly completion', 'השלמה לפי שבוע')}</div>
       <div class="hist">${g.history.map(h => `<div title="${fmtDate(h.week)}: ${h.done}/${h.expected}" style="height:${4 + Math.round(h.done / Math.max(1, h.expected) * 42)}px"></div>`).join('')}</div>
       <div class="row-flex" style="gap:6px;font-size:11px;color:var(--muted);font-weight:700">${g.history.map(h => `<span style="flex:1;text-align:center">${h.done}/${h.expected}</span>`).join('')}</div>` : ''}
-    <details><summary>Recent activity ▾</summary>
+    <details><summary>${T('Recent activity', 'פעילות אחרונה')} ▾</summary>
       <div class="recent">${g.recent.length ? g.recent.map(r => `<div><span>${fmtDate(r.doneOn)}</span>
         <span><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title)}</a></span>
-        <b>${r.section === 'level' ? 'Level' : esc(r.correct) + '/' + esc(r.total)}</b>${r.mission && r.seconds ? `<span title="Played in the app">${Math.max(1, Math.round(r.seconds / 60))} min</span>` : ''}<span>+${esc(r.points)}</span></div>`).join('') : '<div>No activity yet</div>'}</div>
+        <b>${r.section === 'level' ? 'Level' : esc(r.correct) + '/' + esc(r.total)}</b>${r.mission && r.seconds ? `<span title="Played in the app">${Math.max(1, Math.round(r.seconds / 60))} min</span>` : ''}<span>+${esc(r.points)}</span></div>`).join('') : `<div>${T('No activity yet', 'עדיין אין פעילות')}</div>`}</div>
     </details>
     ${g.bought && g.bought.length ? `<details><summary>Coco's shop ▾</summary><div class="recent">${g.bought.map(b => `<div><span>${fmtDate(b.date)}</span>
       <span>"${esc(b.sentence)}"</span><b>${esc(b.design ? (b.perfect ? 'Studio design · Perfect Fit' : 'Studio design') : b.name)}</b><span>${coinsTxt(b.paid)}</span></div>`).join('')}</div></details>` : ''}

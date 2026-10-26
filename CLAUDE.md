@@ -165,3 +165,9 @@ server in Missions.js, 59 missions (the first week of each level) with recorded 
 in-app level test, the journey story and the family week are phase 2 and 3. Dev: `/dev/mission?who=Aviv&id=a2g01`.
 Ideas not built yet: per-group reminder times, rewards redemption from the app (now via the
 `Redeemed` column), editing groups/kids from the app (now via the sheet).
+
+The friends' pilot (built 2026-10-26, spec `specs/pilot.md`, server `Pilot.js`, SETUP v16): self-signup from `?join=<code>`
+(Settings.InviteCode / InviteOpen, closed by default), the in-app level test (forms A and B, tab Placements), Hebrew parent area
+(`PHE` / `T()`; the admin stays English), feedback (tab Feedback), teacher review (`?missions&t=<Settings.TeacherCode>`), the
+admin Pilot card. 183 missions. Writing days give a mission instead of a link. Shown name: English with Coco. Mission
+writers can check a staging file alone: `MISSIONS_ONLY=<file> MISSIONS_FILE=<path> node test/missions-check.js`.

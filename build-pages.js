@@ -4,10 +4,10 @@ const path = require('path');
 const src = fs.readFileSync(path.join(__dirname, 'src', 'Index.html'), 'utf8');
 const head = [
   '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">',
-  '<title>English Quest</title>',
+  '<title>English with Coco</title>',
   '<meta name="theme-color" content="#ece6e0">',
   '<meta name="apple-mobile-web-app-capable" content="yes">',
-  '<meta name="apple-mobile-web-app-title" content="English Quest">',
+  '<meta name="apple-mobile-web-app-title" content="Coco">',
   '<link rel="manifest" href="manifest.webmanifest">',
   '<link rel="icon" type="image/png" href="icons/icon-192.png">',
   '<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">'

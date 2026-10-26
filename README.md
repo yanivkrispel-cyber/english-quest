@@ -1,4 +1,4 @@
-# English Quest
+# English Quest (English with Coco)
 
 Daily ~10-minute English practice for kids, built on the free exercises at
 [test-english.com](https://test-english.com). Kids open one link, pick their name, enter a PIN,
@@ -93,6 +93,11 @@ notifications, and reward points.
   "My words", with practice rounds).
 - Installable app (PWA) on Android / iOS; **phone reminders** at 17:00 and a last call at 20:00
   on days she hasn't practiced.
+
+**The friends' pilot** (spec: `specs/pilot.md`): families join on their own from the owner's invite link (`?join=<code>`, Hebrew screens
+and a privacy consent), new kids take an adaptive level test inside the app (and a progress check after four weeks), parents see their
+area in Hebrew and can send feedback, the teacher reviews missions at `?missions&t=<code>`, and the admin has a Pilot card with the funnel.
+The app is shown as **English with Coco** with Coco the parrot as its icon.
 
 **Parents**
 - **Groups** (families, friends): each group has its own link and parent PIN and sees only its kids.
