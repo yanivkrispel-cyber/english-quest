@@ -60,7 +60,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2g02', title: 'Who ate my crackers?',
-    he: 'קוקו מחפשת מי אכל לה את הקרקרים: שאלות עם who ומילות יחס בסוף',
+    he: 'קוקו מחפש מי אכל לו את הקרקרים: שאלות עם who ומילות יחס בסוף',
     turns: [
       {
         c: "Oh no! Somebody ate my crackers! Who ate them, do you think: the cat, the dog or the mouse?",
@@ -412,7 +412,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2l03', title: 'Help Coco find the way!',
-    he: 'קוקו הלכה לאיבוד בעיר: נותנים לה הוראות דרך',
+    he: 'קוקו הלך לאיבוד בעיר: נותנים לו הוראות דרך',
     turns: [
       {
         c: "Help, I am lost! I want to find the ice cream shop. Should I go straight on or turn left?",
@@ -628,7 +628,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2g05', title: 'When the lights went out',
-    he: 'קוקו מספרת מה קרה כשהאור כבה: was/were + ing ועבר פשוט',
+    he: 'קוקו מספר מה קרה כשהאור כבה: was/were + ing ועבר פשוט',
     turns: [
       {
         c: "Last night I was making a hat when the lights went out! What were you doing at eight last night?",
@@ -645,7 +645,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
       },
       {
         c: "Back to my story. While I was sitting in the dark, what do you think happened?",
-        he: 'מה לדעתכם קרה כשקוקו ישבה בחושך? Somebody knocked on the door. או The lights came on.',
+        he: 'מה לדעתכם קרה כשקוקו ישב בחושך? Somebody knocked on the door. או The lights came on.',
         a: [
           { k: ['light lights candle torch flashlight phone came'], r: "Good guess! The lights came on, and then my friend Polly knocked." },
           { k: ['knock door friend someone somebody bell visitor'], r: "Yes! Somebody knocked on the door. It was my friend Polly!" }
@@ -1730,7 +1730,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
 window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   {
     id: 'sa201', title: 'The café mix-up',
-    he: "מזמינים בבית הקפה של קוקו, והיא מתבלבלת בהזמנה",
+    he: "מזמינים בבית הקפה של קוקו, והוא מתבלבל בהזמנה",
     turns: [
       {
         c: "Hello, and welcome to Café Coco! We have sandwiches, soup and salad. What would you like to eat?",
@@ -1754,7 +1754,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
       },
       {
         c: "Here you are: a bowl of popcorn and a glass of milk! Is this what you ordered?",
-        he: "קוקו הביאה פופקורן וחלב! זה מה שהזמנתם? No, it isn't. או No, I ordered a sandwich.",
+        he: "קוקו הביא פופקורן וחלב! זה מה שהזמנתם? No, it isn't. או No, I ordered a sandwich.",
         a: [
           { k: ['no not'], r: "Oh no, I'm so sorry! I mixed up the orders." },
           { k: ['yes'], r: "Ha ha, you are very kind! But I think I made a mistake." }
@@ -1792,7 +1792,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'sa202', title: 'Help! Where is the beach?',
-    he: "קוקו תיירת שהלכה לאיבוד: נותנים לה הוראות הגעה לים",
+    he: "קוקו תייר שהלך לאיבוד: נותנים לו הוראות הגעה לים",
     turns: [
       {
         c: "Excuse me! I am a tourist and I am lost. Is the beach near here or far?",
@@ -1830,7 +1830,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
       },
       {
         c: "I can see the sea! Thank you so much. What should I do first at the beach?",
-        he: "מה קוקו צריכה לעשות קודם בים? Swim in the sea. או Eat an ice cream.",
+        he: "מה קוקו צריך לעשות קודם בים? Swim in the sea. או Eat an ice cream.",
         a: [],
         o: "Great idea! I will do that first.",
         t: ["Swim in the sea.", "Eat an ice cream.", "Build a sandcastle."],
@@ -2066,7 +2066,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'sa207', title: 'Radio Coco',
-    he: "קוקו מראיינת אתכם ברדיו על סוף השבוע שעבר ועל תוכנית רדיו משלכם",
+    he: "קוקו מראיין אתכם ברדיו על סוף השבוע שעבר ועל תוכנית רדיו משלכם",
     turns: [
       {
         c: "Hello, and welcome to Radio Coco! Today's question: what did you do last weekend?",
@@ -2171,7 +2171,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'sa209', title: 'At the bookshop',
-    he: "בוחרים ספר בחנות ספרים שקוקו עוזרת בה: סוג, אורך, איפה קוראים וחתול ישן",
+    he: "בוחרים ספר בחנות ספרים שקוקו עוזר בה: סוג, אורך, איפה קוראים וחתול ישן",
     turns: [
       {
         c: "Today I am helping at the bookshop! What kind of books do you like: funny, adventure or mystery?",
@@ -2282,7 +2282,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'sa211', title: 'Cooking with Coco',
-    he: "מבשלים פנקייקים עם השפית קוקו בתוכנית טלוויזיה",
+    he: "מבשלים פנקייקים עם השף קוקו בתוכנית טלוויזיה",
     turns: [
       {
         c: "Welcome to Cooking with Coco! Today we are making pancakes. Did you wash your hands?",
@@ -2342,7 +2342,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'sa212', title: 'After the big match',
-    he: "קוקו הכתבת מראיינת אתכם, קפטן הקבוצה, אחרי משחק כדורגל גדול",
+    he: "קוקו הכתב מראיין אתכם, קפטן הקבוצה, אחרי משחק כדורגל גדול",
     turns: [
       {
         c: "I'm here with the team captain after the big match! Did your team win or lose today?",
@@ -2451,7 +2451,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'sa214', title: 'The Great Pet Show',
-    he: "תחרות חיות מחמד: מספרים לשופטת קוקו על חיה דמיונית שהבאתם",
+    he: "תחרות חיות מחמד: מספרים לשופט קוקו על חיה דמיונית שהבאתם",
     turns: [
       {
         c: "Welcome to the Great Pet Show! I'm the judge, and any animal can come. What pet did you bring?",

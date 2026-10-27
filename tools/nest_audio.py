@@ -4,7 +4,7 @@
     python tools/nest_audio.py --all      # records everything again
 
 w-<word id>.mp3 (the word's `say`), f-<word id>.mp3 (its `find` question) and en-<key>.mp3 (Coco's lines) are Kokoro
-(kokoro-onnx, Apache 2.0, on this computer, voice af_heart, slow for small kids). he-<key>.mp3 (the Hebrew lines for the
+(kokoro-onnx, Apache 2.0, on this computer, voice am_fenrir, slow for small kids). he-<key>.mp3 (the Hebrew lines for the
 kid) are Microsoft Edge's multilingual neural voice en-US-EmmaMultilingualNeural (it reads Hebrew; chosen over he-IL-HilaNeural by ear and by a Hebrew speech-recognition test, 2026-10-27) through edge-tts (needs the internet; only our own fixed text
 from docs/nest/nest.js is sent, nothing about a kid). Every clip is peak-normalized and written with the same MP3
 settings as tools/talk_audio.py but a higher MP3 quality (0.25: the old 0.9 squeezed Hebrew to about 28 kbps). tools/nest-audio.json keeps a hash of each clip, so only new or changed clips are
@@ -20,7 +20,7 @@ APP = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 KOKORO_DIR = os.environ.get('KOKORO_DIR', os.path.join(os.path.dirname(APP), 'kokoro'))
 OUT = os.path.join(APP, 'docs', 'nest', 'audio')
 STATE = os.path.join(APP, 'tools', 'nest-audio.json')
-VOICE = 'af_heart'  # Coco
+VOICE = 'am_fenrir'  # Coco (a he; the owner chose Fenrir on 2026-10-27, before that af_heart)
 SPEED = {'word': 0.82, 'find': 0.86, 'en': 0.9}
 HE_VOICE, HE_RATE = 'en-US-EmmaMultilingualNeural', '+0%'  # Emma reads Hebrew more naturally than Hila (2026-10-27)
 RATE = 24000

@@ -25,7 +25,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
       },
       {
         c: "Here's a tricky one. I've been very quiet today, which isn't like me at all. Why do you think I'm being so quiet?",
-        he: "למה קוקו שקטה היום? נחשו עם being. למשל: Maybe you're being quiet because you're tired.",
+        he: "למה קוקו שקט היום? נחשו עם being. למשל: Maybe you're being quiet because you're tired.",
         a: [
           { k: ["tired sleepy sleep exhausted"], n: "not", r: "Spot on! I'm being quiet because I was up all night rearranging my feathers." },
           { k: ["sad upset unhappy angry bored lonely"], r: "Don't worry, nothing is wrong! I'm just being quiet while I concentrate." },
@@ -89,7 +89,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
       },
       {
         c: "Here's a little mystery. I came home last night with my feathers soaking wet and covered in sand. What had I been doing all afternoon?",
-        he: "מה קוקו עשתה כל אחר הצהריים? עם had been. למשל: You had been swimming in the sea.",
+        he: "מה קוקו עשה כל אחר הצהריים? עם had been. למשל: You had been swimming in the sea.",
         a: [
           { k: ["beach sea swim swimming swam ocean waves sand sandcastle sandcastles"], r: "Correct! I had been swimming in the sea and rolling in the sand. Very undignified." },
           { k: ["rain raining storm shower puddle puddles"], r: "Good guess! I had been dancing in the rain, and then I landed in a sandpit." }
@@ -1602,7 +1602,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc104", title: "Making sense of modern art",
-    he: "קוקו מדריכה בגלריה לאמנות מודרנית ושואלת מה אתם חושבים באמת",
+    he: "קוקו מדריך בגלריה לאמנות מודרנית ושואל מה אתם חושבים באמת",
     turns: [
       {
         c: "Step right in! This is the Gallery of Modern Art, and I'm your guide. In front of us is a huge white canvas with a single red dot. What's your honest first impression?",
@@ -1661,7 +1661,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc105", title: "The city of the future",
-    he: "ראש העיר קוקו מתכננת את העיר של 2050 ומבקשת את דעתכם",
+    he: "ראש העיר קוקו מתכנן את העיר של 2050 ומבקש את דעתכם",
     turns: [
       {
         c: "Welcome to City Hall! As mayor, I'm redesigning our city for the year twenty fifty. If you could change one thing about the way cities work today, what would it be?",
@@ -1783,7 +1783,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc107", title: "The vanishing trophy",
-    he: "הבלשית קוקו חוקרת: הגביע של בית הספר נעלם לפני הטקס",
+    he: "הבלש קוקו חוקר: הגביע של בית הספר נעלם לפני הטקס",
     turns: [
       {
         c: "Detective Coco here. The school's football trophy has vanished from its glass case, just hours before the ceremony. Where would you start investigating, and why?",
@@ -1893,7 +1893,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc109", title: "Across the desert",
-    he: "קוקו מובילה מסע רגלי של שלושה ימים בנגב, ואתם בצוות",
+    he: "קוקו מוביל מסע רגלי של שלושה ימים בנגב, ואתם בצוות",
     turns: [
       {
         c: "Welcome, explorer! I'm leading a three-day hiking expedition across the Negev, and you're on the team. What appeals to you most about a trip like this?",
@@ -2008,7 +2008,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc111", title: "An AI for a teacher?",
-    he: "פרופסור קוקו חוקרת את עתיד החינוך: מורה בינה מלאכותית, כן או לא?",
+    he: "פרופסור קוקו חוקר את עתיד החינוך: מורה בינה מלאכותית, כן או לא?",
     turns: [
       {
         c: "Hello! I'm Professor Coco, and I'm researching the future of education. Imagine your school replaced half of its lessons with a computer tutor powered by artificial intelligence. What's your first reaction?",
@@ -2180,7 +2180,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc114", title: "Running for student council",
-    he: "אתם מתמודדים למועצת התלמידים, וקוקו מנהלת את הקמפיין",
+    he: "אתם מתמודדים למועצת התלמידים, וקוקו מנהל את הקמפיין",
     turns: [
       {
         c: "Congratulations! You've decided to run for student council, and I'm your campaign manager. What's the main reason you want to represent the students?",
@@ -2238,7 +2238,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc115", title: "Fast fashion",
-    he: "קוקו, חובבת האופנה, מדברת איתכם על אופנה מהירה, יד שנייה ואיכות הסביבה",
+    he: "קוקו, חובב האופנה, מדבר איתכם על אופנה מהירה, יד שנייה ואיכות הסביבה",
     turns: [
       {
         c: "Ooh, my favourite topic: fashion! Did you know some brands release new collections almost every week? How often do you think people really need new clothes?",

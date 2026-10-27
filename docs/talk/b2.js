@@ -1773,7 +1773,7 @@ window.EQ_TALK.b2 = (window.EQ_TALK.b2 || []).concat([
   },
   {
     id: "sb203", title: "Pitch me a film",
-    he: "קוקו במאית קולנוע, ואתם ממציאים לה סרט חדש",
+    he: "קוקו במאי קולנוע, ואתם ממציאים לו סרט חדש",
     turns: [
       {
         c: "Lights, camera, Coco! I'm a film director, and I need a new idea. What kind of film should we make: a comedy, a thriller, or science fiction?",
@@ -1835,7 +1835,7 @@ window.EQ_TALK.b2 = (window.EQ_TALK.b2 || []).concat([
   },
   {
     id: "sb204", title: "A year on Mars",
-    he: "קוקו מגייסת צוות למשימה דמיונית: שנה שלמה על מאדים",
+    he: "קוקו מגייס צוות למשימה דמיונית: שנה שלמה על מאדים",
     turns: [
       {
         c: "Hello! I'm putting together a team for a future mission: a whole year living on Mars. Would you volunteer, even though it would be really difficult?",
@@ -1901,7 +1901,7 @@ window.EQ_TALK.b2 = (window.EQ_TALK.b2 || []).concat([
   },
   {
     id: "sb205", title: "Whose phone is it?",
-    he: "הבלשית קוקו מצאה טלפון בכיתה. של מי הוא? מסיקים עם must ו-might",
+    he: "הבלש קוקו מצא טלפון בכיתה. של מי הוא? מסיקים עם must ו-might",
     turns: [
       {
         c: "Detective Coco here. Someone left their phone in the classroom. It has a cover with a football on it. Who might it belong to?",
@@ -2146,7 +2146,7 @@ window.EQ_TALK.b2 = (window.EQ_TALK.b2 || []).concat([
   },
   {
     id: "sb209", title: "Too many tourists?",
-    he: "קוקו ראש כפר קטן ויפה שמוצף בתיירים, ואתם עוזרים לה להחליט",
+    he: "קוקו ראש כפר קטן ויפה שמוצף בתיירים, ואתם עוזרים לו להחליט",
     turns: [
       {
         c: "Hello! Today I'm playing the mayor of a tiny seaside village. Thousands of tourists come every day, and the locals are getting tired of it. Have you ever been somewhere really crowded?",
@@ -2326,7 +2326,7 @@ window.EQ_TALK.b2 = (window.EQ_TALK.b2 || []).concat([
   },
   {
     id: "sb212", title: "Dear Coco",
-    he: "מדור העצות של קוקו: עוזרים לה לענות למכתבים של קוראים",
+    he: "מדור העצות של קוקו: עוזרים לו לענות למכתבים של קוראים",
     turns: [
       {
         c: "Welcome to Dear Coco, my advice column! A reader writes: my friend keeps borrowing my things and forgets to give them back. Should I say something, or just ignore it?",
@@ -2380,7 +2380,7 @@ window.EQ_TALK.b2 = (window.EQ_TALK.b2 || []).concat([
   },
   {
     id: "sb213", title: "The Parrot's Den",
-    he: "מציגים המצאה למשקיעה קוקו ומנסים לשכנע אותה להשקיע",
+    he: "מציגים המצאה למשקיע קוקו ומנסים לשכנע אותו להשקיע",
     turns: [
       {
         c: "Welcome to The Parrot's Den, where young inventors pitch their ideas to investors! What's your invention, and what problem does it solve?",
@@ -2445,7 +2445,7 @@ window.EQ_TALK.b2 = (window.EQ_TALK.b2 || []).concat([
   },
   {
     id: "sb214", title: "Reading to dogs",
-    he: "קוקו מנהלת מקלט לבעלי חיים ומתכננת איתכם פרויקט קריאה לכלבים",
+    he: "קוקו מנהל מקלט לבעלי חיים ומתכנן איתכם פרויקט קריאה לכלבים",
     turns: [
       {
         c: "Hi! Today I'm helping at an animal shelter, and we're starting a project where kids read stories to the dogs. Do you think dogs can really enjoy being read to?",
@@ -2510,7 +2510,7 @@ window.EQ_TALK.b2 = (window.EQ_TALK.b2 || []).concat([
   },
   {
     id: "sb215", title: "A museum of teen life",
-    he: "קוקו אוצרת מוזיאון מהעתיד ובונה תערוכה על חיי בני נוער היום",
+    he: "קוקו אוצר מוזיאון מהעתיד ובונה תערוכה על חיי בני נוער היום",
     turns: [
       {
         c: "Hello! I'm a museum curator from the future, and I'm building an exhibition about teenage life today. What should visitors see first, and why?",

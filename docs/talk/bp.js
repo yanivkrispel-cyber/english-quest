@@ -66,7 +66,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   },
   {
     id: 'tbpg02', title: 'Coco the polite tourist',
-    he: 'קוקו תיירת ומבקשת עזרה בנימוס, ואתם שואלים אותה בחזרה: Could you tell me...?',
+    he: 'קוקו תייר ומבקש עזרה בנימוס, ואתם שואלים אותו בחזרה: Could you tell me...?',
     turns: [
       {
         c: "Excuse me, I'm a tourist parrot! Could you tell me where I can find really good food around here? What should I try?",
@@ -121,7 +121,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   },
   {
     id: 'tbpg03', title: 'So do I, neither do I',
-    he: 'קוקו מספרת על עצמה ואתם מסכימים או לא: So do I, Neither can I, ו-question tags',
+    he: 'קוקו מספר על עצמו ואתם מסכימים או לא: So do I, Neither can I, ו-question tags',
     turns: [
       {
         c: "Let's find out what we have in common. I absolutely love dancing in the rain. What about you?",
@@ -183,7 +183,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   },
   {
     id: 'tbpv01', title: "Coco's wild weather report",
-    he: 'קוקו מגישה תחזית של מזג אוויר קיצוני, ואתם עוזרים לה עם המילים החדשות',
+    he: 'קוקו מגיש תחזית של מזג אוויר קיצוני, ואתם עוזרים לו עם המילים החדשות',
     turns: [
       {
         c: "Welcome to the Feather Forecast! First, a question for my viewers. Which is worse for a farmer, a drought or a flood, and why?",
@@ -238,7 +238,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   },
   {
     id: 'tbpv02', title: "Nurse Coco's busy day",
-    he: 'קוקו משחקת אחות ומטפלת בחברים שלה, החיות, ואתם עוזרים לה להבין מה כואב ומה לעשות',
+    he: 'קוקו משחק אח בבית חולים ומטפל בחברים שלו, החיות, ואתם עוזרים לו להבין מה כואב ומה לעשות',
     turns: [
       {
         c: "Ooh, I'm playing nurse today! My friend the giraffe can't eat or sing, because her long neck hurts inside. What do you think she has?",
@@ -456,7 +456,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   },
   {
     id: 'tbpr01', title: "Coco can't sleep",
-    he: 'קוקו לא מצליחה להירדם, ואתם נותנים לה עצות מהכתבה על שינה',
+    he: 'קוקו לא מצליח להירדם, ואתם נותנים לו עצות מהכתבה על שינה',
     turns: [
       {
         c: "Yawn! I watched videos on my phone until midnight, and now I can't sleep. According to the article, what should I do tonight?",
@@ -835,7 +835,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
     turns: [
       {
         c: "Let's write a story together! It was raining, and I was flying home. Suddenly, I saw something strange. What did I see?",
-        he: "מה קוקו ראתה? past simple: You saw a huge purple balloon.",
+        he: "מה קוקו ראה? past simple: You saw a huge purple balloon.",
         a: [],
         o: "Ooh, how mysterious! I almost fell out of the sky.",
         t: ["You saw a huge purple balloon.", "You saw a cat sitting on a cloud!"],
@@ -1029,7 +1029,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   },
   {
     id: 'tbpv03', title: 'Coco Airlines',
-    he: 'טסים עם קוקו בחברת התעופה שלה, עם המילים של שדה התעופה',
+    he: 'טסים עם קוקו בחברת התעופה שלו, עם המילים של שדה התעופה',
     turns: [
       {
         c: "Welcome to Coco Airlines! If you could fly anywhere tomorrow, where would you go, and why?",
@@ -1083,7 +1083,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   },
   {
     id: 'tbpv04', title: "Judge Coco's court",
-    he: 'קוקו שופטת בבית משפט מצחיק, ואתם עוזרים לה: עדים, ראיות, אשם או חף מפשע',
+    he: 'קוקו שופט בבית משפט מצחיק, ואתם עוזרים לו: עדים, ראיות, אשם או חף מפשע',
     turns: [
       {
         c: "Order in my court! A monkey is accused of taking bananas from the zoo shop. What evidence would you look for to find out the truth?",
@@ -1143,7 +1143,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   },
   {
     id: 'tbpv05', title: "Who took Coco's hat?",
-    he: 'קוקו מספרת על פושעים קטנים, ואתם עוזרים לה: burglar, pickpocket, scammer, hacker',
+    he: 'קוקו מספר על פושעים קטנים, ואתם עוזרים לו: burglar, pickpocket, scammer, hacker',
     turns: [
       {
         c: "Someone climbed through my shop window at night and took my best hat! What do we call a person who does that?",
@@ -1305,7 +1305,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   },
   {
     id: 'tbpl06', title: 'Face your fear, Coco!',
-    he: 'קוקו נלחצת מחתולים, ואתם נותנים לה עצות כמו של Dr Green: צעד קטן כל פעם',
+    he: 'קוקו נלחץ מחתולים, ואתם נותנים לו עצות כמו של Dr Green: צעד קטן כל פעם',
     turns: [
       {
         c: "Confession: I panic when I see a cat, just like Amit with spiders! What do you think of the advice: just don't think about it?",
@@ -1683,7 +1683,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
 window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   {
     id: "sbp01", title: "The perfect school day",
-    he: "קוקו כתבת בעיתון ומראיינת אתכם על יום הלימודים המושלם",
+    he: "קוקו כתב בעיתון ומראיין אתכם על יום הלימודים המושלם",
     turns: [
       {
         c: "Hello! I'm a reporter for The Feather Times, and I'm writing about the perfect school day. Could you tell me what time it would start?",
@@ -1739,7 +1739,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   },
   {
     id: "sbp02", title: "Coco Travel",
-    he: "קוקו סוכנת נסיעות ומתכננת איתכם טיול חלומי",
+    he: "קוקו סוכן נסיעות ומתכנן איתכם טיול חלומי",
     turns: [
       {
         c: "Welcome to Coco Travel! I can plan any trip you like. Would you rather go somewhere with mountains and forests, or to a big busy city?",
@@ -1793,7 +1793,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   },
   {
     id: "sbp03", title: "Coco's Got Talent",
-    he: "קוקו שופטת בתחרות כישרונות ואתם עולים לבמה",
+    he: "קוקו שופט בתחרות כישרונות ואתם עולים לבמה",
     turns: [
       {
         c: "Welcome to Coco's Got Talent! I'm one of the judges today. What are you going to do on stage for us?",
@@ -1849,7 +1849,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   },
   {
     id: "sbp04", title: "The missing crackers",
-    he: "הבלשית קוקו חוקרת: מי לקח את הקרקרים מהחנות?",
+    he: "הבלש קוקו חוקר: מי לקח את הקרקרים מהחנות?",
     turns: [
       {
         c: "Detective Coco here! Someone took my crackers from the shop this morning. What were you doing at about ten o'clock?",
@@ -1902,7 +1902,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   },
   {
     id: "sbp05", title: "A park for the town",
-    he: "ראש העיר קוקו בונה פארק חדש ומבקשת מכם רעיונות",
+    he: "ראש העיר קוקו בונה פארק חדש ומבקש מכם רעיונות",
     turns: [
       {
         c: "Hello! I'm Mayor Coco. The town is building a new park, and I need young people's ideas. What's the first thing a great park needs?",
@@ -1957,7 +1957,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   },
   {
     id: "sbp06", title: "A very old find",
-    he: "קוקו מדריכה במוזיאון ומראה לכם ממצא עתיק ומסתורי",
+    he: "קוקו מדריך במוזיאון ומראה לכם ממצא עתיק ומסתורי",
     turns: [
       {
         c: "Welcome to the museum! I'm your guide today. Do you usually enjoy museums, or do you find them a bit boring?",
@@ -2011,7 +2011,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   },
   {
     id: "sbp07", title: "A storm is coming",
-    he: "קוקו מגישת מזג האוויר: סערה בדרך, ואתם מתכוננים",
+    he: "קוקו מגיש מזג האוויר: סערה בדרך, ואתם מתכוננים",
     turns: [
       {
         c: "Good evening, this is Coco with the weather! A big storm is coming this weekend. Do you enjoy rainy, stormy days, or do you prefer sunshine?",
@@ -2169,7 +2169,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   },
   {
     id: "sbp10", title: "The sleep scientist",
-    he: "דוקטור קוקו חוקרת שינה ושואלת אתכם על הרגלי השינה של בני נוער",
+    he: "דוקטור קוקו חוקר שינה ושואל אתכם על הרגלי השינה של בני נוער",
     turns: [
       {
         c: "Hello! I'm Doctor Coco, a sleep scientist. I'm doing a study about teenagers and sleep. Do you feel tired in the mornings on school days?",
@@ -2386,7 +2386,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
   },
   {
     id: "sbp14", title: "Before the big final",
-    he: "המאמנת קוקו מכינה את הקבוצה לגמר הגדול, ואתם העוזרים",
+    he: "המאמן קוקו מכין את הקבוצה לגמר הגדול, ואתם העוזרים",
     turns: [
       {
         c: "Hi, I'm Coach Coco! Our school team plays in the final tomorrow. Which sport do you think is the most exciting to watch, and why?",

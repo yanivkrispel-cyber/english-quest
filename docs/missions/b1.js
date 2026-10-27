@@ -413,17 +413,17 @@ window.EQ_MISSIONS.b1 = [
   hook: { q: 'How many words can a clever parrot learn?', o: ['About 10', 'Hundreds, sometimes more', 'None, they only copy sounds'], a: 1,
     reveal: '*Hundreds*! A famous parrot called Puck knew about 1,700 words, a world record.' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a funny news story (it is made up!) and choose the right word for each gap.',
-    predict: { q: 'A parrot works in a pet shop. What do you think she does?', o: ['She talks to the customers.', 'She counts the money.', 'She cleans the floor.'] } },
+    predict: { q: 'A parrot works in a pet shop. What do you think he does?', o: ['He talks to the customers.', 'He counts the money.', 'He cleans the floor.'] } },
   steps: [
     { name: 'The story', items: [
       { k: 'gaps', title: 'The parrot who runs the shop',
-        t: 'When customers walk into Pet Paradise in Leeds, the first thing they hear is "Good morning! Can I help you?" The voice [1] to Coco, a nine-year-old parrot [2] lives in a cage near the door. "She [3] to me talking to customers for years," says the owner, Sam Hart. "Now she even says goodbye!" Coco [4] to be shy, but these days she is the star of the shop. Last month she [5] on local TV, and since then people [6] from all over the city to meet her. "I think Coco [7] be my best employee," Sam laughs. "And she [8] asks for a pay rise!"',
+        t: 'When customers walk into Pet Paradise in Leeds, the first thing they hear is "Good morning! Can I help you?" The voice [1] to Coco, a nine-year-old parrot [2] lives in a cage near the door. "He [3] to me talking to customers for years," says the owner, Sam Hart. "Now he even says goodbye!" Coco [4] to be shy, but these days he is the star of the shop. Last month he [5] on local TV, and since then people [6] from all over the city to meet him. "I think Coco [7] be my best employee," Sam laughs. "And he [8] asks for a pay rise!"',
         gaps: [
           { o: ['belongs', 'is belonging', 'belong'], a: 0, why: 'belong is a state verb → belongs.' },
           { o: ['who', 'where', 'what'], a: 0, why: 'who (or that) for a person or a pet with a name.' },
           { o: ['has been listening', 'is listening', 'listens'], a: 0, why: 'for years → has been listening.' },
           { o: ['used', 'was used', 'uses'], a: 0, why: 'used to = it was true in the past, but not now.' },
-          { o: ['was shown', 'showed', 'has shown'], a: 0, why: 'Someone showed Coco on TV → she was shown (passive).' },
+          { o: ['was shown', 'showed', 'has shown'], a: 0, why: 'Someone showed Coco on TV → he was shown (passive).' },
           { o: ['have come', 'came', 'are coming since'], a: 0, why: 'since then → have come (present perfect).' },
           { o: ['must', 'can\'t', 'mustn\'t'], a: 0, why: 'must = I\'m sure it is true.' },
           { o: ['never', 'always', 'often'], a: 0, why: 'The joke: the best employee never asks for more money.' }

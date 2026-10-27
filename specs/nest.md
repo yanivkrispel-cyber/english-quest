@@ -103,7 +103,7 @@ Every picture is a clay sticker made for the Nest in the pets' world (Gemini she
 clay version.
 
 Audio (`docs/nest/audio/`, `python tools/nest_audio.py`, only what changed): `w-<word id>.mp3` (the word's `say`),
-`f-<word id>.mp3` (its `find` question), `p-<unit id>.mp3` (the phrase), `m-<move id>.mp3` (Coco says), `en-<key>.mp3` (Kokoro, Coco's voice `af_heart`, slow), `he-<key>.mp3` (Hebrew,
+`f-<word id>.mp3` (its `find` question), `p-<unit id>.mp3` (the phrase), `m-<move id>.mp3` (Coco says), `en-<key>.mp3` (Kokoro, Coco's voice `am_fenrir`, slow), `he-<key>.mp3` (Hebrew,
 `en-US-EmmaMultilingualNeural`, which reads Hebrew more naturally than `he-IL-HilaNeural`; Coco is a he in every line;
 recorded once at build time from our own fixed text; nothing about a kid is sent). Raise `NEST_V` in
 Index.html after new recordings.

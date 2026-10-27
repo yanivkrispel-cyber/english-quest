@@ -444,7 +444,7 @@ window.EQ_NEST = {
     done: 'כל הכבוד! סיימתם להיום.',
     bye: 'להתראות! נתראה מחר.'
   },
-  // Coco's English lines (Kokoro, af_heart).
+  // Coco's English lines (Kokoro, am_fenrir).
   en: {
     hi: "Hi! Let's play!",
     listen: 'Listen!',

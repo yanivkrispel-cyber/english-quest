@@ -2648,7 +2648,7 @@ function studioGrade(text, base) {
   };
   var kinds = words.map(kindOf);
   if (!words.length) { out.hint = 'Describe your ' + thing + ' in English, darling. For example: "' + eg + '".'; return out; }
-  // A word Coco does not know: the closest one she knows (a typo), or the list.
+  // A word Coco does not know: the closest one he knows (a typo), or the list.
   for (i = 0; i < words.length; i++) {
     if (kinds[i]) continue;
     var w0 = words[i], best = '', bd = 3, all = [];
@@ -7105,7 +7105,7 @@ function auditRender(pin){
 // ---------- Coco's Nest: ages 2 to 7 (specs/nest.md) ----------
 // Listening and pictures only: Coco says a word, the kid taps it or says it. No reading, timers or fail screens, and the
 // pet is the only reward. Content: docs/nest/nest.js (EQ_NEST); recordings: docs/nest/audio (tools/nest_audio.py).
-const NEST_V = 3, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
+const NEST_V = 4, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
 let NE = null, nestLoading = null, nestAudioEl = null, nestQueue = null, nestMic = null;
 function loadNest(){
   if (window.EQ_NEST) return Promise.resolve(window.EQ_NEST);
@@ -7121,7 +7121,7 @@ const nestUnit = id => (window.EQ_NEST && EQ_NEST.units.find(u => u.id === id)) 
 // Ages 2 and 3 play the unit's 4 core words (a review: the core words of its units).
 const nestCore = u => u.core ? u.words.filter(w => u.core.includes(w.id)) : u.words;
 const nestWordsOf = (u, core) => !u ? [] : u.review ? [].concat(...u.review.map(id => { const x = nestUnit(id); return x && x.words ? (core ? nestCore(x) : x.words) : []; })) : core ? nestCore(u) : u.words;
-const nestPicSrc = name => ASSETS + 'nest/pics/' + name + '.webp';
+const nestPicSrc = name => ASSETS + 'nest/pics/' + name + '.webp?v=' + NEST_V;
 // A word's picture: a clay picture, a clay color blob, or 1 to 10 clay chicks to count, all drawn the same size.
 function nestPic(w){
   if (w.color) return `<img src="${esc(nestPicSrc('blob-' + w.color.slice(1).toLowerCase()))}" alt="" draggable="false">`;
@@ -7287,9 +7287,11 @@ function nestSwitch(){
     <div class="row-flex between"><button class="btn btn-glass icon-btn" id="nkback" aria-label="Back">${icon('arrow-left')}</button><span></span></div>
     <div class="nk-switch">${kids.map((k, i) => `<button class="nk-kid glass" data-nkkid="${i}">${petFace(store.get('eq_pet_' + k.name), colorOf(k.name), k.name)}<b>${esc(k.name)}</b></button>`).join('')}
       <button class="nk-kid glass add" id="nkother" aria-label="Someone else">${icon('user-plus', 'duotone')}</button></div>
+    <button class="btn btn-glass btn-block" id="nkout">${icon('sign-out')} Sign out</button>
   </div>`;
   document.getElementById('nkback').onclick = renderDash;
   document.getElementById('nkother').onclick = signOut;
+  document.getElementById('nkout').onclick = signOut;
   app.querySelectorAll('[data-nkkid]').forEach(b => b.onclick = () => {
     const k = kids[Number(b.dataset.nkkid)];
     if (session && k.name === session.name) return renderDash();

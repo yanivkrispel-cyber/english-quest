@@ -75,7 +75,7 @@ window.EQ_TALK.b1 = (window.EQ_TALK.b1 || []).concat([
       },
       {
         c: "Oh no, I just dropped all my buttons on the floor! What will you do to help me?",
-        he: 'קוקו הפילה כפתורים. מה תעשו כדי לעזור? למשל: I will help you pick them up.',
+        he: 'קוקו הפיל כפתורים. מה תעשו כדי לעזור? למשל: I will help you pick them up.',
         a: [],
         o: "Thank you so much! You are a true friend.",
         t: ["I will help you pick them up.", "I'll find them for you.", "Don't worry, I will get a box."],
@@ -429,11 +429,11 @@ window.EQ_TALK.b1 = (window.EQ_TALK.b1 || []).concat([
           { k: ['yes can sure think clever smart maybe'], r: "Thank you! Parrots are very clever, and we love customers." }
         ],
         o: "Well, I run a clothes shop, so I think it is possible!",
-        t: ["Yes, because parrots are very clever.", "No, parrots can't count money!", "Maybe, if she just says hello."],
+        t: ["Yes, because parrots are very clever.", "No, parrots can't count money!", "Maybe, if he just says hello."],
         x: [["yes they are smart", 1], ["no it is not possible", 0], ["parrots can't work", 0], ["maybe a little", 1], ["i have a cat", -1]]
       },
       {
-        c: "Coco used to be shy, but now she is the star of the shop. What is something you used to do, but don't do any more?",
+        c: "Coco used to be shy, but now he is the star of the shop. What is something you used to do, but don't do any more?",
         he: 'מה הייתם עושים פעם ועכשיו כבר לא? למשל: I used to watch cartoons every day.',
         a: [],
         o: "Interesting! We all change so much as we grow up.",
@@ -1700,7 +1700,7 @@ window.EQ_TALK.b1 = (window.EQ_TALK.b1 || []).concat([
   },
   {
     id: 'sb106', title: 'Coco Travel',
-    he: "קוקו סוכנת נסיעות: מתכננים חופשת חלומות, הכל בדמיון",
+    he: "קוקו סוכן נסיעות: מתכננים חופשת חלומות, הכל בדמיון",
     turns: [
       {
         c: "Welcome to Coco Travel, where every trip is a dream trip! If you could go anywhere in the world, where would you go?",
@@ -1807,7 +1807,7 @@ window.EQ_TALK.b1 = (window.EQ_TALK.b1 || []).concat([
   },
   {
     id: 'sb108', title: 'Movie night',
-    he: "בוחרים סרט לערב סרטים עם קוקו, משכנעים אותה, ומה עושים כשהחשמל נופל",
+    he: "בוחרים סרט לערב סרטים עם קוקו, משכנעים אותו, ומה עושים כשהחשמל נופל",
     turns: [
       {
         c: "It's movie night, and I've made the popcorn! What kind of film are you in the mood for, and why?",
@@ -1824,7 +1824,7 @@ window.EQ_TALK.b1 = (window.EQ_TALK.b1 || []).concat([
       },
       {
         c: "Here's my problem: I want to watch a film about parrots for the tenth time. Can you persuade me to choose something else?",
-        he: "קוקו רוצה לראות סרט על תוכים בפעם העשירית. שכנעו אותה לבחור משהו אחר: A new film would be more exciting.",
+        he: "קוקו רוצה לראות סרט על תוכים בפעם העשירית. שכנעו אותו לבחור משהו אחר: A new film would be more exciting.",
         a: [],
         o: "Hmm, you make a good point. Okay, the parrot film can wait.",
         t: ["Come on, you've seen it ten times!", "A new film would be more exciting.", "We can watch the parrot film next week."],
@@ -1964,7 +1964,7 @@ window.EQ_TALK.b1 = (window.EQ_TALK.b1 || []).concat([
   },
   {
     id: 'sb111', title: 'Green News',
-    he: "קוקו כתבת ירוקה: פלסטיק, גינה ורעיונות לבית ספר ששומר על הסביבה",
+    he: "קוקו כתב ירוק: פלסטיק, גינה ורעיונות לבית ספר ששומר על הסביבה",
     turns: [
       {
         c: "I'm Coco, reporting for Green News! Many schools throw away lots of plastic every day. Have you noticed this at your school?",
@@ -2017,7 +2017,7 @@ window.EQ_TALK.b1 = (window.EQ_TALK.b1 || []).concat([
   },
   {
     id: 'sb112', title: 'Coach Coco and the final',
-    he: "המאמנת קוקו מכינה את הקבוצה למשחק הגמר: עמדה, ויכוח, לחץ, מחצית וניצחון",
+    he: "המאמן קוקו מכין את הקבוצה למשחק הגמר: עמדה, ויכוח, לחץ, מחצית וניצחון",
     turns: [
       {
         c: "The final is tomorrow, and I'm your coach! Which position would you like to play, and why?",
@@ -2122,7 +2122,7 @@ window.EQ_TALK.b1 = (window.EQ_TALK.b1 || []).concat([
   },
   {
     id: 'sb114', title: "Coco's Kitchen Cup",
-    he: "תחרות בישול: מספרים לשופטת קוקו על המנה, מצילים רוטב חריף וזוכים",
+    he: "תחרות בישול: מספרים לשופט קוקו על המנה, מצילים רוטב חריף וזוכים",
     turns: [
       {
         c: "Welcome to Coco's Kitchen Cup! You have one hour to cook anything you like. What dish are you going to make?",

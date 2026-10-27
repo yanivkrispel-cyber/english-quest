@@ -18,7 +18,7 @@ APP = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 KOKORO_DIR = os.environ.get('KOKORO_DIR', os.path.join(os.path.dirname(APP), 'kokoro'))
 OUT = os.path.join(APP, 'docs', 'talk', 'audio')
 STATE = os.path.join(APP, 'tools', 'talk-audio.json')
-VOICE = 'af_heart'  # Coco
+VOICE = 'am_fenrir'  # Coco (a he; the owner chose Fenrir on 2026-10-27, before that af_heart)
 # A little slower for the lower levels; the shared lines at an easy pace.
 SPEED = {'a1': 0.88, 'a2': 0.92, 'b1': 0.96, 'bp': 1.0, 'b2': 1.0, 'c1': 1.03, 'bank': 0.92}
 RATE = 24000
