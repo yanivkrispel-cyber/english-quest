@@ -26,11 +26,12 @@ screen is built from these pieces, not from new ones.
 7. **Chips and status:** `.chip` with `.purple`, `.teal`, `.orange`, `.red`. Right/wrong: teal and `--danger`, the same as
    the games.
 8. **Background:** the body gradient with the four `.blob`s. A screen does not set its own page background (except the
-   full-screen play frames and the worlds, which use the world's colors).
+   full-screen play frames and the worlds, which use the world's colors, and the Nest's play sky, `nkSkyOn`).
 9. **Motion:** short and soft (`.btn:active` scale .97, sheets rise with `up`). Nothing that flashes or shakes for long;
    nothing moves when a button in a play screen is tapped (the play frame rules in `CLAUDE.md`).
 10. **The Nest (ages 2 to 7)** uses the same glass and tokens, bigger: tap targets at least 88 px, pictures instead of
-    words, no text the kid must read.
+    words, no text the kid must read. A right answer is a moment, never just a colored border: use `nkCheer` (stars, the
+    gold star into the progress row, Coco hops, the tune) for every new Nest game.
 11. **Same thing, same look.** Before drawing a new card, list, header or empty state, find the closest existing one
     (home tabs, missions, shop, parent area) and reuse its classes. Two ways to show the same kind of thing is the bug
     this file exists to stop.

@@ -175,3 +175,23 @@ band an app: 5 and under, 6 to 8, 9 to 11) is in the gaps list of `specs/store-r
 - 2026-10-27, the games plan phases 1 to 4: no Hebrew voice, the hand and Coco's first round, four days a unit with
   spaced review per word, and the games above. Not built: the monthly report, the word map for parents, weeks 21 to 40,
   first sounds and letter tracing for ages 6 and 7 (phases 5 and 6 of the games plan).
+
+## The playground, one more lesson and the right-answer moment (option C, owner 2026-10-28)
+
+Proposal and the owner's pick: https://claude.ai/artifact/TEp9sYUzd8VUWfGB21H684 (C: a daily lesson plus an open playground).
+
+- **Playground** (`nestPlayground`, `nkPlayStart`, `NK_PLAY` in play.js): the teal puzzle button on the Nest home opens a grid
+  of games; each plays one activity (`nkCompose(.., only)`) on every word of the units the kid has played, as a review-like
+  unit. Free play: nothing is sent (`NE.play`), Done goes back to the playground. Games open by age (`NK_PLAY[i][1]`); Get
+  dressed only after the clothes unit, Chant only with a chant.
+- **One more lesson**: `Girls.NestPerDay` (SETUP v21; empty = 1, 0 = no limit), set by the parent in the kid card
+  (`apiParentNestPerDay`). Once the day's own lesson is logged, `nestInfo.next` is the next day of the program (`nestNext`) and
+  the big button starts it; `apiNestResult` logs it with points only while today's count is under the number. The week strip
+  keeps the day's own lesson (the first Nest row of a date).
+- **Right answer** (`nkCheer`): the card jumps with a gold glow, stars burst, a gold star flies into the progress row (the
+  dots turn gold), Coco hops, a short Web Audio tune (muted with the sound button); every third right answer in a row the
+  pet (or Coco) pops up under a rainbow with confetti (`nkParty`). Coco's demo rounds do not count. Reduced motion: no bursts.
+- **Play sky** (`nkSkyOn`): a fixed layer behind the session, one of four palettes by unit (sun, clouds, bubbles, hills),
+  removed by `nestLeave` and `renderNest`.
+- **Try-out gate**: playground, sky and cheer show only for kids in `Settings.NestAll` and the teacher's preview (`nkBeta`)
+  until the owner opens them to everyone. Check: `test/tablet.html?screen=nest-home2|nest-ground|nest-cheer[&phones]`.

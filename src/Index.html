@@ -85,6 +85,14 @@ body{
 .nk-unit{flex:none;width:68px;height:68px;border-radius:50%;border:1px solid rgba(255,255,255,.95);background:rgba(255,255,255,.75);display:grid;place-items:center;cursor:pointer}
 .nk-unit img{width:46px;height:46px;object-fit:contain}
 .nk-dayicon{width:48px;height:48px;object-fit:contain}
+.nk-today.three{gap:10px}.nk-today.three .nk-coco{width:64px;height:64px}
+.nk-playb{width:88px;height:88px;border-radius:50%;border:0;background:linear-gradient(145deg,#5eead4,#0d9488);color:#fff;font-size:44px;display:grid;place-items:center;cursor:pointer;box-shadow:0 14px 30px rgba(13,148,136,.35),inset 0 1px 0 rgba(255,255,255,.55)}
+.nk-playb:active,.nk-game:active{transform:scale(.96)}
+.nk-games{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-content:start}
+html.tablet .nk-games{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+.nk-game{min-height:118px;border-radius:24px;display:grid;justify-items:center;align-content:center;gap:8px;cursor:pointer;font:inherit;color:var(--ink);padding:10px 6px}
+.nk-game .tile{width:64px;height:64px;border-radius:20px;font-size:36px}
+.nk-game span:last-child{font-weight:700;font-size:13px;color:var(--muted)}
 .nk-days{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .nk-day{min-height:110px;border-radius:22px;display:grid;justify-items:center;align-content:center;gap:6px;cursor:pointer;font:inherit;color:var(--ink);padding:12px}
 .nk-day .tile{width:52px;height:52px;border-radius:18px;font-size:28px}
@@ -93,7 +101,50 @@ body{
 .nk-day:active{transform:scale(.97)}
 .nk-top .nk-prog{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;flex:1;padding:0 8px}
 .nk-prog i{width:7px;height:7px;border-radius:50%;background:rgba(99,102,241,.18)}
-.nk-prog i.ok{background:#22c55e}
+.nk-prog i.ok{background:radial-gradient(circle at 35% 30%,#fde68a,#f59e0b);box-shadow:0 0 6px rgba(245,158,11,.6)}
+.nk-prog i.got{animation:nkpop .4s ease}
+/* The play sky (nkSkyOn): behind #app, one of four palettes a session */
+.nk-sky{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:linear-gradient(180deg,var(--k1),var(--k2) 70%)}
+.nk-sky.p0{--k1:#bde3ff;--k2:#fff3c4;--h1:#a7f3d0;--h2:#6ee7b7}
+.nk-sky.p1{--k1:#fbcfe8;--k2:#ede9fe;--h1:#ddd6fe;--h2:#c4b5fd}
+.nk-sky.p2{--k1:#a5f3fc;--k2:#e0f2fe;--h1:#99f6e4;--h2:#5eead4}
+.nk-sky.p3{--k1:#fed7aa;--k2:#fce7f3;--h1:#fde68a;--h2:#fdba74}
+.nk-sun{position:absolute;top:6%;right:8%;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,#fff7cc,#fde047 60%,rgba(253,224,71,0) 72%);animation:nksun 6s ease-in-out infinite alternate}
+.nk-cloud{position:absolute;width:120px;height:38px;border-radius:40px;background:rgba(255,255,255,.85);filter:blur(1px);animation:nkcloud 38s linear infinite}
+.nk-cloud::before{content:'';position:absolute;left:22px;top:-22px;width:56px;height:52px;border-radius:50%;background:inherit}
+.nk-cloud.c1{top:12%;left:-140px}.nk-cloud.c2{top:26%;left:-140px;transform:scale(.7);animation-duration:52s;animation-delay:-24s}
+.nk-bub{position:absolute;bottom:-40px;width:var(--s);height:var(--s);border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.95),rgba(255,255,255,.25) 60%);border:1px solid rgba(255,255,255,.7);animation:nkbub var(--t) linear infinite}
+.nk-hills{position:absolute;left:0;right:0;bottom:0;width:100%;height:22%}
+.nk-hills .h1{fill:var(--h1)}.nk-hills .h2{fill:var(--h2)}
+@keyframes nksun{to{transform:scale(1.08)}}
+@keyframes nkcloud{to{transform:translateX(calc(100vw + 300px))}}
+@keyframes nkbub{to{transform:translateY(-115vh) translateX(18px)}}
+/* A right answer (nkCheer) */
+.nk-card.nk-joy{animation:nkjoy .7s cubic-bezier(.3,1.6,.5,1)}
+@keyframes nkjoy{0%{transform:scale(1)}25%{transform:scale(1.18) translateY(-14px) rotate(-4deg)}50%{transform:scale(.96) rotate(3deg)}75%{transform:scale(1.06) rotate(-1deg)}100%{transform:scale(1)}}
+.nk-coco.nk-hop{animation:nkhop .7s ease}
+@keyframes nkhop{0%,100%{transform:none}30%{transform:translateY(-22px) rotate(-10deg) scale(1.08)}60%{transform:translateY(0) rotate(6deg)}80%{transform:translateY(-8px)}}
+.nk-burst{position:fixed;z-index:30;pointer-events:none;width:0;height:0}
+.nk-burst span{position:absolute;left:-14px;top:-14px;width:28px;height:28px;animation:nkfly .95s cubic-bezier(.2,.8,.3,1) both}
+.nk-burst span svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 2px 3px rgba(0,0,0,.15))}
+.nk-burst span b{display:block;width:60%;height:60%;margin:20%;border-radius:50%;background:currentColor}
+@keyframes nkfly{0%{transform:rotate(var(--a)) translateX(0) scale(.2);opacity:1}70%{opacity:1}100%{transform:rotate(var(--a)) translateX(var(--d)) scale(var(--z)) rotate(180deg);opacity:0}}
+.nk-wave{position:absolute;left:-60px;top:-60px;width:120px;height:120px;border-radius:50%;border:6px solid #fde047;animation:nkwave .7s ease-out both}
+@keyframes nkwave{from{transform:scale(.3);opacity:1}to{transform:scale(2.6);opacity:0}}
+.nk-flystar{position:fixed;z-index:31;width:46px;height:46px;pointer-events:none;color:#fbbf24;transform:translate(-50%,-50%)}
+.nk-flystar svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 0 8px rgba(251,191,36,.8))}
+.nk-party{position:fixed;inset:0;z-index:29;pointer-events:none;display:grid;place-items:end center;overflow:hidden}
+.nk-rainbow{position:absolute;left:50%;bottom:12%;width:min(92vw,560px);transform:translateX(-50%);opacity:.9}
+.nk-rainbow path{stroke-dasharray:1;stroke-dashoffset:1;animation:nkdraw .8s ease-out forwards}
+.nk-rainbow path:nth-child(2){animation-delay:.06s}.nk-rainbow path:nth-child(3){animation-delay:.12s}.nk-rainbow path:nth-child(4){animation-delay:.18s}.nk-rainbow path:nth-child(5){animation-delay:.24s}.nk-rainbow path:nth-child(6){animation-delay:.3s}
+@keyframes nkdraw{to{stroke-dashoffset:0}}
+.nk-partypet{width:min(46vw,230px);aspect-ratio:1;margin-bottom:4%;animation:nkpetup .6s cubic-bezier(.3,1.5,.5,1) both,nkdance .5s ease-in-out .6s 2 alternate}
+.nk-partypet .nk-petart,.nk-partypet img{width:100%;height:100%;object-fit:contain}
+.nk-party.out{transition:opacity .5s;opacity:0}
+@keyframes nkpetup{from{transform:translateY(110%)}to{transform:none}}
+@keyframes nkdance{from{transform:rotate(-8deg) translateY(0)}to{transform:rotate(8deg) translateY(-14px)}}
+.nk-card.yes{box-shadow:0 0 0 6px #fff,0 0 0 11px #fbbf24,0 0 34px 12px rgba(251,191,36,.55)!important}
+@media (prefers-reduced-motion:reduce){.nk-sky *{animation:none!important}.nk-card.nk-joy,.nk-coco.nk-hop{animation:none}}
 .nk-prog i.on{background:#6366f1;transform:scale(1.3)}
 .nk-stage{align-items:center;justify-content:center;gap:16px}
 .nk-card{border:0;border-radius:30px;background:rgba(255,255,255,.88);box-shadow:0 8px 24px rgba(60,60,120,.12);display:grid;place-items:center;padding:0;position:relative;width:100%;max-width:220px;aspect-ratio:1;cursor:pointer;transition:transform .15s,opacity .3s,filter .3s;-webkit-tap-highlight-color:transparent}
@@ -101,7 +152,6 @@ body{
 .nk-card.big{max-width:min(68vw,290px)}
 .nk-card:active{transform:scale(.96)}
 .nk-card.pop{animation:nkpop .35s ease}
-.nk-card.yes{box-shadow:0 0 0 7px #22c55e,0 10px 26px rgba(34,197,94,.3);animation:nkpop .4s ease}
 .nk-card.no{opacity:.3;filter:grayscale(1)}
 .nk-card.away{opacity:.25}
 .nk-cap{position:absolute;bottom:6px;left:0;right:0;text-align:center;font-weight:800;font-size:20px;color:var(--ink)}
@@ -7243,8 +7293,26 @@ function nestDays(u){
   ov.querySelectorAll('[data-nkday]').forEach(b => b.onclick = () => { close(); nestStart(b.dataset.nkday); });
 }
 
+// The playground (specs/nest.md): every game on the words the kid has met, as often as she likes; nothing is saved.
+function nestPlayground(){
+  const games = dash && dash.nest && window.EQ_NEST ? nkPlayGames() : [];
+  if (!games.length) return renderDash();
+  const L = Object.fromEntries(NG_GAMES);
+  app.innerHTML = `<div class="nk-home">
+    <div class="row-flex between"><button class="btn btn-glass icon-btn" id="nkback" aria-label="Home">${icon('house')}</button>
+      <img class="nk-coco" src="${cocoSrc('happy')}" alt="Coco" style="width:64px;height:64px"></div>
+    <div class="nk-games">${games.map(([g, , ic, t]) => `<button class="nk-game soft" data-nkgame="${g}" aria-label="${esc(L[g])}">
+      <span class="tile ${t}">${icon(ic, 'duotone')}</span><span>${esc(L[g])}</span></button>`).join('')}</div>
+  </div>`;
+  document.getElementById('nkback').onclick = () => renderDash();
+  app.querySelectorAll('[data-nkgame]').forEach(b => b.onclick = () => nkPlayStart(b.dataset.nkgame));
+  nestPlay(['en-hi']);
+}
+
 function renderNest(d){
-  const n = d.nest, u = nestUnit(n.today);
+  { const sky = document.getElementById('nksky'); if (sky) sky.remove(); }
+  // n.next: one more lesson (the parent allows more than one a day), so the big button starts it instead of a replay.
+  const n = d.nest, again = n.done && !n.next, u = nestUnit(n.done && n.next ? n.next : n.today);
   if (!window.EQ_NEST || typeof NK !== 'object') {
     app.innerHTML = '<div class="spinner"></div>';
     loadNest().then(() => { if (dash === d && !NE) renderNest(d); })
@@ -7253,6 +7321,7 @@ function renderNest(d){
     return;
   }
   // Settings.NestAll (n.all): every unit is open now, each with its days to pick.
+  const games = nkPlayGames();
   const played = (n.all ? EQ_NEST.units : [...new Set(n.played.map(id => String(id).split('.')[0]))].map(nestUnit).filter(Boolean)).filter(x => x.id !== (u && u.id));
   app.innerHTML = `<div class="nk-home">
     <div class="row-flex between">
@@ -7267,16 +7336,18 @@ function renderNest(d){
         <div class="nk-petname">${esc(d.pet.name)}</div>`
       : `<div class="nk-adopt">${PETS.filter(p => PET_ART[p[0]]).slice(0, 6).map(([id]) => `<button class="nk-adoptb" data-nkpet="${id}" aria-label="${esc(petName(id))}"><img src="${petSrc(id, 1, 'happy')}" alt=""></button>`).join('')}</div>`}
     </div>
-    <div class="nk-today">
+    <div class="nk-today${games.length ? ' three' : ''}">
       <img class="nk-coco" id="nkcoco" src="${cocoSrc(n.done ? 'celebrate' : 'happy')}" alt="Coco">
-      ${u ? `<button class="nk-start${n.done ? ' again' : ''}" id="nkgo" aria-label="${esc(u.title)}">
-        <img src="${esc(nestPicSrc(u.icon))}" alt=""><span class="nk-play">${icon(n.done ? 'arrow-counter-clockwise' : 'play', 'bold')}</span></button>` : ''}
+      ${u ? `<button class="nk-start${again ? ' again' : ''}" id="nkgo" aria-label="${esc(u.title)}">
+        <img src="${esc(nestPicSrc(u.icon))}" alt=""><span class="nk-play">${icon(again ? 'arrow-counter-clockwise' : 'play', 'bold')}</span></button>` : ''}
+      ${games.length ? `<button class="nk-playb" id="nkplay" aria-label="Play">${icon('puzzle-piece', 'duotone')}</button>` : ''}
       ${n.done ? `<div class="nk-stars">${icon('star', 'duotone')}${icon('star', 'duotone')}${icon('star', 'duotone')}</div>` : ''}
     </div>
     ${played.length ? `<div class="nk-played">${played.map(x => `<button class="nk-unit" data-nkunit="${esc(x.id)}" aria-label="${esc(x.title)}"><img src="${esc(nestPicSrc(x.icon))}" alt=""></button>`).join('')}</div>` : '<div></div>'}
   </div>`;
   const go = document.getElementById('nkgo');
-  if (go) go.onclick = () => nestStart(n.today);
+  if (go) go.onclick = () => nestStart(n.done && n.next ? n.next : n.today);
+  const pg = document.getElementById('nkplay'); if (pg) pg.onclick = nestPlayground;
   // A unit played before: one of its days again, as free play.
   app.querySelectorAll('[data-nkunit]').forEach(b => b.onclick = () => n.all ? nestDays(nestUnit(b.dataset.nkunit))
     : nestStart(nkPick(n.played.filter(id => String(id).split('.')[0] === b.dataset.nkunit).concat([b.dataset.nkunit]))));
@@ -7325,12 +7396,12 @@ function nestSwitch(){
 }
 
 // ---- A session: the engine and every activity live in docs/nest/play.js (nestStart, nestRender, NK.*) ----
-function nestLeave(){ if (typeof nkHandStop === 'function') nkHandStop(); const mic = document.getElementById('nkmic'); if (mic) mic.remove(); if (NE && NE.chant) NE.chant.stop(); if (NE) clearTimeout(NE.idleT); nestStopAudio(); nestMicStop(); NE = null; }
-function nestExit(){ const pv = NE && NE.preview; nestLeave(); if (pv) nestGallery(); else renderDash(); }
+function nestLeave(){ const sky = document.getElementById('nksky'); if (sky) sky.remove(); if (typeof nkHandStop === 'function') nkHandStop(); const mic = document.getElementById('nkmic'); if (mic) mic.remove(); if (NE && NE.chant) NE.chant.stop(); if (NE) clearTimeout(NE.idleT); nestStopAudio(); nestMicStop(); NE = null; }
+function nestExit(){ const pv = NE && NE.preview, pl = NE && NE.play; nestLeave(); if (pv) nestGallery(); else if (pl) nestPlayground(); else renderDash(); }
 // The day's result: the day id the server gave, the score of the rounds that count, and each word's first try
 // ("cat:1,dog:0") for the review days and the parents' view.
 async function nestFinish(){
-  if (NE.preview) return;
+  if (NE.preview || NE.play) return;
   const t = dash.week.find(w => w.isToday);
   const detail = Object.keys(NE.res).map(id => id + ':' + (NE.res[id] ? 1 : 0)).join(',');
   const R = { fn: 'nest', args: [t ? t.date : dash.today, NE.dayId, NE.correct, NE.total, Math.round((Date.now() - NE.t0) / 1000), detail] };
@@ -7350,7 +7421,20 @@ function ageRow(g){
     <span class="chip">${icon(g.nest ? 'bird' : 'graduation-cap')} ${esc(ageLabel(ageValue(g)))}</span>
     <button class="btn btn-glass btn-sm" data-ageopen="${esc(g.girl.name)}">${icon('pencil-simple')} שינוי גיל או כיתה</button></div>`;
 }
+// Coco's Nest: how many lessons a day (Girls.NestPerDay; 0 = no limit). The playground is open either way.
+function nestPerDayRow(g){
+  if (!g.nest) return '';
+  const v = g.nest.perDay == null ? 1 : g.nest.perDay;
+  return `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:6px;flex-wrap:wrap;align-items:center">
+    <span class="sub" style="margin:0;font-size:13px">שיעורים ביום:</span>
+    ${[[1, 'אחד'], [2, 'שניים'], [3, 'שלושה'], [0, 'בלי הגבלה']].map(([n, l]) => `<button class="btn btn-sm ${v === n ? 'btn-primary' : 'btn-glass'}" data-perday="${n}" data-perkid="${esc(g.girl.name)}">${l}</button>`).join('')}</div>`;
+}
 function bindAgeRows(p, pin){
+  app.querySelectorAll('[data-perday]').forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try { renderParent(await call('apiParentNestPerDay', pin, b.dataset.perkid, Number(b.dataset.perday)), pin); toast(b.dataset.perkid + ': ' + b.textContent.trim()); }
+    catch(err){ toast(err.message, true); b.disabled = false; }
+  });
   app.querySelectorAll('[data-ageopen]').forEach(b => b.onclick = () => {
     const name = b.dataset.ageopen, box = b.closest('[data-agebox]');
     const g = [].concat(...p.groups.map(x => x.girls)).find(x => x.girl.name === name);
@@ -8433,6 +8517,7 @@ function girlCard(g, isAdmin, grp){
     ${placementLine(g)}
     ${nestParentCard(g)}
     ${ageRow(g)}
+    ${nestPerDayRow(g)}
     ${!isAdmin && g.pin && grp ? `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:8px;flex-wrap:wrap">
       <a class="btn btn-teal btn-sm" href="${esc(waLink(kidInvite(grp.link, { name: g.girl.name, pin: g.pin, nest: !!g.nest })))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} שליחת הקישור האישי</a>
       <button class="btn btn-glass btn-sm" data-kidhere="${esc(g.girl.name)}" data-kidpin="${esc(g.pin)}" data-kidgroup="${esc(grp.id)}">${icon('device-mobile')} משחק בטלפון הזה</button>

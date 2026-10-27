@@ -35,15 +35,19 @@ async function ready(f){
 }
 async function show(f){
   const w = f.contentWindow, d = w.document, ev = s => w.eval(s);
-  d.head.insertAdjacentHTML('beforeend', '<style>*,*::before,*::after{animation:none!important;transition:none!important}</style>');
+  // nest-cheer freezes the right-answer moment half way instead of turning animations off.
+  d.head.insertAdjacentHTML('beforeend', screen === 'nest-cheer' ? '<style>*,*::before,*::after{animation-play-state:paused!important;animation-delay:-.4s!important;transition:none!important}</style>' : '<style>*,*::before,*::after{animation:none!important;transition:none!important}</style>');
   if (screen === 'parent') await ev("parent('1234', false, false)");
   // Coco's Nest: Mia, 4 (dev-server.js). nest = her home, nest-meet / nest-phrase / nest-find / nest-move / nest-say / nest-done = a session step.
   else if (screen.startsWith('nest')) {
     await ev("(async () => { await login('Mia', '5151', false, false); })()");
     await new Promise(r => setTimeout(r, 1500));
     // nest-all: Settings.NestAll on (every unit open) and one unit's days in the sheet.
+    // nest-ground: the playground; nest-home2: the home with it; nest-cheer: a right answer, the third in a row (the party). Try-out kid, two units played.
+    if (['nest-ground', 'nest-home2', 'nest-cheer'].includes(screen)) { ev("dash.nest.all = true; dash.nest.played = ['n01', 'n01.b', 'n02']; dash.nest.done = true; renderNest(dash)"); if (screen === 'nest-ground') ev('nestPlayground()'); }
+    if (screen === 'nest-cheer') { ev('nestPlay = function(k, cb){}; window.setTimeout = (st => (f, t) => t >= 300 ? 0 : st(f, t))(window.setTimeout); nkPlayStart("find")'); ev('const b = document.querySelector("[data-nkopt]"); b.classList.add("yes"); NE.run = 2; nkCheer({})'); }
     if (screen === 'nest-all') ev('dash.nest.all = true; renderNest(dash);' + (location.search.includes('home') ? '' : ' nestDays(EQ_NEST.units[1])'));
-    const step = screen === 'nest-all' ? '' : screen.slice(5);
+    const step = ['nest-all', 'nest-ground', 'nest-home2', 'nest-cheer'].includes(screen) ? '' : screen.slice(5);
     if (step) { ev('nestPlay = function(k, cb){}'); ev('nestStart(dash.nest.today)'); ev("NE.si = Math.max(0, NE.steps.findIndex(x => x.t === '" + step + "')); nestRender(false)"); }
   }
   else {

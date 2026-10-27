@@ -551,6 +551,35 @@ function nestStart(id, preview, only){
   window.scrollTo(0, 0);
   nestRender(true);
 }
+// ---------- The playground: one game on every word the kid has met (free play, nothing is saved) ----------
+// [game, the youngest age it opens at, icon, tile]
+const NK_PLAY = [['find', 2, 'magnifying-glass', 't-grammar'], ['pop', 2, 'balloon', 't-uoe'], ['peek', 2, 'eye', 't-read'],
+  ['sound', 2, 'ear', 't-listen'], ['give', 2, 'hand-grabbing', 't-write'], ['move', 2, 'person-simple-run', 't-fire'],
+  ['scene', 2, 'tree', 't-chat'], ['color', 2, 'paint-brush', 't-vocab'], ['chant', 2, 'music-notes', 't-together'],
+  ['pairs', 4, 'cards', 't-target'], ['sort', 4, 'tray', 't-star'], ['missing', 4, 'question', 't-level'],
+  ['dress', 4, 't-shirt', 't-uoe'], ['odd', 6, 'shapes', 't-read']];
+function nkKnownUnits(){
+  const ids = new Set(((dash.nest || {}).played || []).map(id => String(id).split('.')[0]));
+  return EQ_NEST.units.filter(u => !u.review && ids.has(u.id));
+}
+function nkPlayGames(){
+  const known = nkKnownUnits(), age = dash.nest.age;
+  if (!known.length || !nkBeta()) return [];
+  return NK_PLAY.filter(([g, from]) => age >= from && (g !== 'dress' || known.some(u => u.theme === 'clothes'))
+    && (g !== 'chant' || known.some(u => (EQ_NEST.chants || {})[u.id])));
+}
+function nkPlayStart(game){
+  const known = nkKnownUnits();
+  if (!known.length) return;
+  const last = known[known.length - 1], n = dash.nest;
+  const u = { id: last.id, title: last.title, icon: last.icon, theme: last.theme, review: known.map(x => x.id) };
+  NE = { u, dayId: last.id, day: 'r', si: 0, correct: 0, total: 0, res: {}, t0: Date.now(), review: true, tries: 0, heard: false,
+    preview: false, play: game, age: n.age, k: n.choices, words: n.words, tok: 0 };
+  NE.steps = nkCompose(u, 'r', game);
+  window.scrollTo(0, 0);
+  nestRender(true);
+}
+
 // What Coco says when a step opens: hello at the start, an activity's short instruction the first time, then the step.
 function nestPrompt(s, opening){
   const hello = opening ? ['en-hi'] : [], first = s.first ? (NK[s.t] && NK[s.t].intro) || [] : [];
@@ -559,6 +588,7 @@ function nestPrompt(s, opening){
 function nestRender(opening){
   if (!NE) return;
   const s = NE.steps[NE.si];
+  nkSkyOn();
   NE.tok = ++NK_RUN.tok;
   NE.locked = false;
   const mic = document.getElementById('nkmic'); if (mic) mic.remove();
@@ -616,10 +646,100 @@ function nkWin(s, keys, wait){
   const tok = NE.tok;
   nkCoco('celebrate');
   buzz(true);
+  nkCheer(s);
   NE.locked = true;
   nestPlay(keys.concat(s.demo ? ['en-turn'] : []), () => setTimeout(() => { if (NE && NE.tok === tok) nestAdvance(); }, wait || 150));
 }
-function nkMiss(keys){ buzz(false); nkCoco('thinking'); nestPlay(keys); }
+function nkMiss(keys){ buzz(false); nkCoco('thinking'); if (NE) NE.run = 0; nestPlay(keys); }
+
+// ---------- The play sky: a soft colored world behind the cards (one of four per session), on until the session ends ----------
+// The new play (playground, sky, cheer) is on for the try-out kids (Settings.NestAll) and the teacher's preview until the owner opens it to all.
+const nkBeta = () => !!((dash && dash.nest && dash.nest.all) || (NE && NE.preview));
+function nkSkyOn(){
+  if (!nkBeta() || document.getElementById('nksky')) return;
+  const k = NE.u && NE.u.id ? [...NE.u.id].reduce((a, c) => a + c.charCodeAt(0), 0) % 4 : 0;
+  const sky = document.createElement('div');
+  sky.id = 'nksky'; sky.className = 'nk-sky p' + k; sky.setAttribute('aria-hidden', 'true');
+  sky.innerHTML = '<i class="nk-sun"></i><i class="nk-cloud c1"></i><i class="nk-cloud c2"></i>'
+    + Array.from({ length: 8 }, (_, i) => `<i class="nk-bub" style="left:${6 + i * 12}%;--s:${18 + (i * 7) % 26}px;--t:${11 + (i * 5) % 9}s;animation-delay:-${(i * 2.3).toFixed(1)}s"></i>`).join('')
+    + '<svg class="nk-hills" viewBox="0 0 400 120" preserveAspectRatio="none"><path class="h1" d="M0 60C70 20 140 30 210 55S330 85 400 40V120H0z"/><path class="h2" d="M0 90C90 60 170 75 250 92S350 100 400 80V120H0z"/></svg>';
+  document.body.appendChild(sky);
+}
+
+// ---------- A right answer is a moment ----------
+// The right card jumps and glows, stars burst out of it, a gold star flies into the progress row, Coco hops, a short
+// tune plays; every third right answer in a row the kid's pet pops up under a rainbow with confetti. CSS only, no files.
+const NK_STAR = '<svg viewBox="0 0 24 24"><path d="M12 1.8l3 6.5 7.1.8-5.3 4.8 1.5 7L12 17.3l-6.3 3.6 1.5-7L1.9 9.1 9 8.3z"/></svg>';
+const NK_FUN = ['#f472b6', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa', '#fb923c'];
+const nkCalm = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function nkAgain(el, cls){ if (!el) return; el.classList.remove(cls); void el.getBoundingClientRect(); el.classList.add(cls); }
+function nkCheer(s){
+  if (!NE || !nkBeta()) return;
+  if (!s || !s.demo) NE.run = (NE.run || 0) + 1;  // Coco's own demo round does not count
+  const st = nkStage(), card = st && (st.querySelector('.nk-card.yes') || st.querySelector('.yes'));
+  const r = (card || st || document.body).getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+  nkAgain(card, 'nk-joy');
+  nkAgain(document.getElementById('nkcoco'), 'nk-hop');
+  nkTune(NE.run % 3 === 0);
+  if (nkCalm()) return;
+  nkBurst(x, y);
+  nkStarFly(x, y);
+  if (NE.run && NE.run % 3 === 0 && !(s && s.demo)) nkParty();
+}
+function nkBurst(x, y){
+  const b = document.createElement('div');
+  b.className = 'nk-burst';
+  b.style.left = x + 'px'; b.style.top = y + 'px';
+  b.innerHTML = '<i class="nk-wave"></i>' + Array.from({ length: 14 }, (_, i) => {
+    const a = Math.round(i * 360 / 14 + Math.random() * 14), d = 90 + Math.round(Math.random() * 70), z = (.6 + Math.random() * .7).toFixed(2);
+    return `<span style="--a:${a}deg;--d:${d}px;--z:${z};color:${NK_FUN[i % NK_FUN.length]};animation-delay:${Math.round(Math.random() * 80)}ms">${i % 3 ? NK_STAR : '<b></b>'}</span>`;
+  }).join('');
+  document.body.appendChild(b);
+  setTimeout(() => b.remove(), 1300);
+}
+// A gold star from the card into the progress row (the dot of this step turns gold when the next step draws).
+function nkStarFly(x, y){
+  const dot = document.querySelector('.nk-prog i.on'), s = document.createElement('div');
+  if (!dot || !s.animate) return;
+  const t = dot.getBoundingClientRect();
+  s.className = 'nk-flystar'; s.innerHTML = NK_STAR;
+  s.style.left = x + 'px'; s.style.top = y + 'px';
+  document.body.appendChild(s);
+  const dx = t.left + t.width / 2 - x, dy = t.top + t.height / 2 - y;
+  s.animate([{ transform: 'translate(-50%,-50%) scale(.4) rotate(0)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.5) rotate(40deg)', opacity: 1, offset: .25 },
+    { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(.35) rotate(220deg)`, opacity: 1 }], { duration: 900, easing: 'cubic-bezier(.5,0,.3,1)' })
+    .onfinish = () => { s.remove(); dot.classList.add('ok', 'got'); };
+}
+// Every third in a row: the pet (or Coco) jumps up from the bottom under a rainbow, with confetti.
+function nkParty(){
+  const p = document.createElement('div');
+  p.className = 'nk-party';
+  p.innerHTML = `<svg class="nk-rainbow" viewBox="0 0 200 110">${['#f87171', '#fb923c', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa'].map((c, i) =>
+    `<path d="M${10 + i * 9} 105a${90 - i * 9} ${90 - i * 9} 0 0 1 ${180 - i * 18} 0" stroke="${c}" stroke-width="9" fill="none" stroke-linecap="round" pathLength="1"/>`).join('')}</svg>
+    <div class="nk-partypet">${dash.pet ? petArt(dash.pet, 'celebrate', 'nk-petart') : `<img src="${cocoSrc('celebrate')}" alt="">`}</div>`;
+  document.body.appendChild(p);
+  confetti();
+  setTimeout(() => p.classList.add('out'), 1700);
+  setTimeout(() => p.remove(), 2300);
+}
+// A short bright tune (Web Audio, like chime): three rising notes and a sparkle; a longer run for the party.
+function nkTune(big){
+  if (typeof soundOn === 'function' && !soundOn()) return;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const t0 = audioCtx.currentTime + .2;
+    const note = (f, at, len, vol) => {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = 'triangle'; o.frequency.value = f;
+      g.gain.setValueAtTime(0, t0 + at); g.gain.linearRampToValueAtTime(vol, t0 + at + .01);
+      g.gain.exponentialRampToValueAtTime(.0005, t0 + at + len);
+      o.connect(g); g.connect(audioCtx.destination); o.start(t0 + at); o.stop(t0 + at + len + .02);
+    };
+    (big ? [523, 659, 784, 1047, 1319, 1568] : [659, 784, 1047]).forEach((f, i) => note(f, i * .07, .25, .045));
+    [2093, 2637, 3136].forEach((f, i) => note(f, (big ? .45 : .24) + i * .05, .18, .018));
+  } catch(e){}
+}
 // The main button in the dock: next (blue), done (green), home (gold).
 function nkBtn(kind, label, on){
   const sl = nkSlot(), cls = kind === 'did' || kind === 'said' ? 'said' : kind === 'home' ? 'home' : '';

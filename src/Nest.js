@@ -12,9 +12,9 @@ function nestUnits() { return typeof NEST_UNITS === 'object' && NEST_UNITS.lengt
 
 // The day for a date: the first one she has not played yet, then around again. It follows what she played, not the
 // calendar, so a missed day (or a move into the Nest in the middle of a week) never skips a unit.
-function nestNext(kid) {
+function nestNext(kid, logs) {
   var units = nestUnits(), played = {}, n = 0;
-  readTable('Log').forEach(function (l) { if (l.Girl === kid.Name && l.Section === 'nest' && l.Mission) { played[l.Mission] = 1; n++; } });
+  (logs || readTable('Log')).forEach(function (l) { if (l.Girl === kid.Name && l.Section === 'nest' && l.Mission) { played[l.Mission] = 1; n++; } });
   for (var i = 0; i < units.length; i++) if (!played[units[i][0]]) return nestAssignment(units[i]);
   return nestAssignment(units[n % units.length]);
 }
@@ -41,15 +41,39 @@ function nestInfo(kid, t, assigned, logs) {
       if (String(l.Date) > w[2]) w[2] = String(l.Date);
     });
   });
-  var age = nestAge(kid);
+  var age = nestAge(kid), done = logs.some(function (l) { return l.Date === t; }), perDay = nestPerDay(kid);
+  var today = logs.filter(function (l) { return l.Date === t && l.Section === 'nest'; }).length;
   return {
     age: age, choices: age <= 4 ? 2 : 3, words: age >= 6,
     today: a && a.section === 'nest' ? String(a.url).slice(5) : null,
-    done: logs.some(function (l) { return l.Date === t; }),
+    done: done,
     played: played,
     known: words,
-    all: nestAllOpen(kid)
+    all: nestAllOpen(kid),
+    perDay: perDay,
+    // One more lesson: once the day's own is done, the next day of the program while the parent's daily number allows.
+    next: done && (!perDay || today < perDay) ? String(nestNext(kid, logs).url).slice(5) : null
   };
+}
+
+// Lessons a day (Girls.NestPerDay, set by the parent): 1 when empty, 0 = no limit.
+function nestPerDay(kid) {
+  var v = String(kid.NestPerDay == null ? '' : kid.NestPerDay).trim();
+  if (v === '') return 1;
+  var n = Math.round(Number(v));
+  return n >= 0 && n <= 9 ? n : 1;
+}
+
+function apiParentNestPerDay(pin, name, n) {
+  ensureSetup();
+  var access = parentAccess(pin);
+  var kid = findGirl(name);
+  if (!kid || !isNest(kid) || (!access.isAdmin && groupOf(kid) !== String(access.group.Id))) throw new Error('Unknown kid');
+  n = Math.round(Number(n));
+  if (!(n >= 0 && n <= 9)) throw new Error('בחרו כמה שיעורים ביום');
+  setGirlFields(kid.Name, { NestPerDay: n });
+  audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest lessons a day', kid.Name + ': ' + (n || 'no limit'));
+  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
 }
 
 // Settings.NestAll: the names (comma separated, or 'all') whose Nest home shows every unit and day now, as free play.
@@ -85,12 +109,19 @@ function apiNestResult(name, pin, date, unitId, correct, total, seconds, detail)
   var free = function () { var d = buildDashboard(findGirl(kid.Name)); d.justEarned = 0; d.free = true; return d; };
   if (weekDates(t).indexOf(date) < 0 || date > t || date < kidStart(kid)) return free();
   var a = ensureAssignments(kid, [date])[date];
-  if (!a || a.url !== 'nest:' + unitId) return free();
+  if (!a) return free();
   var entry = null;
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
-    if (readTableUncached('Log').some(function (l) { return l.Girl === kid.Name && l.Date === date; })) return free();
+    var mine = readTableUncached('Log').filter(function (l) { return l.Girl === kid.Name; });
+    if (a.url !== 'nest:' + unitId) {
+      // One more lesson today: the day's own is logged, this is the next day of the program, and the parent allows it.
+      var perDay = nestPerDay(kid), todays = mine.filter(function (l) { return l.Date === t && l.Section === 'nest'; }).length;
+      var next = nestNext(kid, mine);
+      if (date !== t || !todays || (perDay && todays >= perDay) || next.url !== 'nest:' + unitId) return free();
+      a = next;
+    } else if (mine.some(function (l) { return l.Date === date; })) return free();
     entry = {
       Timestamp: new Date(), Girl: kid.Name, Date: date, DoneOn: t, Section: 'nest', Level: 'nest', Title: a.title, URL: a.url,
       Correct: correct, Total: total, Percent: Math.round(correct / total * 100), Points: date === t ? NEST.points : NEST.latePoints,
