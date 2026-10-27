@@ -9,6 +9,17 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="description" content="10 דקות אנגלית ביום, בכיף ובמשחק: משימות, משחקים ושיחות בקול עם קוקו התוכי.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="English with Coco">
+<meta property="og:title" content="English with Coco">
+<meta property="og:description" content="10 דקות אנגלית ביום, בכיף ובמשחק: משימות, משחקים ושיחות בקול עם קוקו התוכי.">
+<meta property="og:url" content="https://coco.coachkrispel.com/">
+<meta property="og:image" content="https://coco.coachkrispel.com/icons/share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Coco the parrot, English with Coco">
+<meta name="twitter:card" content="summary_large_image">
 <meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -6807,7 +6818,7 @@ function pilotCard(){
   return `<div class="glass panel" id="pilotcard"><div class="row-flex between"><h2>Pilot</h2><button class="btn btn-glass btn-sm" id="pilotload">${icon('chart-bar')} Show</button></div>
     <div class="sub mt-s" style="font-size:13px">Families in the app (the ones from before the link count from Settings.PilotFrom): the funnel, activity per week, feedback and the teacher's notes.</div></div>`;
 }
-const pilotInviteText = link => `היי! בניתי לבנות שלי אפליקציה לאנגלית, 10 דקות ביום, והן לא מוותרות עליה 🦜\nאני מחפש כמה משפחות שינסו אותה 4 שבועות בחינם ויגידו לי את האמת.\nההרשמה לוקחת 3 דקות:\n${link}`;
+const pilotInviteText = link => `🦜 הכירו את קוקו!\nאפליקציה חדשה ללמוד אנגלית בכיף: 10 דקות ביום של משימות, משחקים ושיחות בקול עם תוכי אחד מצחיק, וחיית מחמד שגדלה ככל שמתאמנים 🚀\nאנחנו מזמינים כמה משפחות לנסות 4 שבועות בחינם ולספר לנו מה דעתכם.\nההרשמה לוקחת 3 דקות 👇\n${link}`;
 async function pilotLoad(pin, open, code){
   const card = document.getElementById('pilotcard');
   card.innerHTML = '<div class="spinner"></div>';

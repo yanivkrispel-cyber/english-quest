@@ -6800,7 +6800,7 @@ function pilotCard(){
   return `<div class="glass panel" id="pilotcard"><div class="row-flex between"><h2>Pilot</h2><button class="btn btn-glass btn-sm" id="pilotload">${icon('chart-bar')} Show</button></div>
     <div class="sub mt-s" style="font-size:13px">Families in the app (the ones from before the link count from Settings.PilotFrom): the funnel, activity per week, feedback and the teacher's notes.</div></div>`;
 }
-const pilotInviteText = link => `היי! בניתי לבנות שלי אפליקציה לאנגלית, 10 דקות ביום, והן לא מוותרות עליה 🦜\nאני מחפש כמה משפחות שינסו אותה 4 שבועות בחינם ויגידו לי את האמת.\nההרשמה לוקחת 3 דקות:\n${link}`;
+const pilotInviteText = link => `🦜 הכירו את קוקו!\nאפליקציה חדשה ללמוד אנגלית בכיף: 10 דקות ביום של משימות, משחקים ושיחות בקול עם תוכי אחד מצחיק, וחיית מחמד שגדלה ככל שמתאמנים 🚀\nאנחנו מזמינים כמה משפחות לנסות 4 שבועות בחינם ולספר לנו מה דעתכם.\nההרשמה לוקחת 3 דקות 👇\n${link}`;
 async function pilotLoad(pin, open, code){
   const card = document.getElementById('pilotcard');
   card.innerHTML = '<div class="spinner"></div>';
