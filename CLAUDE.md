@@ -184,9 +184,9 @@ writers can check a staging file alone: `MISSIONS_ONLY=<file> MISSIONS_FILE=<pat
 Talk with Coco (built 2026-10-26 overnight, spec `specs/talk.md`, server `src/Chat.js`, SETUP v17): scripted spoken talks,
 one after Use it in every mission and one home scene a day; recorded Coco lines, the phone's speech recognition matched to
 the script by keywords, tiles and a Hebrew hint; a bonus only. Preview: `?talk` (and the button in `?missions`). Stage 0 gate on
-the admin's Pilot card. Writing rules for new scripts: `tools/TALK-WRITING.md`. Live @35 on 2026-10-27 with 2,689 of 4,502
-clips recorded (the recording run was stopped for low memory); the rest play in the phone's voice until
-`python tools/talk_audio.py` finishes them (it resumes where it stopped), then raise `TALK_V`, build Pages and push.
+the admin's Pilot card. Writing rules for new scripts: `tools/TALK-WRITING.md`. Live @35 on 2026-10-27; all 4,502
+clips recorded the same day (`TALK_V` 2, @37). After changing a script, run `python tools/talk_audio.py` (it records only
+changed lines and resumes where it stopped), then raise `TALK_V`, build Pages and push.
 
 Home in five tabs (owner's choice 2026-10-27 from the mockup canvas, spec `specs/home-tabs.md`): Today (pet, one Start, two
 pills, no scroll), Journey (the map), Play, Pet, Me. Live on Pages and @36 the same day.
