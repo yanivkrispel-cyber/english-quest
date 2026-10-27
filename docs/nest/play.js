@@ -150,6 +150,7 @@
 
 // ---------- Small helpers ----------
 const NK = {};                                   // the activities, by step type
+const NK_RUN = { tok: 0 };                       // a number per screen, never reused: late timers of an old screen do nothing
 const NK_CUE = { meet: ['ear', 'ear'], phrase: ['ear', 'ear'], story: ['book-open', 'ear'], chant: ['music-notes', 'ear'],
   find: ['hand-pointing', ''], peek: ['hand-pointing', ''], sound: ['ear', 'ear'], pop: ['hand-pointing', ''],
   pairs: ['hand-pointing', ''], missing: ['hand-pointing', ''], odd: ['hand-pointing', ''], scene: ['hand-pointing', ''],
@@ -267,7 +268,7 @@ function nkHandTap(el, done, taps){
     { opacity: 1, transform: `translate(${x}px,${y}px) scale(1)`, offset: .45 + (i + 1) * .4 / n });
   frames.push({ opacity: 0, transform: `translate(${x + 30}px,${y + 40}px) scale(1)` });
   const a = h.animate(frames, { duration: 1300 + n * 250, easing: 'ease-in-out' });
-  if (done) setTimeout(done, (1300 + n * 250) * .66);
+  if (done) setTimeout(() => { if (document.body.contains(el)) done(); }, (1300 + n * 250) * .66);
   a.onfinish = () => { h.style.opacity = 0; };
 }
 // The hand drags a copy of one element onto another; done() when it lands.
@@ -290,7 +291,7 @@ function nkHandDrag(from, to, done){
   g.animate([{ opacity: 0, transform: 'translate(0,0) scale(1)' }, { opacity: 1, transform: 'translate(0,0) scale(1.08)', offset: .25 },
     { opacity: 1, transform: `translate(${x1 - x0}px,${y1 - y0}px) scale(.7)`, offset: .85 }, { opacity: 0, transform: `translate(${x1 - x0}px,${y1 - y0}px) scale(.4)` }],
     { duration: dur, easing: 'ease-in-out' }).onfinish = () => g.remove();
-  setTimeout(() => { from.classList.remove('lift'); if (done) done(); }, dur * .86);
+  setTimeout(() => { from.classList.remove('lift'); if (done && document.body.contains(from) && document.body.contains(to)) done(); }, dur * .86);
 }
 // A hint when nothing happens for a while: the hand shows the way (a tap, or a drag for drag games). Any touch on the
 // stage starts the wait again.
@@ -558,7 +559,7 @@ function nestPrompt(s, opening){
 function nestRender(opening){
   if (!NE) return;
   const s = NE.steps[NE.si];
-  NE.tok++;
+  NE.tok = ++NK_RUN.tok;
   NE.locked = false;
   const mic = document.getElementById('nkmic'); if (mic) mic.remove();
   clearTimeout(NE.idleT); NE.idleArm = null;
@@ -581,7 +582,8 @@ function nestRender(opening){
     </div>
   </div>`;
   document.getElementById('nkx').onclick = nestExit;
-  document.getElementById('nkagain').onclick = () => { const k = s.t === 'done' ? ['en-great'] : NK[s.t].say ? NK[s.t].say(s) : []; nestPlay(k.length ? k : (NK[s.t].intro || ['en-listen'])); };
+  // Listen again: only when Coco is quiet, so it never cuts a line whose end starts the next part of a game.
+  document.getElementById('nkagain').onclick = () => { if (nestQueue) return; const k = s.t === 'done' ? ['en-great'] : NK[s.t].say ? NK[s.t].say(s) : []; nestPlay(k.length ? k : (NK[s.t].intro || ['en-listen'])); };
   nkTipBind(s);
   if (s.first && s.t !== 'done') { nkSeenAdd(s.t); const c = document.getElementById('nkcue'); if (c) c.classList.add('on'); }
   NK[s.t].render(s, opening);
@@ -872,6 +874,7 @@ NK.sort = {
     const boxes = () => [...app.querySelectorAll('[data-nkbox]')];
     let tries = 0, demo = !!s.demo;
     const show = () => {
+      if (!nkLive(s)) return;
       const w = s.items[s.ii], si = document.getElementById('nksi');
       si.innerHTML = `<button class="nk-card" id="nkitem">${nestPic(w)}</button>`;
       const it = document.getElementById('nkitem');
@@ -911,7 +914,7 @@ NK.pairs = {
     nkFill(`<div class="nk-pairs${cards.length > 6 ? ' c4' : ''}">${cards.map((c, i) => `<button class="nk-pc" data-nkc="${i}"><span class="in">
       <span class="bc"><img src="${cocoSrc('happy')}" alt="" draggable="false"></span>
       <span class="fc">${c.txt ? `<b>${esc(c.w.en)}</b>` : nestPic(c.w)}</span></span></button>`).join('')}</div>`);
-    let open = [], got = 0;
+    let open = [], got = 0, demoPair = false;
     const flip = (b, byCoco) => {
       if (!nkLive(s) || (NE.locked && !byCoco) || b.classList.contains('up')) return;
       const c = cards[Number(b.dataset.nkc)];
@@ -927,7 +930,8 @@ NK.pairs = {
         if (x.w.id === y.w.id) {
           pair.forEach(e => e.classList.add('got')); got++; buzz(true); nkCoco('celebrate');
           if (got === s.words.length) return nkWin(s, ['w-' + x.w.id, 'en-great']);
-          nestPlay([nkPraise()], () => { NE.locked = false; nkCoco('happy'); });
+          nestPlay(demoPair ? ['en-turn'] : [nkPraise()], () => { NE.locked = false; nkCoco('happy'); });
+          demoPair = false;
         } else { pair.forEach(e => e.classList.remove('up')); NE.locked = false; }
       }, 1000);
     };
@@ -937,7 +941,7 @@ NK.pairs = {
       if (s.demo) {
         const w = cards[0].w, two = [...app.querySelectorAll('[data-nkc]')].filter(b => cards[Number(b.dataset.nkc)].w.id === w.id);
         NE.locked = true;
-        nkHandTap(two[0], () => { flip(two[0], true); setTimeout(() => nkHandTap(two[1], () => { flip(two[1], true); setTimeout(() => nestPlay(['en-turn']), 1300); }), 700); });
+        nkHandTap(two[0], () => { flip(two[0], true); setTimeout(() => nkHandTap(two[1], () => { demoPair = true; flip(two[1], true); }), 700); });
       } else nkIdle(s, () => app.querySelector('.nk-pc:not(.up)'));
     });
   }

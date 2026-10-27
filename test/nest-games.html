@@ -20,7 +20,8 @@ async function ready(f){
 // Starts a game in the frame (muted when asked) and measures it: the page and the stage must not scroll.
 async function play(f, unit, game, age, step, mute){
   const w = f.contentWindow, ev = s => w.eval(s);
-  if (mute) ev("nestPlay = function(k, cb){ if (cb) setTimeout(cb, 30); }");
+  // Muted like the real player: a newer line (or a stop) cancels the waiting end of the last one.
+  if (mute) ev("nestPlay = function(k, cb){ const t = {}; window.nkQ = t; if (cb) setTimeout(() => { if (window.nkQ === t) cb(); }, 30); }; nestStopAudio = function(){ window.nkQ = null; }");
   ev(`nestLeave(); NG_AGE = ${age}; nestGalleryDash()`);
   await ev('loadNest()');
   ev(`nestStart(${JSON.stringify(unit)}, true, ${JSON.stringify(game)})`);
