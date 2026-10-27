@@ -1271,7 +1271,8 @@ function movedScreen(){
 // Install as an app: Android/desktop Chrome fire beforeinstallprompt; iOS needs Share > Add to Home Screen.
 let installPrompt = null;
 const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
-const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent);
+// iPadOS Safari says it is a Mac: a Mac with a touch screen is an iPad.
+const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
 if (!IN_APPS_SCRIPT) {
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
   window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; const b = document.getElementById('install'); if (b) b.hidden = false; });
