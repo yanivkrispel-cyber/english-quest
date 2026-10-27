@@ -210,7 +210,8 @@ Coco's Nest (built 2026-10-27, spec `specs/nest.md`, server `src/Nest.js`, conte
 `kid.Level` must check `isNest(kid)` first). Home `renderNest`, session `nestStart` (meet, find, say, done), audio
 `nestPlay` (one Audio element per session for iPhones). Content: edit `docs/nest/nest.js`, then `python tools/nest_pics.py`,
 `python tools/nest_audio.py`, `node tools/nest-index.js`, `node test/nest-check.js`, and raise `NEST_V`. Dev: Mia 5151 (age 4),
-`test/tablet.html?screen=nest|nest-meet|nest-find|nest-say|nest-done&phones`.
+`test/tablet.html?screen=nest|nest-meet|nest-find|nest-say|nest-done&phones`. A new audio folder needs its path in
+`run_worker_first` (wrangler.jsonc), or Safari plays nothing.
 
 The audit trail (built 2026-10-27, spec `specs/audit.md`, server `src/Audit.js`, tab Audit, SETUP v19): opens, wrong PINs,
 grown-ups' changes and hand edits in the sheet, with a coarse device label the app sends (`dev` in every call); the admin's
