@@ -94,13 +94,18 @@ window.EQ_NEST = {
 ```
 
 A word's picture is one of:
-- `pic: '<name>'`: `docs/nest/pics/<name>.webp` (Fluent Emoji 3D, MIT, made by `tools/nest_pics.py`), or
-- `color: '#e53935'`: a round color blob drawn in code, or
-- `count: 3`: 1 to 10 dots drawn in code.
+- `pic: '<name>'`: `docs/nest/pics/<name>.webp`, or
+- `color: '#e53935'`: the clay blob `blob-e53935.webp`, or
+- `count: 3`: 1 to 10 clay chicks (`count-token.webp`).
+
+Every picture is a clay sticker made for the Nest in the pets' world (Gemini sheets, `tools/NEST-ART.md`,
+`tools/nest_art.py`), written by `tools/nest_pics.py` at 320 px; Fluent Emoji 3D (MIT) is only the fallback for a name with no
+clay version.
 
 Audio (`docs/nest/audio/`, `python tools/nest_audio.py`, only what changed): `w-<word id>.mp3` (the word's `say`),
 `f-<word id>.mp3` (its `find` question), `p-<unit id>.mp3` (the phrase), `m-<move id>.mp3` (Coco says), `en-<key>.mp3` (Kokoro, Coco's voice `af_heart`, slow), `he-<key>.mp3` (Hebrew,
-`he-IL-HilaNeural`, recorded once at build time from our own fixed text; nothing about a kid is sent). Raise `NEST_V` in
+`en-US-EmmaMultilingualNeural`, which reads Hebrew more naturally than `he-IL-HilaNeural`; Coco is a he in every line;
+recorded once at build time from our own fixed text; nothing about a kid is sent). Raise `NEST_V` in
 Index.html after new recordings.
 
 Checks: `node test/nest-check.js` (ids unique, 4 to 6 words a unit, 4 core words, phrase, 2 or 3 known moves, home ideas

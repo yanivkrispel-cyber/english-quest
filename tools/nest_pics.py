@@ -1,4 +1,6 @@
-"""Coco's Nest pictures (specs/nest.md): Microsoft Fluent Emoji 3D (MIT license), saved as 200px WebP.
+"""Coco's Nest pictures (specs/nest.md). The clay pictures made for the Nest (tools/nest_art.py, art/nest/cut/<name>.png,
+320px WebP) come first; a name without one falls back to Microsoft Fluent Emoji 3D (MIT license, 200px WebP).
+Colors are clay blobs (blob-<hex>) and numbers repeat count-token: both need their clay pictures.
 
 usage (from app/):
   python tools/nest_pics.py --fetch   # downloads the PNGs that are missing into tools/.fluent, then writes the WebPs
@@ -60,16 +62,18 @@ PICS = {
 HERE = os.path.dirname(os.path.abspath(__file__))
 APP = os.path.dirname(HERE)
 CACHE = os.path.join(HERE, '.fluent')
+CLAY = os.path.join(os.path.dirname(APP), 'art', 'nest', 'cut')
 OUT = os.path.join(APP, 'docs', 'nest', 'pics')
 CDN = 'https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/'
 
 
 def used():
-    """Every picture name nest.js uses (word pics, unit icons and Coco says pictures)."""
+    """Every picture name nest.js uses (word pics, unit icons, Coco says pictures, color blobs and the count token)."""
     js = ("const vm=require('vm'),fs=require('fs');const w={};"
           "vm.runInNewContext(fs.readFileSync('docs/nest/nest.js','utf8'),{window:w});const s=new Set();"
-          "w.EQ_NEST.units.forEach(u=>{s.add(u.icon);(u.words||[]).forEach(x=>{if(x.pic)s.add(x.pic)})});"
-          "Object.values(w.EQ_NEST.moves||{}).forEach(m=>{if(m.pic)s.add(m.pic)});"
+          "const add=x=>{if(x.pic)s.add(x.pic);if(x.color)s.add('blob-'+x.color.slice(1).toLowerCase());if(x.count)s.add('count-token')};"
+          "w.EQ_NEST.units.forEach(u=>{s.add(u.icon);(u.words||[]).forEach(add)});"
+          "Object.values(w.EQ_NEST.moves||{}).forEach(add);"
           "process.stdout.write(JSON.stringify([...s]))")
     return json.loads(subprocess.check_output(['node', '-e', js], cwd=APP).decode('utf-8'))
 
@@ -109,25 +113,32 @@ def main():
             print(name + '|' + asset)
         return
     names = used()
-    missing = [n for n in names if n not in PICS]
+    clay = lambda n: os.path.join(CLAY, n + '.png')
+    missing = [n for n in names if not os.path.exists(clay(n)) and n not in PICS]
     if missing:
-        raise SystemExit('add to PICS in tools/nest_pics.py: ' + ', '.join(missing))
+        raise SystemExit('no clay picture (python tools/nest_art.py status) and no Fluent fallback: ' + ', '.join(missing))
     os.makedirs(CACHE, exist_ok=True)
     os.makedirs(OUT, exist_ok=True)
     if '--fetch' in sys.argv:
-        bad = [n for n in names if not fetch(PICS[n])]
+        bad = [n for n in names if not os.path.exists(clay(n)) and not fetch(PICS[n])]
         if bad:
             raise SystemExit('%d picture(s) not found' % len(bad))
+    fluent = 0
     for name in names:
-        im = Image.open(cached(PICS[name])).convert('RGBA')
-        im.thumbnail((200, 200), Image.LANCZOS)
+        if os.path.exists(clay(name)):
+            im = Image.open(clay(name)).convert('RGBA')
+            im.thumbnail((320, 320), Image.LANCZOS)
+        else:
+            fluent += 1
+            im = Image.open(cached(PICS[name])).convert('RGBA')
+            im.thumbnail((200, 200), Image.LANCZOS)
         im.save(os.path.join(OUT, name + '.webp'), 'WEBP', quality=88, alpha_quality=100, method=6)
     # Pictures nest.js no longer uses are removed.
     for f in os.listdir(OUT):
         if f.endswith('.webp') and f[:-5] not in names:
             os.remove(os.path.join(OUT, f))
     total = sum(os.path.getsize(os.path.join(OUT, f)) for f in os.listdir(OUT))
-    print(len(os.listdir(OUT)), 'pictures,', total // 1024, 'KB')
+    print(len(os.listdir(OUT)), 'pictures (%d clay, %d Fluent),' % (len(names) - fluent, fluent), total // 1024, 'KB')
 
 
 if __name__ == '__main__':

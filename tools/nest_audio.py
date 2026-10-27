@@ -5,9 +5,9 @@
 
 w-<word id>.mp3 (the word's `say`), f-<word id>.mp3 (its `find` question) and en-<key>.mp3 (Coco's lines) are Kokoro
 (kokoro-onnx, Apache 2.0, on this computer, voice af_heart, slow for small kids). he-<key>.mp3 (the Hebrew lines for the
-kid) are Microsoft Edge's neural voice he-IL-HilaNeural through edge-tts (needs the internet; only our own fixed text
+kid) are Microsoft Edge's multilingual neural voice en-US-EmmaMultilingualNeural (it reads Hebrew; chosen over he-IL-HilaNeural by ear and by a Hebrew speech-recognition test, 2026-10-27) through edge-tts (needs the internet; only our own fixed text
 from docs/nest/nest.js is sent, nothing about a kid). Every clip is peak-normalized and written with the same MP3
-settings as tools/talk_audio.py. tools/nest-audio.json keeps a hash of each clip, so only new or changed clips are
+settings as tools/talk_audio.py but a higher MP3 quality (0.25: the old 0.9 squeezed Hebrew to about 28 kbps). tools/nest-audio.json keeps a hash of each clip, so only new or changed clips are
 recorded; clips nest.js no longer needs are removed. Raise NEST_V in Index.html after new recordings.
 The clip list comes from tools/nest-audio-list.js.
 """
@@ -22,7 +22,7 @@ OUT = os.path.join(APP, 'docs', 'nest', 'audio')
 STATE = os.path.join(APP, 'tools', 'nest-audio.json')
 VOICE = 'af_heart'  # Coco
 SPEED = {'word': 0.82, 'find': 0.86, 'en': 0.9}
-HE_VOICE, HE_RATE = 'he-IL-HilaNeural', '-10%'
+HE_VOICE, HE_RATE = 'en-US-EmmaMultilingualNeural', '+0%'  # Emma reads Hebrew more naturally than Hila (2026-10-27)
 RATE = 24000
 
 
@@ -37,7 +37,7 @@ def write(path, samples):
                             np.zeros(int(RATE * 0.12), dtype=np.float32)])
     peak = float(np.max(np.abs(audio))) or 1.0
     audio = audio / peak * 0.89
-    with sf.SoundFile(path, 'w', RATE, 1, format='MP3', compression_level=0.9, bitrate_mode='VARIABLE') as f:
+    with sf.SoundFile(path, 'w', RATE, 1, format='MP3', compression_level=0.25, bitrate_mode='VARIABLE') as f:
         f.write(audio)
 
 

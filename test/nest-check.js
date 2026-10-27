@@ -44,6 +44,8 @@ function check(opts) {
       else pics.add(w.pic);
     }
     if (w.color != null && !/^#[0-9a-f]{6}$/i.test(w.color)) err(where, 'color must be #rrggbb');
+    else if (w.color != null) pics.add('blob-' + w.color.slice(1).toLowerCase());
+    if (w.count != null) pics.add('count-token');
     if (w.count != null && !(Number.isInteger(w.count) && w.count >= 1 && w.count <= 10)) err(where, 'count must be 1 to 10');
   };
   let nNew = 0, nRev = 0, nWords = 0;

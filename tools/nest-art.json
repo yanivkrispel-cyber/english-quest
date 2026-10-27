@@ -1,0 +1,84 @@
+{
+  "_": "Coco's Nest clay pictures (tools/NEST-ART.md): one Gemini sheet of 6 per entry, items in sheet order (row-major). kind: what the sheet is about. A name starting with blob- is a color blob (blob-<hex> of a color in nest.js); count-token is the picture Find it repeats for numbers.",
+  "hello": { "kind": "friendly things", "items": [
+    ["wave", "a small child's hand waving hello, palm open"],
+    ["yes", "a hand giving a big thumbs up"],
+    ["no", "a hand giving a thumbs down"],
+    ["baby", "a happy chubby baby in a white diaper, sitting"],
+    ["friend", "two little kids (a boy and a girl) hugging each other, full body"],
+    ["palette", "an artist's paint palette with blobs of red, yellow, blue and green paint and a small brush"]] },
+  "farm": { "kind": "farm animals", "items": [
+    ["cat", "a cat, sitting"], ["dog", "a dog, sitting"], ["cow", "a cow, standing, side view"],
+    ["horse", "a horse, standing, side view"], ["chicken", "a chicken (a hen)"], ["duck", "a duck"]] },
+  "family": { "kind": "family members, full body, each standing alone, kind and smiling", "items": [
+    ["mom", "a mom: a young woman with warm brown skin and dark curly hair, in a coral top and jeans"],
+    ["dad", "a dad: a young man with olive skin, short dark hair and a short beard, in a blue shirt"],
+    ["brother", "a brother: a boy about 8 years old with light skin and messy brown hair, in a green t-shirt"],
+    ["sister", "a sister: a girl about 6 years old with dark skin and two puffy pigtails, in a yellow dress"],
+    ["grandma", "a grandma: an old woman with white hair in a bun, round glasses and a lilac cardigan"],
+    ["grandpa", "a grandpa: an old man with white hair, a white mustache and a brown sweater vest"]] },
+  "face": { "kind": "parts of the face, each one shown alone, cute and not scary", "items": [
+    ["nose", "a cute round nose"], ["eyes", "a pair of big friendly eyes with eyebrows"], ["ear", "an ear"],
+    ["mouth", "smiling lips (a mouth)"], ["tooth", "one shiny white tooth"],
+    ["tongue", "a pink tongue sticking out of smiling lips"]] },
+  "fruit": { "kind": "fruit", "items": [
+    ["apple", "a red apple with a leaf"], ["banana", "a yellow banana"], ["pear", "a green pear"],
+    ["grapes", "a bunch of purple grapes"], ["strawberry", "a strawberry"], ["watermelon", "a slice of watermelon"]] },
+  "toys": { "kind": "toys", "items": [
+    ["teddy-bear", "a teddy bear, sitting"], ["ball", "a colorful beach ball"], ["balloon", "a red balloon on a string"],
+    ["drum", "a toy drum with two drumsticks"], ["kite", "a diamond kite with a tail"], ["robot", "a friendly toy robot"]] },
+  "feelings": { "kind": "feelings: the SAME cute round child face (head only, short brown hair) in 6 expressions", "items": [
+    ["happy", "happy, big smile"], ["sad", "sad, one small tear"], ["angry", "angry, frowning, red cheeks"],
+    ["sleepy", "sleepy, eyes closed, yawning"], ["surprised", "surprised, mouth open in an O, eyebrows up"],
+    ["silly", "silly, tongue out and eyes crossed, laughing"]] },
+  "wild": { "kind": "wild animals, full body", "items": [
+    ["lion", "a lion with a big mane"], ["elephant", "an elephant"], ["monkey", "a monkey"],
+    ["giraffe", "a giraffe"], ["zebra", "a zebra"], ["penguin", "a penguin"]] },
+  "clothes": { "kind": "clothes, each one alone, not worn", "items": [
+    ["shirt", "a blue t-shirt"], ["pants", "a pair of jeans"], ["dress", "a pink dress"],
+    ["socks", "a pair of striped socks"], ["shoes", "a pair of red sneakers"], ["cap", "a yellow baseball cap"]] },
+  "actions": { "kind": "actions: the SAME child (a 6-year-old with short brown hair, yellow t-shirt and blue shorts) in 6 actions, full body", "items": [
+    ["running", "running"], ["walking", "walking"], ["swimming", "swimming in a small patch of blue water"],
+    ["dancing", "dancing with arms up"], ["sleeping", "sleeping in a small bed under a blanket"],
+    ["clapping", "clapping hands, happy"]] },
+  "body": { "kind": "parts of the body, each one shown alone, cute and not scary", "items": [
+    ["hand", "an open hand with fingers spread"], ["foot", "a bare foot"], ["leg", "a child's leg in shorts with a sneaker"],
+    ["arm", "an arm flexing a muscle"], ["finger", "a hand pointing one finger up"], ["face", "a friendly child's face with a calm smile"]] },
+  "food": { "kind": "food and drinks", "items": [
+    ["bread", "a loaf of bread"], ["cheese", "a wedge of yellow cheese with holes"], ["egg", "a white egg"],
+    ["milk", "a glass of milk"], ["juice", "a glass of orange juice with a straw"], ["ice-cream", "an ice cream cone"]] },
+  "sky": { "kind": "sky and weather", "items": [
+    ["sun", "a smiling sun"], ["moon", "a crescent moon"], ["cloud", "a fluffy white cloud"],
+    ["rain", "a gray cloud with blue raindrops"], ["snow", "a white snowflake"], ["star", "a yellow star"]] },
+  "house": { "kind": "a house and things in it", "items": [
+    ["house", "a small house with a red roof"], ["door", "a wooden front door"], ["window", "a window with open shutters"],
+    ["bed", "a bed with a pillow and blanket"], ["chair", "a wooden chair"], ["bath", "a bathtub with bubbles"]] },
+  "people": { "kind": "people who help, full body, each standing alone, kind and smiling, varied skin tones", "items": [
+    ["teacher", "a teacher holding a book"], ["pilot", "a pilot in a uniform and cap"], ["farmer", "a farmer in overalls and a straw hat"],
+    ["doctor", "a doctor in a white coat with a stethoscope"], ["firefighter", "a firefighter in a yellow helmet and coat"],
+    ["astronaut", "an astronaut in a white space suit, helmet visor open"]] },
+  "go": { "kind": "things that go, side view", "items": [
+    ["car", "a red car"], ["bus", "a yellow bus"], ["train", "a toy-like train engine"],
+    ["plane", "an airplane"], ["boat", "a sailboat"], ["bike", "a bicycle"]] },
+  "clothes2": { "kind": "clothes, each one alone, not worn", "items": [
+    ["scarf", "a knitted scarf"], ["coat", "a warm winter coat"], ["gloves", "a pair of mittens"],
+    ["shorts", "a pair of shorts"], ["swimsuit", "a one-piece swimsuit"], ["glasses", "a pair of glasses"]] },
+  "doing": { "kind": "actions: the SAME child (a 6-year-old with short brown hair, yellow t-shirt and blue shorts) in 5 actions, full body, and a rainbow", "items": [
+    ["singing", "singing into a microphone"], ["climbing", "climbing a short ladder"], ["playing-ball", "kicking a ball"],
+    ["painting", "painting at a small easel"], ["cooking", "stirring a pot, wearing a chef hat"], ["rainbow", "a rainbow with two small clouds"]] },
+  "outside": { "kind": "nature outside", "items": [
+    ["tree", "a round green tree"], ["flower", "a red tulip"], ["leaf", "a green leaf"],
+    ["sea", "a blue sea wave"], ["shell", "a seashell"], ["rock", "a gray rock"]] },
+  "things": { "kind": "things at home", "items": [
+    ["toothbrush", "a toothbrush with toothpaste"], ["soap", "a bar of soap with bubbles"], ["spoon", "a spoon"],
+    ["cup", "a cup"], ["clock", "an alarm clock"], ["key", "a golden key"]] },
+  "colors1": { "kind": "6 identical soft round blobs of modeling clay, same shape and size, each one solid color", "items": [
+    ["blob-e53935", "red"], ["blob-1e88e5", "blue"], ["blob-fdd835", "yellow"],
+    ["blob-43a047", "green"], ["blob-fb8c00", "orange"], ["blob-8e24aa", "purple"]] },
+  "colors2": { "kind": "6 identical soft round blobs of modeling clay, same shape and size, each one solid color", "items": [
+    ["blob-f06292", "pink"], ["blob-212121", "black"], ["blob-ffffff", "white"],
+    ["blob-795548", "brown"], ["blob-9e9e9e", "gray"], ["abacus", "a colorful toy abacus"]] },
+  "extra": { "kind": "small things for counting", "items": [
+    ["count-token", "a tiny round yellow baby chick, front view"],
+    ["x1", "a red ladybug"], ["x2", "a green frog"], ["x3", "a blue fish"], ["x4", "an orange carrot"], ["x5", "a pink cupcake"]] }
+}

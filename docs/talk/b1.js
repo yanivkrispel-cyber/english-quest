@@ -419,7 +419,7 @@ window.EQ_TALK.b1 = (window.EQ_TALK.b1 || []).concat([
   },
   {
     id: 'tb1u02', title: 'Another parrot called Coco!',
-    he: 'קוקו מדברת על התוכי מהחדשות, שקוראים לו בדיוק כמו לה',
+    he: 'קוקו מדבר על התוכי מהחדשות, שקוראים לו בדיוק כמו לו',
     turns: [
       {
         c: "Ooh, the parrot in the story is called Coco, just like me! Do you think a parrot can really work in a shop? Why?",
