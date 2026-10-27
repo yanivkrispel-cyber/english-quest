@@ -21,6 +21,28 @@
 <meta property="og:image:alt" content="Coco the parrot, English with Coco">
 <meta name="twitter:card" content="summary_large_image">
 <meta charset="utf-8">
+<script>
+/* Tablets (specs/tablet.md): the phone layout, drawn larger. The page is laid out like a big phone, 520 px wide in
+   portrait and 640 px tall in landscape, and the browser scales it to the screen, so every size, frame and measure
+   stays the phone's. Phones (short side under 600 px) and computers keep the normal viewport. */
+(function () {
+  var m = document.querySelector('meta[name=viewport]');
+  if (!m || !(navigator.maxTouchPoints > 0) || Math.min(innerWidth, innerHeight) < 600) return;
+  var base = m.content;
+  window.tabletFit = function () {
+    var a = screen.width, b = screen.height, short = Math.min(a, b), long = Math.max(a, b);
+    var land = screen.orientation && screen.orientation.type ? screen.orientation.type.indexOf('landscape') === 0 : Math.abs(window.orientation || 0) === 90;
+    var w = land ? long : short, h = land ? short : long;
+    var k = Math.max(1, Math.min(2, land ? h / 640 : w / 520));
+    var c = short < 600 ? base : 'width=' + Math.round(w / k) + ', viewport-fit=cover, interactive-widget=resizes-content';
+    if (m.content !== c) m.content = c;
+    document.documentElement.classList.toggle('tablet', short >= 600);
+  };
+  tabletFit();
+  addEventListener('orientationchange', function () { setTimeout(tabletFit, 60); });
+  if (screen.orientation && screen.orientation.addEventListener) screen.orientation.addEventListener('change', tabletFit);
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
@@ -54,6 +76,8 @@ body{
 @keyframes float{to{transform:translate(40px,60px) scale(1.12)}}
 
 #app{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:20px 16px 48px}
+/* Tablets in landscape (the tablet script in the head): a wider column, so the cards use the screen. */
+@media (orientation:landscape){html.tablet #app{max-width:760px}html.tablet .tabbar{max-width:736px}html.tablet .sheet{max-width:640px}}
 .glass{background:var(--glass);backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);
   border:1px solid var(--stroke);box-shadow:var(--shadow),var(--inner);border-radius:30px}
 .soft{background:var(--glass-soft);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);

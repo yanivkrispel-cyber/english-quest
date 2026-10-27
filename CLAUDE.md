@@ -136,6 +136,9 @@ gaps list in that file in the same commit, and the owner hears about it.
   `takeMove` without overwriting) and unsubscribes the old push subscription. Do not redirect the old address: an installed
   app's service worker cannot update through a redirect and would never see the screen. Cloudflare's static server ignores
   `Range`; `worker/range.js` answers ranges for `*/audio/*` (Safari plays nothing without 206).
+- **Tablets draw the phone layout scaled up** (`tabletFit` at the top of Index.html, `specs/tablet.md`): the viewport is set to
+  520 px wide (portrait) or 640 px tall (landscape). Do not add tablet breakpoints by width; check new screens at
+  `http://localhost:8787/test/tablet.html`. iPadOS Safari reports a Mac: use `isIos()`, never a user-agent test of your own.
 - Default PINs are random; the real PINs live only in the private sheet. The repo is public:
   never commit real PINs, emails or the sheet's contents (tests use fake PINs 4821/7356/2694/1234).
 

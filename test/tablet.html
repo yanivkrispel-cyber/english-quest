@@ -10,15 +10,18 @@ b{display:block;margin:4px 0}
 pre{white-space:pre-wrap;margin:12px 0 0}
 </style>
 <!-- The app on tablets (served by test/dev-server.js: http://localhost:8787/test/tablet.html?screen=today|journey|game|mission|parent).
-     Each frame is the real size, drawn at half scale. -->
+     Each frame is the page size the tablet script picks, scaled to the real screen and drawn at 0.42. -->
 <div class="row" id="row"></div>
 <pre id="out">Loading…</pre>
 <script>
 const SIZES = [[768, 1024, 'iPad portrait'], [1024, 768, 'iPad landscape'], [820, 1180, 'iPad Air portrait'], [1180, 820, 'iPad Air landscape'], [800, 1280, 'Android tablet']];
 const S = 0.42, screen = new URLSearchParams(location.search).get('screen') || 'today', out = document.getElementById('out');
 const row = document.getElementById('row');
+// The layout size the tablet script in Index.html picks (tabletFit): 520 px wide in portrait, 640 px tall in landscape.
+const fitK = (w, h) => Math.max(1, Math.min(2, w > h ? h / 640 : w / 520));
 const frames = SIZES.map(([w, h, label], i) => {
-  row.insertAdjacentHTML('beforeend', `<div><b>${label} ${w}x${h}</b><div class="box" style="width:${w * S}px;height:${h * S}px"><iframe id="f${i}" width="${w}" height="${h}" style="transform:scale(${S})"></iframe></div></div>`);
+  const k = fitK(w, h), lw = Math.round(w / k), lh = Math.round(h / k);
+  row.insertAdjacentHTML('beforeend', `<div><b>${label} ${w}x${h} (page ${lw}x${lh})</b><div class="box" style="width:${w * S}px;height:${h * S}px"><iframe id="f${i}" width="${lw}" height="${lh}" style="transform:scale(${S * k})"></iframe></div></div>`);
   return document.getElementById('f' + i);
 });
 async function ready(f){
