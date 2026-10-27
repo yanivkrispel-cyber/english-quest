@@ -1301,6 +1301,15 @@ check('one more lesson is logged, the program moves on, and the week still shows
   d.justEarned === 15 && sheets.Log.rows.filter(r => r[1] === TALI).length === 2 && d.nest.played.includes(units[1][0]) && d.nest.next === null
   && d.week.find(w => w.isToday).percent === Math.round(3 / 8 * 100), JSON.stringify([d.justEarned, d.nest.next, d.week.find(w => w.isToday).percent]));
 run(`apiParentNestPerDay('7788', '${TALI}', 1)`);
+const nestyId = run("JSON.stringify(groups().filter(function (g) { return g.Name === 'Nesty'; })[0].Id)").replace(/"/g, '');
+fails('a parents code from a parent', () => run(`apiAdminParentPin('7788', '${nestyId}', '3434')`));
+const otherPin = run("JSON.stringify(groups().filter(function (g) { return g.Name !== 'Nesty' && g.ParentPIN; })[0].ParentPIN)").replace(/"/g, '');
+fails('a parents code that another family has', () => run(`apiAdminParentPin('1234', '${nestyId}', '${otherPin}')`));
+fails('a parents code of 3 digits', () => run(`apiAdminParentPin('1234', '${nestyId}', '343')`));
+run(`apiAdminParentPin('1234', '${nestyId}', '3434')`);
+check('the admin sets a family\'s parents code: the new one opens the family, the old one does not',
+  run("apiParent('3434')").groups.length === 1 && (() => { try { run("apiParent('7788')"); return false; } catch (e) { return true; } })());
+run(`apiAdminParentPin('1234', '${nestyId}', '7788')`);
 const day0 = ctx.__day; ctx.__day = run(`addDays('${day0}', 1)`);
 d = run(`apiDashboard('${TALI}', '${tali.PIN}')`);
 check('the next day brings the next unit not played yet (the extra lesson took the second)', units.length < 3 || d.nest.today === units[2][0], d.nest.today);
