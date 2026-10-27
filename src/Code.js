@@ -130,7 +130,7 @@ function doGet() {
 function api() {
   return {
   apiPublic: apiPublic, apiWarm: apiWarm, apiDashboard: apiDashboard, apiSubmit: apiSubmit, apiParent: apiParent,
-  apiAdminAddGroup: apiAdminAddGroup, apiAdminAddKid: apiAdminAddKid, apiAdminSettings: apiAdminSettings, apiAdminNestAll: apiAdminNestAll,
+  apiAdminAddGroup: apiAdminAddGroup, apiAdminAddKid: apiAdminAddKid, apiAdminSettings: apiAdminSettings, apiAdminNestAll: apiAdminNestAll, apiAdminParentPin: apiAdminParentPin,
   apiPushSubscribe: apiPushSubscribe, apiPushMessage: apiPushMessage, apiAdminTestPush: apiAdminTestPush,
   apiParentPushSubscribe: apiParentPushSubscribe, apiParentPushPrefs: apiParentPushPrefs, apiParentPushTest: apiParentPushTest,
   apiGameResult: apiGameResult, apiSetPet: apiSetPet, apiGateResult: apiGateResult,
@@ -634,6 +634,23 @@ function apiAdminSettings(pin, reminderHour, lastCallHour) {
   installTriggers();
   audit('admin', 'admin', '', 'reminder hours', r + ':00' + (l === '' ? ', no last call' : ', last call ' + l + ':00'));
   return apiParent(pin);
+}
+
+// The admin sets a family's parents' code (4 digits, unused by another family or the admin).
+function apiAdminParentPin(pin, groupId, newPin) {
+  ensureSetup();
+  if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can change settings');
+  newPin = String(newPin || '').trim();
+  if (!/^\d{4}$/.test(newPin)) throw new Error('A parents code is 4 digits');
+  var gs = groups(), g = gs.filter(function (x) { return String(x.Id) === String(groupId); })[0];
+  if (!g) throw new Error('Unknown family');
+  if (newPin === String(getSetting('AdminPIN')) || gs.some(function (x) { return x !== g && String(x.ParentPIN) === newPin; })) throw new Error('This code is taken');
+  invalidate('Groups');
+  var sh = sheet('Groups'), values = sh.getDataRange().getValues(), col = values[0].indexOf('ParentPIN');
+  for (var i = 1; i < values.length; i++) if (String(values[i][0]) === String(g.Id)) sh.getRange(i + 1, col + 1).setValue(newPin);
+  invalidate('Groups');
+  audit('admin', 'admin', String(g.Id), 'parents code', g.Name);
+  return { ok: true };
 }
 
 function uniqueParentPin() {
