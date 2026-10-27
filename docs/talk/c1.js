@@ -1227,12 +1227,12 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
         a: [
           { k: ["roof roofs caterpillar caterpillars wasp wasps leaves"], r: "The roofs falling in surprised me too. Tiny wasps were protecting the houses all along." },
           { k: ["rat rats mice"], r: "The rats were a real twist. Everything in the food chain was connected." },
-          { k: ["gecko geckos lizard lizards poison poisoned die died dead sick"], r: "That was the hidden link. The poison travelled up the food chain, and nobody saw it coming." },
+          { k: ["gecko geckos lizard lizards poison poisoned"], r: "That was the hidden link. The poison travelled up the food chain, and nobody saw it coming." },
           { k: ["parachute parachutes drop dropped cat cats box boxes"], r: "The parachuting cats amazed me too! Imagine looking up and seeing that." }
         ],
         o: "It's an astonishing chain of events. One change led to so many others.",
         t: ["The cats arriving by parachute surprised me most.", "I was surprised that caterpillars ate the roofs.", "The rats, because nobody expected that."],
-        x: [["the cats with parachute", 3], ["the roofs fell", 0], ["the rats", 1], ["geckos ate the insects", 2], ["all of it", -1], ["that the cats died", 2], ["the poison", 2]]
+        x: [["the cats with parachute", 3], ["the roofs fell", 0], ["the rats", 1], ["geckos ate the insects", 2], ["all of it", -1], ["the lizards", 2], ["the poison", 2]]
       },
       {
         c: "Have you ever solved one problem and accidentally created another? What happened?",
@@ -1243,12 +1243,12 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
         x: [["i fix the computer and delete my files", -1], ["yes with my homework", -1]]
       },
       {
-        c: "Against the mosquitoes, the spraying worked remarkably well. Knowing only what they knew back then, do you think the people in charge were right to spray? Why?",
-        he: "הם צדקו לרסס, לפי מה שידעו אז? למשל: Yes, but they should have thought about side effects.",
+        c: "The spraying solved the mosquito problem but created several new ones. If you were planning a big change, like a new rule at school, how would you spot the side effects early?",
+        he: "איך הייתם מזהים מראש תופעות לוואי של שינוי גדול? למשל: I'd test it on one class first.",
         a: [],
-        o: "A tricky one. Hindsight makes everything look clearer than it was at the time.",
-        t: ["Yes, because stopping malaria protected so many people.", "They were right, but they should have tested it first.", "I think they should have thought more about the side effects."],
-        x: [["yes malaria is worse", -1], ["no they need to think before", -1]]
+        o: "Very wise. Asking the right questions early can save a lot of trouble later.",
+        t: ["I'd test it on one class first and see what happens.", "I'd ask the people it affects before deciding anything.", "I'd imagine what could go wrong and plan for it."],
+        x: [["try it for one week first", -1], ["ask the students what they think", -1]]
       },
       {
         c: "Some versions say fourteen thousand cats, others just a few dozen. Why do you think stories like this grow every time they're retold?",
@@ -1578,8 +1578,8 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
         x: [["good for news bad for sleep", -1], ["you can talk with friends but there is bullying", -1]]
       },
       {
-        c: "Some countries are considering banning social media for under-sixteens. Were that law to be passed here, how would you feel about it?",
-        he: "איך תרגישו אם יאסרו רשתות מתחת לגיל 16? למשל: I'd support it. או I'd be against it. או Mixed feelings.",
+        c: "Some countries have decided to ban social media for under-sixteens. Were you asked to advise lawmakers, would you support a ban like that, or argue against it?",
+        he: "אילו ביקשו מכם לייעץ, הייתם בעד איסור רשתות מתחת לגיל 16? למשל: I'd support it. או I'd be against it. או Mixed feelings.",
         a: [
           { k: ["mixed both depends partly"], r: "That's a nuanced reaction to a controversial idea." },
           { k: ["support good agree fair yes"], n: "not no", r: "Interesting. You see it as a way of protecting younger teens." },

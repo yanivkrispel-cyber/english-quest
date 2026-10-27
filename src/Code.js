@@ -3,8 +3,10 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v17';
+var SETUP_VERSION = 'v18';
 // The production web app (Apps Script deployment) that the Pages front end calls.
+// The kids' front end (Cloudflare, docs/). Until 2026-10 it was https://yanivkrispel-cyber.github.io/english-quest/.
+var PUBLIC_URL = 'https://coco.coachkrispel.com/';
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
 var LEVEL_LABEL = { a1: 'A1', a2: 'A2', b1: 'B1', 'b1-b2': 'B1+', b2: 'B2', c1: 'C1' };
@@ -951,10 +953,12 @@ function ensureSetup() {
     if (stray && ss.getSheets().length > 1) ss.deleteSheet(stray);
     clearCache();
 
-    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: 'https://yanivkrispel-cyber.github.io/english-quest/', ShopOpens: SHOP.opens, ShopEarly: '',
+    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: PUBLIC_URL, PilotFrom: today(), ShopOpens: SHOP.opens, ShopEarly: '',
       InviteCode: Math.random().toString(36).slice(2, 8), InviteOpen: 'no', TeacherCode: String(100000 + Math.floor(Math.random() * 900000)) };
     Object.keys(defaults).forEach(function (k) { if (getSetting(k) === null) setSetting(k, defaults[k]); });
     if (getSetting('AppUrl') !== APP_URL) setSetting('AppUrl', APP_URL);
+    // v18: the front end moved from GitHub Pages to its own address (the old one shows a "new home" screen).
+    if (/github\.io/.test(String(getSetting('PublicUrl') || ''))) setSetting('PublicUrl', PUBLIC_URL);
     // v15: Today's Mission is every kid's daily task (Girls.Missions = no keeps the old link), so the pilot setting goes.
     var st = sheet('Settings'), sv = st.getDataRange().getValues();
     for (var si = sv.length - 1; si >= 1; si--) if (sv[si][0] === 'MissionPilot') st.deleteRow(si + 1);

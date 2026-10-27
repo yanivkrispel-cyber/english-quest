@@ -829,39 +829,39 @@ window.EQ_MISSIONS.b2 = [
   title: 'Making peace', dinner: 'What is the best way to make peace with someone after an argument?',
   hook: { q: 'Most Nobel Prizes are given in Stockholm. Where is the Nobel Peace Prize given?', o: ['In Stockholm too', 'In Oslo', 'In Geneva'], a: 1,
     reveal: '*Oslo*, in Norway! Alfred Nobel asked for the *peace* prize to be given by a Norwegian committee, so it has its own ceremony there.' },
-  learn: { kind: 'words', title: 'Words about conflict and peace', words: [
-    { w: 'a conflict', d: 'a serious disagreement or fight between groups', ex: 'The two clubs had a long *conflict* over the football pitch.' },
+  learn: { kind: 'words', title: 'Words about disagreeing and making peace', words: [
+    { w: 'a conflict', d: 'a serious disagreement between people or groups', ex: 'The two clubs had a long *conflict* over the football pitch.' },
     { w: 'negotiate', d: 'talk in order to reach an agreement', ex: 'We *negotiated* with Mum for an extra hour of screen time.' },
-    { w: 'a truce', d: 'an agreement to stop fighting for a time', ex: 'My brother and I called a *truce* for Grandma\'s birthday.' },
-    { w: 'a treaty', d: 'an official written agreement between countries', ex: 'The two countries signed a *treaty* to protect the river.' },
-    { w: 'an ally', d: 'a person or country that is on your side', ex: 'In the game, Ella was my *ally* against the other team.' },
-    { w: 'surrender', d: 'stop fighting and accept that you have lost', ex: 'In the story, the pirates *surrendered* and gave back the gold.' },
+    { w: 'a compromise', d: 'an agreement in which each side gives up a little', ex: 'We reached a *compromise*: pizza tonight, sushi next week.' },
+    { w: 'a truce', d: 'an agreement to stop arguing or fighting for a time', ex: 'My brother and I called a *truce* for Grandma\'s birthday.' },
+    { w: 'a treaty', d: 'an official written agreement between countries', ex: 'In 1959, twelve countries signed a *treaty* to keep Antarctica for peace and science.' },
+    { w: 'an ally', d: 'a person or group that is on your side', ex: 'In the game, Ella was my *ally* against the other team.' },
     { w: 'resolve', d: 'find a solution to a problem or a disagreement', ex: 'The teacher helped us *resolve* the argument.' },
-    { w: 'invade', d: 'enter a country or place by force', ex: 'The Romans *invaded* Britain almost 2,000 years ago.' }
+    { w: 'reconcile', d: 'become friends again after an argument', ex: 'After a week of silence, the two friends finally *reconciled*.' }
   ] },
   steps: [
     { name: 'Match', items: [
-      { k: 'mc', q: 'An agreement to stop fighting for a time:', o: ['a truce', 'an ally', 'a conflict'], a: 0, why: 'a truce = a break in the fighting.' },
-      { k: 'mc', q: 'Talk in order to reach an agreement:', o: ['negotiate', 'invade', 'surrender'], a: 0, why: 'negotiate = talk until both sides agree.' },
-      { k: 'mc', q: 'A person or country that is on your side:', o: ['an ally', 'an enemy', 'a treaty'], a: 0, why: 'an ally is on your side; an enemy is against you.' },
-      { k: 'mc', q: 'Stop fighting and accept that you have lost:', o: ['surrender', 'resolve', 'negotiate'], a: 0, why: 'surrender = give up and accept defeat.' }
+      { k: 'mc', q: 'An agreement to stop arguing or fighting for a time:', o: ['a truce', 'an ally', 'a conflict'], a: 0, why: 'a truce = a break in the fighting or arguing.' },
+      { k: 'mc', q: 'Talk in order to reach an agreement:', o: ['negotiate', 'reconcile', 'disagree'], a: 0, why: 'negotiate = talk until both sides agree.' },
+      { k: 'mc', q: 'A person or group that is on your side:', o: ['an ally', 'an opponent', 'a treaty'], a: 0, why: 'an ally is on your side; an opponent is against you.' },
+      { k: 'mc', q: 'An agreement in which each side gives up a little:', o: ['a compromise', 'a conflict', 'an ally'], a: 0, why: 'a compromise = both sides give a little so they can agree.' }
     ] },
     { name: 'Play', items: [
-      { k: 'sort', q: 'Towards peace or towards fighting?', g: ['towards peace', 'towards fighting'],
-        w: [['negotiate', 0], ['sign a treaty', 0], ['call a truce', 0], ['resolve a conflict', 0], ['invade', 1], ['attack', 1], ['declare war', 1]],
-        why: 'peace: negotiate, sign a treaty, call a truce, resolve a conflict · fighting: invade, attack, declare war' },
-      { k: 'hear', say: 'After weeks of talks, the two sides finally reached an agreement.', q: 'What happened?', o: ['They agreed after long talks.', 'They stopped talking.', 'One side surrendered.'], a: 0,
+      { k: 'sort', q: 'Towards peace or making it worse?', g: ['towards peace', 'making it worse'],
+        w: [['negotiate', 0], ['reach a compromise', 0], ['call a truce', 0], ['resolve a conflict', 0], ['refuse to listen', 1], ['shout insults', 1], ['slam the door', 1]],
+        why: 'peace: negotiate, reach a compromise, call a truce, resolve a conflict · worse: refuse to listen, shout insults, slam the door' },
+      { k: 'hear', say: 'After weeks of talks, the two sides finally reached an agreement.', q: 'What happened?', o: ['They agreed after long talks.', 'They stopped talking.', 'One side gave up.'], a: 0,
         why: 'reach an agreement = finally agree.' },
-      { k: 'spell', w: 'truce', clue: 'An agreement to stop fighting for a time.', why: 'truce: t-r-u-c-e.' },
-      { k: 'mc', q: 'The Romans ___ Britain in AD 43.', o: ['invaded', 'surrendered', 'negotiated'], a: 0, why: 'invade = enter a country by force.' }
+      { k: 'spell', w: 'truce', clue: 'An agreement to stop arguing or fighting for a time.', why: 'truce: t-r-u-c-e.' },
+      { k: 'mc', q: 'In 1959, twelve countries signed a ___ to keep Antarctica open to science.', o: ['treaty', 'truce', 'conflict'], a: 0, why: 'a treaty = an official written agreement between countries (the Antarctic Treaty).' }
     ] },
     { name: 'In a text', items: [
-      { k: 'gaps', title: 'The remote control war',
-        t: 'Every evening, Gal and his sister Maya fought over the TV remote. The [1] got worse until Dad stepped in. "Let\'s [2]," he said. After a long talk, they reached an [3]: Gal chooses on even days, Maya on odd days. They even wrote it down like a real peace [4] and signed it.',
+      { k: 'gaps', title: 'The remote control deal',
+        t: 'Every evening, Gal and his sister Maya argued over the TV remote. The [1] got worse until Dad stepped in. "Let\'s [2]," he said. After a long talk, they reached a [3]: Gal chooses on even days, Maya on odd days. They even wrote it down like a real peace [4] and signed it.',
         gaps: [
-          { o: ['conflict', 'ally', 'treaty'], a: 0, why: 'a fight that got worse → the conflict.' },
-          { o: ['negotiate', 'invade', 'surrender'], a: 0, why: 'talk to reach an agreement → negotiate.' },
-          { o: ['agreement', 'enemy', 'attack'], a: 0, why: 'reach an agreement.' },
+          { o: ['conflict', 'ally', 'treaty'], a: 0, why: 'an argument that got worse → the conflict.' },
+          { o: ['negotiate', 'reconcile', 'disagree'], a: 0, why: 'talk to reach an agreement → negotiate.' },
+          { o: ['compromise', 'conflict', 'ally'], a: 0, why: 'each of them gives up some days → a compromise.' },
           { o: ['treaty', 'conflict', 'ally'], a: 0, why: 'a written and signed agreement → a peace treaty.' }
         ] }
     ] }
@@ -869,7 +869,7 @@ window.EQ_MISSIONS.b2 = [
   use: [
     { k: 'teach', s: 'After a long argument, my best friend and I finally *did* peace.', fix: 'made', why: 'The collocation is make peace.',
       he: 'בעברית "עשינו שלום", אבל באנגלית אומרים make peace, לא do peace.' },
-    { k: 'type', q: 'The two teams called a ___ and stopped arguing for the rest of the trip.', a: ['truce'], why: 'call a truce = agree to stop fighting for a time.' }
+    { k: 'type', q: 'The two teams called a ___ and stopped arguing for the rest of the trip.', a: ['truce'], why: 'call a truce = agree to stop arguing or fighting for a time.' }
   ]
 },
 {
@@ -1089,55 +1089,56 @@ window.EQ_MISSIONS.b2 = [
 },
 {
   id: 'b2l07', url: 'https://test-english.com/listening/b2/dark-tourism-b2-english-listening-test/', type: 'listening',
-  title: 'Trips into sad history', dinner: 'Which place from history would you most like to visit, and why?',
-  hook: { q: 'Pompeii was buried by a volcano almost 2,000 years ago. About how many people visit it every year now?', o: ['About 40,000', 'About 400,000', 'About 4 million'], a: 2,
-    reveal: 'About *4 million*! Walking along its Roman streets is one of the most popular trips in Italy.' },
+  title: 'Trips into film worlds', dinner: 'Which place from a film or a TV show would you most like to visit, and why?',
+  hook: { q: 'Hobbiton, the village from The Lord of the Rings films, was built in New Zealand. Where exactly?', o: ['On a sheep farm', 'On a beach', 'On top of a mountain'], a: 0,
+    reveal: '*On a sheep farm*! The film makers spotted its green hills from the air. Today the little round doors of the hobbit holes are one of New Zealand\'s best-known sights.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
-    { w: 'dark tourism', d: 'visiting places connected with disasters or sad moments in history' },
-    { w: 'respectful', d: 'showing that you care about other people and their feelings' },
-    { w: 'a ghost tour', d: 'a walk at night with spooky stories about a place' }
-  ], predict: { q: 'Why do you think people visit places where something sad happened?', o: ['To learn about history', 'To feel scared', 'Because they are cheap'] } },
-  show: { cast: 'A travel podcast. The host talks to Dr Hannah Webb, a historian.', names: { H: 'Host', G: 'Dr Webb' }, voices: { H: 'am_adam', G: 'bf_alice' },
+    { w: 'film tourism', d: 'travelling to places you have seen in films or on TV' },
+    { w: 'a film set', d: 'a place that is built or used for making a film' },
+    { w: 'respectful', d: 'showing that you care about other people and their feelings' }
+  ], predict: { q: 'Why do you think fans travel to places from films?', o: ['To step inside a story they love', 'Because the trips are cheap', 'To be in a film themselves'] } },
+  show: { cast: 'A travel podcast. The host talks to Lucy Grant, a travel writer.', names: { H: 'Host', G: 'Lucy' }, voices: { H: 'am_adam', G: 'bf_alice' },
     parts: [
       { lines: [
-        ['H', 'Today we\'re talking about dark tourism. Hannah, what is it exactly?'],
-        ['G', 'It means visiting places connected with disasters or sad moments in history. One of the most famous is Pompeii, the Roman town that was buried under ash when a volcano erupted almost two thousand years ago. Millions of people visit it every year.']
+        ['H', 'Today we\'re talking about film tourism. Lucy, what is it exactly?'],
+        ['G', 'It means travelling to places you\'ve seen in films or on TV. The most famous example is Hobbiton in New Zealand. The film set was built on a sheep farm for The Lord of the Rings, and now hundreds of thousands of fans visit it every year to see the hobbit holes.']
       ], items: [
-        { k: 'mc', q: 'What is dark tourism?', o: ['visiting places connected with disasters or sad history', 'travelling only at night', 'exploring dark caves'], a: 0,
-          why: '"visiting places connected with disasters or sad moments in history"' },
-        { k: 'mc', q: 'What happened to Pompeii?', o: ['It was buried under ash from a volcano.', 'It was destroyed by a flood.', 'It sank into the sea.'], a: 0,
-          why: '"buried under ash when a volcano erupted"' }
+        { k: 'mc', q: 'What is film tourism?', o: ['travelling to places you have seen in films or on TV', 'making films about holidays', 'watching films on a plane'], a: 0,
+          why: '"travelling to places you\'ve seen in films or on TV"' },
+        { k: 'mc', q: 'Where was the Hobbiton film set built?', o: ['on a sheep farm', 'in a big film studio', 'in a city park'], a: 0,
+          why: '"The film set was built on a sheep farm"' }
       ] },
       { lines: [
-        ['H', 'Why do people want to go to places like that?'],
-        ['G', 'For most, it\'s about learning. Standing in a real Roman street teaches you more than any textbook. In Belfast, the Titanic museum lets you see how the ship was built and read the passengers\' stories. Visitors leave understanding how people really lived.']
+        ['H', 'Why do people want to visit a film set?'],
+        ['G', 'Fans want to step inside a story they love. At King\'s Cross station in London, there\'s a luggage trolley that seems to disappear into the wall, just like in Harry Potter. People queue for an hour to take a photo with it! And film tourism can be great for small towns. Visitors bring jobs and money to places that most travellers had never heard of.']
       ], items: [
-        { k: 'mc', q: 'According to Hannah, why do most people visit these places?', o: ['to learn about history', 'to feel scared', 'to take funny photos'], a: 0, why: '"For most, it\'s about learning."' },
-        { k: 'tf', q: 'The Titanic museum is in Belfast.', a: true, why: '"In Belfast, the Titanic museum lets you see how the ship was built"' }
+        { k: 'mc', q: 'Why do people queue at King\'s Cross station?', o: ['to take a photo with a trolley in the wall', 'to buy tickets for a film', 'to meet the actors'], a: 0,
+          why: '"People queue for an hour to take a photo with it!"' },
+        { k: 'tf', q: 'Lucy thinks film tourism can help small towns.', a: true, why: '"film tourism can be great for small towns"' }
       ] },
       { lines: [
-        ['H', 'Is there a wrong way to do it?'],
-        ['G', 'Definitely. Some visitors take silly selfies or laugh at places where people suffered. My rule is simple: behave as if the families of those people are standing next to you. Be curious, but be respectful.'],
-        ['H', 'And ghost tours?'],
-        ['G', 'They\'re more about fun than history, and that\'s fine, as long as everyone knows the difference.']
+        ['H', 'Is there a downside?'],
+        ['G', 'Sometimes a place becomes too popular. After the film The Beach, so many boats came to Maya Bay in Thailand that the coral was badly damaged. In 2018 the bay was closed so that nature could recover. It opened again in 2022, but now the number of visitors is limited, and nobody is allowed to swim there.'],
+        ['H', 'So what\'s your advice?'],
+        ['G', 'Enjoy the magic, but remember that real people live in these places. Be curious, but be respectful.']
       ], items: [
-        { k: 'mc', q: 'What is Hannah\'s rule?', o: ['Behave as if those people\'s families are next to you.', 'Never take any photos.', 'Only visit with a guide.'], a: 0,
-          why: '"behave as if the families of those people are standing next to you"' },
-        { k: 'mc', q: 'What does she think about ghost tours?', o: ['They are fine if people know they are just for fun.', 'They should be banned.', 'They are the best way to learn history.'], a: 0,
-          why: '"that\'s fine, as long as everyone knows the difference"' },
-        { k: 'tf', q: 'Hannah thinks ghost tours teach a lot of history.', a: false, fix: 'She says they\'re more about fun than history.', why: '"They\'re more about fun than history"' }
+        { k: 'mc', q: 'Why was Maya Bay closed in 2018?', o: ['Too many boats had damaged the coral.', 'A new film was being made there.', 'The weather was too dangerous.'], a: 0,
+          why: '"so many boats came to Maya Bay in Thailand that the coral was badly damaged"' },
+        { k: 'tf', q: 'Today visitors can swim in Maya Bay.', a: false, fix: 'Nobody is allowed to swim there.', why: '"nobody is allowed to swim there"' },
+        { k: 'mc', q: 'What is Lucy\'s advice?', o: ['Remember that real people live in these places.', 'Only visit places from old films.', 'Never take photos at film sets.'], a: 0,
+          why: '"remember that real people live in these places"' }
       ] }
     ] },
   steps: [
     { name: 'Listen again', items: [
       { k: 'type', clip: 2, q: 'Be curious, but be ___.', a: ['respectful'], why: 'respectful = showing that you care about others\' feelings.' },
-      { k: 'hear', say: 'Standing in a real Roman street teaches you more than any textbook.', q: 'What does she mean?', o: ['You learn more by visiting the real place.', 'Textbooks are always wrong.', 'Roman streets are dangerous.'], a: 0,
-        why: 'Being in the real place teaches more than reading about it.' },
-      { k: 'mc', clip: 0, q: 'A town "buried under ash" was…', o: ['completely covered by ash', 'burnt down by fire', 'washed away by water'], a: 0, why: 'buried = covered completely.' }
+      { k: 'hear', say: 'Visitors bring jobs and money to places that most travellers had never heard of.', q: 'What does she mean?', o: ['Film tourism helps places that were unknown before.', 'Small towns don\'t want visitors.', 'Travellers already know every small town.'], a: 0,
+        why: 'Places that nobody knew get visitors, jobs and money.' },
+      { k: 'mc', clip: 2, q: 'The bay was closed "so that nature could recover". Recover means…', o: ['get better again', 'disappear', 'become more crowded'], a: 0, why: 'recover = become healthy or strong again after damage.' }
     ] }
   ],
   use: [
-    { k: 'build', s: 'Be curious, but be respectful.', why: 'Two short instructions joined by but.' }
+    { k: 'build', s: 'The bay was closed so that nature could recover.', why: 'so that + can/could explains the purpose of an action.' }
   ]
 },
 {
@@ -1292,44 +1293,44 @@ window.EQ_MISSIONS.b2 = [
 },
 {
   id: 'b2r03', url: 'https://test-english.com/reading/b2/using-ai-to-talk-to-the-deceased-b2-english-reading-test/', type: 'reading',
-  title: 'Talking to the past', dinner: 'Which family story would you like us to record, so we never forget it?',
-  hook: { q: 'The oldest recording of a human voice that we can play today was made in which year?', o: ['1860', '1910', '1950'], a: 0,
-    reveal: '*1860*! A Frenchman recorded someone singing a folk song as lines on paper. Nobody could play it back until 2008, when scientists turned the lines into sound.' },
-  learn: { kind: 'intro', title: 'Before you read', line: 'A science magazine looks at a surprising use of artificial intelligence: chatbots that copy people who have died.',
-    predict: { q: 'How do you think most people feel about this idea?', o: ['They have mixed feelings.', 'Everyone loves it.', 'Nobody has heard of it.'] } },
-  story: { title: 'Talking to the past', chunks: [
-    { text: 'Imagine sending a message to a grandparent who is no longer alive, and getting an answer in their own words. A few technology companies now offer exactly this. They collect old texts, emails, voice messages and videos, and use artificial intelligence to build a chatbot that writes, or even speaks, like the person who has died. Some people call these programs "griefbots", because grief is the deep sadness we feel when someone dies.',
+  title: 'Talking to whales', dinner: 'If you could ask one animal one question, which animal would you choose, and what would you ask?',
+  hook: { q: 'Which animal has the biggest brain on Earth?', o: ['The sperm whale', 'The African elephant', 'The blue whale'], a: 0,
+    reveal: '*The sperm whale*! Its brain weighs about eight kilograms, around six times as much as a human brain. No wonder scientists want to know what these whales are saying.' },
+  learn: { kind: 'intro', title: 'Before you read', line: 'A science magazine looks at a surprising use of artificial intelligence: helping us understand what whales are saying.',
+    predict: { q: 'What do you think is the hardest part of "translating" whales?', o: ['Knowing what the sounds mean', 'Recording the sounds', 'Finding the whales'] } },
+  story: { title: 'Talking to whales', chunks: [
+    { text: 'Imagine being able to ask a whale how its day was. It sounds like science fiction, but a team of biologists, linguists and computer experts is trying to make it possible. Their project, called CETI, studies sperm whales near the Caribbean island of Dominica. Sperm whales have the largest brain of any animal, and they communicate with short series of clicks called codas. To human ears, a coda sounds like someone knocking on a wooden door. To the whales, it seems to mean something.',
       items: [
-        { k: 'mc', q: 'What do these companies use to build the chatbot?', o: ['old messages, voice notes and videos', 'the person\'s school reports', 'photos of the person\'s home'], a: 0,
-          why: '"They collect old texts, emails, voice messages and videos"' },
-        { k: 'tf', q: 'These chatbots can only write, not speak.', a: false, fix: 'They can write, or even speak.', why: '"a chatbot that writes, or even speaks, like the person"' },
-        { k: 'find', q: 'Find a word that means "the deep sadness we feel when someone dies".', a: 'grief', why: 'grief = deep sadness after a death.' }
+        { k: 'mc', q: 'Where does the CETI team study sperm whales?', o: ['near the island of Dominica', 'in a big aquarium', 'near the North Pole'], a: 0,
+          why: '"studies sperm whales near the Caribbean island of Dominica"' },
+        { k: 'tf', q: 'Sperm whales communicate by singing long songs.', a: false, fix: 'They communicate with short series of clicks called codas.', why: '"they communicate with short series of clicks called codas"' },
+        { k: 'find', q: 'Find a word for "experts who study languages".', a: 'linguists', why: 'a linguist = someone who studies languages and how they work.' }
       ] },
-    { text: 'For some users, the experience is comforting. One woman told reporters that hearing her father\'s voice again helped her say the goodbye she never had the chance to say. Supporters say it is not so different from watching old family videos: it is simply a new way to remember someone and to feel close to them.',
+    { text: 'This is where artificial intelligence comes in. Listening to thousands of hours of recordings would take a human researcher a lifetime, but a computer can do it in days. In 2024, the team used AI to study almost 9,000 codas and found patterns that nobody had noticed before. The whales seem to change the speed and rhythm of their clicks, and sometimes add an extra click at the end, a bit like the way we build words out of sounds. Different groups of whales even have their own dialects, so a whale can probably tell who belongs to its family.',
       items: [
-        { k: 'mc', q: 'How did a chatbot help one woman?', o: ['It helped her say goodbye to her father.', 'It helped her find a job.', 'It helped her forget her father.'], a: 0,
-          why: '"helped her say the goodbye she never had the chance to say"' },
-        { k: 'mc', q: 'What do supporters compare griefbots to?', o: ['watching old family videos', 'playing video games', 'writing a diary'], a: 0,
-          why: '"it is not so different from watching old family videos"' }
+        { k: 'mc', q: 'Why is AI so useful for this project?', o: ['It can listen to huge numbers of recordings quickly.', 'It can talk to the whales for the scientists.', 'It can find whales that are lost.'], a: 0,
+          why: '"Listening to thousands of hours of recordings would take a human researcher a lifetime, but a computer can do it in days."' },
+        { k: 'tf', q: 'The whales sometimes add an extra click at the end of a coda.', a: true, why: '"and sometimes add an extra click at the end"' },
+        { k: 'find', q: 'Find a word for "the ways of speaking that belong to different groups".', a: 'dialects', why: 'a dialect = the way a language is spoken by one group or in one area.' }
       ] },
-    { text: 'However, many psychologists are worried. Grief is painful, but it is also a natural process that helps us accept a loss and move on. A chatbot that is always available might make that harder. There is another problem: the AI can invent things that the real person would never have said. "It sounds like him, but it isn\'t him," one user explained. Experts suggest a simpler idea: record the stories of the people you love while they are still here to tell them.',
+    { text: 'Not everyone believes we will ever have a real conversation with a whale. Some scientists point out that finding patterns is not the same as understanding meaning. Others ask what would happen if we started "talking back": a message played into the ocean could confuse the whales or disturb their families. The CETI team agrees that the first rule is to listen, not to speak. Even if nobody ever translates a single coda, the project is already showing us how clever these giants of the sea really are.',
       items: [
-        { k: 'mc', q: 'Why are psychologists worried?', o: ['A chatbot might make it harder to accept a loss.', 'Chatbots are too expensive.', 'Chatbots don\'t work on phones.'], a: 0,
-          why: '"A chatbot that is always available might make that harder."' },
-        { k: 'tf', q: 'The AI only repeats things that the real person actually said.', a: false, fix: 'It can invent things the person would never have said.',
-          why: '"the AI can invent things that the real person would never have said"' },
-        { k: 'find', q: 'Find a word that means "make up something that is not true".', a: 'invent', why: 'invent = create something new, here something untrue.' }
+        { k: 'mc', q: 'What do some scientists point out?', o: ['Finding patterns is not the same as understanding meaning.', 'Whales have nothing to say.', 'AI makes too many mistakes to be useful.'], a: 0,
+          why: '"finding patterns is not the same as understanding meaning"' },
+        { k: 'tf', q: 'The CETI team wants to send messages to the whales as soon as possible.', a: false, fix: 'Their first rule is to listen, not to speak.',
+          why: '"the first rule is to listen, not to speak"' },
+        { k: 'find', q: 'Find a word that means "interrupt the peace of someone or make them upset".', a: 'disturb', why: 'disturb = interrupt or upset someone who is calm.' }
       ] }
   ] },
   steps: [
     { name: 'The big question', items: [
-      { k: 'mc', q: 'What is the writer\'s main point?', o: ['Griefbots can comfort people, but they also raise serious questions.', 'Everyone should use a griefbot.', 'Griefbots are a joke that nobody uses.'], a: 0,
-        why: 'The article shows both the comfort and the worries.' }
+      { k: 'mc', q: 'What is the writer\'s main point?', o: ['AI is helping us understand whales, but a real conversation is still far away.', 'Scientists can already talk to whales.', 'Studying whales is a waste of time.'], a: 0,
+        why: 'The article shows how much AI has found, and why a real conversation is still a big question.' }
     ] }
   ],
   use: [
-    { k: 'type', q: 'The AI can invent things that the real person would never have ___.', a: ['said'], why: 'would have + past participle: would never have said.',
-      he: 'אחרי would have בא תמיד V3: would have said, לא would have say.' }
+    { k: 'type', q: 'Without AI, listening to all those recordings would have ___ a lifetime.', a: ['taken'], why: 'would have + past participle: would have taken.',
+      he: 'אחרי would have בא תמיד V3: would have taken, לא would have took.' }
   ]
 },
 {

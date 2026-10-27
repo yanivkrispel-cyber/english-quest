@@ -5,7 +5,9 @@ Daily ~10-minute English practice for kids, built on the free exercises at
 do today's exercise on test-english.com and log their score. Parents follow progress, get phone
 notifications, and reward points.
 
-- **App:** https://yanivkrispel-cyber.github.io/english-quest/ (a group's link adds `?g=<groupId>`)
+- **App:** https://coco.coachkrispel.com/ (a group's link adds `?g=<groupId>`), served by Cloudflare from `docs/`. The old
+  address, https://yanivkrispel-cyber.github.io/english-quest/ (GitHub Pages, same `docs/`), only shows a "new home" screen
+  that carries the phone's saved kid and settings to the new address (`movedScreen`, `takeMove` in Index.html).
 - **Data:** the private Google Sheet "English Quest" (owner's Drive)
 - **Backend:** Google Apps Script bound to that sheet, deployed as a web app, managed with `clasp`
 
@@ -190,7 +192,8 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | `src/Index.html` | Whole UI (Liquid Glass design, Phosphor icons), works in Pages and Apps Script |
 | `src/Catalog.js` | Generated exercise catalog (`node gen-catalog.js` from `catalog.tsv`) |
 | `src/appsscript.json` | Manifest: V8, Asia/Jerusalem, web app = execute as owner, anyone anonymous |
-| `docs/` | GitHub Pages site: `index.html` (built), `sw.js`, `manifest.webmanifest`, `icons/` |
+| `wrangler.jsonc`, `worker/range.js` | The Cloudflare front end: static files from `docs/`; the recordings go through `range.js`, since the static server ignores byte ranges and Safari needs them |
+| `docs/` | The front end (Cloudflare, and GitHub Pages for the old address): `index.html` (built), `sw.js`, `manifest.webmanifest`, `icons/` |
 | `docs/games.js` | Mini-game content for A1–C1, and the Talk & Tap words with their don't-say words (edited by hand; not in `src/`, so clasp never pushes it; raise `BANK_V` in Index.html after a change) |
 | `docs/missions/` | Mission content per level (`a1.js` … `c1.js`, `bp` = B1+; edited by hand, out of `src/`; raise `MISSIONS_V` in Index.html after a change) and the recordings (`audio/<mission>-<part>.mp3`) |
 | `docs/talk/` | Talk with Coco scripts per level (`a1.js` … `c1.js`; format and writing rules: `tools/TALK-WRITING.md`; raise `TALK_V` in Index.html after a change) and Coco's lines (`audio/<clip>.mp3`, `python tools/talk_audio.py`) |
@@ -241,7 +244,8 @@ node build-pages.js                     # src/Index.html -> docs/index.html
 clasp push --force                      # upload src/ to Apps Script
 clasp update-deployment AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w
 node tools/warm.js                      # the slow first call of the new version, instead of a kid
-git add -A && git commit -m "..." && git push   # GitHub Pages rebuilds docs/ (~1 min)
+npx wrangler deploy                     # docs/ to Cloudflare (coco.coachkrispel.com; wrangler.jsonc)
+git add -A && git commit -m "..." && git push   # GitHub Pages rebuilds docs/ for the old address (~1 min)
 ```
 
 Phones get a new app version in the background: the first open after a deploy still shows the old one, with

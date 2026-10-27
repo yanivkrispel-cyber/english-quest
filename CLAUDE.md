@@ -11,6 +11,14 @@ working rules and the traps learned while building it.
   WhatsApp message text. UI language: English. Talk to the owner in Hebrew.
 - Ask only when a decision is genuinely theirs; otherwise pick a sensible default and say so.
 
+## Store rules for every change (owner, 2026-10-27)
+The app may be sold on Google Play and the App Store later, as a kids' app (Apple Kids Category, Google Families Policy,
+COPPA). **Every change must follow the rules in `specs/store-readiness.md`**: no third-party tracking, nothing leaves the
+kids' side without a parental gate, kids meet kids only through preset content with a parent switch, least data (and
+the data list there updated), deletable data, permissions in context with a fallback, no money outside store billing and
+no loot boxes, no pressure on kids, age-appropriate content. A change that cannot meet a rule yet adds a line to the
+gaps list in that file in the same commit, and the owner hears about it.
+
 ## Change → test → deploy
 1. Edit `src/` (server: `Code.js`, `Push.js`; UI: `Index.html`). Game content: `docs/games.js`
    (check with `node test/games-check.js`); pet art: see `tools/PETS.md`. Mission content: `docs/missions/<level>.js`
@@ -30,9 +38,10 @@ working rules and the traps learned while building it.
    `src/Index.html` on every load; server edits need a restart. Bad networks on purpose:
    `/dev/chaos?mode=hang|500|html|busy&n=2`. The dev page has the service worker too, so after an edit the first
    reload still shows the old page (with the update bar); reload once more.
-4. `node build-pages.js && clasp push --force && clasp update-deployment <id from README>`, then
+4. `node build-pages.js && clasp push --force && clasp update-deployment <id from README>`, then `npx wrangler deploy`
+   (the front end at https://coco.coachkrispel.com, Cloudflare account of the owner, wrangler logged in) and
    `node tools/warm.js` (the slow first call of a new version, so no kid gets it).
-5. Commit and `git push` (Pages rebuild). Commit trailer lines per the session's attribution rules.
+5. Commit and `git push` (GitHub Pages rebuild: the old address, which only shows the "new home" screen). Commit trailer lines per the session's attribution rules.
 6. Quick live check: `curl -sL -H "Content-Type: text/plain" --data '{"fn":"apiPublic","args":[""]}' <exec URL>`.
 
 ## Traps (each one bit us)
@@ -122,6 +131,11 @@ working rules and the traps learned while building it.
 - **Talk & Tap owns the names `talk*` / `TALK`** (Duels.js, Index.html). Talk with Coco is `chat*` / `CHAT` in code
   (`src/Chat.js`, tab `Chats`, `dash.chat`); a server `var TALK` in another file silently broke the Talk & Tap duel.
   Its content keeps the outside names (`docs/talk/`, `EQ_TALK`, `test/talk-check.js`).
+- **The front end moved to https://coco.coachkrispel.com (2026-10-27).** The kids' saved state is per address: the old GitHub
+  Pages address shows `movedScreen`, whose button carries every `eq_*` local-storage key in the link's `#move=` (taken by
+  `takeMove` without overwriting) and unsubscribes the old push subscription. Do not redirect the old address: an installed
+  app's service worker cannot update through a redirect and would never see the screen. Cloudflare's static server ignores
+  `Range`; `worker/range.js` answers ranges for `*/audio/*` (Safari plays nothing without 206).
 - Default PINs are random; the real PINs live only in the private sheet. The repo is public:
   never commit real PINs, emails or the sheet's contents (tests use fake PINs 4821/7356/2694/1234).
 

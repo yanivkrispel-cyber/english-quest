@@ -1153,6 +1153,11 @@ check('the teacher\'s note goes to Flags', rows('Flags').some(f => f.Girl === 'T
 const st = run(`apiPilotStats('1234')`);
 const lf = st.families.find(f => f.id === r.groupId);
 check('the admin board lists the family and its funnel', lf && lf.kids.length === 2 && lf.kids[0].placed && st.totals.placed >= 1 && st.feedback.length >= 1 && st.teacherFlags >= 1, JSON.stringify(st.totals));
+const old = st.families.find(f => f.before);
+check('the families from before the link are on the board too', old && old.joined === run("String(getSetting('PilotFrom'))").slice(0, 10) && old.day >= 1 && !lf.before, JSON.stringify(old && { joined: old.joined, day: old.day }));
+check('the public link is the new address', run('publicUrl()') === 'https://coco.coachkrispel.com/');
+run("setSetting('PublicUrl', 'https://yanivkrispel-cyber.github.io/english-quest/'); PropertiesService.getScriptProperties().setProperty('setup', 'v17'); CacheService.getScriptCache().put('SETUP', 'v17', 60); ensureSetup()");
+check('the v18 setup moves an old GitHub Pages link to the new address', run("getSetting('PublicUrl')") === 'https://coco.coachkrispel.com/');
 fails('the board for a parent', () => run(`apiPilotStats('5566')`));
 check('the admin closes the invite link', run(`apiPilotInvite('1234', false, '')`).invite.open === false);
 // Writing Fridays: a kid with missions gets a mission (Use of English or grammar), not a link.

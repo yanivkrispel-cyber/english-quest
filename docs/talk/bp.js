@@ -264,12 +264,12 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
         x: [["a bruise", 0], ["he have a bruise", 0], ["he needs stitches", 1], ["blue mark", -1], ["his arm is broken", 1]]
       },
       {
-        c: "My friend the owl spun around too fast at a party and felt dizzy. What do you do when you feel dizzy, for example after a fast ride?",
-        he: "dizzy = סחרחורת. מה אתם עושים כשמסתובב לכם הראש? למשל: I sit down and close my eyes for a minute.",
+        c: "My friend the owl spun around too fast at a party, and now she feels dizzy. What should she do to feel better?",
+        he: "dizzy = סחרחורת. מה הינשופה צריכה לעשות? למשל: She should sit down and close her eyes for a minute.",
         a: [],
         o: "Good idea! I'll tell the owl to sit down and drink some water.",
-        t: ["I sit down and close my eyes for a minute.", "I drink some water and wait until it stops."],
-        x: [["i sit and drink water", -1], ["i lie down on the floor", -1]]
+        t: ["She should sit down and close her eyes for a minute.", "She should drink some water and wait until it stops."],
+        x: [["sit and drink water", -1], ["she should lie down on the floor", -1]]
       },
       {
         c: "The zebra hurt her ankle playing football, but nothing is broken. Did she sprain it or break it? And what should she do now?",
@@ -284,12 +284,12 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
         x: [["she sprained it", 0], ["she broke it", 1], ["she should rest", 2], ["put ice on it", 2], ["football", -1]]
       },
       {
-        c: "Last question, nurse! If you could invent something to make hospitals more fun for kids, what would it be?",
-        he: "איזו המצאה תהפוך בית חולים למקום כיפי יותר לילדים? למשל: I would put a game room in every hospital.",
+        c: "Last question, nurse! If you could design a fun animal hospital for my friends, what would you put in the waiting room?",
+        he: "מה הייתם שמים בחדר ההמתנה של בית חולים לחיות? למשל: I would put a big game corner there.",
         a: [],
-        o: "What a kind idea! The doctors should hire you right now.",
-        t: ["I would put a game room in every hospital.", "Robot nurses that tell jokes!", "I'd bring dogs to visit the kids."],
-        x: [["a room with video games", -1], ["clowns that make them laugh", -1]]
+        o: "What a fun idea! My animal friends would love to wait there.",
+        t: ["I would put a big game corner there.", "Comfy cushions and lots of crackers!", "A giant fish tank to watch."],
+        x: [["video games and toys", -1], ["a tv with funny cartoons", -1]]
       }
     ],
     end: "Thank you, nurse! All my animal friends feel much better now. See you soon!"

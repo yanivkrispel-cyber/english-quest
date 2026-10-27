@@ -1207,6 +1207,59 @@ function groupId(){
   return g || store.get('eq_group') || '';
 }
 
+// ---------- The move to coco.coachkrispel.com (2026-10) ----------
+// The app moved from GitHub Pages to its own address. A phone keeps everything per address (the remembered kid, the
+// installed icon, notifications), so the old address shows a "new home" screen whose button carries this phone's saved
+// settings to the new one in the link's #part, which is never sent to a server. A visitor with nothing saved (a new
+// invite link, the teacher) goes straight there. GitHub Pages keeps serving docs/ for this screen.
+const HOME_URL = 'https:' + '/' + '/coco.coachkrispel.com/';
+const OLD_HOST = !IN_APPS_SCRIPT && /\.github\.io$/.test(location.hostname);
+function moveData(){
+  const o = {};
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i), v = localStorage.getItem(k);
+      if (/^eq_/.test(k) && v != null && v.length < 3000) o[k] = v;
+    }
+  } catch(e){}
+  return o;
+}
+function moveLink(){
+  const o = moveData(), packed = Object.keys(o).length ? '#move=' + encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(o))))) : '';
+  return HOME_URL + location.search + packed;
+}
+// The new address: take what the old one sent, without overwriting anything this phone already has here.
+(function takeMove(){
+  if (IN_APPS_SCRIPT || !/^#move=/.test(location.hash)) return;
+  try {
+    const o = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(location.hash.slice(6))))));
+    Object.keys(o).forEach(k => { if (/^eq_/.test(k) && localStorage.getItem(k) == null) localStorage.setItem(k, o[k]); });
+  } catch(e){}
+  history.replaceState(null, '', location.pathname + location.search);
+})();
+function movedScreen(){
+  if (!Object.keys(moveData()).length) return location.replace(moveLink());
+  app.innerHTML = `<div class="gscreen">
+    <div class="result">
+      <img src="${cocoSrc('celebrate')}" alt="" style="width:120px;height:120px;object-fit:contain">
+      <h1 style="font-size:28px">Coco has a new home</h1>
+      <div class="sub" style="max-width:330px;margin:0">The app moved to <b>coco.coachkrispel.com</b>. Your points, your pet and your journey are all there.</div>
+      <ol class="sub" style="text-align:left;max-width:330px;margin:0;padding-left:20px">
+        <li>Tap <b>Open the new app</b>.</li>
+        <li>${isIos() ? 'Tap Share, then <b>Add to Home Screen</b>.' : 'Open the browser menu, then <b>Install app</b>.'}</li>
+        <li>Delete the old Coco icon.</li>
+      </ol>
+      <div class="sub" dir="rtl" lang="he" style="max-width:330px;margin:0;font-size:13px">האפליקציה עברה לכתובת חדשה, וכל ההתקדמות נשמרה. פותחים, מתקינים שוב ומוחקים את האייקון הישן.</div>
+    </div>
+    <a class="btn btn-primary btn-block" id="mgo" href="${esc(moveLink())}"${isStandalone() ? ' target="_blank" rel="noopener"' : ''}>${icon('arrow-square-out')} Open the new app</a>
+  </div>`;
+  // Reminders move with the kid: the old address stops getting them, so no phone gets two.
+  document.getElementById('mgo').onclick = () => {
+    if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistration()
+      .then(r => r && r.pushManager.getSubscription()).then(s => s && s.unsubscribe()).catch(() => {});
+  };
+}
+
 // Install as an app: Android/desktop Chrome fire beforeinstallprompt; iOS needs Share > Add to Home Screen.
 let installPrompt = null;
 const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
@@ -1227,9 +1280,9 @@ function colorOf(name){ const g = (pub?.girls || []).find(x => x.name === name);
 function fmtDate(d){ const [y,m,dd] = d.split('-'); return dd + '/' + m; }
 
 // ---------- Pets ----------
-// Art and game content live on GitHub Pages (docs/pets, docs/pics, docs/games.js); the Apps Script
+// Art and game content live on the front end (docs/pets, docs/pics, docs/games.js); the Apps Script
 // copy of the page loads them from there.
-const ASSETS = window.EQ_ASSETS || (IN_APPS_SCRIPT ? 'https:' + '/' + '/yanivkrispel-cyber.github.io/english-quest/' : '');
+const ASSETS = window.EQ_ASSETS || (IN_APPS_SCRIPT ? HOME_URL : '');
 const PETS = [['turtle', 'Shelly'], ['monster', 'Fizz'], ['cat', 'Mochi'], ['cow', 'Daisy'], ['fawn', 'Fern'],
   ['donkey', 'Dusty'], ['sheep', 'Cloud'], ['giraffe', 'Zuri'], ['elephant', 'Peanut'], ['lion', 'Leo']];
 // Growth stages drawn so far for each pet. A pet that is further along keeps its last drawn look
@@ -3409,7 +3462,7 @@ function chatMatch(turn, text){
   return { b: n ? (turn.a || []).findIndex(x => chatFits(said, x)) : -1, n };
 }
 
-const MISSIONS_V = 2, MS_PARTS = ['Hook', 'Learn', 'Practice', 'Use it', 'Finish'];
+const MISSIONS_V = 3, MS_PARTS = ['Hook', 'Learn', 'Practice', 'Use it', 'Finish'];
 const MS_TYPES = { grammar: ['Grammar Lab', 7], vocabulary: ['Word Pack', 7], listening: ['Radio Show', 8], reading: ['Story Cards', 8],
   'use-of-english': ['Newsroom', 7], writing: ['Writer\'s Desk', 9] };
 let MS = null, msTick = null, msAudio = null;
@@ -4104,7 +4157,7 @@ async function previewMission(id, label){
 // Coco says each line (a recording, or the phone's voice without one), the kid answers aloud with the mic button
 // (the phone's own speech recognition; nothing is recorded or sent but the words it heard), or with a tile. Every answer
 // moves the talk on; there is no wrong answer. A mission talk comes after Use it; a home scene once a day from home.
-const TALK_V = 2;
+const TALK_V = 3;
 const CHAT_PET = {
   start: ['Your turn soon! Tap the mic and talk.', 'Talk to Coco! I am right here.', 'Speak English with Coco. You can do it!'],
   voice: ['You said it!', 'Wow, great English!', 'Coco understood you!', 'So cool! Keep going!', 'Yes! Out loud!'],
@@ -6430,6 +6483,7 @@ function splashScreen(quick){
 // Starts the app behind the opening animation and lifts it when both are ready (at most 9 s). The full
 // animation plays on the first open of the day; later opens play it faster.
 async function boot(){
+  if (OLD_HOST) return movedScreen();
   const day = new Date().toLocaleDateString('en-CA'), quick = store.get('eq_splash_day') === day;
   if (!quick) store.set('eq_splash_day', day);
   const s = splashScreen(quick);
@@ -6744,7 +6798,7 @@ function placementLine(g){
 // ---------- The admin's pilot board ----------
 function pilotCard(){
   return `<div class="glass panel" id="pilotcard"><div class="row-flex between"><h2>Pilot</h2><button class="btn btn-glass btn-sm" id="pilotload">${icon('chart-bar')} Show</button></div>
-    <div class="sub mt-s" style="font-size:13px">Families who joined from the invite link: the funnel, activity per week, feedback and the teacher's notes.</div></div>`;
+    <div class="sub mt-s" style="font-size:13px">Families in the app (the ones from before the link count from Settings.PilotFrom): the funnel, activity per week, feedback and the teacher's notes.</div></div>`;
 }
 const pilotInviteText = link => `היי! בניתי לבנות שלי אפליקציה לאנגלית, 10 דקות ביום, והן לא מוותרות עליה 🦜\nאני מחפש כמה משפחות שינסו אותה 4 שבועות בחינם ויגידו לי את האמת.\nההרשמה לוקחת 3 דקות:\n${link}`;
 async function pilotLoad(pin, open, code){
@@ -6775,8 +6829,8 @@ async function pilotLoad(pin, open, code){
     <button class="btn btn-glass btn-sm mt-s" data-copy="${esc(tlink)}">${icon('copy')} Copy teacher link</button>
     <div class="label mt">Families (days active in weeks 1 to 4)</div>
     <div class="stack mt-s" style="gap:8px">${s.families.length ? s.families.map(f => `<div class="soft" style="padding:10px 12px;border-radius:12px">
-      <div class="row-flex between"><b>${esc(f.name)}</b><span class="sub" style="font-size:12px">day ${f.day} · ${esc(f.parent)}${f.feedback ? ' · ' + f.feedback + ' notes' : ''}</span></div>
-      ${f.kids.map(k => `<div class="row-flex between mt-s" style="font-size:13px"><span>${esc(k.name)} · ${esc(k.level)}${k.placed ? '' : ' · <b style="color:var(--orange,#f59e0b)">no test yet</b>'}${k.missions ? ' · ' + k.missions + ' missions' : ''}</span><span>${dots(k)}</span></div>`).join('')}
+      <div class="row-flex between"><b>${esc(f.name)}</b><span class="sub" style="font-size:12px">${f.before ? "before the link · " : ""}day ${f.day}${f.parent ? " · " + esc(f.parent) : ""}${f.feedback ? ' · ' + f.feedback + ' notes' : ''}</span></div>
+      ${f.kids.map(k => `<div class="row-flex between mt-s" style="font-size:13px"><span>${esc(k.name)} · ${esc(k.level)}${k.placed || f.before ? '' : ' · <b style="color:var(--orange,#f59e0b)">no test yet</b>'}${k.missions ? ' · ' + k.missions + ' missions' : ''}</span><span>${dots(k)}</span></div>`).join('')}
     </div>`).join('') : '<div class="sub">Nobody has joined yet.</div>'}</div>
     ${s.feedback.length ? `<div class="label mt">Feedback</div><div class="stack mt-s he" dir="rtl" lang="he" style="gap:6px">${s.feedback.map(f => `<div class="soft" style="padding:8px 12px;border-radius:12px;font-size:13px"><b>${esc(f.group)}</b> · ${fmtDate(f.date)}${f.score ? ' · ' + f.score + '/5' : ''}<div>${esc(f.text)}</div></div>`).join('')}</div>` : ''}`;
   card.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(b.dataset.copy));

@@ -1,0 +1,12 @@
+// The kids' front end on Cloudflare: https://coco.coachkrispel.com. Files come straight from docs/; only the
+// recordings go through worker/range.js (byte ranges for Safari). Deploy: node build-pages.js && npx wrangler deploy.
+// GitHub Pages keeps serving the same docs/ at the old address (it shows the "we moved" screen there).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "english-with-coco",
+  "compatibility_date": "2026-10-23",
+  "main": "worker/range.js",
+  "assets": { "directory": "docs", "binding": "ASSETS", "run_worker_first": ["/missions/audio/*", "/talk/audio/*"] },
+  "routes": [{ "pattern": "coco.coachkrispel.com", "custom_domain": true }],
+  "workers_dev": true
+}

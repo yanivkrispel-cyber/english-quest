@@ -140,8 +140,11 @@ function apiPilotStats(pin) {
   logs.forEach(function (l) { (active[l.Girl] = active[l.Girl] || {})[String(l.DoneOn || l.Date)] = true; });
   games.forEach(function (g) { (active[g.Girl] = active[g.Girl] || {})[String(g.Date)] = true; });
   readTable('Chats').forEach(function (r) { (active[r.Girl] = active[r.Girl] || {})[String(r.Date)] = true; });
-  var fams = groups().filter(function (g) { return String(g.Joined || ''); }).map(function (g) {
-    var joined = String(g.Joined).slice(0, 10);
+  // Every group is measured (owner's choice, 2026-10-27): the ones that were in the app before the invite link count
+  // from Settings.PilotFrom (set by SETUP v18; change it in the sheet to the opening day).
+  var from = String(getSetting('PilotFrom') || t).slice(0, 10);
+  var fams = groups().map(function (g) {
+    var joined = String(g.Joined || from).slice(0, 10), before = !g.Joined;
     var kids = kidsIn(String(g.Id)).map(function (k) {
       var days = Object.keys(active[k.Name] || {}).filter(function (d) { return d >= joined; }).sort();
       var week = function (w) { var a = addDays(joined, 7 * w), b = addDays(joined, 7 * w + 6); return days.filter(function (d) { return d >= a && d <= b; }).length; };
@@ -151,7 +154,7 @@ function apiPilotStats(pin) {
         missions: missions, days: days.length, weeks: [week(0), week(1), week(2), week(3)], last: days.length ? days[days.length - 1] : '',
         last7: days.filter(function (d) { return d > addDays(t, -7); }).length };
     });
-    return { id: String(g.Id), name: g.Name, parent: g.Parent || '', joined: joined, day: daysBetween(joined, t) + 1, kids: kids,
+    return { id: String(g.Id), name: g.Name, parent: g.Parent || '', joined: joined, before: before, day: Math.max(1, daysBetween(joined, t) + 1), kids: kids,
       feedback: fb.filter(function (f) { return f.Who === String(g.Id); }).length };
   });
   var all = [].concat.apply([], fams.map(function (f) { return f.kids; }));

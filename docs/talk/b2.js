@@ -1057,7 +1057,7 @@ window.EQ_TALK.b2 = (window.EQ_TALK.b2 || []).concat([
   },
   {
     id: "tb2v04", title: "Coco the peacemaker",
-    he: "מדברים עם קוקו על ויכוחים ופיוס, עם negotiate, an ally, a truce ו-resolve",
+    he: "מדברים עם קוקו על ויכוחים ופיוס, עם negotiate, an ally, a compromise ו-resolve",
     turns: [
       {
         c: "Phew, what a morning! Two pigeons had a conflict over my birdseed today, so I helped them negotiate. What's the best way to resolve an argument with a friend?",
@@ -1090,12 +1090,12 @@ window.EQ_TALK.b2 = (window.EQ_TALK.b2 || []).concat([
         x: [["one strong ally", 0], ["only one but strong", 0], ["many allies", 1], ["lots of weak ones", 1], ["i play alone", -1]]
       },
       {
-        c: "Sometimes people who are arguing call a truce, for example during a trip. Why do you think a short truce can help them make peace for good?",
-        he: "למה הפסקה קצרה בריב יכולה לעזור להשלים? למשל: Because they remember they actually like each other.",
+        c: "Imagine you and a friend want to watch different films tonight. What compromise could you suggest, so that you both feel happy?",
+        he: "איזו פשרה (compromise) הייתם מציעים? למשל: We watch one film tonight and the other one tomorrow.",
         a: [],
-        o: "That's a thoughtful answer. A little break can change everything.",
-        t: ["Because they remember they actually like each other.", "They calm down and see the problem differently.", "It gives them time to stop being angry."],
-        x: [["because they relax", -1], ["they forget the fight", -1]]
+        o: "What a fair idea! Everybody wins with a compromise like that.",
+        t: ["We watch one film tonight and the other one tomorrow.", "We choose a third film that we both like.", "One of us picks the film, the other picks the snacks."],
+        x: [["we watch half of each film", -1], ["we toss a coin to decide", -1]]
       },
       {
         c: "Last one. Imagine two neighbouring villages sign an agreement, like a little peace treaty, to protect the river they share. What rules should it include?",
@@ -1325,61 +1325,58 @@ window.EQ_TALK.b2 = (window.EQ_TALK.b2 || []).concat([
     end: "That's all from Coco Radio! Stop, check, and then share. See you next time!"
   },
   {
-    id: "tb2l07", title: "History you can walk in",
-    he: "מה דעתכם על מה שההיסטוריונית אמרה על ביקור באתרים היסטוריים? מביעים דעה",
+    id: "tb2l07", title: "Trips into film worlds",
+    he: "מה דעתכם על תיירות סרטים ועל מה ש-Lucy סיפרה? מביעים דעה ומנמקים",
     turns: [
       {
-        c: "Hello! Doctor Webb says walking through a real Roman town teaches you more than any textbook. Do you agree? Why or why not?",
-        he: "ביקור באתר מלמד יותר מספר? למשל: Yes, because you can see history. או Not always, books explain more.",
-        a: [
-          { k: ["yes agree true right definitely"], n: "not no disagree", r: "Me too! Seeing a place with your own eyes makes history feel real." },
-          { k: ["no not disagree textbook book books"], n: "know sure", r: "Fair point. Books explain things a trip can't, so both help." }
-        ],
-        o: "Interesting! History can come alive in lots of different ways.",
-        t: ["Yes, because you can see and feel history.", "Not always, books explain more details."],
-        x: [["yes i agree", 0], ["yes i am agree", 0], ["no books are better", 1], ["i don't think so", 1], ["rome is far", -1]]
-      },
-      {
-        c: "If you could visit Pompeii or the Titanic museum in Belfast, which one would you choose, and what would you want to see there?",
-        he: "פומפיי או מוזיאון הטיטניק? למשל: Pompeii, because I want to walk in a Roman town.",
-        a: [
-          { k: ["pompeii pompei pompey pompeyi roman volcano"], r: "Ooh, Roman streets and ancient houses! What a trip." },
-          { k: ["titanic belfast ship ships boat"], r: "Fabulous! Seeing how that huge ship was built would be amazing." }
-        ],
-        o: "Interesting choice! Both places have amazing stories to tell.",
-        t: ["Pompeii, because I want to walk in a Roman town.", "The Titanic museum, because I love ships."],
-        x: [["pompeii because of the volcano", 0], ["pompei", 0], ["titanic museum", 1], ["i want to see the ship", 1], ["neither of them", -1]]
-      },
-      {
-        c: "Doctor Webb says some visitors take silly selfies at serious historic places. Why do you think some people forget to be respectful there?",
-        he: "למה יש מבקרים שלא מתנהגים בכבוד באתרים היסטוריים? למשל: They don't think about the history.",
+        c: "Hello! Lucy says fans travel to film sets to step inside a story they love. Which place from a film or TV show would you most like to visit, and why?",
+        he: "לאיזה מקום מסרט או מסדרה הייתם רוצים לנסוע? למשל: Hobbiton, because the little round doors look so cosy.",
         a: [],
-        o: "Good point. A little thinking before acting goes a long way.",
-        t: ["They don't think about the history.", "They just want likes online.", "Maybe nobody explained the story to them."],
-        x: [["because they want likes", -1], ["they don't understand what happened", -1]]
+        o: "Ooh, fabulous choice! I'd pack my best travel hat for that.",
+        t: ["Hobbiton, because the little round doors look so cosy.", "Hogwarts, because I love the Harry Potter films.", "The beach from my favourite animated film."],
+        x: [["the castle from frozen because it is beautiful", -1], ["i want to see hogwarts", -1]]
       },
       {
-        c: "Her rule is simple: be curious, but be respectful. What other rule would you add for visitors to historic places?",
-        he: "איזה כלל הייתם מוסיפים למבקרים? למשל: Speak quietly and listen to the guide.",
-        a: [],
-        o: "That's a respectful rule. Doctor Webb would be impressed.",
-        t: ["Read about the place before you visit.", "Speak quietly and listen to the guide.", "Don't touch anything you shouldn't."],
-        x: [["be quiet", -1], ["no selfies in museums", -1]]
-      },
-      {
-        c: "Last one. Ghost tours are more about fun than history. Should historic places offer fun tours like that, or keep everything serious? Why?",
-        he: "סיורים כיפיים באתרים היסטוריים, או רק רציניים? למשל: Fun tours make people curious. או Keep it serious.",
+        c: "People queue for an hour to take a photo with the trolley at King's Cross. Would you wait that long for one photo? Why or why not?",
+        he: "הייתם מחכים שעה בתור בשביל תמונה אחת? למשל: Yes, it would be worth it. או No, an hour is too long.",
         a: [
-          { k: ["both mix balance depends depend"], r: "A bit of both! Fun can bring people in, and history keeps them there." },
-          { k: ["serious respect respectful no not"], n: "know sure", r: "Fair point. Some places deserve a quiet, serious visit." },
-          { k: ["fun yes offer okay ok fine cool exciting curious"], r: "Good point. Fun tours can get more people interested in history." }
+          { k: ["no not never long boring waste"], n: "know sure", r: "Fair enough! An hour is a long time for one click." },
+          { k: ["yes sure definitely worth wait of_course"], r: "A true fan! That photo would be worth every minute." }
         ],
-        o: "Good thinking. History can be fun and respectful at the same time.",
-        t: ["Yes, fun tours make people curious about history.", "Keep it serious, out of respect for the place.", "A bit of both, I think."],
-        x: [["yes they are fun", 2], ["fun is good", 2], ["keep it serious", 1], ["no it should be serious", 1], ["both", 0], ["it depends on the place", 0], ["i like ghosts", -1], ["i don't know", -1]]
+        o: "Interesting! Queues are part of almost every big trip.",
+        t: ["Yes, it would be worth it for a great photo.", "No, an hour is too long for one photo."],
+        x: [["yes it is worth it", 1], ["of course i will wait", 1], ["no it is too long", 0], ["i will not wait", 0], ["i love harry potter", -1]]
+      },
+      {
+        c: "Film tourism brings jobs and money to small towns, but it can also bring huge crowds. Is it mostly good or mostly bad for a place? Why?",
+        he: "תיירות סרטים טובה או רעה למקום? למשל: Mostly good, because it brings jobs. או Mostly bad, because of the crowds.",
+        a: [
+          { k: ["both mix depends depend balance"], r: "A bit of both! It depends on how the visitors behave." },
+          { k: ["bad crowd crowds crowded damage noise noisy rubbish dirty"], n: "not", r: "Good point. Too many visitors can spoil the very thing they came to see." },
+          { k: ["good jobs job money help helps great positive"], r: "Good point. One famous film can change a small town's life." }
+        ],
+        o: "Interesting! Every place has to find its own balance.",
+        t: ["Mostly good, because it brings jobs to small towns.", "Mostly bad, because the crowds can damage the place.", "A bit of both, it depends."],
+        x: [["mostly good because of jobs", 2], ["it helps the town", 2], ["bad because of the crowds", 1], ["it is too crowded", 1], ["both", 0], ["it depends on the place", 0], ["i like films", -1]]
+      },
+      {
+        c: "Maya Bay was closed for almost four years so the coral could recover. If you were in charge of a very popular place, what rule would you make for visitors?",
+        he: "איזה כלל הייתם קובעים למבקרים במקום פופולרי מאוד? למשל: Only a few hundred visitors a day, with tickets.",
+        a: [],
+        o: "Sensible rule! Nature would thank you for that.",
+        t: ["Only a few hundred visitors a day, with tickets.", "No boats are allowed close to the coral.", "Everyone takes their rubbish home with them."],
+        x: [["no swimming near the coral", -1], ["you must buy a ticket first", -1]]
+      },
+      {
+        c: "Before you go! Lucy reminds us that real people live in these places. How can tourists be respectful when they visit a famous spot from a film?",
+        he: "איך תיירים יכולים להתנהג בכבוד במקום מפורסם מסרט? למשל: Be quiet near people's homes.",
+        a: [],
+        o: "Lovely advice. Lucy would be proud of you.",
+        t: ["Be quiet near people's homes.", "Don't leave any rubbish behind.", "Buy something from the local shops."],
+        x: [["do not shout in the streets", -1], ["say hello to the people who live there", -1]]
       }
     ],
-    end: "Thank you for travelling through history with me. Be curious, be respectful, and see you soon!"
+    end: "Thanks for travelling through film worlds with me. Be curious, be respectful, and see you soon!"
   },
   {
     id: "tb2l08", title: "Grandpa's new routine",
@@ -1544,51 +1541,57 @@ window.EQ_TALK.b2 = (window.EQ_TALK.b2 || []).concat([
     end: "Thanks for chatting! I'm off to pack my jacket for a coolcation. See you soon!"
   },
   {
-    id: "tb2r03", title: "Stories worth keeping",
-    he: "מה דעתכם על בינה מלאכותית שמעתיקה קולות, ועל הקלטת סיפורים לעתיד?",
+    id: "tb2r03", title: "Coco meets the whales",
+    he: "מה דעתכם על בינה מלאכותית שמנסה להבין את השפה של הלווייתנים? מביעים דעה ומנמקים",
     turns: [
       {
-        c: "Hello! Artificial intelligence can now copy how a person writes and speaks. If a computer copied your voice, what job would you let it do for you?",
-        he: "אילו מחשב היה מעתיק את הקול שלכם, איזו עבודה הייתם נותנים לו? למשל: It could read my homework out loud.",
+        c: "Hello! Scientists are using AI to listen to sperm whales. If you could understand one animal's language, which animal would you choose, and why?",
+        he: "את השפה של איזו חיה הייתם רוצים להבין? למשל: Dolphins, because they seem so clever.",
         a: [],
-        o: "Ha! A copy of you would be very busy. I'd send mine to sell hats.",
-        t: ["It could answer boring phone calls for me.", "It could read my homework out loud.", "Nothing, I'd want to do everything myself."],
-        x: [["it can do my homework", -1], ["talk to my teacher for me", -1], ["sing songs on my channel", -1]]
+        o: "Ooh, fabulous choice! I'd love to hear what it really thinks.",
+        t: ["My dog, because I want to know what he's thinking.", "Dolphins, because they seem so clever.", "Cats, to find out why they ignore us."],
+        x: [["my cat because she is funny", -1], ["the dolphins they are very smart", -1]]
       },
       {
-        c: "Some apps can make a famous singer's voice sing any song. Why do you think a copy like that might feel strange, even if it sounds just right?",
-        he: "למה קול מועתק של זמר יכול להרגיש מוזר? למשל: Because it's not really the singer.",
+        c: "A computer can listen to thousands of hours of whale clicks in just a few days. What other huge or boring job would you give to AI?",
+        he: "איזו עבודה ענקית או משעממת הייתם נותנים לבינה מלאכותית? למשל: Counting all the birds in a forest.",
         a: [],
-        o: "That's a deep answer. Being real matters more than sounding real.",
-        t: ["Because it's not really the singer.", "It might sing things the real singer never would.", "It feels like a robot pretending."],
-        x: [["because it is a computer", -1], ["it's fake", -1]]
+        o: "Clever! Let the computer do the boring part, and you do the thinking.",
+        t: ["Sorting thousands of old photos.", "Checking my spelling before I hand in my homework.", "Counting all the birds in a forest."],
+        x: [["cleaning my room every day", -1], ["read all the books for me", -1]]
       },
       {
-        c: "Copying a real person's voice can be fun, but it can also trick people. Should companies follow rules when they copy voices? Which rules?",
-        he: "אילו כללים צריכים לחול על חברות שמעתיקות קולות? למשל: They should ask the person first.",
-        a: [],
-        o: "Sensible rules. Technology should help people, not trick them.",
-        t: ["They should ask the person first.", "They should clearly say it's only a computer.", "Only for fun, never to trick anyone."],
-        x: [["yes they need rules", -1], ["ask before you copy", -1]]
+        c: "Some scientists say finding patterns isn't the same as understanding meaning. Do you think people will ever really have a conversation with a whale? Why?",
+        he: "תהיה פעם שיחה אמיתית עם לווייתן? למשל: Yes, one day, with better AI. או No, clicks are too different from words.",
+        a: [
+          { k: ["no not never doubt impossible"], n: "know sure", r: "Fair point. A few clicks are a long way from a real chat." },
+          { k: ["yes maybe sure definitely possible one_day someday future"], n: "not never", r: "I hope you're right! I'd love to chat with a whale one day." }
+        ],
+        o: "Interesting! Nobody knows the answer yet, not even the scientists.",
+        t: ["Yes, one day, with better AI.", "No, I think whale clicks are too different from words."],
+        x: [["yes one day with ai", 1], ["maybe in the future", 1], ["no it is impossible", 0], ["i don't think so", 0], ["whales are so big", -1]]
       },
       {
-        c: "The experts in the article had a simpler idea: record real stories. If you could interview someone older about their life, what would you ask them?",
-        he: "אילו הייתם מראיינים אדם מבוגר על החיים שלו, מה הייתם שואלים? למשל: I'd ask what school was like.",
-        a: [],
-        o: "What a lovely question to ask. Stories like that are real treasures.",
-        t: ["I'd ask what school was like when they were young.", "I'd ask about the funniest thing that ever happened to them.", "I'd ask how they met their best friend."],
-        x: [["about when they was children", -1], ["what games they played", -1]]
+        c: "The team's first rule is to listen, not to speak, because a message could confuse the whales. Do you think that's a good rule? Why?",
+        he: "קודם להקשיב ולא לדבר: כלל טוב? למשל: Yes, because we could scare them. או No, they should try to talk back.",
+        a: [
+          { k: ["no not disagree"], n: "know sure", r: "Bold! But one wrong click could really confuse a whale family." },
+          { k: ["yes good agree right smart sensible fair"], r: "Me too. Listening first is good manners, even under the sea." }
+        ],
+        o: "Hmm, interesting. Listening carefully is a good start for any conversation.",
+        t: ["Yes, it's a good rule, because we could scare them.", "No, I think they should try to talk back."],
+        x: [["yes it is a good rule", 1], ["i agree with them", 1], ["no they should try to talk", 0], ["i disagree", 0], ["whales are cool", -1]]
       },
       {
-        c: "Before you go! The oldest voice recording we can play is from eighteen sixty. What would you record today, so people in a hundred years could hear it?",
-        he: "מה הייתם מקליטים היום כדי שישמעו בעוד מאה שנה? למשל: I'd record my friends laughing together.",
+        c: "Last one! Imagine you could leave one short message for the whales, and they'd really understand it. What would you say to them?",
+        he: "איזו הודעה קצרה הייתם משאירים ללווייתנים? למשל: Thank you for sharing the ocean with us.",
         a: [],
-        o: "Fabulous choice! People in the future will love that.",
-        t: ["I'd record my friends laughing together.", "A song that I wrote myself.", "I'd record what a normal school day sounds like."],
-        x: [["the sound of the sea", -1], ["me singing a song", -1]]
+        o: "That's lovely. I'm sure the whales would click back something kind.",
+        t: ["Thank you for sharing the ocean with us.", "Please tell us what all those clicks mean.", "We promise to keep your ocean clean."],
+        x: [["hello whales how are you", -1], ["we are sorry about the plastic", -1]]
       }
     ],
-    end: "Thank you for such a thoughtful chat. Go and collect some great stories! See you soon."
+    end: "Thanks for diving into whale science with me! Keep listening, and see you soon!"
   },
   {
     id: "tb2r04", title: "Real or deepfake?",
