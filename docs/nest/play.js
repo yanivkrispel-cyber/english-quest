@@ -564,7 +564,7 @@ function nkKnownUnits(){
 }
 function nkPlayGames(){
   const known = nkKnownUnits(), age = dash.nest.age;
-  if (!known.length || !nkBeta()) return [];
+  if (!known.length) return [];
   return NK_PLAY.filter(([g, from]) => age >= from && (g !== 'dress' || known.some(u => u.theme === 'clothes'))
     && (g !== 'chant' || known.some(u => (EQ_NEST.chants || {})[u.id])));
 }
@@ -653,10 +653,8 @@ function nkWin(s, keys, wait){
 function nkMiss(keys){ buzz(false); nkCoco('thinking'); if (NE) NE.run = 0; nestPlay(keys); }
 
 // ---------- The play sky: a soft colored world behind the cards (one of four per session), on until the session ends ----------
-// The new play (playground, sky, cheer) is on for the try-out kids (Settings.NestAll) and the teacher's preview until the owner opens it to all.
-const nkBeta = () => !!((dash && dash.nest && dash.nest.all) || (NE && NE.preview));
 function nkSkyOn(){
-  if (!nkBeta() || document.getElementById('nksky')) return;
+  if (document.getElementById('nksky')) return;
   const k = NE.u && NE.u.id ? [...NE.u.id].reduce((a, c) => a + c.charCodeAt(0), 0) % 4 : 0;
   const sky = document.createElement('div');
   sky.id = 'nksky'; sky.className = 'nk-sky p' + k; sky.setAttribute('aria-hidden', 'true');
@@ -674,7 +672,7 @@ const NK_FUN = ['#f472b6', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa', '#fb923c'
 const nkCalm = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 function nkAgain(el, cls){ if (!el) return; el.classList.remove(cls); void el.getBoundingClientRect(); el.classList.add(cls); }
 function nkCheer(s){
-  if (!NE || !nkBeta()) return;
+  if (!NE) return;
   if (!s || !s.demo) NE.run = (NE.run || 0) + 1;  // Coco's own demo round does not count
   const st = nkStage(), card = st && (st.querySelector('.nk-card.yes') || st.querySelector('.yes'));
   const r = (card || st || document.body).getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;

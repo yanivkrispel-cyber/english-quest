@@ -193,5 +193,5 @@ Proposal and the owner's pick: https://claude.ai/artifact/TEp9sYUzd8VUWfGB21H684
   pet (or Coco) pops up under a rainbow with confetti (`nkParty`). Coco's demo rounds do not count. Reduced motion: no bursts.
 - **Play sky** (`nkSkyOn`): a fixed layer behind the session, one of four palettes by unit (sun, clouds, bubbles, hills),
   removed by `nestLeave` and `renderNest`.
-- **Try-out gate**: playground, sky and cheer show only for kids in `Settings.NestAll` and the teacher's preview (`nkBeta`)
-  until the owner opens them to everyone. Check: `test/tablet.html?screen=nest-home2|nest-ground|nest-cheer[&phones]`.
+- Open to every Nest kid since 2026-10-28 (the owner: open to all, the palettes change by unit, the party every third).
+  Check: `test/tablet.html?screen=nest-home2|nest-ground|nest-cheer[&phones]`.
