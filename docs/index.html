@@ -102,6 +102,13 @@ body{
 .nk-played::-webkit-scrollbar{display:none}
 .nk-unit{flex:none;width:68px;height:68px;border-radius:50%;border:1px solid rgba(255,255,255,.95);background:rgba(255,255,255,.75);display:grid;place-items:center;cursor:pointer}
 .nk-unit img{width:46px;height:46px;object-fit:contain}
+.nk-dayicon{width:48px;height:48px;object-fit:contain}
+.nk-days{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.nk-day{min-height:110px;border-radius:22px;display:grid;justify-items:center;align-content:center;gap:6px;cursor:pointer;font:inherit;color:var(--ink);padding:12px}
+.nk-day .tile{width:52px;height:52px;border-radius:18px;font-size:28px}
+.nk-day b{font-size:13px;color:var(--muted);line-height:1}
+.nk-day span:last-child{font-weight:700;font-size:15px}
+.nk-day:active{transform:scale(.97)}
 .nk-top .nk-prog{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;flex:1;padding:0 8px}
 .nk-prog i{width:7px;height:7px;border-radius:50%;background:rgba(99,102,241,.18)}
 .nk-prog i.ok{background:#22c55e}
@@ -7235,6 +7242,25 @@ function nestMicStop(){
 }
 
 // ---- Home ----
+// A unit's days in a sheet (Settings.NestAll): free play, nothing is logged.
+function nestDays(u){
+  if (!u) return;
+  const days = u.review ? [[u.id, 'Review', 'arrows-clockwise', 't-star']]
+    : [[u.id, 'New words', 'sparkle', 't-vocab'], [u.id + '.b', 'Move', 'person-simple-run', 't-fire'], [u.id + '.c', 'Song and story', 'music-notes', 't-listen'], [u.id + '.d', 'Games', 'puzzle-piece', 't-together']];
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="sheet glass">
+    <div class="row-flex between"><span class="row-flex" style="gap:10px"><img class="nk-dayicon" src="${esc(nestPicSrc(u.icon))}" alt=""><h2>${esc(u.title)}</h2></span>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x" aria-label="Close">${icon('x')}</button></div>
+    <div class="nk-days mt">${days.map(([id, l, ic, t], i) => `<button class="nk-day soft" data-nkday="${esc(id)}"><span class="tile ${t}">${icon(ic, 'duotone')}</span><b>${u.review ? '' : i + 1}</b><span>${l}</span></button>`).join('')}</div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  ov.onclick = e => { if (e.target === ov) close(); };
+  ov.querySelector('#x').onclick = close;
+  ov.querySelectorAll('[data-nkday]').forEach(b => b.onclick = () => { close(); nestStart(b.dataset.nkday); });
+}
+
 function renderNest(d){
   const n = d.nest, u = nestUnit(n.today);
   if (!window.EQ_NEST || typeof NK !== 'object') {
@@ -7244,7 +7270,8 @@ function renderNest(d){
         document.getElementById('nkagain').onclick = () => renderNest(d); });
     return;
   }
-  const played = [...new Set(n.played.map(id => String(id).split('.')[0]))].map(nestUnit).filter(Boolean).filter(x => x.id !== (u && u.id));
+  // Settings.NestAll (n.all): every unit is open now, each with its days to pick.
+  const played = (n.all ? EQ_NEST.units : [...new Set(n.played.map(id => String(id).split('.')[0]))].map(nestUnit).filter(Boolean)).filter(x => x.id !== (u && u.id));
   app.innerHTML = `<div class="nk-home">
     <div class="row-flex between">
       <div class="row-flex">${petFace(d.pet, d.girl.color, d.girl.name)}<h2 style="font-size:22px">${esc(d.girl.name)}</h2></div>
@@ -7269,7 +7296,8 @@ function renderNest(d){
   const go = document.getElementById('nkgo');
   if (go) go.onclick = () => nestStart(n.today);
   // A unit played before: one of its days again, as free play.
-  app.querySelectorAll('[data-nkunit]').forEach(b => b.onclick = () => nestStart(nkPick(n.played.filter(id => String(id).split('.')[0] === b.dataset.nkunit).concat([b.dataset.nkunit]))));
+  app.querySelectorAll('[data-nkunit]').forEach(b => b.onclick = () => n.all ? nestDays(nestUnit(b.dataset.nkunit))
+    : nestStart(nkPick(n.played.filter(id => String(id).split('.')[0] === b.dataset.nkunit).concat([b.dataset.nkunit]))));
   document.getElementById('nkhear').onclick = () => nestPlay(['en-hi']);
   const art = document.getElementById('nkart'); if (art) art.onclick = nkAlbum;
   document.getElementById('logout').onclick = nestSwitch;
