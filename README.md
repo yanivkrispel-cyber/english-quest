@@ -140,6 +140,8 @@ Phone / browser                     GitHub Pages (docs/)            Google
   with BigInt in `Push.js` (verified against Node crypto in `test/push-crypto.js`). Pushes carry no
   payload; the service worker asks `apiPushMessage` what to show. The VAPID key pair is generated
   on first use and stored only in Script Properties.
+- **Home in five tabs** (spec: `specs/home-tabs.md`): Today (the pet, one Start, Talk with Coco and an invite or a
+  game, never a scroll), Journey (the map), Play, Pet (and the shop) and Me (stats, week, rewards, switch player).
 - **Speed** (spec: `specs/perf-phase1.md`): a remembered kid's last dashboard is kept on the phone and shown at
   once, fresh data comes in the background (the refresh button spins, or shows a dot when it failed). Every call
   has a time limit, reads get a second try, Google's own failures read as "try again". The server caches every
@@ -261,4 +263,5 @@ node test/dev-server.js   # two players locally (seeded duo history): /test/dev.
                           # bad networks: /dev/chaos?mode=hang|500|html|busy&n=2 ; the page gets the service worker
                           # missions: /dev/mission?who=Aviv&id=a2l01 (turns missions on for her, makes it today's task)
                           # the play frame: /test/fit.html measures every mission screen in two phone sizes
+                          # the home tabs: /test/home-fit.html checks Today fits in three phone sizes
 ```

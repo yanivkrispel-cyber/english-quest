@@ -98,11 +98,13 @@ h2{font-size:18px;font-weight:700;margin:0}
 .word-card{padding:18px 20px;border-radius:26px;background:linear-gradient(155deg,rgba(196,181,253,.78),rgba(165,180,252,.55) 45%,rgba(153,246,228,.72));
   border:1px solid rgba(255,255,255,.75);box-shadow:var(--shadow),var(--inner)}
 .word{font-size:28px;font-weight:800;letter-spacing:-.4px;margin-top:4px}
-.who{display:grid;gap:14px}
-.who button{height:72px;border-radius:999px;justify-content:flex-start;padding:0 12px;font-size:20px}
+.who{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.who button{height:auto;min-height:150px;border-radius:26px;flex-direction:column;justify-content:center;gap:6px;padding:14px 8px;font-size:19px}
+.who .pet-face,.who .avatar{width:84px;height:84px;font-size:32px}
+.who .pet-face img{width:158px;height:158px}
 .avatar{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:20px;flex:none;
   box-shadow:0 10px 20px -8px currentColor,inset 0 1px 0 rgba(255,255,255,.5)}
-.who .age{margin-left:auto;margin-right:10px;color:var(--muted);font-size:14px;font-weight:600}
+.who .age{margin:0;color:var(--muted);font-size:13px;font-weight:600}
 
 /* PIN */
 .dots{display:flex;gap:14px;justify-content:center;margin:22px 0}
@@ -990,6 +992,91 @@ button{touch-action:manipulation}
 .mgaps .gz{display:inline-grid;visibility:hidden}
 .mgaps .gz>span{grid-area:1/1;white-space:nowrap}
 .mgaps .gl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;white-space:nowrap}
+/* The five tabs (specs/home-tabs.md). The bar stays at the bottom; Today fits the screen without a scroll. */
+.tabbar{position:fixed;left:0;right:0;margin:0 auto;bottom:calc(10px + env(safe-area-inset-bottom));z-index:40;width:calc(100% - 24px);max-width:456px;height:68px;
+  display:flex;justify-content:space-around;align-items:center;padding:0 6px;border-radius:26px}
+#app>.tabbar{animation:none}
+.tabb{position:relative;flex:1;max-width:80px;height:56px;border:0;background:none;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  font-family:inherit;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.tabb i{font-size:23px}
+.tabb.on{color:#4338ca;background:rgba(99,102,241,.14)}
+.tabb:focus-visible{outline:2px solid var(--primary);outline-offset:-2px}
+.tdot{position:absolute;top:7px;left:calc(50% + 7px);width:10px;height:10px;border-radius:50%;background:var(--danger);border:2px solid #fff}
+html:has(.tabbar) #app{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+html:has(.tabbar) .netbar:not(.upd){bottom:calc(88px + env(safe-area-inset-bottom))}
+.tv-today{display:flex;flex-direction:column;gap:12px}
+.htop{display:flex;align-items:center;gap:8px;flex:none}
+.hme{border:0;background:none;padding:0;cursor:pointer;flex:none;border-radius:50%}
+.hhi{display:flex;flex-direction:column;line-height:1.2;min-width:0;margin-right:auto}
+.hhi span{font-size:12.5px;color:var(--muted);font-weight:600;white-space:nowrap}
+.hhi b{font-size:19px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hchip{height:34px;font-weight:800;flex:none}
+.hchip.fire{color:#c2410c}
+.htop .icon-btn{width:38px;height:38px;font-size:16px;flex:none}
+.phero{flex:1 1 auto;min-height:190px;display:flex;flex-direction:column;align-items:center;padding:14px 16px;position:relative}
+.phero .bubble{margin:0;align-self:center;max-width:100%;text-align:center;font-size:14.5px;flex:none}
+.phero .bubble::before{left:50%;top:auto;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-top-color:rgba(255,255,255,.85);border-bottom:0}
+.phstage{flex:1;min-height:70px;width:100%;position:relative;margin-top:10px}
+.phbody{position:absolute;left:0;right:0;bottom:0;height:min(100%,290px);transform-origin:50% 100%;will-change:transform}
+.phbody .pet-img{width:100%;height:100%;object-fit:contain}
+.phero>.btn{flex:none;margin-top:10px}
+.phrow{display:flex;align-items:center;gap:8px;width:100%;margin-top:8px;font-size:12.5px;color:var(--muted);font-weight:700;flex:none;white-space:nowrap}
+.phrow b{color:var(--ink);font-size:15px}
+.phrow .bar{flex:1;height:8px;margin:0;min-width:40px}
+@media (prefers-reduced-motion:no-preference){
+  .phbody{animation:phBreathe 3.4s ease-in-out infinite}
+  .phbody.enter{animation:phIn .75s cubic-bezier(.2,.9,.3,1.35) both,phBreathe 3.4s ease-in-out .75s infinite}
+}
+@keyframes phBreathe{50%{transform:scale(1.03,.97)}}
+@keyframes phIn{0%{transform:translateY(46px) scale(.55);opacity:0}100%{transform:none;opacity:1}}
+.tmain{flex:none;padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.tm-top{display:flex;align-items:center;gap:8px}
+.tm-top .label{margin:0;color:#4338ca}
+.tm-top .sub{margin:0 0 0 auto;font-size:13px;white-space:nowrap}
+.tmain h2{font-size:21px;line-height:1.2;margin:0}
+.tmain .mission-parts{margin-top:2px}
+.tmain>.btn-block{height:56px;font-size:17px;margin-top:4px}
+.tmain.done{flex-direction:row;align-items:center;gap:12px}
+.tm-main{display:flex;flex-direction:column;line-height:1.3;min-width:0;flex:1}
+.tm-main b{font-size:17px}
+.tm-main .sub{margin:2px 0 0;font-size:13px}
+.tcheck{width:46px;height:46px;border-radius:50%;background:#0f766e;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;flex:none}
+.tcheck.rest{background:#f6a04d;color:#fff}
+.hpills{display:flex;gap:10px;flex:none}
+.hpill{flex:1 1 0;min-width:0;height:60px;border-radius:20px;display:flex;align-items:center;gap:8px;padding:0 10px;font:inherit;color:var(--ink);cursor:pointer;text-align:left}
+.hpill img{width:38px;height:38px;object-fit:contain;flex:none}
+.hpill .tile,.hpill .pet-face,.hpill .avatar{flex:none}
+.hpill .pet-face,.hpill .avatar{width:40px;height:40px;font-size:16px}
+.hpill .pet-face img{width:76px;height:76px}
+.hme .pet-face,.hme .avatar{width:44px;height:44px}
+.hme .pet-face img{width:84px;height:84px}
+.tmain .mission-parts span{border-top-color:rgba(99,102,241,.22)}
+.hpill>span:last-child{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.hpill b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hpill small{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hpill small.ok{color:#0f766e}
+.hpill.hot{border:2px solid rgba(99,102,241,.55)}
+.tv-pet .pet-card{grid-template-columns:minmax(0,1fr);justify-items:stretch}
+.tv-pet .pet-card>.pa{width:min(240px,70%);margin:0 auto}
+.tv-pet .pet-card .bubble::before{display:none}
+@media (orientation:portrait),(min-height:501px){
+  html:has(.tv-today),html:has(.tv-today) body{height:100%;overflow:hidden;overscroll-behavior:none}
+  html:has(.tv-today) #app{height:100vh;height:100dvh;padding:calc(12px + env(safe-area-inset-top)) 16px calc(90px + env(safe-area-inset-bottom));display:flex;flex-direction:column}
+  .tv-today{flex:1;min-height:0}
+}
+@media (max-width:370px){
+  .hpill{padding:0 8px;gap:6px}
+  .hpill img{width:32px;height:32px}
+  .hpill b{font-size:13px}
+}
+@media (max-height:680px){
+  .tv-today{gap:10px}
+  .phero{min-height:150px;padding:10px 14px}
+  .tmain{padding:12px 16px;gap:6px}
+  .tmain>.btn-block{height:50px}
+  .tmain .mission-parts{display:none}
+  .hpill{height:54px}
+}
 @media (orientation:portrait),(min-height:501px){
   html:has(.gplay),html:has(.gplay) body,html:has(.tugscreen),html:has(.tugscreen) body{height:100%;overflow:hidden;overscroll-behavior:none}
   html:has(.gplay) #app{height:100vh;height:100dvh;padding:calc(10px + env(safe-area-inset-top)) 16px calc(12px + env(safe-area-inset-bottom));display:flex;flex-direction:column}
@@ -4290,16 +4377,6 @@ async function startChat(){
   if (!s) { toast('No talks for your level yet.', true); return renderDash(); }
   chatOpen(s, { where: 'home', level: file, practice: !!dash.chat.homeToday, onDone: () => renderDash() });
 }
-function chatCard(d){
-  const c = d.chat;
-  if (!c || d.levelTest) return '';
-  return `<div class="glass panel chatcard">
-    <div class="row-flex" style="gap:12px"><img class="coco-face" src="${cocoSrc(c.homeToday ? 'celebrate' : 'happy')}" alt="">
-      <div style="flex:1;min-width:0"><div class="row-flex between"><h2>Talk with Coco</h2>${c.weekVoice ? `<span class="chip teal">${icon('microphone')} ${c.weekVoice} this week</span>` : ''}</div>
-      <div class="sub" style="font-size:13px">${c.homeToday ? 'Done for today. Want to talk again? (practice)' : 'A new little talk every day. Speak English out loud, about 3 minutes.'}</div></div></div>
-    <button class="btn ${c.homeToday ? 'btn-glass' : 'btn-primary'} btn-block mt" id="chatgo">${icon('microphone')} ${c.homeToday ? 'Talk again' : 'Start talking'}</button>
-  </div>`;
-}
 
 // The gallery of home scenes (the mission talks play inside the missions), for the teacher and the owner.
 async function chatGallery(){
@@ -4460,22 +4537,28 @@ function bindTogether(){
 }
 
 function refreshTogether(){
-  const b = document.getElementById('duelbanner'), c = document.getElementById('together');
+  const b = document.getElementById('duelbanner'), c = document.getElementById('together'), hp = document.getElementById('hpills'), tb = document.getElementById('tabbar');
   if (b) b.outerHTML = duelBanner();
   if (c) c.outerHTML = togetherCard();
+  if (hp && dash) { hp.outerHTML = homePills(dash); bindPills(); }
+  if (tb && dash) tb.outerHTML = tabBar(dash);
   bindTogether();
+  bindTabs();
   refreshDuos();
 }
 
-// The home screen asks for invites every 20 s while it is open (this also keeps the online dot).
+// The tabs ask for invites every 20 s while one is open (this also keeps the online dot).
+// Nothing is redrawn when nothing changed, so the pet on Today keeps moving.
+const onTabs = () => !!document.querySelector('.tabview,.tabmap');
 async function pollHome(){
-  if (!session || G || DU || document.visibilityState !== 'visible' || !document.getElementById('together')) return;
+  if (!session || G || DU || document.visibilityState !== 'visible' || !onTabs()) return;
   try {
     const h = await call('apiDuelHome', session.name, session.pin);
-    if (!document.getElementById('together')) return;
+    if (!onTabs()) return;
     const fresh = h.incoming.find(v => !(duelsHome && duelsHome.incoming.some(x => x.code === v.code)));
+    const same = JSON.stringify(h) === JSON.stringify(duelsHome);
     duelsHome = h;
-    refreshTogether();
+    if (!same) refreshTogether();
     if (fresh) { toast(fresh.host.name + ' invites you to ' + modeInvite(fresh) + '!'); try { navigator.vibrate && navigator.vibrate(120); } catch(e){} }
   } catch(e){}
 }
@@ -6007,7 +6090,7 @@ function gateNote(j){
   return `${plural(Math.min(left, early), 'more station')} to the gate`;
 }
 
-// The world's name, number and progress: the top of the journey card and of the map.
+// The world's name, number and progress: the top of the map.
 const worldHead = j => `<div class="row-flex" style="gap:12px">
     <span class="tile wtile">${icon(look(j.level).icon, 'duotone')}</span>
     <div style="flex:1;min-width:0"><div class="label">World ${j.world} · Level ${esc(j.label)}</div><h2 style="font-size:19px;margin-top:1px">${esc(j.name)}</h2></div>
@@ -6015,26 +6098,11 @@ const worldHead = j => `<div class="row-flex" style="gap:12px">
   </div>
   <div class="mt-s">${trackBar(j)}</div>`;
 
-function journeyCard(d){
-  const j = d.journey;
-  if (!j) return '';
-  return `<div class="jcard iri" id="jcard" style="${worldVars(j.level)}">
-    ${worldHead(j)}
-    <div class="row-flex between mt-s" style="gap:8px"><span class="sub" style="margin:0;font-size:13px;color:#3b3f55">${gateNote(j)}</span>
-      <span class="jlink">Map ${icon('caret-right')}</span></div>
-    ${j.gate.state === 'open' ? `<button class="btn btn-primary btn-block mt-s" id="gatego">${icon('castle-turret')} Take the gate challenge</button>` : ''}
-  </div>`;
-}
-
-function bindJourney(){
-  const jc = document.getElementById('jcard');
-  if (jc) jc.onclick = e => e.target.closest('#gatego') ? gateIntro() : renderMap();
-}
-
 // The map: station 1 at the bottom, the gate on top, a winding road between them.
 function renderMap(){
   G = null; speechStop();
   const d = dash, j = d && d.journey;
+  dashTab = 'journey';
   if (!j) return renderDash();
   const g = j.gate, L = look(j.level), nl = look(g.next || j.level), N = j.goal, n = Math.min(j.stations, N);
   const W = 360, DY = 74, TOP = 146, BOT = 86, H = TOP + N * DY + BOT;
@@ -6068,9 +6136,9 @@ function renderMap(){
     ['seal-check', `At the gate: ${g.items} questions from level ${esc(g.nextLabel)}. Get ${g.need} right to reach ${esc(g.nextName)}.`]
   ] : [['crown', `This is the last world. ${N} stations take you to the summit.`]]);
   if (g.state === 'wait' && g.last) rules.push(['hourglass-medium', `Last try: ${g.last.correct}/${g.last.total}. The gate opens again on ${dayLabel(g.until)}, and the questions you missed come back in your games.`]);
-  app.innerHTML = `<div class="stack" style="${worldVars(j.level)}">
+  app.innerHTML = `<div class="stack tabmap" style="${worldVars(j.level)}">
     <div class="mapbar">
-      <div class="row-flex" style="gap:10px"><button class="btn btn-glass icon-btn" id="back" title="Back">${icon('arrow-left')}</button>
+      <div class="row-flex" style="gap:10px">
         <div class="wstrip">${j.worlds.map((w, i) => {
           const st = i < j.world - 1 ? 'done' : i === j.world - 1 ? 'cur' : '';
           return `<div class="wdot ${st}" style="${worldVars(w.level)}" title="${esc(w.name)}"><span class="wball">${icon(st === 'done' ? 'check' : st ? look(w.level).icon : 'lock-simple', st === 'done' ? 'bold' : 'duotone')}</span>${esc(w.label)}</div>`;
@@ -6097,13 +6165,12 @@ function renderMap(){
       <span class="chip mtag" style="${at(pts[0][0], pts[0][1] + 40)}">${icon('flag-banner')} Start</span>
       ${d.pet ? `${petArt(d.pet, g.state === 'open' ? 'celebrate' : 'happy', 'mpet', { style: at(petAt[0], petAt[1]) })}` : ''}
     </div>
-  </div>`;
+  </div>${tabBar(d)}`;
   const gate = () => {
     if (g.state === 'open') return gateIntro();
     toast(g.state === 'wait' ? 'The gate opens again on ' + dayLabel(g.until)
       : g.state === 'top' ? (j.stations >= N ? 'You reached the summit of English with Coco!' : 'The summit of English with Coco. Keep going!') : gateNote(j));
   };
-  document.getElementById('back').onclick = renderDash;
   document.getElementById('mgate').onclick = gate;
   const go = document.getElementById('gatego');
   if (go) go.onclick = gate;
@@ -6120,6 +6187,8 @@ function renderMap(){
     const top = bar.offsetHeight, r = here.getBoundingClientRect();
     window.scrollTo(0, Math.max(0, window.scrollY + r.top + r.height / 2 - top - (window.innerHeight - top) / 2));
   }, 30);
+  bindTabs();
+  startHomePoll();
   checkGrowth();
 }
 
@@ -6787,18 +6856,18 @@ function home(){
       <div><h1>English with Coco</h1><div class="sub">${esc(pub.group.name)} · 10 minutes a day</div></div>
       <button class="btn btn-glass icon-btn" id="pbtn" title="Parent">${icon('lock-simple')}</button>
     </div>
-    <div class="word-card mt">
-      <div class="label">Word of the day</div>
-      <div class="word">${esc(pub.word.word)}</div>
-      <div class="sub" style="color:#3b3f55">${esc(pub.word.meaning)}</div>
-    </div>
-    <div class="label mt" style="margin-left:6px">Who's practicing?</div>
+    <div class="label mt" style="margin-left:6px">Who's learning today?</div>
     <div class="who mt-s">
       ${pub.girls.map(g => `
         <button class="btn btn-glass iri" data-name="${esc(g.name)}">
           ${petFace(g.pet, g.color, g.name)}
-          <span style="margin-left:6px">${esc(g.name)}</span><span class="age">${esc(g.age)}</span>
+          <span>${esc(g.name)}</span><span class="age">${esc(g.age)}</span>
         </button>`).join('')}
+    </div>
+    <div class="word-card mt">
+      <div class="label">Word of the day</div>
+      <div class="word">${esc(pub.word.word)}</div>
+      <div class="sub" style="color:#3b3f55">${esc(pub.word.meaning)}</div>
     </div>
     ${installCard()}
   </div>`;
@@ -6861,7 +6930,7 @@ function setDash(d){
   if (session && session.keep) store.set(dashKey(session.name), d);
 }
 const dashSig = d => JSON.stringify(d, (k, v) => k === 'now' ? undefined : v);
-const onDashboard = () => !G && !DU && !TW && !!document.getElementById('petimg');
+const onDashboard = () => !G && !DU && !TW && !!document.querySelector('.tabview,.tabmap');
 function syncState(s){
   syncNow = s;
   const b = document.getElementById('refresh');
@@ -6896,14 +6965,14 @@ function refreshDash(manual){
 function signOut(){
   if (session) store.del(dashKey(session.name));
   store.del('eq_auth');
-  session = null; dash = null; syncNow = ''; SHOP = null;
+  session = null; dash = null; syncNow = ''; SHOP = null; dashTab = 'today'; homeEntered = false; clearInterval(petLifeT);
   loadHome();
 }
 
 async function login(name, pin, silent, remember){
   try {
     const d = await call('apiDashboard', name, pin);
-    session = { name, pin, keep: !!(remember || silent) };
+    session = { name, pin, keep: !!(remember || silent) }; dashTab = 'today'; homeEntered = false;
     SHOP = null;
     if (remember) store.set('eq_auth', { name, pin });
     setDash(d); syncNow = ''; renderDash();
@@ -6956,21 +7025,73 @@ function renderDash(){
   if (d.duels) duelsHome = d.duels;
   if (!d.games) d.games = Object.assign({}, GAMES_DEFAULT);
   if (d.levelTest) return renderOnboarding(d);
-  const today = d.week.find(w => w.isToday);
-  const next = d.nextReward;
-  const prevPts = d.rewards.filter(r => r.points <= s.balance).map(r => r.points).pop() || 0;
-  const prog = next ? Math.round((s.balance - prevPts) / (next.points - prevPts) * 100) : 100;
-  app.innerHTML = `
-  <div class="stack">
-    ${dashHeader(d)}
-    ${duelBanner()}
-    ${duoBanner()}
+  if (dashTab === 'journey' && d.journey) return renderMap();
+  app.innerHTML = `<div class="tabview tv-${dashTab}${dashTab === 'today' ? '' : ' stack'}">${dashBody(d)}</div>${tabBar(d)}`;
+  window.scrollTo(0, 0);
+  const rf = document.getElementById('refresh'); if (rf) rf.onclick = () => refreshDash(true);
+  const lo = document.getElementById('logout'); if (lo) lo.onclick = signOut;
+  syncState(syncNow);
+  app.querySelectorAll('[data-log]').forEach(b => b.onclick = () => openSheet(d.week.find(w => w.date === b.dataset.log)));
+  app.querySelectorAll('[data-mission]').forEach(b => b.onclick = () => startMission(b.dataset.mission));
+  const rt = document.getElementById('retest'); if (rt) rt.onclick = () => placeIntro('B');
+  const mr = document.getElementById('msreview');
+  if (mr) mr.onclick = startMissionReview;
+  bindPills();
+  app.querySelectorAll('.tabview [data-game]').forEach(b => b.onclick = () => startGame(b.dataset.game));
+  ['adopt', 'petedit'].forEach(id => { const b = document.getElementById(id); if (b) b.onclick = petPicker; });
+  bindPet(d);
+  const sg = document.getElementById('shopgo'), pw = document.getElementById('petwear');
+  if (sg) sg.onclick = () => openShop('shop');
+  if (pw) pw.onclick = () => openShop('wardrobe');
+  const pg = document.getElementById('polishgo');
+  if (pg) pg.onclick = polishAll;
+  const mw = document.getElementById('mywords');
+  if (mw) mw.onclick = openMyWords;
+  bindTogether();
+  bindDuos();
+  bindTabs();
+  startHomePoll();
+  if (d.push && d.push.key) pushKey = d.push.key;
+  renderPushCard();
+  petLife(d);
+  checkGrowth();
+  checkDuoParty();
+  prefetch();
+}
 
-    ${petCard(d)}
-    ${shopCard(d)}
-    ${journeyCard(d)}
-    ${duoSection()}
-
+// ---------- The five tabs (specs/home-tabs.md) ----------
+// Today is one screen with one big button: the pet, today's mission and two small extras, never a scroll.
+// Everything else has a tab of its own. A new sign-in opens on Today; going back from a game, the shop or
+// the map lands on the tab it was opened from.
+let dashTab = 'today', homeEntered = false, petLifeT = null;
+const TABS = [['today', 'sun-horizon', 'Today'], ['journey', 'map-trifold', 'Journey'], ['play', 'game-controller', 'Play'], ['pet', 'paw-print', 'Pet'], ['me', 'user-circle', 'Me']];
+function tabBar(d){
+  const h = duelsHome, p = d && d.placement;
+  const dot = {
+    play: !!(h && ((h.incoming || []).length || (h.challenges || []).length || (h.playing || []).length || (h.duos && (h.duos.incoming || []).length))),
+    me: !!(p && p.due && d.girl.inApp)
+  };
+  return `<nav class="tabbar glass" id="tabbar" aria-label="Main">${TABS.map(([k, ic, l]) => `<button class="tabb ${k === dashTab ? 'on' : ''}" data-tab="${k}"${k === dashTab ? ' aria-current="page"' : ''}>${icon(ic, k === dashTab ? 'duotone' : 'bold')}<span>${l}</span>${dot[k] ? '<i class="tdot"></i>' : ''}</button>`).join('')}</nav>`;
+}
+function bindTabs(){
+  app.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => goTab(b.dataset.tab));
+}
+function goTab(t){
+  if (t === dashTab && t !== 'journey') return window.scrollTo({ top: 0, behavior: 'smooth' });
+  dashTab = t;
+  renderDash();
+}
+function dashBody(d){
+  const s = d.stats, today = d.week.find(w => w.isToday);
+  if (dashTab === 'play') return `${duelBanner()}${duoBanner()}${togetherCard()}${gamesPanel(d)}${duoSection()}`;
+  if (dashTab === 'pet') return `${petCard(d)}${shopCard(d)}`;
+  if (dashTab === 'journey') return `<div class="glass panel" style="text-align:center"><h2>Your journey starts soon</h2><div class="sub mt-s">Finish your first daily task to open the map.</div></div>`;
+  if (dashTab === 'me') {
+    const next = d.nextReward;
+    const prevPts = d.rewards.filter(r => r.points <= s.balance).map(r => r.points).pop() || 0;
+    const prog = next ? Math.round((s.balance - prevPts) / (next.points - prevPts) * 100) : 100;
+    return `${dashHeader(d)}
+    ${retestCard(d)}
     <div class="hero">
       ${ring(s.weekDone, s.weekTotal)}
       <div class="stack" style="gap:10px">
@@ -6980,11 +7101,6 @@ function renderDash(){
       </div>
     </div>
 
-    ${retestCard(d)}
-    ${today ? todayCard(today) : ''}
-    ${chatCard(d)}
-    ${gamesPanel(d)}
-    ${togetherCard()}
     <div id="pushcard"></div>
 
     <div class="glass panel">
@@ -7005,36 +7121,103 @@ function renderDash(){
       <div class="label">Word of the day</div>
       <div class="word">${esc(d.word.word)}</div>
       <div class="sub" style="color:#3b3f55">${esc(d.word.meaning)}</div>
-    </div>
+    </div>`;
+  }
+  return `${homeTop(d)}${petHero(d)}${todayMain(d, today)}${homePills(d)}`;
+}
+
+function homeTop(d){
+  const s = d.stats, hr = new Date().getHours();
+  const hi = hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
+  return `<div class="htop">
+    <button class="hme" data-tab="me" aria-label="Me">${petFace(d.pet, d.girl.color, d.girl.name)}</button>
+    <div class="hhi"><span>${hi}</span><b>${esc(d.girl.name)}</b></div>
+    <span class="chip hchip fire" title="Day streak">${icon('fire', 'duotone')} ${s.streak}</span>
+    ${d.shop ? `<span class="chip hchip" title="Coins">${coin}${coinsTxt(d.coins)}</span>` : `<span class="chip hchip" title="Points">${icon('star', 'duotone')} ${s.balance}</span>`}
+    <button class="btn btn-glass icon-btn" id="refresh" title="Refresh">${icon('arrows-clockwise')}</button>
   </div>`;
-  document.getElementById('refresh').onclick = () => refreshDash(true);
-  document.getElementById('logout').onclick = signOut;
-  syncState(syncNow);
-  app.querySelectorAll('[data-log]').forEach(b => b.onclick = () => openSheet(d.week.find(w => w.date === b.dataset.log)));
-  app.querySelectorAll('[data-mission]').forEach(b => b.onclick = () => startMission(b.dataset.mission));
-  const rt = document.getElementById('retest'); if (rt) rt.onclick = () => placeIntro('B');
+}
+
+// The pet, big: it greets, breathes, looks around now and then (petLife) and jumps when tapped (bindPet).
+function petHero(d){
+  const p = d.pet;
+  if (!p) return `<div class="glass phero"><div class="bubble">A friend who grows every time you practice English.</div>
+    <div class="phstage"><div class="phbody"><img class="pet-img" src="${petSrc('cat', 1, 'happy')}" alt=""></div></div>
+    <button class="btn btn-primary btn-block" id="adopt">${icon('paw-print')} Choose your pet</button></div>`;
+  const mood = petMood(d), span = p.to ? p.to - p.from : 0, pct = p.to ? Math.round((p.xp - p.from) / span * 100) : 100;
+  const line = d.journey && d.journey.gate.state === 'open' ? pick(PET_LINES.gate) : petLine(d, mood);
+  const enter = !homeEntered;
+  homeEntered = true;
+  return `<div class="glass phero iri">
+    <div class="bubble" id="petline">${esc(line)}</div>
+    <div class="phstage"><div class="phbody${enter ? ' enter' : ''}">${petArt(p, mood, 'pet-img', { id: 'petimg', label: p.name })}</div></div>
+    <div class="phrow"><b>${esc(p.name)}</b><span>${STAGES[p.stage - 1]}</span><div class="bar"><i style="width:${Math.max(3, pct)}%"></i></div>
+      <span>${p.to ? (p.to - p.xp) + ' XP to grow' : 'Fully grown!'}</span></div>
+  </div>`;
+}
+
+// Today's mission: one big Start. Done, it says so; a day without a task says that.
+function todayMain(d, t){
+  const missed = d.week.filter(w => !w.done && !w.isToday && !w.isFuture && !w.beforeStart).length;
+  const catchUp = missed ? `<button class="btn btn-glass btn-sm" data-tab="me">Catch up · ${missed}</button>` : '';
+  if (!t) return `<div class="glass tmain done"><span class="tcheck rest">${icon('sun', 'duotone')}</span>
+    <div class="tm-main"><b>No mission today</b><span class="sub">Play a game or talk with Coco for bonus points.</span></div>${catchUp}</div>`;
+  if (!t.mission) return todayCard(t);
+  if (t.done) return `<div class="glass tmain done"><span class="tcheck">${icon('check', 'bold')}</span>
+    <div class="tm-main"><b>Mission done!</b><span class="sub">${esc(scoreText(t))} · +${esc(t.points)} points · next one tomorrow</span></div>${catchUp}</div>`;
+  const info = MS_TYPES[t.section] || MS_TYPES.grammar, saved = msSaved(t);
+  const left = saved ? Math.max(1, t.mission.n - (saved.res || []).filter(x => x != null).length) : 0;
+  return `<div class="glass tmain">
+    <div class="tm-top"><span class="label">Today's mission</span><span class="sub">${esc(info[0])} · ${info[1]} min</span></div>
+    <h2>${esc(t.title)}</h2>
+    <div class="mission-parts">${MS_PARTS.map(p => `<span>${p}</span>`).join('')}</div>
+    <button class="btn btn-primary btn-block" data-mission="${t.date}">${icon('play', 'bold')} ${saved ? 'Continue · ' + left + ' left' : 'Start'}</button>
+  </div>`;
+}
+
+// The two small extras under the mission: Talk with Coco, and an invite (or a warm-up game).
+function homePills(d){
+  const c = d.chat, rec = warmupGame(d);
+  const talk = c ? `<button class="glass hpill" id="chatgo"><img src="${cocoSrc(c.homeToday ? 'celebrate' : 'happy')}" alt="">
+    <span><b>Talk with Coco</b><small class="${c.homeToday ? '' : 'ok'}">${c.homeToday ? 'Done · talk again' : 'Bonus · 3 min'}</small></span></button>` : '';
+  const game = invitePill() || `<button class="glass hpill" data-game="${rec}"><span class="tile sm ${GAME_INFO[rec].tile}">${icon(GAME_INFO[rec].icon, 'duotone')}</span>
+    <span><b>${GAME_INFO[rec].name}</b><small>Game · 2 min</small></span></button>`;
+  return `<div class="hpills" id="hpills">${talk}${game}</div>`;
+}
+function invitePill(){
+  const h = duelsHome;
+  if (!h) return '';
+  const pl = (h.playing || [])[0], inv = (h.incoming || [])[0], ch = (h.challenges || [])[0], duo = h.duos && (h.duos.incoming || [])[0];
+  const who = pl ? duelThem(pl) : inv ? inv.host : ch ? ch.host : duo ? duo.partner : null;
+  if (!who) return '';
+  const top = pl ? 'Back to the game' : inv ? who.name + ' invites you' : ch ? who.name + ' challenged you' : who.name + ' wants a duo';
+  const sub = pl ? modeTitle(pl) : inv ? 'Tap to answer' : ch ? 'Beat ' + ch.host.score + '/' + DUEL_ITEMS : 'Duo streak';
+  return `<button class="glass hpill hot" data-tab="play">${faceOf(who)}<span><b>${esc(top)}</b><small>${esc(sub)}</small></span></button>`;
+}
+function bindPills(){
   const cg = document.getElementById('chatgo'); if (cg) cg.onclick = startChat;
-  const mr = document.getElementById('msreview');
-  if (mr) mr.onclick = startMissionReview;
-  app.querySelectorAll('[data-game]').forEach(b => b.onclick = () => startGame(b.dataset.game));
-  ['adopt', 'petedit'].forEach(id => { const b = document.getElementById(id); if (b) b.onclick = petPicker; });
-  bindPet(d);
-  const sg = document.getElementById('shopgo'), pw = document.getElementById('petwear');
-  if (sg) sg.onclick = () => openShop('shop');
-  if (pw) pw.onclick = () => openShop('wardrobe');
-  const pg = document.getElementById('polishgo');
-  if (pg) pg.onclick = polishAll;
-  const mw = document.getElementById('mywords');
-  if (mw) mw.onclick = openMyWords;
-  bindJourney();
-  bindTogether();
-  bindDuos();
-  startHomePoll();
-  if (d.push && d.push.key) pushKey = d.push.key;
-  renderPushCard();
-  checkGrowth();
-  checkDuoParty();
-  prefetch();
+  const hp = document.getElementById('hpills');
+  if (hp) hp.querySelectorAll('[data-game]').forEach(b => b.onclick = () => startGame(b.dataset.game));
+}
+
+// Now and then the pet hops, tries a face or says something new, while Today is on screen.
+function petLife(d){
+  clearInterval(petLifeT);
+  if (dashTab !== 'today' || !d.pet || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+  let k = 0;
+  petLifeT = setInterval(() => {
+    const pi = document.querySelector('.tv-today #petimg'), line = document.getElementById('petline');
+    if (!pi) return clearInterval(petLifeT);
+    if (document.visibilityState !== 'visible' || pi.busy) return;
+    const m = petMood(dash), act = k++ % 3;
+    if (act === 0) { pi.classList.remove('bounce'); void pi.getBoundingClientRect(); pi.classList.add('bounce'); }
+    else if (act === 1) {
+      pi.busy = true;
+      paMood(pi, m === 'sleepy' ? 'thinking' : 'celebrate');
+      setTimeout(() => { pi.busy = false; if (pi.isConnected) paMood(pi, m); }, 1500);
+    }
+    else if (line) line.textContent = petLine(dash, m);
+  }, 6500);
 }
 
 // ---------- Reminders (Web Push) ----------

@@ -69,6 +69,11 @@ working rules and the traps learned while building it.
   happen under the script lock in the other duel calls). `ensureSetup()` checks a cache flag before Script Properties
   (consumer quota: 50,000 reads a day).
 - The home screen polls invites only while the page is visible; background tabs skip it (test with the tab in front).
+- **The home is five tabs** (`dashTab`, `specs/home-tabs.md`). `renderDash()` draws the open tab, so a screen that goes
+  "home" lands where it came from. A new home card goes on a tab, not on Today: Today must fit the screen
+  (`http://localhost:8787/test/home-fit.html`, "page" stays 0). Code that looks for a home element must allow for it to
+  be on another tab (null checks; `onTabs()` instead of one card's id). `renderDash()` copies `dash.duels` into
+  `duelsHome`, so a test invite goes into `dash.duels`.
 - Chrome sometimes paints glass panels blank when two app iframes sit side by side (`test/duo.html`); the DOM is
   fine. Check visuals in separate tabs.
 - **Index.html is one global scope**: a second top-level function with the same name silently replaces the
@@ -182,3 +187,6 @@ the script by keywords, tiles and a Hebrew hint; a bonus only. Preview: `?talk` 
 the admin's Pilot card. Writing rules for new scripts: `tools/TALK-WRITING.md`. Live @35 on 2026-10-27 with 2,689 of 4,502
 clips recorded (the recording run was stopped for low memory); the rest play in the phone's voice until
 `python tools/talk_audio.py` finishes them (it resumes where it stopped), then raise `TALK_V`, build Pages and push.
+
+Home in five tabs (owner's choice 2026-10-27 from the mockup canvas, spec `specs/home-tabs.md`): Today (pet, one Start, two
+pills, no scroll), Journey (the map), Play, Pet, Me. Live on Pages and @36 the same day.

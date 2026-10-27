@@ -1,0 +1,68 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Home fit</title>
+<style>
+body{margin:0;background:#2b2b33;color:#eee;font:14px/1.45 system-ui,sans-serif;padding:12px}
+.row{display:flex;gap:16px;align-items:flex-start}
+iframe{border:0;border-radius:18px;background:#fff}
+pre{white-space:pre-wrap;margin:12px 0 0}
+</style>
+<!-- The five tabs in three phone sizes, for every test kid (served by test/dev-server.js:
+     http://localhost:8787/test/home-fit.html). Today must fit the screen in every state: "page" stays 0 and the
+     extras end above the tab bar. The other tabs may scroll; their heights are listed. -->
+<div class="row"><iframe id="f1" width="360" height="640"></iframe><iframe id="f2" width="390" height="740"></iframe><iframe id="f3" width="430" height="932"></iframe></div>
+<pre id="out">Loading…</pre>
+<script>
+const SIZES = ['360x640', '390x740', '430x932'], out = document.getElementById('out');
+const KIDS = [['Aviv', '2694'], ['Ziv', '4821'], ['Ron', '7356']];
+const load = f => new Promise(r => { f.onload = r; f.src = 'dev.html'; });
+async function ready(f){
+  for (let i = 0; i < 80; i++) {
+    try { if (f.contentWindow.eval('typeof renderDash') === 'function' && f.contentDocument.getElementById('app')) return; } catch(e){}
+    await new Promise(r => setTimeout(r, 250));
+  }
+  throw new Error('the app did not open in ' + f.id);
+}
+const INVITE = "dash.duels = Object.assign({ friends: [], waiting: [], results: [], challenges: [], playing: [], duos: { incoming: [], active: [] } }, dash.duels || {}, "
+  + "{ incoming: [{ code: 'TEST', host: { name: 'Tom', color: '#8b8ffb' }, mode: 'live', until: Date.now() + 600000 }] });";
+const DONE = "(() => { const t = dash.week.find(w => w.isToday); if (t) { t.done = true; t.correct = 7; t.total = 8; t.points = 15; } })();";
+async function audit(f){
+  const w = f.contentWindow, d = w.document, ev = s => w.eval(s);
+  // Layout only: the animations stay off so three phones in one window stay light.
+  d.head.insertAdjacentHTML('beforeend', '<style>*,*::before,*::after{animation:none!important;transition:none!important}</style>');
+  const fit = () => {
+    const tb = d.getElementById('tabbar'), last = d.querySelector('.tv-today > :last-child');
+    return { page: d.scrollingElement.scrollHeight - w.innerHeight, over: tb && last ? Math.round(last.getBoundingClientRect().bottom - tb.getBoundingClientRect().top) : 0 };
+  };
+  const rows = [];
+  for (const [name, pin] of KIDS) {
+    await ev(`(async () => { await login('${name}', '${pin}', false, false); clearInterval(homeTimer); clearInterval(petLifeT); })()`);
+    if (ev('!!dash.levelTest')) { rows.push(name + ': level test first (no tabs)'); continue; }
+    const states = [['plain', ''], ['invite', INVITE], ['done', DONE]];
+    for (const [st, js] of states) {
+      ev(js + " dashTab = 'today'; renderDash(); clearInterval(petLifeT);");
+      await new Promise(r => setTimeout(r, 60));
+      const m = fit();
+      const noPill = st === 'invite' && !d.querySelector('.hpill.hot');
+      rows.push(`${name} today ${st}: page ${m.page}, ${m.over > 0 ? 'OVER the tab bar by ' + m.over + 'px' : 'ends ' + -m.over + 'px above the bar'}${noPill ? ', no invite pill' : ''}${m.page > 0 || m.over > 0 || noPill ? '  <-- FIX' : ''}`);
+    }
+    for (const t of ['journey', 'play', 'pet', 'me']) {
+      ev(`dashTab = '${t}'; renderDash();`);
+      await new Promise(r => setTimeout(r, 60));
+      rows.push(`${name} ${t}: ${d.scrollingElement.scrollHeight}px tall${d.getElementById('tabbar') ? '' : '  <-- no tab bar'}`);
+    }
+    ev("dashTab = 'today'; renderDash(); clearInterval(petLifeT);");
+  }
+  return rows;
+}
+(async () => {
+  try {
+    const frames = ['f1', 'f2', 'f3'].map(id => document.getElementById(id));
+    for (const f of frames) { await load(f); await ready(f); }
+    const text = [];
+    for (let i = 0; i < frames.length; i++) { out.textContent = 'Measuring ' + SIZES[i] + '…'; text.push(SIZES[i] + '\n' + (await audit(frames[i])).map(r => '  ' + r).join('\n')); }
+    const bad = text.join('\n').split('FIX').length - 1;
+    out.textContent = (bad ? bad + ' screens to fix' : 'Today fits on every phone size, for every kid and state') + '\n\n' + text.join('\n\n');
+  } catch(e){ out.textContent = 'Failed: ' + e.message; }
+})();
+</script>
