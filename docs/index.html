@@ -1287,6 +1287,17 @@ function moveLink(){
   } catch(e){}
   history.replaceState(null, '', location.pathname + location.search);
 })();
+// A kid's own link (#hi=, from kidLink in the join block): this phone signs her in. The #part never reaches a server and
+// is removed at once; a wrong pair is dropped by the first sign-in like any stale one.
+(function takeHi(){
+  if (IN_APPS_SCRIPT || !/^#hi=/.test(location.hash)) return;
+  try {
+    const raw = atob(decodeURIComponent(location.hash.slice(4))), i = raw.lastIndexOf('.');
+    const name = decodeURIComponent(raw.slice(0, i)), pin = raw.slice(i + 1);
+    if (name && /^\d{4}$/.test(pin)) localStorage.setItem('eq_auth', JSON.stringify({ name, pin }));
+  } catch(e){}
+  history.replaceState(null, '', location.pathname + location.search);
+})();
 function movedScreen(){
   if (!Object.keys(moveData()).length) return location.replace(moveLink());
   app.innerHTML = `<div class="gscreen">
@@ -6665,9 +6676,15 @@ function retestCard(d){
 }
 
 // ---------- Join: a family signs up from the owner's invite link (?join=<code>) ----------
+// Two short screens (what it is + consent, then the family) and the family page. The phone keeps the family
+// (eq_family), so the link opened again, or the back button, lands on the family page and never on a fresh form
+// (the first pilot family pressed back on the done screen, signed up again and was left with two families).
+// The draft is kept as it is typed (eq_join), and each step is a browser history entry, so back moves one step.
 const GRADES = [[3, 'ג'], [4, 'ד'], [5, 'ה'], [6, 'ו'], [7, 'ז'], [8, 'ח'], [9, 'ט'], [10, 'י'], [11, 'יא'], [12, 'יב']];
 let JOIN = null;
 async function renderJoin(code){
+  const fam = store.get('eq_family');
+  if (fam && fam.groupId) return familyPage(fam);
   loading();
   let ok = false;
   try { ok = (await call('apiJoinCheck', code)).ok; } catch(e){ ok = null; }
@@ -6675,50 +6692,62 @@ async function renderJoin(code){
     app.innerHTML = `<div class="glass panel he" dir="rtl" lang="he" style="display:grid;gap:12px;text-align:center">
       <h2>${ok === null ? 'אין חיבור כרגע' : 'הקישור לא פעיל'}</h2>
       <div class="sub">${ok === null ? 'בדקו את החיבור לאינטרנט ונסו שוב.' : 'ההרשמה בקישור הזה סגורה. בקשו קישור חדש ממי ששלח לכם.'}</div>
-      ${ok === null ? `<button class="btn btn-primary btn-block" id="jagain">${icon('arrows-clockwise')} נסו שוב</button>` : ''}</div>`;
+      ${ok === null ? `<button class="btn btn-primary btn-block" id="jagain">${icon('arrows-clockwise')} נסו שוב</button>` : ''}
+      <button class="btn btn-glass btn-block" id="jhave">${icon('lock-simple')} כבר נרשמתם? כניסה עם קוד ההורה</button></div>`;
     const b = document.getElementById('jagain'); if (b) b.onclick = () => renderJoin(code);
+    document.getElementById('jhave').onclick = () => pinPad(null, true);
     return;
   }
-  JOIN = JOIN || { code, kids: [{ name: '', grade: '' }], consent: false };
-  joinWelcome();
+  JOIN = JOIN || store.get('eq_join') || { kids: [{ name: '', grade: '' }], consent: false };
+  JOIN.code = code;
+  joinStep(history.state && history.state.join === 'form' && JOIN.consent ? 'form' : 'welcome', true);
 }
+function joinStep(step, replace){
+  try { history[replace ? 'replaceState' : 'pushState']({ join: step }, '', location.href); } catch(e){}
+  if (step === 'form') joinForm(); else joinWelcome();
+}
+const joinKeep = () => { if (JOIN) store.set('eq_join', JOIN); };
+window.addEventListener('popstate', e => {
+  const st = e.state && e.state.join;
+  if (!st) return;
+  const fam = store.get('eq_family');
+  if (fam && fam.groupId) return familyPage(fam);
+  if (!JOIN) return;
+  if (st === 'form' && JOIN.consent) joinForm(); else joinWelcome();
+});
 function joinWelcome(){
   app.innerHTML = `<div class="stack he" dir="rtl" lang="he">
     <div class="glass panel">
       <div class="label">פיילוט משפחות · 4 שבועות בחינם</div>
       <h1 style="margin-top:6px">אנגלית, 10 דקות ביום</h1>
-      <div class="sub mt-s">אפליקציה שהילדים רוצים לחזור אליה: משימה יומית קצרה ברמה של הילד, משחקים, חיית מחמד שגדלה ומשחק עם חברים.</div>
-    </div>
-    <div class="glass panel">
-      <h2>מה מקבלים</h2>
-      <ul class="helist">
-        <li><b>משימה יומית של 6 עד 9 דקות</b> בדקדוק, אוצר מילים, האזנה וקריאה, ברמה שנקבעת במבחן קצר בהתחלה.</li>
-        <li><b>ארבעה משחקים קצרים</b> שמחזירים את הטעויות של הילד עד שהן נלמדות.</li>
-        <li><b>משחק עם חברים</b>: דו קרב, משחק דיבור ואתגר משותף.</li>
-        <li><b>אתם רואים כל יום</b> מה הילד עשה, ומקבלים ב-21:00 סיכום עם שאלה באנגלית לארוחת הערב.</li>
-      </ul>
-      <div class="sub" style="font-size:13px">התוכן נכתב בעזרת בינה מלאכותית ונבדק על ידי מורה לאנגלית.</div>
+      <div class="sub mt-s">משימה יומית קצרה ברמה של הילד, משחקים, חיית מחמד שגדלה ומשחק עם חברים. אתם רואים כל יום מה הילד עשה.</div>
+      <div class="sub mt-s" style="font-size:13px">ההרשמה לוקחת בערך שתי דקות: מאשרים כאן, כותבים את שמות הילדים, ושולחים לכל ילד קישור אישי.</div>
     </div>
     <div class="glass panel">
       <h2>פרטיות</h2>
-      <ul class="helist">
-        <li>שומרים רק את השם הפרטי של הילד, הכיתה, התשובות וההתקדמות. מכם: שם, וכתובת מייל אם תבחרו.</li>
-        <li>נרשם גם מתי נכנסו לאפליקציה ומאיזה סוג מכשיר (למשל אייפון או אנדרואיד), כדי שנדע איך הפיילוט עובד.</li>
-        <li>אין פרסומות. לא מקליטים קול ולא שומרים הקלטות. לא מעבירים מידע לאף אחד.</li>
-        <li>אפשר לבקש מחיקה מלאה של כל המידע בכל רגע, בהודעה למי ששלח לכם את הקישור.</li>
-        <li>הילדים יכולים לשחק עם ילדים ממשפחות אחרות בפיילוט. רואים רק שם פרטי, ואין צ'אט חופשי.</li>
-      </ul>
+      <div class="sub">שומרים רק את השם הפרטי של הילד, הכיתה וההתקדמות. אין פרסומות, לא שומרים הקלטות, ואפשר למחוק הכול בכל רגע.</div>
+      <details class="mt-s"><summary>כל הפרטים ▾</summary>
+        <ul class="helist">
+          <li>שומרים רק את השם הפרטי של הילד, הכיתה, התשובות וההתקדמות. מכם: שם, וכתובת מייל אם תבחרו.</li>
+          <li>נרשם גם מתי נכנסו לאפליקציה ומאיזה סוג מכשיר (למשל אייפון או אנדרואיד), כדי שנדע איך הפיילוט עובד.</li>
+          <li>אין פרסומות. לא מקליטים קול ולא שומרים הקלטות. לא מעבירים מידע לאף אחד.</li>
+          <li>אפשר לבקש מחיקה מלאה של כל המידע בכל רגע, בהודעה למי ששלח לכם את הקישור.</li>
+          <li>הילדים יכולים לשחק עם ילדים ממשפחות אחרות בפיילוט. רואים רק שם פרטי, ואין צ'אט חופשי.</li>
+          <li>התוכן נכתב בעזרת בינה מלאכותית ונבדק על ידי מורה לאנגלית.</li>
+        </ul></details>
       <label class="row-flex mt-s" style="gap:10px;align-items:flex-start;cursor:pointer">
         <input type="checkbox" id="jconsent" ${JOIN.consent ? 'checked' : ''} style="width:22px;height:22px;flex:none;margin-top:2px">
         <span>אני ההורה, קראתי ואני מסכים/ה לשימוש במידע כמו שכתוב כאן.</span></label>
     </div>
-    <button class="btn btn-primary btn-block" id="jnext">בואו נתחיל ${icon('arrow-left')}</button>
+    <button class="btn btn-primary btn-block" id="jnext">המשך ${icon('arrow-left')}</button>
+    <button class="btn btn-glass btn-block" id="jhave">${icon('lock-simple')} כבר נרשמתם? כניסה עם קוד ההורה</button>
   </div>`;
-  document.getElementById('jconsent').onchange = e => { JOIN.consent = e.target.checked; };
+  document.getElementById('jconsent').onchange = e => { JOIN.consent = e.target.checked; joinKeep(); };
   document.getElementById('jnext').onclick = () => {
     if (!JOIN.consent) return toast('צריך לסמן את האישור כדי להמשיך', true);
-    joinForm();
+    joinStep('form');
   };
+  document.getElementById('jhave').onclick = () => pinPad(null, true);
 }
 function joinForm(){
   const kidRow = (k, i) => `<div class="row-flex" style="gap:8px">
@@ -6727,90 +6756,105 @@ function joinForm(){
       ${JOIN.kids.length > 1 ? `<button class="btn btn-glass icon-btn" data-kdel="${i}" title="הסרה">${icon('x')}</button>` : ''}</div>`;
   app.innerHTML = `<div class="stack he" dir="rtl" lang="he">
     <div class="glass panel" style="display:grid;gap:10px">
-      <h2>המשפחה</h2>
-      <input class="input" id="jfam" placeholder="שם המשפחה" value="${esc(JOIN.family || '')}" autocomplete="family-name">
-      <input class="input" id="jpar" placeholder="השם שלך" value="${esc(JOIN.parent || '')}" autocomplete="given-name">
-      <input class="input" id="jpin" inputmode="numeric" maxlength="4" placeholder="קוד הורה: 4 ספרות שתבחרו" value="${esc(JOIN.parentPin || '')}" dir="ltr" style="text-align:right">
-      <div class="sub" style="font-size:12px">עם הקוד הזה נכנסים לאזור ההורים (המנעול במסך הבית). כדאי לבחור קוד שהילדים לא יודעים.</div>
-      <input class="input" id="jmail" type="email" placeholder="מייל לסיכום שבועי (לא חובה)" value="${esc(JOIN.email || '')}" dir="ltr" style="text-align:right">
-    </div>
-    <div class="glass panel" style="display:grid;gap:10px">
       <h2>הילדים</h2>
       <div class="sub" style="font-size:12px">השם מופיע באפליקציה, ולכן באנגלית. לפי הכיתה נקבעת נקודת ההתחלה של מבחן הרמה.</div>
       ${JOIN.kids.map(kidRow).join('')}
-      ${JOIN.kids.length < 5 ? `<button class="btn btn-glass btn-block" id="jaddkid">${icon('user-plus')} הוספת ילד</button>` : ''}
+      ${JOIN.kids.length < 5 ? `<button class="btn btn-glass btn-block" id="jaddkid">${icon('user-plus')} עוד ילד</button>` : ''}
     </div>
-    <button class="btn btn-primary btn-block" id="jsend">${icon('check')} פתיחת המשפחה</button>
-    <button class="btn btn-glass btn-block" id="jback">${icon('arrow-right')} חזרה</button>
+    <div class="glass panel" style="display:grid;gap:10px">
+      <h2>ההורה</h2>
+      <input class="input" id="jpar" placeholder="השם שלך" value="${esc(JOIN.parent || '')}" autocomplete="given-name">
+      <input class="input" id="jfam" placeholder="שם המשפחה" value="${esc(JOIN.family || '')}" autocomplete="family-name">
+      <input class="input" id="jpin" inputmode="numeric" maxlength="4" placeholder="קוד הורה: 4 ספרות שתבחרו" value="${esc(JOIN.parentPin || '')}" dir="ltr" style="text-align:right">
+      <div class="sub" style="font-size:12px">הקוד היחיד שצריך לזכור. איתו נכנסים לאזור ההורים מכל טלפון, ושם יש גם את הקישורים של הילדים. כדאי קוד שהילדים לא יודעים.</div>
+      <input class="input" id="jmail" type="email" placeholder="מייל לסיכום שבועי (לא חובה)" value="${esc(JOIN.email || '')}" dir="ltr" style="text-align:right">
+    </div>
+    <button class="btn btn-primary btn-block" id="jsend">${icon('check')} סיום</button>
   </div>`;
   const keep = () => {
     JOIN.family = document.getElementById('jfam').value; JOIN.parent = document.getElementById('jpar').value;
     JOIN.parentPin = document.getElementById('jpin').value.replace(/\D/g, ''); JOIN.email = document.getElementById('jmail').value;
     app.querySelectorAll('[data-kname]').forEach(el => { JOIN.kids[el.dataset.kname].name = el.value; });
     app.querySelectorAll('[data-kgrade]').forEach(el => { JOIN.kids[el.dataset.kgrade].grade = el.value; });
+    joinKeep();
   };
+  app.querySelector('.stack').addEventListener('input', keep);
+  app.querySelector('.stack').addEventListener('change', keep);
   const add = document.getElementById('jaddkid');
   if (add) add.onclick = () => { keep(); JOIN.kids.push({ name: '', grade: '' }); joinForm(); };
-  app.querySelectorAll('[data-kdel]').forEach(b => b.onclick = () => { keep(); JOIN.kids.splice(Number(b.dataset.kdel), 1); joinForm(); });
-  document.getElementById('jback').onclick = () => { keep(); joinWelcome(); };
+  app.querySelectorAll('[data-kdel]').forEach(b => b.onclick = () => { keep(); JOIN.kids.splice(Number(b.dataset.kdel), 1); joinKeep(); joinForm(); });
   document.getElementById('jsend').onclick = async () => {
     keep();
     const kids = JOIN.kids.filter(k => k.name.trim());
-    if (!JOIN.family.trim() || !JOIN.parent.trim()) return toast('כתבו שם משפחה ואת השם שלכם', true);
-    if (!/^\d{4}$/.test(JOIN.parentPin)) return toast('קוד ההורה צריך להיות 4 ספרות', true);
-    if (!kids.length) return toast('הוסיפו לפחות ילד אחד', true);
+    if (!kids.length) return toast('כתבו את השם של הילד', true);
     if (kids.some(k => !/^[A-Za-z][A-Za-z .'-]*$/.test(k.name.trim()))) return toast('כתבו את שמות הילדים באותיות באנגלית', true);
     if (kids.some(k => !k.grade)) return toast('בחרו כיתה לכל ילד', true);
+    if (!JOIN.parent.trim() || !JOIN.family.trim()) return toast('כתבו את השם שלכם ואת שם המשפחה', true);
+    if (!/^\d{4}$/.test(JOIN.parentPin)) return toast('קוד ההורה צריך להיות 4 ספרות', true);
     const b = document.getElementById('jsend'); b.disabled = true; b.innerHTML = '<span class="mini-spin"></span> פותחים…';
     try {
       const r = await call('apiJoin', JOIN.code, { family: JOIN.family, parent: JOIN.parent, parentPin: JOIN.parentPin, email: JOIN.email,
         consent: true, kids: kids.map(k => ({ name: k.name.trim(), grade: Number(k.grade) })) });
+      const fam = { groupId: r.groupId, family: r.family, link: r.link, parentPin: r.parentPin, kids: r.kids, code: JOIN.code };
+      store.set('eq_family', fam); store.set('eq_group', r.groupId); store.del('eq_join');
       JOIN = null;
-      store.set('eq_joined', r);
-      joinDone(r);
-    } catch(e){ b.disabled = false; b.innerHTML = icon('check') + ' פתיחת המשפחה'; toast(e.message, true); }
+      familyPage(fam);
+    } catch(e){ b.disabled = false; b.innerHTML = icon('check') + ' סיום'; toast(e.message, true); }
   };
 }
-const kidInvite = (r, k) => `היי ${k.name}! 👋\nזה הקישור לאפליקציית האנגלית שלך:\n${r.link}\n\nבוחרים את השם שלך ומקלידים את הקוד: ${k.pin}\nמתחילים במבחן רמה קצר (בערך 8 דקות), ואז נפתחות המשימות, המשחקים והחיה שלך.\n10 דקות ביום, בהצלחה! 💪`;
-function joinDone(r){
+// The kid's own link: it opens the app signed in (takeHi). The name and PIN ride in the #part, which never reaches a server.
+const kidLink = (base, name, pin) => base + '#hi=' + btoa(encodeURIComponent(name) + '.' + pin).replace(/=+$/, '');
+const kidInvite = (base, k) => `היי ${k.name}! 👋\nזה הקישור האישי שלך לאפליקציית האנגלית:\n${kidLink(base, k.name, k.pin)}\n\nלוחצים ונכנסים, בלי סיסמה. מתחילים במבחן רמה קצר (בערך 8 דקות), ואז נפתחות המשימות, המשחקים והחיה שלך.\nאם פעם יבקשו ממך קוד: ${k.pin}\n10 דקות ביום, בהצלחה! 💪`;
+// A kid plays on this phone: sign her in here (the parent's phone, or a shared tablet).
+function kidHere(groupId, name, pin){
+  store.set('eq_group', groupId); store.set('eq_auth', { name, pin }); pub = null;
+  history.replaceState(null, '', location.pathname + '?g=' + encodeURIComponent(groupId));
+  loading();
+  login(name, pin, false, true).then(ok => { if (!ok) loadHome(); });
+}
+// The family page: what is left to do after signing up (send each kid her link), and the way back to it later.
+function familyPage(fam){
+  try { history.replaceState({ join: 'done' }, '', location.pathname + '?g=' + encodeURIComponent(fam.groupId)); } catch(e){}
   const ios = isIos();
   app.innerHTML = `<div class="stack he" dir="rtl" lang="he">
     <div class="today iri">
-      <div class="label" style="color:#3b3f55">המשפחה נפתחה</div>
-      <h1 style="margin-top:4px">${esc(r.family)}</h1>
-      <div class="sub" style="color:#3b3f55">שמרו את ההודעה הזאת. הקוד שלכם לאזור ההורים: <b dir="ltr">${esc(r.parentPin)}</b></div>
+      <div class="label" style="color:#3b3f55">נרשמתם, המשפחה מוכנה</div>
+      <h1 style="margin-top:4px">${esc(fam.family)}</h1>
+      <div class="sub" style="color:#3b3f55">נשאר רק לשלוח לכל ילד את הקישור האישי שלו. הדף הזה נשמר בטלפון, ואפשר לחזור אליו מאותו קישור.</div>
     </div>
     <div class="glass panel" style="display:grid;gap:12px">
-      <h2>הקודים של הילדים</h2>
-      ${r.kids.map(k => `<div class="soft" style="padding:12px;border-radius:14px;display:grid;gap:8px">
-        <div class="row-flex between"><b dir="ltr">${esc(k.name)}</b><span class="chip purple">${icon('key')} <span dir="ltr">${esc(k.pin)}</span></span></div>
-        <div class="row-flex" style="gap:8px;flex-wrap:wrap">
-          <a class="btn btn-teal btn-sm" href="${esc(waLink(kidInvite(r, k)))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} שליחה בוואטסאפ</a>
-          <button class="btn btn-glass btn-sm" data-copy="${esc(kidInvite(r, k))}">${icon('copy')} העתקה</button>
-          <button class="btn btn-primary btn-sm" data-here="${esc(k.name)}">${icon('device-mobile')} לפתוח בטלפון הזה</button></div></div>`).join('')}
-      <div class="sub" style="font-size:12px">לכל ילד שולחים את ההודעה שלו לטלפון שלו. אם הוא משתמש בטלפון שלכם, לחצו "לפתוח בטלפון הזה".</div>
-    </div>
-    <div class="glass panel" style="display:grid;gap:8px">
-      <h2>להתקין כמו אפליקציה</h2>
-      ${ios ? `<ol class="helist"><li>פותחים את הקישור ב-<bdi>Safari</bdi>.</li><li>לוחצים על כפתור השיתוף (ריבוע עם חץ למעלה).</li><li>בוחרים "הוספה למסך הבית".</li><li>פותחים מהאייקון החדש ומאשרים התראות. באייפון התראות עובדות רק אחרי ההתקנה.</li></ol>`
-        : `<ol class="helist"><li>פותחים את הקישור ב-<bdi>Chrome</bdi>.</li><li>לוחצים על שלוש הנקודות למעלה.</li><li>בוחרים "התקנת אפליקציה" או "הוספה למסך הבית".</li><li>פותחים מהאייקון החדש ומאשרים התראות.</li></ol>`}
+      <h2>לחבר את הילדים</h2>
+      ${fam.kids.map((k, i) => `<div class="soft" style="padding:12px;border-radius:14px;display:grid;gap:8px">
+        <div class="row-flex between"><b dir="ltr">${esc(k.name)}</b><span class="chip" title="קוד גיבוי">${icon('key')} <span dir="ltr">${esc(k.pin)}</span></span></div>
+        <a class="btn btn-teal btn-block" href="${esc(waLink(kidInvite(fam.link, k)))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} שליחת הקישור בוואטסאפ</a>
+        <div class="row-flex" style="gap:8px">
+          <button class="btn btn-glass btn-sm" style="flex:1" data-here="${i}">${icon('device-mobile')} משחק בטלפון הזה</button>
+          <button class="btn btn-glass btn-sm" style="flex:1" data-copy="${i}">${icon('copy')} העתקת ההודעה</button></div></div>`).join('')}
+      <div class="sub" style="font-size:12px">לילד יש טלפון? שולחים לו את ההודעה, והוא נכנס בלחיצה על הקישור. משחק בטלפון שלכם? לוחצים "משחק בטלפון הזה".</div>
     </div>
     <div class="glass panel" style="display:grid;gap:8px">
       <h2>אזור ההורים</h2>
-      <div class="sub">שם רואים מה כל ילד עשה, ומפעילים התראות: עדכון כשהילד מסיים, וסיכום ב-21:00.</div>
+      <div class="sub">רואים מה כל ילד עשה, מפעילים סיכום ב-21:00, ושולחים שוב קישור אם צריך. הקוד שלכם: <b dir="ltr">${esc(fam.parentPin)}</b></div>
       <button class="btn btn-primary btn-block" id="jparent">${icon('lock-simple')} כניסה לאזור ההורים</button>
     </div>
+    <div class="glass panel"><details><summary><b>איך שמים את האפליקציה במסך הבית</b> ▾</summary>
+      ${ios ? `<ol class="helist"><li>פותחים את הקישור ב-<bdi>Safari</bdi>.</li><li>לוחצים על כפתור השיתוף (ריבוע עם חץ למעלה).</li><li>בוחרים "הוספה למסך הבית".</li><li>פותחים מהאייקון החדש. אם הוא מבקש שם וקוד, הקוד מופיע בהודעה.</li></ol>`
+        : `<ol class="helist"><li>פותחים את הקישור ב-<bdi>Chrome</bdi>.</li><li>לוחצים על שלוש הנקודות למעלה.</li><li>בוחרים "התקנת אפליקציה" או "הוספה למסך הבית".</li><li>פותחים מהאייקון החדש ומאשרים התראות.</li></ol>`}
+    </details></div>
+    ${fam.code ? `<button class="btn btn-glass btn-sm" id="jagain2" style="justify-self:center">רישום משפחה אחרת מהטלפון הזה</button>` : ''}
   </div>`;
-  app.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(b.dataset.copy));
-  app.querySelectorAll('[data-here]').forEach(b => b.onclick = () => {
-    store.set('eq_group', r.groupId); store.del('eq_joined'); pub = null;
-    history.replaceState(null, '', location.pathname + '?g=' + encodeURIComponent(r.groupId));
-    loadHome().then(() => pinPad(b.dataset.here));
-  });
+  app.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(kidInvite(fam.link, fam.kids[b.dataset.copy])));
+  app.querySelectorAll('[data-here]').forEach(b => b.onclick = () => { const k = fam.kids[b.dataset.here]; kidHere(fam.groupId, k.name, k.pin); });
   document.getElementById('jparent').onclick = () => {
-    store.set('eq_group', r.groupId);
-    history.replaceState(null, '', location.pathname + '?g=' + encodeURIComponent(r.groupId));
-    parent(r.parentPin, true, true);
+    store.set('eq_group', fam.groupId);
+    parent(fam.parentPin, true, true);
+  };
+  const again = document.getElementById('jagain2');
+  if (again) again.onclick = () => {
+    if (!again.dataset.sure) { again.dataset.sure = '1'; again.textContent = 'בטוחים? זה פותח משפחה חדשה. לחצו שוב'; return; }
+    store.del('eq_family'); JOIN = null;
+    history.replaceState(null, '', location.pathname + '?join=' + encodeURIComponent(fam.code));
+    renderJoin(fam.code);
   };
 }
 
@@ -6972,6 +7016,7 @@ async function start(){
   if (qs.has('missions')) { const t = qs.get('t') || store.get('eq_teacher'); if (t) await teacherStart(t); return missionGallery(); }
   if (qs.has('talk')) { const t = qs.get('t') || store.get('eq_teacher'); if (t) await teacherStart(t); await missionGallery(); return chatGallery(); }
   if (qs.get('join')) return renderJoin(qs.get('join'));
+  if (history.state && history.state.join === 'done' && store.get('eq_family')) return familyPage(store.get('eq_family'));
   takeDuelParam();
   const saved = store.get('eq_auth'), admin = store.get('eq_admin');
   const kept = saved && store.get(dashKey(saved.name));
@@ -6991,6 +7036,7 @@ async function start(){
 // The kids of the group: from the phone at once when known, refreshed in the background.
 async function loadHome(){
   const key = 'eq_pub_' + groupId(), kept = store.get(key);
+  if (!IN_APPS_SCRIPT && !groupId() && !kept) return signIn();
   if (!pub && kept && kept.group && kept.girls) {
     pub = kept; home();
     call('apiPublic', groupId()).then(p => {
@@ -7013,6 +7059,26 @@ async function loadHome(){
     return;
   }
   home();
+}
+
+// A phone that knows no family (a new phone, or the installed iPhone app, which starts with empty storage): the kid types
+// her name, then her PIN (names are unique across the app). Phones that already used the default group still see its faces.
+function signIn(){
+  pub = null;
+  app.innerHTML = `<div class="glass panel">
+    <div class="row-flex between">
+      <div><h1>English with Coco</h1><div class="sub">10 minutes a day</div></div>
+      <button class="btn btn-glass icon-btn" id="pbtn" title="Parent">${icon('lock-simple')}</button>
+    </div>
+    <div class="label mt" style="margin-left:6px">What's your name?</div>
+    <input class="input mt-s" id="siname" placeholder="Your name in English" autocomplete="off" autocapitalize="words" dir="ltr">
+    <button class="btn btn-primary btn-block mt" id="sigo">Next ${icon('arrow-right')}</button>
+    <div class="sub mt he" dir="rtl" lang="he" style="font-size:13px">קיבלתם קישור אישי בוואטסאפ? פותחים אותו ונכנסים בלי להקליד.</div>
+  </div>`;
+  const go = () => { const n = document.getElementById('siname').value.trim(); if (!n) return toast('Type your name', true); call('apiWarm').catch(() => {}); pinPad(n); };
+  document.getElementById('sigo').onclick = go;
+  document.getElementById('siname').onkeydown = e => { if (e.key === 'Enter') go(); };
+  document.getElementById('pbtn').onclick = () => { call('apiWarm').catch(() => {}); pinPad(null); };
 }
 
 function home(){
@@ -7044,9 +7110,9 @@ function home(){
 }
 
 // ---------- PIN ----------
-function pinPad(name){
+function pinPad(name, he){
   let pin = '', remember = true;
-  const isParent = !name;
+  const isParent = !name, ask = he ? 'הקוד של 4 ספרות שבחרתם בהרשמה' : 'Enter your 4-digit PIN';
   app.innerHTML = `
   <div class="glass panel">
     <div class="row-flex between">
@@ -7055,8 +7121,8 @@ function pinPad(name){
       <span style="width:46px"></span>
     </div>
     <div style="text-align:center" class="mt">
-      <h1>${isParent ? 'Parent' : 'Hi ' + esc(name)}</h1>
-      <div class="sub" id="pinsub">Enter your 4-digit PIN</div>
+      <h1>${he ? 'כניסת הורים' : isParent ? 'Parent' : 'Hi ' + esc(name)}</h1>
+      <div class="sub" id="pinsub"${he ? ' dir="rtl" lang="he"' : ''}>${ask}</div>
     </div>
     <div class="dots" id="dots">${'<div class="dot"></div>'.repeat(4)}</div>
     <div class="pad">
@@ -7064,13 +7130,13 @@ function pinPad(name){
       <span></span><button class="btn btn-glass" data-k="0">0</button><button class="btn btn-glass" data-k="del">${icon('backspace')}</button>
     </div>
     <div class="row-flex between mt" style="padding:0 6px">
-      <span class="sub" style="margin:0">Remember me on this phone</span>
+      <span class="sub" style="margin:0"${he ? ' dir="rtl" lang="he"' : ''}>${he ? 'לזכור אותי בטלפון הזה' : 'Remember me on this phone'}</span>
       <div class="toggle" id="rem"></div>
     </div>
   </div>`;
   const dots = document.getElementById('dots'), pad = app.querySelector('.pad'), sub = document.getElementById('pinsub');
   const paint = () => dots.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('on', i < pin.length));
-  document.getElementById('back').onclick = home;
+  document.getElementById('back').onclick = () => he ? (JOIN ? joinWelcome() : location.reload()) : pub ? home() : signIn();
   document.getElementById('rem').onclick = e => { remember = !remember; e.currentTarget.classList.toggle('off', !remember); };
   app.querySelectorAll('.pad button').forEach(b => b.onclick = async () => {
     const k = b.dataset.k;
@@ -7080,7 +7146,7 @@ function pinPad(name){
       pad.classList.add('busy'); dots.classList.add('pulse');
       sub.innerHTML = '<span class="mini-spin"></span>Checking…';
       const ok = isParent ? await parent(pin, false, remember) : await login(name, pin, false, remember);
-      if (!ok) { pad.classList.remove('busy'); dots.classList.remove('pulse'); sub.textContent = 'Enter your 4-digit PIN'; dots.classList.remove('shake'); void dots.offsetWidth; dots.classList.add('shake'); pin = ''; paint(); }
+      if (!ok) { pad.classList.remove('busy'); dots.classList.remove('pulse'); sub.textContent = ask; dots.classList.remove('shake'); void dots.offsetWidth; dots.classList.add('shake'); pin = ''; paint(); }
     }
   });
 }
@@ -7138,6 +7204,7 @@ function signOut(){
 async function login(name, pin, silent, remember){
   try {
     const d = await call('apiDashboard', name, pin);
+    name = (d.girl && d.girl.name) || name;
     session = { name, pin, keep: !!(remember || silent) }; dashTab = 'today'; homeEntered = false;
     SHOP = null;
     if (remember) store.set('eq_auth', { name, pin });
@@ -7641,7 +7708,7 @@ function groupBody(g, p, i){
       <div class="bar mt-s"><i style="width:${Math.max(3, pct)}%"></i></div>
       <div class="sub mt-s" style="color:#3b3f55"><b>${goal.total}</b> / ${goal.goal} ${T('points together', 'נקודות ביחד')}</div>
     </div>
-    ${g.girls.length ? g.girls.map(k => girlCard(k, p.isAdmin)).join('') : `<div class="glass panel sub" style="text-align:center">${T('No kids in this group yet', 'עדיין אין ילדים')}</div>`}
+    ${g.girls.length ? g.girls.map(k => girlCard(k, p.isAdmin, g)).join('') : `<div class="glass panel sub" style="text-align:center">${T('No kids in this group yet', 'עדיין אין ילדים')}</div>`}
     <div class="glass panel">
       <h2>${T('Share with the kids', 'הקישור לילדים')}</h2>
       <div class="row-flex mt-s" style="gap:8px">
@@ -7788,6 +7855,7 @@ function renderParent(p, pin){
   app.querySelectorAll('details.acc').forEach(d => d.addEventListener('toggle', () => store.set('eq_acc_' + d.dataset.acc, d.open)));
   renderParentPush(p, pin);
   bindFeedback(pin);
+  app.querySelectorAll('[data-kidhere]').forEach(b => b.onclick = () => kidHere(b.dataset.kidgroup, b.dataset.kidhere, b.dataset.kidpin));
   const pl = document.getElementById('pilotload'); if (pl) pl.onclick = () => pilotLoad(pin);
   const al = document.getElementById('auditload'); if (al) al.onclick = () => auditLoad(pin);
   document.getElementById('refresh').onclick = () => parent(pin, true);
@@ -7838,7 +7906,7 @@ function journeyChip(j){
   return `<span class="chip ${g.state === 'open' ? 'teal' : ''}" title="World ${j.world}: ${esc(j.name)}">${icon('map-trifold')} ${esc(j.name)} ${Math.min(j.stations, j.goal)}/${j.goal}${gate}</span>`;
 }
 
-function girlCard(g, isAdmin){
+function girlCard(g, isAdmin, grp){
   const s = g.stats;
   return `<div class="glass panel">
     <div class="row-flex between">
@@ -7860,6 +7928,10 @@ function girlCard(g, isAdmin){
       ${g.chat && g.chat.week ? `<span class="chip teal" title="Talk with Coco this week">${icon('microphone')} ${g.chat.weekVoice}/${g.chat.week} ${T('talks out loud', 'שיחות בקול')}</span>` : ''}
     </div>
     ${placementLine(g)}
+    ${!isAdmin && g.pin && grp ? `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:8px;flex-wrap:wrap">
+      <a class="btn btn-teal btn-sm" href="${esc(waLink(kidInvite(grp.link, { name: g.girl.name, pin: g.pin })))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} שליחת הקישור האישי</a>
+      <button class="btn btn-glass btn-sm" data-kidhere="${esc(g.girl.name)}" data-kidpin="${esc(g.pin)}" data-kidgroup="${esc(grp.id)}">${icon('device-mobile')} משחק בטלפון הזה</button>
+      <span class="chip" title="קוד גיבוי">${icon('key')} <bdi>${esc(g.pin)}</bdi></span></div>` : ''}
     ${g.chat && g.chat.best ? `<div class="sub mt-s" style="font-size:13px">${icon('chats-circle')} ${T('Said to Coco this week:', 'משפט מהשיחה עם קוקו השבוע:')} <bdi dir="ltr">"${esc(g.chat.best)}"</bdi></div>` : ''}
     <div class="strip">${g.week.map(w => {
       const st = w.beforeStart ? 'future' : w.done ? 'done' : w.isFuture ? 'future' : w.isToday ? 'pending' : 'missed';

@@ -533,7 +533,7 @@ function parentData(list, isAdmin, who) {
       });
       d.email = k.Email;
       d.bought = shopBought(readTable('Shop').filter(function (r) { return r.Girl === k.Name; }), 3);
-      if (isAdmin) d.pin = String(k.PIN);
+      d.pin = String(k.PIN);
       return d;
     });
     return {

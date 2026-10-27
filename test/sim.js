@@ -1131,6 +1131,8 @@ check('a taken kid name gets the family initial', r.kids[1].name === 'Tali L.' &
 const noa = rows('Girls').find(x => x.Name === 'Shira');
 check('the grade sets the starting level', noa.Level === 'a2' && rows('Girls').find(x => x.Name === 'Tali L.').Level === 'b1-b2');
 fails('a second family with the same parent code', () => J('friends', Object.assign({}, fam, { family: 'Cohen', kids: [{ name: 'Yael', grade: 4 }] })));
+const pp = run("apiParent('5566')").groups[0].girls;
+check('a parent sees each kid\'s code, to send her link again', pp.length === 2 && pp.every(k => /^\d{4}$/.test(k.pin)) && pp.find(k => k.girl.name === 'Shira').pin === r.kids[0].pin);
 const nd = run(`apiDashboard('Shira', '${r.kids[0].pin}')`);
 check('a new kid starts with the in-app level test', !!nd.levelTest && nd.girl.inApp === true);
 fails('a level test that is not finished', () => run(`apiPlacement('Shira', '${r.kids[0].pin}', 'A', 'a2', 1, 3, '{}')`));

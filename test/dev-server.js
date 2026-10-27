@@ -43,6 +43,8 @@ for (let k = 1; k <= 13; k++) {
 }
 // The Wordrobe opens on its date (Settings.ShopOpens); Aviv may shop before it, Ziv sees the teaser.
 run("setSetting('ShopEarly', 'Aviv')");
+// An open invite, so the families' sign-up can be tried: /test/dev.html?join=friends
+run("setSetting('InviteCode', 'friends'); setSetting('InviteOpen', 'yes')");
 global.devRun = run; global.devCtx = ctx; global.devPushLog = pushLog;
 `);
 
