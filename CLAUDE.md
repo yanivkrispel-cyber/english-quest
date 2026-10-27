@@ -6,8 +6,8 @@ working rules and the traps learned while building it.
 ## How the owner wants to work
 - Do the work end-to-end yourself (clasp, gh, git). Only ask the owner for things that need their
   login or consent (OAuth approval in the Apps Script editor, GitHub device login).
-- Premium look: Liquid Glass design (`Design2.jpg` in the parent folder is the reference), Phosphor
-  icons in gradient tiles. **No emoji as UI icons** ("makes it cheap"). Emoji are fine inside
+- Premium look: Liquid Glass design (`Design2.jpg` in the parent folder is the reference, the rules are
+  `specs/design.md`), Phosphor icons in gradient tiles. **No emoji as UI icons** ("makes it cheap"). Emoji are fine inside
   WhatsApp message text. UI language: English. Talk to the owner in Hebrew.
 - Ask only when a decision is genuinely theirs; otherwise pick a sensible default and say so.
 
@@ -18,6 +18,18 @@ kids' side without a parental gate, kids meet kids only through preset content w
 the data list there updated), deletable data, permissions in context with a fallback, no money outside store billing and
 no loot boxes, no pressure on kids, age-appropriate content. A change that cannot meet a rule yet adds a line to the
 gaps list in that file in the same commit, and the owner hears about it.
+
+## One design for every screen (owner, 2026-10-27)
+"שלא יהיה עוד עיצובים לא תואמים": **every new or changed screen follows `specs/design.md`**: the `:root` tokens, `.glass` /
+`.soft` / `.sheet` surfaces, `.btn` pills (one `.btn-primary` per screen), Phosphor icons in `.tile`s, clay art, Plus Jakarta
+Sans. No new colors, button styles, card styles or fonts; reuse the closest existing screen's classes. Before shipping,
+look at it next to its neighbours (home tabs, a mission, the parent view). A screen that looks like another app is a bug.
+
+## Tablets for every change (owner, 2026-10-27)
+Young kids have no phone of their own: they play on a parent's tablet (iPad, Android). **Every new or changed screen must
+work on a tablet, portrait and landscape**, checked at `http://localhost:8787/test/tablet.html` (`specs/tablet.md`) as well
+as on a phone frame, before it ships. No change is done until it is checked on both. The Nest (ages 2 to 7) is tablet
+first. Tablets get the phone layout scaled (`tabletFit`); never add width breakpoints of your own.
 
 ## Change → test → deploy
 1. Edit `src/` (server: `Code.js`, `Push.js`; UI: `Index.html`). Game content: `docs/games.js`
@@ -38,6 +50,7 @@ gaps list in that file in the same commit, and the owner hears about it.
    `src/Index.html` on every load; server edits need a restart. Bad networks on purpose:
    `/dev/chaos?mode=hang|500|html|busy&n=2`. The dev page has the service worker too, so after an edit the first
    reload still shows the old page (with the update bar); reload once more.
+   **Every visual change: a phone frame and `test/tablet.html` (portrait and landscape), against `specs/design.md`.**
 4. `node build-pages.js && clasp push --force && clasp update-deployment <id from README>`, then `npx wrangler deploy`
    (the front end at https://coco.coachkrispel.com, Cloudflare account of the owner, wrangler logged in) and
    `node tools/warm.js` (the slow first call of a new version, so no kid gets it).
