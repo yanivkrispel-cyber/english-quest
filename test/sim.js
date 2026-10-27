@@ -48,7 +48,7 @@ const ctx = {
 };
 const props = ctx.PropertiesService.getScriptProperties(); ctx.PropertiesService.getScriptProperties = () => props;
 vm.createContext(ctx);
-for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js']) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
+for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js']) if (f !== 'NestIndex.js' || fs.existsSync('src/' + f)) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
 // Each call is a fresh request: per-request table memo resets, CacheService persists.
 const run = s => { if (typeof ctx.TABLES === 'object') vm.runInContext('TABLES = {}', ctx); return vm.runInContext(s, ctx); };
 let day = '2026-10-08';
@@ -1253,4 +1253,73 @@ const fam = a.families.find(f => f.kidOpens >= 3);
 check('the family summary counts opens and devices', fam && fam.devices.includes('iPhone, app') && fam.wrong >= 1 && fam.last, JSON.stringify(fam));
 check('the device split counts people per device', a.devices['iPhone, app'] >= 1 && a.devices['Android phone, app'] === 1, JSON.stringify(a.devices));
 check('the days are capped at 30', run("apiAudit('1234', 400)").days === 30);
+}
+
+// ---- Coco's Nest (Nest.js) ----
+{
+const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+const fails = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + label); } catch (e) { console.log('ok: ' + label + ' is rejected: ' + e.message); } };
+const units = run('JSON.stringify(nestUnits())') ? JSON.parse(run('JSON.stringify(nestUnits())')) : [];
+run("apiPilotInvite('1234', true, 'nestcode')");
+const j = run(`apiJoin('nestcode', ${JSON.stringify({ family: 'Nesty', parent: 'Mia', parentPin: '7788', consent: true, kids: [{ name: 'Tali', age: 4 }, { name: 'Omer', age: 7 }, { name: 'Gal', grade: 5 }] })})`);
+check('a family joins with two Nest kids and a school kid', j.kids.length === 3 && j.kids[0].nest && j.kids[0].age === 4 && !j.kids[2].nest, JSON.stringify(j.kids.map(k => k.name + ':' + k.nest)));
+fails('an age outside 2 to 7 with no grade', () => run(`apiJoin('nestcode', ${JSON.stringify({ family: 'Baby', parent: 'Rui', parentPin: '7789', consent: true, kids: [{ name: 'Tiny', age: 1 }] })})`));
+const girl = n => run(`JSON.stringify(findGirl('${n}'))`) && JSON.parse(run(`JSON.stringify(findGirl('${n}'))`));
+const TALI = j.kids[0].name, OMER = j.kids[1].name, GAL = j.kids[2].name;
+const tali = girl(TALI), omer = girl(OMER), gal = girl(GAL);
+check('Nest kids keep their real age and the nest level', tali.Level === 'nest' && Number(tali.Age) === 4 && Number(omer.Age) === 7 && gal.Level === 'a2' && Number(gal.Age) === 11, [tali.Level, tali.Age, omer.Age, gal.Level, gal.Age].join(','));
+let d = run(`apiDashboard('${TALI}', '${tali.PIN}')`);
+check('a Nest kid has no level test, journey, talks, shop or duels', !d.levelTest && !d.journey && !d.chat && !d.shop.open && !d.duels, JSON.stringify({ lt: d.levelTest, j: !!d.journey, chat: !!d.chat, shop: d.shop.open, duels: !!d.duels }));
+check('her day is the first unit, with 2 pictures at age 4', d.nest && d.nest.today === units[0][0] && d.nest.choices === 2 && !d.nest.words && !d.nest.done, JSON.stringify(d.nest));
+const today = d.today;
+check('today shows in the week strip as Coco\'s Nest', d.week.find(w => w.isToday).label === "Coco's Nest");
+const o = run(`apiDashboard('${OMER}', '${omer.PIN}')`).nest;
+check('age 7 gets 3 pictures and the written word', o.choices === 3 && o.words, JSON.stringify(o));
+fails('the old score sheet for a Nest kid', () => run(`apiSubmit('${TALI}', '${tali.PIN}', '${today}', 5, 8, null)`));
+fails('a score of 30', () => run(`apiNestResult('${TALI}', '${tali.PIN}', '${today}', '${units[0][0]}', 30, 30, 200)`));
+d = run(`apiNestResult('${TALI}', '${tali.PIN}', '${today}', 'zz99', 6, 8, 200)`);
+check('another unit is free play', d.free === true && d.justEarned === 0 && !d.nest.done);
+d = run(`apiNestResult('${TALI}', '${tali.PIN}', '${today}', '${units[0][0]}', 3, 8, 260)`);
+const row = sheets.Log.rows.slice(-1)[0], head = sheets.Log.rows[0], R = Object.fromEntries(head.map((h, i) => [h, row[i]]));
+check('the day\'s unit logs the day with 15 points, whatever the score', d.justEarned === 15 && d.nest.done && R.Section === 'nest' && R.Mission === units[0][0] && R.Points === 15 && R.Seconds === 260, JSON.stringify(R));
+check('the unit is in the played list', d.nest.played[0] === units[0][0]);
+d = run(`apiNestResult('${TALI}', '${tali.PIN}', '${today}', '${units[0][0]}', 8, 8, 200)`);
+check('the same unit again is free play', d.free === true && sheets.Log.rows.filter(r => r[1] === TALI).length === 1);
+const day0 = ctx.__day; ctx.__day = run(`addDays('${day0}', 1)`);
+d = run(`apiDashboard('${TALI}', '${tali.PIN}')`);
+check('the next day brings the next unit', units.length < 2 || d.nest.today === units[1][0], d.nest.today);
+ctx.__day = day0;
+check('Nest kids never meet other kids', run(`duelCanMeet(findGirl('${TALI}'), findGirl('${GAL}'))`) === false && run(`duelCanMeet(findGirl('${GAL}'), findGirl('Aviv'))`) === true);
+check('other kids do not see Nest kids in Play together', !run(`apiDashboard('Aviv', '2694')`).duels.friends.some(f => f.name === TALI || f.name === OMER));
+const fam = run("apiPilotStats('1234')").families.find(f => f.name === 'Nesty');
+check('the pilot board counts a Nest kid as placed', fam && fam.kids.find(k => k.name === TALI).placed && fam.kids.find(k => k.name === TALI).nest, JSON.stringify(fam && fam.kids));
+check('a unit she did not play comes again the next day', (() => { const k = JSON.stringify(OMER); return run(`nestNext(findGirl(${k})).url`) === 'nest:' + units[0][0]; })());
+run("apiPilotInvite('1234', false, '')");
+}
+
+// ---- a parent changes a kid's age or class (Pilot.js apiParentSetAge) ----
+{
+const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+const fails = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + label); } catch (e) { console.log('ok: ' + label + ' is rejected: ' + e.message); } };
+const kid = n => JSON.parse(run(`JSON.stringify(findGirl(${JSON.stringify(n)}))`));
+run("apiPilotInvite('1234', true, 'agecode')");
+const j = run(`apiJoin('agecode', ${JSON.stringify({ family: 'Erezish', parent: 'Gil', parentPin: '6611', consent: true, kids: [{ name: 'Lilo', grade: 3 }, { name: 'Tomer', grade: 6 }] })})`);
+const LILO = j.kids[0].name, TOMER = j.kids[1].name;
+let d = run(`apiDashboard(${JSON.stringify(LILO)}, '${kid(LILO).PIN}')`);
+check('a grade 3 kid starts with the level test', !!d.levelTest && !d.nest);
+fails('a parent of another group', () => run(`apiParentSetAge('7788', ${JSON.stringify(LILO)}, { age: 5 })`));
+fails('an age of 9', () => run(`apiParentSetAge('6611', ${JSON.stringify(LILO)}, { age: 9 })`));
+const p = run(`apiParentSetAge('6611', ${JSON.stringify(LILO)}, { age: 5 })`);
+check('the parent view comes back', p.groups.length === 1 && p.groups[0].girls.some(g => g.girl.name === LILO && g.nest));
+d = run(`apiDashboard(${JSON.stringify(LILO)}, '${kid(LILO).PIN}')`);
+check('age 5 moves her into the Nest, the pending level test is gone', kid(LILO).Level === 'nest' && Number(kid(LILO).Age) === 5 && !d.levelTest && d.nest && d.nest.today, JSON.stringify({ lv: kid(LILO).Level, lt: d.levelTest, nest: d.nest }));
+const aud = sheets.Audit.rows.slice(-1)[0];
+check('the change is in the audit trail', aud.includes('kid age') && aud.join('|').includes("Coco's Nest, age 5"), aud.join('|'));
+run(`apiPlacement(${JSON.stringify(TOMER)}, '${kid(TOMER).PIN}', 'A', 'b1', 15, 20, '')`);
+run(`apiParentSetAge('6611', ${JSON.stringify(TOMER)}, { grade: 4 })`);
+check('a class change keeps a tested level', kid(TOMER).Level === 'b1' && Number(kid(TOMER).Age) === 10, kid(TOMER).Level);
+run(`apiParentSetAge('6611', ${JSON.stringify(LILO)}, { grade: 3 })`);
+d = run(`apiDashboard(${JSON.stringify(LILO)}, '${kid(LILO).PIN}')`);
+check('back from the Nest with no test: the class level and the level test', kid(LILO).Level === 'a1' && !d.nest && !!d.levelTest, JSON.stringify({ lv: kid(LILO).Level, lt: !!d.levelTest }));
+run("apiPilotInvite('1234', false, '')");
 }

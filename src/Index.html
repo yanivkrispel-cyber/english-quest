@@ -60,6 +60,90 @@ body{
 #app{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:20px 16px 48px}
 /* Tablets in landscape (the tablet script in the head): a wider column, so the cards use the screen. */
 @media (orientation:landscape){html.tablet #app{max-width:760px}html.tablet .tabbar{max-width:736px}html.tablet .sheet{max-width:640px}}
+/* ---------- Coco's Nest (ages 2 to 7): big pictures, big round buttons, no text the kid must read ---------- */
+.t-nest{background:linear-gradient(145deg,#fde68a,#f59e0b);--tc:#d97706}
+.nk-home{display:flex;flex-direction:column;gap:14px}
+.nk-hero{flex:1;min-height:0;display:grid;place-items:center;align-content:center;gap:4px;border-radius:28px;padding:12px}
+.nk-pethero{background:none;border:0;padding:0;width:min(62vw,300px);aspect-ratio:1;max-height:100%;cursor:pointer}
+.nk-pethero .nk-petart{width:100%;height:100%}
+.nk-petname{font-weight:800;font-size:18px;color:var(--ink)}
+.nk-adopt{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.nk-adoptb{width:96px;height:96px;border-radius:26px;border:2px solid rgba(255,255,255,.95);background:rgba(255,255,255,.7);display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 18px rgba(60,60,120,.1)}
+.nk-adoptb img{width:80px;height:80px;object-fit:contain}
+.nk-adoptb.on{box-shadow:0 0 0 5px #22c55e}
+.nk-today{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
+.nk-coco{width:88px;height:88px;object-fit:contain;flex:none}
+.nk-coco.talk{animation:nkbob .45s ease-in-out infinite alternate}
+.nk-start{width:150px;height:150px;border-radius:50%;border:0;background:linear-gradient(145deg,#c7d2fe,#6366f1);box-shadow:0 14px 30px rgba(99,102,241,.35);position:relative;display:grid;place-items:center;cursor:pointer;animation:nkpulse 1.8s ease-in-out infinite}
+.nk-start img{width:92px;height:92px;object-fit:contain}
+.nk-start.again{background:linear-gradient(145deg,#fef3c7,#f59e0b);animation:none;width:120px;height:120px}
+.nk-start.again img{width:72px;height:72px}
+.nk-play{position:absolute;right:-2px;bottom:-2px;width:56px;height:56px;border-radius:50%;background:#22c55e;color:#fff;display:grid;place-items:center;font-size:28px;border:4px solid #fff}
+.nk-stars{display:flex;gap:4px;color:#f59e0b;font-size:26px}
+.nk-played{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 6px;scrollbar-width:none;min-height:76px}
+.nk-played::-webkit-scrollbar{display:none}
+.nk-unit{flex:none;width:68px;height:68px;border-radius:50%;border:1px solid rgba(255,255,255,.95);background:rgba(255,255,255,.75);display:grid;place-items:center;cursor:pointer}
+.nk-unit img{width:46px;height:46px;object-fit:contain}
+.nk-top .nk-prog{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;flex:1;padding:0 8px}
+.nk-prog i{width:7px;height:7px;border-radius:50%;background:rgba(99,102,241,.18)}
+.nk-prog i.ok{background:#22c55e}
+.nk-prog i.on{background:#6366f1;transform:scale(1.3)}
+.nk-stage{align-items:center;justify-content:center;gap:16px}
+.nk-card{border:0;border-radius:30px;background:rgba(255,255,255,.88);box-shadow:0 8px 24px rgba(60,60,120,.12);display:grid;place-items:center;padding:0;position:relative;width:100%;max-width:220px;aspect-ratio:1;cursor:pointer;transition:transform .15s,opacity .3s,filter .3s;-webkit-tap-highlight-color:transparent}
+.nk-card img{width:76%;height:76%;object-fit:contain;pointer-events:none;-webkit-user-drag:none}
+.nk-card.big{max-width:min(68vw,290px)}
+.nk-card:active{transform:scale(.96)}
+.nk-card.pop{animation:nkpop .35s ease}
+.nk-card.yes{box-shadow:0 0 0 7px #22c55e,0 10px 26px rgba(34,197,94,.3);animation:nkpop .4s ease}
+.nk-card.no{opacity:.3;filter:grayscale(1)}
+.nk-card.away{opacity:.25}
+.nk-cap{position:absolute;bottom:6px;left:0;right:0;text-align:center;font-weight:800;font-size:20px;color:var(--ink)}
+.nk-opts{display:grid;gap:16px;width:100%;justify-items:center;align-content:center}
+.nk-opts.n2,.nk-opts.n3{grid-template-columns:1fr 1fr}
+.nk-opts.n3 .nk-card:last-child{grid-column:1 / -1;max-width:min(220px,calc(50% - 8px))}
+@media (min-width:600px){.nk-opts.n3{grid-template-columns:repeat(3,1fr)}.nk-opts.n3 .nk-card:last-child{grid-column:auto;max-width:220px}}
+.nk-word{font-size:40px;font-weight:800;text-align:center;letter-spacing:.5px;color:var(--ink)}
+.nk-blob{width:68%;aspect-ratio:1;border-radius:50%;border:2px solid rgba(60,60,90,.18);box-sizing:border-box;box-shadow:inset 0 -10px 18px rgba(0,0,0,.16),0 0 0 3px rgba(0,0,0,.07)}
+.nk-dots{display:grid;grid-template-columns:repeat(3,1fr);gap:7%;width:72%;justify-items:center;align-items:center}
+.nk-dots i{width:100%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fda4af,#e11d48)}
+.nk-dots.n1{grid-template-columns:1fr;width:38%}
+.nk-dots.n2,.nk-dots.n4{grid-template-columns:repeat(2,1fr);width:56%}
+.nk-dots.n7,.nk-dots.n8,.nk-dots.n10{grid-template-columns:repeat(4,1fr)}
+.nk-ring{position:relative;display:grid;place-items:center;width:100%;--lv:0}
+.nk-ring::before{content:'';position:absolute;inset:0;margin:auto;width:min(68vw,290px);aspect-ratio:1;border-radius:32px;box-shadow:0 0 0 calc(4px + var(--lv) * 20px) rgba(34,197,94,.3);transition:box-shadow .08s;pointer-events:none}
+.nk-ring.heard::before{box-shadow:0 0 0 10px #22c55e}
+.nk-coach{gap:10px;align-items:center}
+.nk-coach .nk-coco{width:72px;height:72px}
+.nk-he{font-size:15px;color:var(--muted);font-weight:600;flex:1;line-height:1.4}
+.nk-slot{min-height:100px;display:grid;place-items:center}
+.nk-next{width:96px;height:96px;border-radius:50%;border:0;background:linear-gradient(145deg,#a5b4fc,#6366f1);color:#fff;font-size:42px;display:grid;place-items:center;box-shadow:0 10px 24px rgba(99,102,241,.35);opacity:.55;cursor:pointer;transition:opacity .2s}
+.nk-next.ready{opacity:1;animation:nkpulse 1.6s ease-in-out infinite}
+.nk-next.said{background:linear-gradient(145deg,#86efac,#16a34a)}
+.nk-next.home{background:linear-gradient(145deg,#fde68a,#f59e0b)}
+.nk-done{display:grid;justify-items:center;gap:12px}
+.nk-done .nk-petart,.nk-done > img{width:min(58vw,250px);height:auto;aspect-ratio:1}
+.nk-stars.big{font-size:52px;gap:10px}
+.nk-stars span{color:rgba(60,60,90,.15)}
+.nk-stars span.on{color:#f59e0b}
+.nk-switch{flex:1;display:grid;grid-template-columns:repeat(2,1fr);gap:16px;align-content:center;justify-items:center}
+.nk-kid{width:100%;max-width:200px;aspect-ratio:1;border-radius:30px;display:grid;place-items:center;align-content:center;gap:8px;cursor:pointer;border:0;font-size:20px;color:var(--ink)}
+.nk-kid .pet-face,.nk-kid .avatar{width:96px;height:96px;font-size:40px}
+.nk-kid .pet-face img{width:100%;height:100%;object-fit:contain}
+.nk-kid.add{font-size:56px;color:var(--muted)}
+.nk-learnrow{display:flex;gap:8px;overflow-x:auto;padding:6px 0 2px;scrollbar-width:none}
+.nk-lw{flex:none;width:74px;border:0;background:rgba(255,255,255,.75);border-radius:14px;padding:6px 4px;display:grid;justify-items:center;gap:2px;font-weight:700;font-size:12px;color:var(--ink);cursor:pointer}
+.nk-lw img{width:46px;height:46px;object-fit:contain}
+.nk-lw .nk-blob,.nk-lw .nk-dots{width:40px}
+@keyframes nkpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes nkpop{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes nkbob{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-4px) rotate(3deg)}}
+@media (prefers-reduced-motion:reduce){.nk-start,.nk-next.ready,.nk-coco.talk,.nk-card.pop,.nk-card.yes{animation:none}}
+@media (orientation:portrait),(min-height:501px){
+  html:has(.nk-home),html:has(.nk-home) body{height:100%;overflow:hidden;overscroll-behavior:none}
+  html:has(.nk-home) #app{height:100vh;height:100dvh;padding:calc(12px + env(safe-area-inset-top)) 16px calc(14px + env(safe-area-inset-bottom));display:flex;flex-direction:column}
+  .nk-home{flex:1;min-height:0}
+}
+@media (max-height:680px){.nk-start{width:120px;height:120px}.nk-start img{width:74px;height:74px}.nk-coco{width:70px;height:70px}.nk-next{width:84px;height:84px}.nk-slot{min-height:88px}}
 .glass{background:var(--glass);backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);
   border:1px solid var(--stroke);box-shadow:var(--shadow),var(--inner);border-radius:30px}
 .soft{background:var(--glass-soft);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
@@ -1141,7 +1225,7 @@ const CHECK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" strok
 const BIG_CHECK = CHECK.replace('width="18" height="18"', 'width="30" height="30"');
 let pub = null, session = null, dash = null;
 const SEC = { level: ['target', 't-level'], grammar: ['book-open-text', 't-grammar'], vocabulary: ['text-aa', 't-vocab'],
-  listening: ['headphones', 't-listen'], reading: ['article', 't-read'], writing: ['pen-nib', 't-write'], 'use-of-english': ['puzzle-piece', 't-uoe'] };
+  listening: ['headphones', 't-listen'], reading: ['article', 't-read'], writing: ['pen-nib', 't-write'], 'use-of-english': ['puzzle-piece', 't-uoe'], nest: ['bird', 't-nest'] };
 const REWARD_ICONS = ['cake', 'device-mobile', 'broom', 'ice-cream', 'popcorn', 'gift', 'ticket', 'trophy'];
 const icon = (n, w) => '<i class="ph-' + (w || 'bold') + ' ph-' + n + '"></i>';
 const tile = (sec, sm) => { const x = SEC[sec] || SEC.grammar; return '<span class="tile ' + (sm ? 'sm ' : '') + x[1] + '">' + icon(x[0], 'duotone') + '</span>'; };
@@ -3430,6 +3514,7 @@ async function flushPending(){
     try {
       if (q[i].fn === 'mission') setDash(await call('apiMissionResult', session.name, session.pin, ...q[i].args));
       else if (q[i].fn === 'chat') setDash(await call('apiChatResult', session.name, session.pin, ...q[i].args));
+      else if (q[i].fn === 'nest') setDash(await call('apiNestResult', session.name, session.pin, ...q[i].args));
       else setDash(await call('apiGameResult', session.name, session.pin, q[i].game, q[i].level, q[i].correct, q[i].total, q[i].missed, q[i].right, q[i].second || 0));
     }
     catch(e){ if (e.app) continue; store.set(pendKey(), q.slice(i).concat(store.get(pendKey()) || [])); return; }
@@ -6662,6 +6747,8 @@ function retestCard(d){
 // (eq_family), so the link opened again, or the back button, lands on the family page and never on a fresh form
 // (the first pilot family pressed back on the done screen, signed up again and was left with two families).
 // The draft is kept as it is typed (eq_join), and each step is a browser history entry, so back moves one step.
+// Ages 2 to 7 join Coco's Nest (specs/nest.md): the value carries the age, a school grade stays a number.
+const NEST_AGES = [['a2', 'גיל 2'], ['a3', 'גיל 3'], ['a4', 'גיל 4'], ['a5', 'גיל 5'], ['a6', 'כיתה א'], ['a7', 'כיתה ב']];
 const GRADES = [[3, 'ג'], [4, 'ד'], [5, 'ה'], [6, 'ו'], [7, 'ז'], [8, 'ח'], [9, 'ט'], [10, 'י'], [11, 'יא'], [12, 'יב']];
 let JOIN = null;
 async function renderJoin(code){
@@ -6734,12 +6821,12 @@ function joinWelcome(){
 function joinForm(){
   const kidRow = (k, i) => `<div class="row-flex" style="gap:8px">
       <input class="input" data-kname="${i}" placeholder="שם פרטי באנגלית, למשל Noa" value="${esc(k.name)}" autocomplete="off" style="flex:1;min-width:0" dir="auto">
-      <select class="input" data-kgrade="${i}" style="width:96px"><option value="">כיתה</option>${GRADES.map(([g, l]) => `<option value="${g}" ${String(k.grade) === String(g) ? 'selected' : ''}>${l}</option>`).join('')}</select>
+      <select class="input" data-kgrade="${i}" style="width:128px"><option value="">גיל או כיתה</option><optgroup label="הקן של קוקו">${NEST_AGES.map(([v, l]) => `<option value="${v}" ${String(k.grade) === v ? 'selected' : ''}>${l}</option>`).join('')}</optgroup><optgroup label="בית ספר">${GRADES.map(([g, l]) => `<option value="${g}" ${String(k.grade) === String(g) ? 'selected' : ''}>כיתה ${l}</option>`).join('')}</optgroup></select>
       ${JOIN.kids.length > 1 ? `<button class="btn btn-glass icon-btn" data-kdel="${i}" title="הסרה">${icon('x')}</button>` : ''}</div>`;
   app.innerHTML = `<div class="stack he" dir="rtl" lang="he">
     <div class="glass panel" style="display:grid;gap:10px">
       <h2>הילדים</h2>
-      <div class="sub" style="font-size:12px">השם מופיע באפליקציה, ולכן באנגלית. לפי הכיתה נקבעת נקודת ההתחלה של מבחן הרמה.</div>
+      <div class="sub" style="font-size:12px">השם מופיע באפליקציה, ולכן באנגלית. מכיתה ג ומעלה, לפי הכיתה נקבעת נקודת ההתחלה של מבחן הרמה. ילדים מגיל 2 עד כיתה ב נכנסים לקן של קוקו: משחק בשמיעה ובתמונות, בלי מבחן ובלי קריאה.</div>
       ${JOIN.kids.map(kidRow).join('')}
       ${JOIN.kids.length < 5 ? `<button class="btn btn-glass btn-block" id="jaddkid">${icon('user-plus')} עוד ילד</button>` : ''}
     </div>
@@ -6770,13 +6857,13 @@ function joinForm(){
     const kids = JOIN.kids.filter(k => k.name.trim());
     if (!kids.length) return toast('כתבו את השם של הילד', true);
     if (kids.some(k => !/^[A-Za-z][A-Za-z .'-]*$/.test(k.name.trim()))) return toast('כתבו את שמות הילדים באותיות באנגלית', true);
-    if (kids.some(k => !k.grade)) return toast('בחרו כיתה לכל ילד', true);
+    if (kids.some(k => !k.grade)) return toast('בחרו גיל או כיתה לכל ילד', true);
     if (!JOIN.parent.trim() || !JOIN.family.trim()) return toast('כתבו את השם שלכם ואת שם המשפחה', true);
     if (!/^\d{4}$/.test(JOIN.parentPin)) return toast('קוד ההורה צריך להיות 4 ספרות', true);
     const b = document.getElementById('jsend'); b.disabled = true; b.innerHTML = '<span class="mini-spin"></span> פותחים…';
     try {
       const r = await call('apiJoin', JOIN.code, { family: JOIN.family, parent: JOIN.parent, parentPin: JOIN.parentPin, email: JOIN.email,
-        consent: true, kids: kids.map(k => ({ name: k.name.trim(), grade: Number(k.grade) })) });
+        consent: true, kids: kids.map(k => /^a\d$/.test(k.grade) ? { name: k.name.trim(), age: Number(k.grade.slice(1)) } : { name: k.name.trim(), grade: Number(k.grade) }) });
       const fam = { groupId: r.groupId, family: r.family, link: r.link, parentPin: r.parentPin, kids: r.kids, code: JOIN.code };
       store.set('eq_family', fam); store.set('eq_group', r.groupId); store.del('eq_join');
       JOIN = null;
@@ -6786,7 +6873,8 @@ function joinForm(){
 }
 // The kid's own link: it opens the app signed in (takeHi). The name and PIN ride in the #part, which never reaches a server.
 const kidLink = (base, name, pin) => base + '#hi=' + btoa(encodeURIComponent(name) + '.' + pin).replace(/=+$/, '');
-const kidInvite = (base, k) => `היי ${k.name}! 👋\nזה הקישור האישי שלך לאפליקציית האנגלית:\n${kidLink(base, k.name, k.pin)}\n\nלוחצים ונכנסים, בלי סיסמה. מתחילים במבחן רמה קצר (בערך 8 דקות), ואז נפתחות המשימות, המשחקים והחיה שלך.\nאם פעם יבקשו ממך קוד: ${k.pin}\n10 דקות ביום, בהצלחה! 💪`;
+const nestInvite = (base, k) => `הקישור של ${k.name} לקן של קוקו, אנגלית לקטנטנים בשמיעה ובתמונות 🦜\n${kidLink(base, k.name, k.pin)}\n\nפותחים את הקישור בטאבלט או בטלפון שהילד משחק בו, ונכנסים בלחיצה. אפשר גם להתקין שם כאפליקציה. 5 דקות ביום, ועם הקטנים כדאי לשבת ליד.\nאם פעם יבקשו קוד: ${k.pin}`;
+const kidInvite = (base, k) => k.nest ? nestInvite(base, k) : `היי ${k.name}! 👋\nזה הקישור האישי שלך לאפליקציית האנגלית:\n${kidLink(base, k.name, k.pin)}\n\nלוחצים ונכנסים, בלי סיסמה. מתחילים במבחן רמה קצר (בערך 8 דקות), ואז נפתחות המשימות, המשחקים והחיה שלך.\nאם פעם יבקשו ממך קוד: ${k.pin}\n10 דקות ביום, בהצלחה! 💪`;
 // A kid plays on this phone: sign her in here (the parent's phone, or a shared tablet).
 function kidHere(groupId, name, pin){
   store.set('eq_group', groupId); store.set('eq_auth', { name, pin }); pub = null;
@@ -6808,9 +6896,12 @@ function familyPage(fam){
       <h2>לחבר את הילדים</h2>
       ${fam.kids.map((k, i) => `<div class="soft" style="padding:12px;border-radius:14px;display:grid;gap:8px">
         <div class="row-flex between"><b dir="ltr">${esc(k.name)}</b><span class="chip" title="קוד גיבוי">${icon('key')} <span dir="ltr">${esc(k.pin)}</span></span></div>
-        <a class="btn btn-teal btn-block" href="${esc(waLink(kidInvite(fam.link, k)))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} שליחת הקישור בוואטסאפ</a>
+        ${k.nest ? `<div class="sub" style="font-size:12px;margin:0">${icon('bird')} הקן של קוקו, גיל <bdi>${esc(k.age)}</bdi>: משחק בשמיעה ובתמונות, בלי מבחן ובלי קריאה.</div>
+        <button class="btn btn-primary btn-block" data-here="${i}">${icon('device-tablet')} משחק במכשיר הזה</button>`
+        : `<a class="btn btn-teal btn-block" href="${esc(waLink(kidInvite(fam.link, k)))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} שליחת הקישור בוואטסאפ</a>`}
         <div class="row-flex" style="gap:8px">
-          <button class="btn btn-glass btn-sm" style="flex:1" data-here="${i}">${icon('device-mobile')} משחק בטלפון הזה</button>
+          ${k.nest ? `<a class="btn btn-glass btn-sm" style="flex:1" href="${esc(waLink(kidInvite(fam.link, k)))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} לטאבלט או טלפון אחר</a>`
+          : `<button class="btn btn-glass btn-sm" style="flex:1" data-here="${i}">${icon('device-mobile')} משחק בטלפון הזה</button>`}
           <button class="btn btn-glass btn-sm" style="flex:1" data-copy="${i}">${icon('copy')} העתקת ההודעה</button></div></div>`).join('')}
       <div class="sub" style="font-size:12px">לילד יש טלפון? שולחים לו את ההודעה, והוא נכנס בלחיצה על הקישור. משחק בטלפון שלכם? לוחצים "משחק בטלפון הזה".</div>
     </div>
@@ -6976,6 +7067,398 @@ function auditRender(pin){
   const more = document.getElementById('audmore'); if (more) more.onclick = () => { AUD.limit += 150; auditRender(pin); };
 }
 
+// ---------- Coco's Nest: ages 2 to 7 (specs/nest.md) ----------
+// Listening and pictures only: Coco says a word, the kid taps it or says it. No reading, timers or fail screens, and the
+// pet is the only reward. Content: docs/nest/nest.js (EQ_NEST); recordings: docs/nest/audio (tools/nest_audio.py).
+const NEST_V = 1, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
+let NE = null, nestLoading = null, nestAudioEl = null, nestQueue = null, nestMic = null;
+function loadNest(){
+  if (window.EQ_NEST) return Promise.resolve(window.EQ_NEST);
+  return nestLoading = nestLoading || new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = ASSETS + 'nest/nest.js?v=' + NEST_V;
+    s.onload = () => window.EQ_NEST ? res(window.EQ_NEST) : rej(new Error("Coco's Nest is not ready yet."));
+    s.onerror = () => { nestLoading = null; s.remove(); rej(new Error('Could not load. Check the connection and try again.')); };
+    document.head.appendChild(s);
+  });
+}
+const nestUnit = id => (window.EQ_NEST && EQ_NEST.units.find(u => u.id === id)) || null;
+const nestWordsOf = u => !u ? [] : u.review ? [].concat(...u.review.map(id => (nestUnit(id) || {}).words || [])) : u.words;
+const nestPicSrc = name => ASSETS + 'nest/pics/' + name + '.webp';
+// A word's picture: a Fluent picture, a color blob or 1 to 10 dots, all drawn the same size.
+function nestPic(w){
+  if (w.color) return `<span class="nk-blob" style="background:${esc(w.color)}"></span>`;
+  if (w.count) return `<span class="nk-dots n${w.count}">${'<i></i>'.repeat(w.count)}</span>`;
+  return `<img src="${esc(nestPicSrc(w.pic))}" alt="" draggable="false">`;
+}
+
+// ---- Sound: one audio element for the whole session, unlocked by the first tap, so iPhones keep playing ----
+const nestClip = key => ASSETS + 'nest/audio/' + key + '.mp3?v=' + NEST_V;
+// The text behind a clip, for the phone's own voice when a recording does not play (English only).
+function nestText(key){
+  const N = window.EQ_NEST || {}, id = key.slice(2), w = (N.units || []).reduce((f, u) => f || (u.words || []).find(x => x.id === id), null);
+  if (key.startsWith('w-')) return w ? w.say : '';
+  if (key.startsWith('f-')) return w ? w.find : '';
+  if (key.startsWith('en-')) return (N.en || {})[key.slice(3)] || '';
+  return '';
+}
+function nestSpeak(key, done){
+  const text = nestText(key);
+  if (!text || !('speechSynthesis' in window)) return done();
+  try {
+    speechStop();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = .85;
+    if (voice) u.voice = voice;
+    u.onend = u.onerror = done;
+    speechSynthesis.speak(u);
+  } catch(e){ done(); }
+}
+function nestPlay(keys, onEnd){
+  nestStopAudio();
+  const list = keys.filter(Boolean), token = {};
+  const a = nestAudioEl = nestAudioEl || new Audio();
+  nestQueue = token;
+  nestTalk(true);
+  const next = () => {
+    if (nestQueue !== token) return;
+    const k = list.shift();
+    if (!k) { nestTalk(false); nestQueue = null; if (onEnd) onEnd(); return; }
+    let over = false;
+    const go = () => { if (over) return; over = true; clearTimeout(guard); next(); };
+    const fallback = () => { if (over) return; clearTimeout(guard); nestSpeak(k, go); };
+    const guard = setTimeout(go, 12000);
+    a.onended = go;
+    a.onerror = fallback;
+    a.src = nestClip(k);
+    const p = a.play();
+    if (p && p.catch) p.catch(err => { if (err && err.name === 'AbortError') return; fallback(); });
+  };
+  next();
+}
+function nestStopAudio(){
+  nestQueue = null;
+  try { if (nestAudioEl) { nestAudioEl.onended = nestAudioEl.onerror = null; nestAudioEl.pause(); } } catch(e){}
+  speechStop();
+  nestTalk(false);
+}
+function nestTalk(on){ const c = document.getElementById('nkcoco'); if (c) c.classList.toggle('talk', !!on); }
+
+// ---- The microphone: loudness only, on the phone. Nothing is recorded or sent, and there is no speech recognition ----
+async function nestMicStart(onVoice){
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+    if (!NE) { stream.getTracks().forEach(t => t.stop()); return false; }
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const an = audioCtx.createAnalyser(), src = audioCtx.createMediaStreamSource(stream);
+    an.fftSize = 512; src.connect(an);
+    const buf = new Uint8Array(an.fftSize);
+    let loud = 0;
+    nestMic = { stream, src, raf: 0 };
+    const tick = () => {
+      if (!nestMic) return;
+      an.getByteTimeDomainData(buf);
+      let s = 0;
+      for (let i = 0; i < buf.length; i++) { const x = (buf[i] - 128) / 128; s += x * x; }
+      const rms = Math.sqrt(s / buf.length), ring = document.getElementById('nkring');
+      if (ring) ring.style.setProperty('--lv', Math.min(1, rms * 9).toFixed(2));
+      loud = rms > .045 ? loud + 1 : Math.max(0, loud - .5);
+      if (loud > 14) { nestMicStop(); onVoice(); return; }
+      nestMic.raf = requestAnimationFrame(tick);
+    };
+    tick();
+    return true;
+  } catch(e){ return false; }
+}
+function nestMicStop(){
+  if (!nestMic) return;
+  cancelAnimationFrame(nestMic.raf);
+  try { nestMic.src.disconnect(); } catch(e){}
+  nestMic.stream.getTracks().forEach(t => t.stop());
+  nestMic = null;
+}
+
+// ---- Home ----
+function renderNest(d){
+  const n = d.nest, u = nestUnit(n.today);
+  if (!window.EQ_NEST) {
+    app.innerHTML = '<div class="spinner"></div>';
+    loadNest().then(() => { if (dash === d && !NE) renderNest(d); })
+      .catch(e => { app.innerHTML = `<div class="glass panel" style="text-align:center;display:grid;gap:12px">${esc(e.message)}<button class="btn btn-primary btn-block" id="nkagain">${icon('arrows-clockwise')} Try again</button></div>`;
+        document.getElementById('nkagain').onclick = () => renderNest(d); });
+    return;
+  }
+  const played = n.played.map(nestUnit).filter(Boolean).filter(x => x.id !== n.today);
+  app.innerHTML = `<div class="nk-home">
+    <div class="row-flex between">
+      <div class="row-flex">${petFace(d.pet, d.girl.color, d.girl.name)}<h2 style="font-size:22px">${esc(d.girl.name)}</h2></div>
+      <div class="row-flex" style="gap:8px">
+        <button class="btn btn-glass icon-btn" id="nkhear" title="Listen">${icon('speaker-high')}</button>
+        <button class="btn btn-glass icon-btn" id="logout" title="Who is playing?">${icon('users-three')}</button></div>
+    </div>
+    <div class="nk-hero glass">
+      ${d.pet ? `<button class="nk-pethero" id="nkpet" aria-label="${esc(d.pet.name)}">${petArt(d.pet, n.done ? 'celebrate' : 'happy', 'nk-petart')}</button>
+        <div class="nk-petname">${esc(d.pet.name)}</div>`
+      : `<div class="nk-adopt">${PETS.filter(p => PET_ART[p[0]]).slice(0, 6).map(([id]) => `<button class="nk-adoptb" data-nkpet="${id}" aria-label="${esc(petName(id))}"><img src="${petSrc(id, 1, 'happy')}" alt=""></button>`).join('')}</div>`}
+    </div>
+    <div class="nk-today">
+      <img class="nk-coco" id="nkcoco" src="${cocoSrc(n.done ? 'celebrate' : 'happy')}" alt="Coco">
+      ${u ? `<button class="nk-start${n.done ? ' again' : ''}" id="nkgo" aria-label="${esc(u.title)}">
+        <img src="${esc(nestPicSrc(u.icon))}" alt=""><span class="nk-play">${icon(n.done ? 'arrow-counter-clockwise' : 'play', 'bold')}</span></button>` : ''}
+      ${n.done ? `<div class="nk-stars">${icon('star', 'duotone')}${icon('star', 'duotone')}${icon('star', 'duotone')}</div>` : ''}
+    </div>
+    ${played.length ? `<div class="nk-played">${played.map(x => `<button class="nk-unit" data-nkunit="${esc(x.id)}" aria-label="${esc(x.title)}"><img src="${esc(nestPicSrc(x.icon))}" alt=""></button>`).join('')}</div>` : '<div></div>'}
+  </div>`;
+  const go = document.getElementById('nkgo');
+  if (go) go.onclick = () => nestStart(n.today);
+  app.querySelectorAll('[data-nkunit]').forEach(b => b.onclick = () => nestStart(b.dataset.nkunit));
+  document.getElementById('nkhear').onclick = () => nestPlay([d.pet ? 'he-start' : 'he-pet']);
+  document.getElementById('logout').onclick = nestSwitch;
+  const pet = document.getElementById('nkpet');
+  if (pet) pet.onclick = () => { paMood(pet.querySelector('svg'), 'celebrate'); buzz(true); };
+  app.querySelectorAll('[data-nkpet]').forEach(b => b.onclick = async () => {
+    nestPlay(['en-great']);
+    b.classList.add('on');
+    try {
+      setDash(await call('apiSetPet', session.name, session.pin, b.dataset.nkpet, petName(b.dataset.nkpet)));
+      store.set('eq_pet_' + session.name, { id: dash.pet.id, stage: shownStage(dash.pet) });
+      renderDash(); confetti();
+    } catch(e){ b.classList.remove('on'); toast(e.message, true); }
+  });
+  if (d.push && d.push.key) pushKey = d.push.key;
+  checkGrowth();
+}
+
+// Kids set up on this device (a family tablet): a toddler cannot type a PIN, so the switch screen and the picker open a
+// Nest kid with one tap. The list (name and PIN) stays on this device, like the remembered sign-in it comes from.
+const deviceKids = () => store.get('eq_kids') || [];
+function deviceKidAdd(name, pin, nest){ store.set('eq_kids', deviceKids().filter(k => k.name !== name).concat([{ name, pin, nest: !!nest }]).slice(-6)); }
+function deviceKidDrop(name){ store.set('eq_kids', deviceKids().filter(k => k.name !== name)); }
+function nestSwitch(){
+  nestStopAudio();
+  const kids = deviceKids();
+  app.innerHTML = `<div class="nk-home">
+    <div class="row-flex between"><button class="btn btn-glass icon-btn" id="nkback" aria-label="Back">${icon('arrow-left')}</button><span></span></div>
+    <div class="nk-switch">${kids.map((k, i) => `<button class="nk-kid glass" data-nkkid="${i}">${petFace(store.get('eq_pet_' + k.name), colorOf(k.name), k.name)}<b>${esc(k.name)}</b></button>`).join('')}
+      <button class="nk-kid glass add" id="nkother" aria-label="Someone else">${icon('user-plus', 'duotone')}</button></div>
+  </div>`;
+  document.getElementById('nkback').onclick = renderDash;
+  document.getElementById('nkother').onclick = signOut;
+  app.querySelectorAll('[data-nkkid]').forEach(b => b.onclick = () => {
+    const k = kids[Number(b.dataset.nkkid)];
+    if (session && k.name === session.name) return renderDash();
+    store.del('eq_auth'); session = null; dash = null; syncNow = ''; SHOP = null; dashTab = 'today'; homeEntered = false; clearInterval(petLifeT);
+    loading();
+    login(k.name, k.pin, false, true).then(ok => { if (!ok) loadHome(); });
+  });
+}
+
+// ---- A session: meet the words, find them, say them ----
+function nestStart(id){
+  const u = nestUnit(id);
+  if (!u) return;
+  const words = nestWordsOf(u), review = !!u.review, rounds = review ? 10 : 8, k = dash.nest.choices;
+  const steps = [];
+  if (!review) words.forEach((w, i) => steps.push({ t: 'meet', w, first: i === 0 }));
+  let order = [];
+  while (order.length < rounds) {
+    const more = shuffle(words);
+    if (order.length && more[0].id === order[order.length - 1].id) more.push(more.shift());
+    order = order.concat(more);
+  }
+  order.slice(0, rounds).forEach((w, i) => steps.push({ t: 'find', w, first: i === 0,
+    opts: shuffle([w].concat(shuffle(words.filter(x => x.id !== w.id && x.en !== w.en)).slice(0, k - 1))) }));
+  shuffle(words).slice(0, 3).forEach((w, i) => steps.push({ t: 'say', w, first: i === 0 }));
+  steps.push({ t: 'done' });
+  NE = { u, steps, si: 0, correct: 0, total: rounds, t0: Date.now(), review, tries: 0, heard: false };
+  window.scrollTo(0, 0);
+  nestRender(true);
+}
+function nestLeave(){ nestStopAudio(); nestMicStop(); NE = null; }
+// What Coco says when a step opens: the session's hello and each part's Hebrew line the first time, then the word.
+function nestPrompt(s, opening){
+  const hello = opening ? ['he-hello', 'en-hi'] : [];
+  if (s.t === 'meet') return hello.concat(s.first ? ['he-meet', 'en-meet'] : [], ['w-' + s.w.id]);
+  if (s.t === 'find') return hello.concat(s.first && NE.review ? ['he-review'] : [], s.first ? ['he-find', 'en-find'] : [], ['f-' + s.w.id]);
+  if (s.t === 'say') return (s.first ? ['he-say', 'en-say'] : []).concat(['w-' + s.w.id]);
+  return ['en-great', 'he-done', 'en-bye'];
+}
+const nestHeLine = s => {
+  const he = (window.EQ_NEST && EQ_NEST.he) || {};
+  return s.t === 'meet' ? he.meet : s.t === 'find' ? he.find : s.t === 'say' ? he.say : he.done;
+};
+function nestRender(opening){
+  if (!NE) return;
+  const s = NE.steps[NE.si], showWord = dash.nest.words;
+  nestMicStop();
+  const dots = NE.steps.filter(x => x.t !== 'done').map((x, i) => `<i class="${i < NE.si ? 'ok' : i === NE.si ? 'on' : ''}"></i>`).join('');
+  let stage = '', dockBtn = '';
+  if (s.t === 'meet') {
+    stage = `<button class="nk-card big" id="nkpic">${nestPic(s.w)}</button>${showWord ? `<div class="nk-word">${esc(s.w.en)}</div>` : ''}`;
+    dockBtn = `<button class="nk-next" id="nknext" aria-label="Next">${icon('arrow-right', 'bold')}</button>`;
+  } else if (s.t === 'find') {
+    stage = `<div class="nk-opts n${s.opts.length}">${s.opts.map((o, i) => `<button class="nk-card" data-nkopt="${i}">${nestPic(o)}<span class="nk-cap"></span></button>`).join('')}</div>`;
+  } else if (s.t === 'say') {
+    stage = `<div class="nk-ring" id="nkring"><button class="nk-card big" id="nkpic">${nestPic(s.w)}</button></div>${showWord ? `<div class="nk-word">${esc(s.w.en)}</div>` : ''}`;
+    dockBtn = `<button class="nk-next said" id="nksaid" aria-label="I said it">${icon('hand-waving', 'bold')}</button>`;
+  } else {
+    // Three stars every time: at this age the effort is what counts (the score goes to the parents' view).
+    const stars = 3;
+    stage = `<div class="nk-done">${dash.pet ? petArt(dash.pet, 'celebrate', 'nk-petart') : `<img src="${cocoSrc('celebrate')}" alt="">`}
+      <div class="nk-stars big">${[0, 1, 2].map(i => `<span class="${i < stars ? 'on' : ''}">${icon('star', 'duotone')}</span>`).join('')}</div></div>`;
+    dockBtn = `<button class="nk-next home" id="nkhome" aria-label="Home">${icon('house', 'bold')}</button>`;
+  }
+  const he = nestHeLine(s);
+  app.innerHTML = `<div class="gscreen gplay nk">
+    <div class="row-flex between nk-top">
+      <button class="btn btn-glass icon-btn" id="nkx" aria-label="Close">${icon('x')}</button>
+      <div class="nk-prog">${dots}</div>
+      <button class="btn btn-glass icon-btn" id="nkagain" aria-label="Listen again">${icon('speaker-high')}</button>
+    </div>
+    <div class="gstage nk-stage">${stage}</div>
+    <div class="gdock nk-dock">
+      <div class="row-flex nk-coach"><img class="nk-coco" id="nkcoco" src="${cocoSrc(s.t === 'done' ? 'celebrate' : 'happy')}" alt="Coco">
+        ${he ? `<div class="nk-he" dir="rtl" lang="he">${esc(he)}</div>` : ''}</div>
+      <div class="nk-slot">${dockBtn}</div>
+    </div>
+  </div>`;
+  document.getElementById('nkx').onclick = () => { nestLeave(); renderDash(); };
+  const say = () => nestPlay(nestPrompt(s, false).slice(-1));
+  document.getElementById('nkagain').onclick = () => nestPlay(s.t === 'done' ? ['en-great'] : nestPrompt(s, false));
+  const pic = document.getElementById('nkpic');
+  if (pic) pic.onclick = () => { pic.classList.remove('pop'); void pic.offsetWidth; pic.classList.add('pop'); say(); };
+  if (s.t === 'meet') {
+    const nx = document.getElementById('nknext');
+    nx.onclick = nestAdvance;
+    nestPlay(nestPrompt(s, opening), () => nx.classList.add('ready'));
+  } else if (s.t === 'find') {
+    NE.tries = 0;
+    app.querySelectorAll('[data-nkopt]').forEach(b => b.onclick = () => nestPick(b, s));
+    nestPlay(nestPrompt(s, opening));
+  } else if (s.t === 'say') {
+    NE.heard = false;
+    document.getElementById('nksaid').onclick = () => nestHeard(s);
+    nestPlay(nestPrompt(s, opening), () => nestListen(s));
+  } else {
+    document.getElementById('nkhome').onclick = () => { nestLeave(); renderDash(); };
+    confetti(); buzz(true);
+    nestPlay(nestPrompt(s), () => document.getElementById('nkhome') && document.getElementById('nkhome').classList.add('ready'));
+    nestFinish();
+  }
+}
+function nestAdvance(){
+  if (!NE) return;
+  nestStopAudio();
+  NE.si = Math.min(NE.si + 1, NE.steps.length - 1);
+  nestRender(false);
+}
+function nestPick(b, s){
+  if (!NE || b.disabled || NE.locked) return;
+  const o = s.opts[Number(b.dataset.nkopt)], ok = o.id === s.w.id;
+  NE.tries++;
+  if (dash.nest.words) b.querySelector('.nk-cap').textContent = o.en;
+  if (!ok) {
+    b.disabled = true; b.classList.add('no');
+    buzz(false);
+    nestPlay(['en-try', 'f-' + s.w.id]);
+    return;
+  }
+  if (NE.tries === 1) NE.correct++;
+  NE.locked = true;
+  b.classList.add('yes');
+  app.querySelectorAll('[data-nkopt]').forEach(x => { if (x !== b) x.classList.add('away'); });
+  const c = document.getElementById('nkcoco'); if (c) c.src = cocoSrc('celebrate');
+  buzz(true);
+  nestPlay(['w-' + s.w.id, 'en-' + NEST_PRAISE[Math.floor(Math.random() * NEST_PRAISE.length)]], () => { if (NE) { NE.locked = false; nestAdvance(); } });
+}
+// Say it: with the microphone on, a voice that is loud enough counts; otherwise (or anytime) the big button.
+function nestListen(s){
+  if (!NE || NE.steps[NE.si] !== s) return;
+  const pref = store.get('eq_nest_mic');
+  if (pref === 'off' || !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) return document.getElementById('nksaid').classList.add('ready');
+  if (pref !== 'on') return nestMicAsk(s);
+  nestMicStart(() => nestHeard(s)).then(on => { if (!on) { store.set('eq_nest_mic', 'off'); const b = document.getElementById('nksaid'); if (b) b.classList.add('ready'); } });
+}
+// The first time: a sentence for the parent before the phone asks for the microphone.
+function nestMicAsk(s){
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="sheet glass he" dir="rtl" lang="he" style="display:grid;gap:12px">
+    <h2>קוקו רוצה לשמוע</h2>
+    <div class="sub" style="margin:0">כדי שהטלפון ידע שהילד אמר את המילה, צריך לאשר את המיקרופון. הוא רק בודק שיש קול: שום דבר לא מוקלט ולא נשלח.</div>
+    <button class="btn btn-primary btn-block" id="nkmicon">${icon('microphone')} לאשר מיקרופון</button>
+    <button class="btn btn-glass btn-block" id="nkmicoff">בלי מיקרופון</button></div>`;
+  document.body.appendChild(ov);
+  ov.querySelector('#nkmicon').onclick = () => { ov.remove(); store.set('eq_nest_mic', 'on'); nestListen(s); };
+  ov.querySelector('#nkmicoff').onclick = () => { ov.remove(); store.set('eq_nest_mic', 'off'); nestListen(s); };
+}
+function nestHeard(s){
+  if (!NE || NE.steps[NE.si] !== s || NE.heard) return;
+  NE.heard = true;
+  nestMicStop();
+  const ring = document.getElementById('nkring'); if (ring) ring.classList.add('heard');
+  const c = document.getElementById('nkcoco'); if (c) c.src = cocoSrc('celebrate');
+  buzz(true);
+  nestPlay(['en-' + NEST_PRAISE[Math.floor(Math.random() * NEST_PRAISE.length)]], nestAdvance);
+}
+async function nestFinish(){
+  const t = dash.week.find(w => w.isToday);
+  const R = { fn: 'nest', args: [t ? t.date : dash.today, NE.u.id, NE.correct, NE.total, Math.round((Date.now() - NE.t0) / 1000)] };
+  try { setDash(await call('apiNestResult', session.name, session.pin, ...R.args)); }
+  catch(e){ if (!e.app) queueResult(R); }
+}
+
+// The kid's age or class in the parents' view, and the change (apiParentSetAge): ages 2 to 7 are Coco's Nest.
+const ageValue = g => g.nest ? 'a' + g.nest.age : (g.girl.age >= 9 && g.girl.age <= 18 ? String(g.girl.age - 6) : '');
+function ageLabel(v){
+  const n = NEST_AGES.find(x => x[0] === v), c = GRADES.find(x => String(x[0]) === v);
+  return n ? 'הקן של קוקו, ' + n[1] : c ? 'כיתה ' + c[1] : 'גיל או כיתה';
+}
+const ageOptions = v => `<option value="">גיל או כיתה</option><optgroup label="הקן של קוקו">${NEST_AGES.map(([a, l]) => `<option value="${a}" ${v === a ? 'selected' : ''}>${l}</option>`).join('')}</optgroup><optgroup label="בית ספר">${GRADES.map(([c, l]) => `<option value="${c}" ${v === String(c) ? 'selected' : ''}>כיתה ${l}</option>`).join('')}</optgroup>`;
+function ageRow(g){
+  return `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:8px;flex-wrap:wrap;align-items:center" data-agebox="${esc(g.girl.name)}">
+    <span class="chip">${icon(g.nest ? 'bird' : 'graduation-cap')} ${esc(ageLabel(ageValue(g)))}</span>
+    <button class="btn btn-glass btn-sm" data-ageopen="${esc(g.girl.name)}">${icon('pencil-simple')} שינוי גיל או כיתה</button></div>`;
+}
+function bindAgeRows(p, pin){
+  app.querySelectorAll('[data-ageopen]').forEach(b => b.onclick = () => {
+    const name = b.dataset.ageopen, box = b.closest('[data-agebox]');
+    const g = [].concat(...p.groups.map(x => x.girls)).find(x => x.girl.name === name);
+    box.innerHTML = `<select class="input" style="width:150px">${ageOptions(ageValue(g))}</select>
+      <button class="btn btn-primary btn-sm" data-agesave>${icon('check')} שמירה</button><button class="btn btn-glass btn-sm" data-agecancel>ביטול</button>
+      <div class="sub" style="font-size:12px;width:100%;margin:0">עד כיתה ב: הקן של קוקו, בשמיעה ובתמונות. מכיתה ג: משימות ומשחקים, ומבחן רמה אם עוד לא היה.</div>`;
+    box.querySelector('[data-agecancel]').onclick = () => renderParent(p, pin);
+    box.querySelector('[data-agesave]').onclick = async e => {
+      const v = box.querySelector('select').value;
+      if (!v) return toast('בחרו גיל או כיתה', true);
+      e.currentTarget.disabled = true;
+      try {
+        const r = await call('apiParentSetAge', pin, name, /^a\d$/.test(v) ? { age: Number(v.slice(1)) } : { grade: Number(v) });
+        renderParent(r, pin);
+        toast(name + ': ' + ageLabel(v));
+      } catch(err){ toast(err.message, true); e.currentTarget.disabled = false; }
+    };
+  });
+}
+
+// The parents' card for a Nest kid: today's words with their pictures, each one plays Coco's word.
+function nestParentCard(g){
+  if (!g.nest || !g.nest.today) return '';
+  return `<div class="nk-learn mt-s" data-nkfill="${esc(g.nest.today)}"></div>`;
+}
+function nestFillParent(){
+  const els = [...app.querySelectorAll('[data-nkfill]')];
+  if (!els.length) return;
+  loadNest().then(() => els.forEach(el => {
+    const u = nestUnit(el.dataset.nkfill);
+    if (!u) return;
+    el.innerHTML = `<div class="he sub" dir="rtl" lang="he" style="font-size:13px;margin:0">${icon('bird')} היום בקן של קוקו: <b>${esc(u.he)}</b></div>
+      <div class="nk-learnrow">${nestWordsOf(u).map(w => `<button class="nk-lw" data-nkw="${esc(w.id)}" title="${esc(w.he)}">${nestPic(w)}<span dir="ltr">${esc(w.en)}</span></button>`).join('')}</div>`;
+    el.querySelectorAll('[data-nkw]').forEach(b => b.onclick = () => nestPlay(['w-' + b.dataset.nkw]));
+  })).catch(() => {});
+}
+
 // ---------- Teacher review: ?missions&t=<code> ----------
 let TEACHER = null;
 async function teacherStart(code){
@@ -7052,6 +7535,8 @@ function signIn(){
       <div><h1>English with Coco</h1><div class="sub">10 minutes a day</div></div>
       <button class="btn btn-glass icon-btn" id="pbtn" title="Parent">${icon('lock-simple')}</button>
     </div>
+    ${deviceKids().length ? `<div class="label mt" style="margin-left:6px">On this device</div>
+    <div class="who mt-s">${deviceKids().map(k => `<button class="btn btn-glass iri" data-dkid="${esc(k.name)}">${petFace(store.get('eq_pet_' + k.name), colorOf(k.name), k.name)}<span>${esc(k.name)}</span></button>`).join('')}</div>` : ''}
     <div class="label mt" style="margin-left:6px">What's your name?</div>
     <input class="input mt-s" id="siname" placeholder="Your name in English" autocomplete="off" autocapitalize="words" dir="ltr">
     <button class="btn btn-primary btn-block mt" id="sigo">Next ${icon('arrow-right')}</button>
@@ -7059,6 +7544,14 @@ function signIn(){
   </div>`;
   const go = () => { const n = document.getElementById('siname').value.trim(); if (!n) return toast('Type your name', true); call('apiWarm').catch(() => {}); pinPad(n); };
   document.getElementById('sigo').onclick = go;
+  // Kids set up on this device: a Coco's Nest kid opens with a tap (a toddler cannot type), the others type their PIN.
+  app.querySelectorAll('[data-dkid]').forEach(b => b.onclick = () => {
+    const k = deviceKids().find(x => x.name === b.dataset.dkid);
+    call('apiWarm').catch(() => {});
+    if (!k || !k.nest) return pinPad(b.dataset.dkid);
+    loading();
+    login(k.name, k.pin, false, true).then(ok => { if (!ok) signIn(); });
+  });
   document.getElementById('siname').onkeydown = e => { if (e.key === 'Enter') go(); };
   document.getElementById('pbtn').onclick = () => { call('apiWarm').catch(() => {}); pinPad(null); };
 }
@@ -7087,7 +7580,12 @@ function home(){
   </div>`;
   const ib = document.getElementById('install');
   if (ib) ib.onclick = async () => { if (!installPrompt) return; installPrompt.prompt(); await installPrompt.userChoice; installPrompt = null; ib.hidden = true; };
-  app.querySelectorAll('.who button').forEach(b => b.onclick = () => { call('apiWarm').catch(() => {}); pinPad(b.dataset.name); });
+  app.querySelectorAll('.who button').forEach(b => b.onclick = () => {
+    call('apiWarm').catch(() => {});
+    const k = deviceKids().find(x => x.nest && x.name === b.dataset.name);
+    if (k) { loading(); return login(k.name, k.pin, false, true).then(ok => { if (!ok) pinPad(k.name); }); }
+    pinPad(b.dataset.name);
+  });
   document.getElementById('pbtn').onclick = () => { call('apiWarm').catch(() => {}); pinPad(null); };
 }
 
@@ -7140,6 +7638,8 @@ let dashFresh = 0, dashSync = null, syncNow = '';
 function setDash(d){
   if (!d) return;
   dash = d;
+  // A parent may move the kid into Coco's Nest or out of it: the tap-to-open list on this device follows.
+  if (session && session.keep) { const k = deviceKids().find(x => x.name === session.name); if (k && k.nest !== !!d.nest) deviceKidAdd(session.name, session.pin, !!d.nest); }
   dashFresh = Date.now();
   if (session && session.keep) store.set(dashKey(session.name), d);
 }
@@ -7189,7 +7689,7 @@ async function login(name, pin, silent, remember){
     name = (d.girl && d.girl.name) || name;
     session = { name, pin, keep: !!(remember || silent) }; dashTab = 'today'; homeEntered = false;
     SHOP = null;
-    if (remember) store.set('eq_auth', { name, pin });
+    if (remember) { store.set('eq_auth', { name, pin }); deviceKidAdd(name, pin, !!d.nest); }
     setDash(d); syncNow = ''; renderDash();
     flushPending(); flushTug();
     if (pendingDuel && !d.levelTest) { const c = pendingDuel; pendingDuel = null; openDuel(c); }
@@ -7197,7 +7697,7 @@ async function login(name, pin, silent, remember){
   } catch(e){
     if (silent) {
       if (!e.app) { offlineStart(); return true; }
-      if (/Wrong PIN/.test(e.message)) store.del('eq_auth'); else toast(e.message, true);
+      if (/Wrong PIN/.test(e.message)) { store.del('eq_auth'); deviceKidDrop(name); } else toast(e.message, true);
     }
     else toast(e.message.includes('PIN') ? 'Wrong PIN, try again' : e.message, true);
     return false;
@@ -7234,12 +7734,14 @@ function scoreText(d){
 function renderDash(){
   if (CT) { chatStop(); CT = null; }
   if (MS) msLeave();
+  if (NE) nestLeave();
   G = null; speechStop(); stopDuel();
   try { performance.mark('eq-dash'); } catch(e){}
   const d = dash, s = d.stats;
   if (d.duels) duelsHome = d.duels;
   if (!d.games) d.games = Object.assign({}, GAMES_DEFAULT);
   if (d.levelTest) return renderOnboarding(d);
+  if (d.nest) return renderNest(d);
   if (dashTab === 'journey' && d.journey) return renderMap();
   app.innerHTML = `<div class="tabview tv-${dashTab}${dashTab === 'today' ? '' : ' stack'}">${dashBody(d)}</div>${tabBar(d)}`;
   window.scrollTo(0, 0);
@@ -7837,6 +8339,8 @@ function renderParent(p, pin){
   app.querySelectorAll('details.acc').forEach(d => d.addEventListener('toggle', () => store.set('eq_acc_' + d.dataset.acc, d.open)));
   renderParentPush(p, pin);
   bindFeedback(pin);
+  nestFillParent();
+  bindAgeRows(p, pin);
   app.querySelectorAll('[data-kidhere]').forEach(b => b.onclick = () => kidHere(b.dataset.kidgroup, b.dataset.kidhere, b.dataset.kidpin));
   const pl = document.getElementById('pilotload'); if (pl) pl.onclick = () => pilotLoad(pin);
   const al = document.getElementById('auditload'); if (al) al.onclick = () => auditLoad(pin);
@@ -7910,8 +8414,10 @@ function girlCard(g, isAdmin, grp){
       ${g.chat && g.chat.week ? `<span class="chip teal" title="Talk with Coco this week">${icon('microphone')} ${g.chat.weekVoice}/${g.chat.week} ${T('talks out loud', 'שיחות בקול')}</span>` : ''}
     </div>
     ${placementLine(g)}
+    ${nestParentCard(g)}
+    ${ageRow(g)}
     ${!isAdmin && g.pin && grp ? `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:8px;flex-wrap:wrap">
-      <a class="btn btn-teal btn-sm" href="${esc(waLink(kidInvite(grp.link, { name: g.girl.name, pin: g.pin })))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} שליחת הקישור האישי</a>
+      <a class="btn btn-teal btn-sm" href="${esc(waLink(kidInvite(grp.link, { name: g.girl.name, pin: g.pin, nest: !!g.nest })))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} שליחת הקישור האישי</a>
       <button class="btn btn-glass btn-sm" data-kidhere="${esc(g.girl.name)}" data-kidpin="${esc(g.pin)}" data-kidgroup="${esc(grp.id)}">${icon('device-mobile')} משחק בטלפון הזה</button>
       <span class="chip" title="קוד גיבוי">${icon('key')} <bdi>${esc(g.pin)}</bdi></span></div>` : ''}
     ${g.chat && g.chat.best ? `<div class="sub mt-s" style="font-size:13px">${icon('chats-circle')} ${T('Said to Coco this week:', 'משפט מהשיחה עם קוקו השבוע:')} <bdi dir="ltr">"${esc(g.chat.best)}"</bdi></div>` : ''}

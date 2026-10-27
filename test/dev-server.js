@@ -41,6 +41,8 @@ for (let k = 1; k <= 13; k++) {
   if (k >= 3 && k <= 12) { play(KIDS[0], 'spot', 4); play(KIDS[1], 'listen', 2); }
   if (k >= 11) play(KIDS[2], 'build', 4);
 }
+// Coco's Nest (specs/nest.md): Mia, 4, in the same family, with no pet yet (PIN 5151).
+run("appendRow('Girls', { Name: 'Mia', Age: 4, PIN: '5151', Level: 'nest', Redeemed: 0, Color: '#f472b6', Group: defaultGroupId() })");
 // The Wordrobe opens on its date (Settings.ShopOpens); Aviv may shop before it, Ziv sees the teaser.
 run("setSetting('ShopEarly', 'Aviv')");
 // An open invite, so the families' sign-up can be tried: /test/dev.html?join=friends

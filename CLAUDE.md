@@ -205,6 +205,13 @@ the admin's Pilot card. Writing rules for new scripts: `tools/TALK-WRITING.md`. 
 clips recorded the same day (`TALK_V` 2, @37). After changing a script, run `python tools/talk_audio.py` (it records only
 changed lines and resumes where it stopped), then raise `TALK_V`, build Pages and push.
 
+Coco's Nest (built 2026-10-27, spec `specs/nest.md`, server `src/Nest.js`, content `docs/nest/`): ages 2 to 7, `Girls.Level = nest`
+(outside `LEVELS` on purpose: a level not in the chain falls back to a2 in several places, so every new code path that reads
+`kid.Level` must check `isNest(kid)` first). Home `renderNest`, session `nestStart` (meet, find, say, done), audio
+`nestPlay` (one Audio element per session for iPhones). Content: edit `docs/nest/nest.js`, then `python tools/nest_pics.py`,
+`python tools/nest_audio.py`, `node tools/nest-index.js`, `node test/nest-check.js`, and raise `NEST_V`. Dev: Mia 5151 (age 4),
+`test/tablet.html?screen=nest|nest-meet|nest-find|nest-say|nest-done&phones`.
+
 The audit trail (built 2026-10-27, spec `specs/audit.md`, server `src/Audit.js`, tab Audit, SETUP v19): opens, wrong PINs,
 grown-ups' changes and hand edits in the sheet, with a coarse device label the app sends (`dev` in every call); the admin's
 Audit card merges it with the practice tabs. New server calls that change something for a grown-up should call `audit()`.

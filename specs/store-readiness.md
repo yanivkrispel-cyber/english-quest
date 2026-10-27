@@ -50,7 +50,9 @@ commit.
 
 Kept in the private Google Sheet, written only by the app's own server (Apps Script, owner's Google account):
 
-- Kid: first name (English), age or grade, level, PIN, color, pet and its name, group. Optional email (older setups).
+- Kid: first name (English), age or grade (a Coco's Nest kid: the real age, 2 to 7), level, PIN, color, pet and its name,
+  group. Optional email (older setups). The Nest's Say it step uses the microphone for loudness only, on the phone:
+  nothing is recorded or sent.
 - Parent / family: family name, parent's first name, parent PIN, optional email, consent date.
 - Activity: tasks and missions with scores and time spent, game rounds, missed items for review, gate challenges,
   level tests, duels and their answers, duo streaks, shop purchases (coins), what the pet wears, saved words, bonus XP.
@@ -77,3 +79,6 @@ On the phone (local storage): the remembered kid and PIN, the group, the last da
   processing note are needed before selling.
 - No `assetlinks.json` / native shell yet; no store listing, age rating questionnaire or data safety form yet.
 - The app name and Coco: trademark check in Israel not done.
+- Coco's Nest (ages 2 to 7, `specs/nest.md`) puts kids under 5 in the same app as teenagers. Apple's Kids Category takes
+  one age band an app (5 and under, 6 to 8, 9 to 11): choose a band, ship the Nest as its own app, or stay out of the
+  Kids Category. Google Families allows several age groups, with stricter rules for "5 and under".

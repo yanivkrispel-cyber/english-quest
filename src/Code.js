@@ -9,7 +9,8 @@ var SETUP_VERSION = 'v19';
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
-var LEVEL_LABEL = { a1: 'A1', a2: 'A2', b1: 'B1', 'b1-b2': 'B1+', b2: 'B2', c1: 'C1' };
+// nest: Coco's Nest, the track for ages 2 to 7 (Nest.js). Not in LEVELS: the chain, journeys and gates never see it.
+var LEVEL_LABEL = { a1: 'A1', a2: 'A2', b1: 'B1', 'b1-b2': 'B1+', b2: 'B2', c1: 'C1', nest: "Coco's Nest" };
 var LEVEL_TEST = { section: 'level', level: '', title: 'English Level Test', url: 'https://test-english.com/level-test/' };
 var SECTIONS = {
   level: { label: 'Level Test' },
@@ -18,7 +19,8 @@ var SECTIONS = {
   listening: { label: 'Listening' },
   reading: { label: 'Reading' },
   writing: { label: 'Writing' },
-  'use-of-english': { label: 'Use of English' }
+  'use-of-english': { label: 'Use of English' },
+  nest: { label: "Coco's Nest" }
 };
 // Sunday..Saturday. Friday alternates between Use of English and Writing.
 var ROTATION = ['grammar', 'vocabulary', 'listening', 'grammar', 'reading', 'FRIDAY', 'listening'];
@@ -139,7 +141,7 @@ function api() {
   apiMissionResult: apiMissionResult, apiFlag: apiFlag,
   apiJoinCheck: apiJoinCheck, apiJoin: apiJoin, apiPlacement: apiPlacement, apiFeedback: apiFeedback,
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
-  apiChatResult: apiChatResult, apiAudit: apiAudit
+  apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge
   };
 }
 
@@ -227,12 +229,13 @@ function apiDashboard(name, pin) {
   auditOpen('kid', kid.Name, groupOf(kid));
   var dash = buildDashboard(kid);
   // Play together card (Duels.js); only here, so parent views and other calls stay fast.
-  if (!dash.levelTest) dash.duels = duelHome(kid);
+  if (!dash.levelTest && !dash.nest) dash.duels = duelHome(kid);
   return dash;
 }
 
 function apiSubmit(name, pin, date, correct, total, levelResult) {
   var kid = auth(name, pin);
+  if (isNest(kid)) throw new Error('Play today in the app');
   var t = today();
   var pending = pendingLevelTest(kid);
   if (pending) {
@@ -560,7 +563,8 @@ function parentData(list, isAdmin, who) {
       summaryHour: Number(getSetting('ParentSummaryHour')) || 21,
       devices: readTable('ParentPush').filter(function (r) { return r.Who === who; }).map(function (r) { return { e: r.Endpoint, instant: r.Instant !== 'no' }; })
     },
-    levels: LEVELS.map(function (l) { return { id: l, label: LEVEL_LABEL[l] }; }),
+    // Coco's Nest last: the admin can add a kid aged 2 to 7 (her age goes in the age field).
+    levels: LEVELS.map(function (l) { return { id: l, label: LEVEL_LABEL[l] }; }).concat([{ id: 'nest', label: LEVEL_LABEL.nest }]),
     today: t,
     word: wordOfDay(t)
   };
@@ -599,7 +603,7 @@ function apiAdminAddKid(pin, name, age, groupId, level, missions) {
   if (!name) throw new Error('Enter a name');
   if (findGirl(name)) throw new Error('This name is already taken — add a last-name initial');
   if (!findGroup(groupId)) throw new Error('Choose a group');
-  if (LEVELS.indexOf(level) < 0) level = 'a2';
+  if (LEVELS.indexOf(level) < 0 && level !== 'nest') level = 'a2';
   var kidPin = randomPin();
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
@@ -673,7 +677,7 @@ function buildDashboard(kid) {
   var logs = readTable('Log').filter(function (l) { return l.Girl === kid.Name; });
   var byDate = {};
   logs.forEach(function (l) { byDate[l.Date] = l; });
-  var missions = !pending && missionsOn(kid);
+  var missions = !pending && missionsOn(kid), nest = isNest(kid);
 
   var week = dates.map(function (d) {
     var wd = parseDate(d).getDay();
@@ -708,7 +712,7 @@ function buildDashboard(kid) {
 
   return {
     // inApp: the level test is played in the app (Pilot.js); kids on the old link keep test-english.com's test.
-    girl: { name: kid.Name, level: kid.Level, levelLabel: LEVEL_LABEL[kid.Level] || kid.Level, color: kid.Color, inApp: missionsOn(kid) },
+    girl: { name: kid.Name, level: kid.Level, levelLabel: LEVEL_LABEL[kid.Level] || kid.Level, color: kid.Color, inApp: missionsOn(kid), age: Number(kid.Age) || null },
     today: t,
     week: week,
     stats: {
@@ -722,15 +726,16 @@ function buildDashboard(kid) {
     rewards: rewards,
     nextReward: next,
     levelTest: pending,
-    journey: pending ? null : journeyInfo(kid, t),
+    journey: pending || nest ? null : journeyInfo(kid, t),
+    nest: nest ? nestInfo(kid, t, assigned, logs) : null,
     pet: petInfo(kid),
     placement: placementInfo(kid),
     games: gameStats(kid, t, owned['word-saver']),
-    chat: pending ? null : chatInfo(kid, t),
+    chat: pending || nest ? null : chatInfo(kid, t),
     coins: coinsOf(kid).balance,
     upgrades: upgradesOf(owned),
     polish: polishInfo(kid),
-    shop: { open: shopOpenFor(kid, t), opens: shopOpens(), season: shopSeason(t) },
+    shop: { open: !nest && shopOpenFor(kid, t), opens: shopOpens(), season: shopSeason(t) },
     push: { key: vapidPublicKey(), devices: readTable('Push').filter(function (s) { return s.Girl === kid.Name; }).length },
     word: wordOfDay(t)
   };
@@ -819,7 +824,8 @@ function ensureAssignments(kid, dates) {
     missing = missing.filter(function (d) { return !out[d]; });
     var first = Object.keys(out).length === 0, missions = missionsOn(kid);
     missing.forEach(function (d, i) {
-      var a = first && i === 0 ? LEVEL_TEST : nextExercise(sectionFor(d), kid.Level, used, missions);
+      // A Nest kid (ages 2 to 7) gets the next unit of Coco's Nest and never the level test.
+      var a = isNest(kid) ? nestNext(kid) : first && i === 0 ? LEVEL_TEST : nextExercise(sectionFor(d), kid.Level, used, missions);
       used[a.url] = true;
       out[d] = a;
       appendRow('Assignments', { Girl: kid.Name, Date: d, Section: a.section, Level: a.level, Title: a.title, URL: a.url });
