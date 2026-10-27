@@ -47,8 +47,25 @@ function nestInfo(kid, t, assigned, logs) {
     today: a && a.section === 'nest' ? String(a.url).slice(5) : null,
     done: logs.some(function (l) { return l.Date === t; }),
     played: played,
-    known: words
+    known: words,
+    all: nestAllOpen(kid)
   };
+}
+
+// Settings.NestAll: the names (comma separated, or 'all') whose Nest home shows every unit and day now, as free play.
+// A try-out switch for the owner; the day's own session still comes one a day.
+function nestAllOpen(kid) {
+  var v = String(getSetting('NestAll') || '').toLowerCase().split(',').map(function (s) { return s.trim(); });
+  return v.indexOf('all') >= 0 || v.indexOf(String(kid.Name || '').toLowerCase()) >= 0;
+}
+
+function apiAdminNestAll(pin, names) {
+  ensureSetup();
+  if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can change settings');
+  names = String(names || '').split(',').map(function (s) { return s.trim(); }).filter(String).join(',');
+  setSetting('NestAll', names);
+  audit('admin', 'admin', '', 'nest all open', names || 'none');
+  return { ok: true, names: names };
 }
 
 // One finished session. The day's own session logs the day (points whatever the score: no pressure at this age); any

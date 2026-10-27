@@ -130,7 +130,7 @@ function doGet() {
 function api() {
   return {
   apiPublic: apiPublic, apiWarm: apiWarm, apiDashboard: apiDashboard, apiSubmit: apiSubmit, apiParent: apiParent,
-  apiAdminAddGroup: apiAdminAddGroup, apiAdminAddKid: apiAdminAddKid, apiAdminSettings: apiAdminSettings,
+  apiAdminAddGroup: apiAdminAddGroup, apiAdminAddKid: apiAdminAddKid, apiAdminSettings: apiAdminSettings, apiAdminNestAll: apiAdminNestAll,
   apiPushSubscribe: apiPushSubscribe, apiPushMessage: apiPushMessage, apiAdminTestPush: apiAdminTestPush,
   apiParentPushSubscribe: apiParentPushSubscribe, apiParentPushPrefs: apiParentPushPrefs, apiParentPushTest: apiParentPushTest,
   apiGameResult: apiGameResult, apiSetPet: apiSetPet, apiGateResult: apiGateResult,

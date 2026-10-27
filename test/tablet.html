@@ -9,7 +9,7 @@ iframe{border:0;transform-origin:0 0}
 b{display:block;margin:4px 0}
 pre{white-space:pre-wrap;margin:12px 0 0}
 </style>
-<!-- The app on tablets (served by test/dev-server.js: http://localhost:8787/test/tablet.html?screen=today|journey|game|mission|parent|nest|nest-meet|nest-phrase|nest-find|nest-move|nest-say|nest-done[&phones]).
+<!-- The app on tablets (served by test/dev-server.js: http://localhost:8787/test/tablet.html?screen=today|journey|game|mission|parent|nest|nest-meet|nest-phrase|nest-find|nest-move|nest-say|nest-done|nest-all[&phones]).
      Each frame is the page size the tablet script picks, scaled to the real screen and drawn at 0.42. -->
 <div class="row" id="row"></div>
 <pre id="out">Loading…</pre>
@@ -41,7 +41,9 @@ async function show(f){
   else if (screen.startsWith('nest')) {
     await ev("(async () => { await login('Mia', '5151', false, false); })()");
     await new Promise(r => setTimeout(r, 1500));
-    const step = screen.slice(5);
+    // nest-all: Settings.NestAll on (every unit open) and one unit's days in the sheet.
+    if (screen === 'nest-all') ev('dash.nest.all = true; renderNest(dash);' + (location.search.includes('home') ? '' : ' nestDays(EQ_NEST.units[1])'));
+    const step = screen === 'nest-all' ? '' : screen.slice(5);
     if (step) { ev('nestPlay = function(k, cb){}'); ev('nestStart(dash.nest.today)'); ev("NE.si = Math.max(0, NE.steps.findIndex(x => x.t === '" + step + "')); nestRender(false)"); }
   }
   else {
