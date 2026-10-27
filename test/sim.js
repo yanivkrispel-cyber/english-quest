@@ -48,7 +48,7 @@ const ctx = {
 };
 const props = ctx.PropertiesService.getScriptProperties(); ctx.PropertiesService.getScriptProperties = () => props;
 vm.createContext(ctx);
-for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js']) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
+for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js']) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
 // Each call is a fresh request: per-request table memo resets, CacheService persists.
 const run = s => { if (typeof ctx.TABLES === 'object') vm.runInContext('TABLES = {}', ctx); return vm.runInContext(s, ctx); };
 let day = '2026-10-08';
@@ -1194,4 +1194,61 @@ check('the dashboard counts the week and keeps the longest sentence', d3.chat.we
 check('talk XP is coins and pet XP', run("coinsOf(findGirl('Aviv')).earned") - coins0 === 30);
 const b = run("apiPilotStats('1234')").chat.find(k => k.name === 'Aviv');
 check('the admin board shows who talks aloud', b && b.week === 1 && b.talks === 5 && b.micPct === 100 && b.voicePct > 80, JSON.stringify(b));
+}
+
+// ---- the audit trail (Audit.js) ----
+{
+const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+const fails = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + label); } catch (e) { console.log('ok: ' + label + ' is rejected: ' + e.message); } };
+const rows = () => sheets.Audit.rows.slice(1).map(r => Object.fromEntries(sheets.Audit.rows[0].map((h, i) => [h, r[i]])));
+Object.keys(cacheStore).filter(k => k.startsWith('AO:') || k.startsWith('F:')).forEach(k => delete cacheStore[k]);
+const n0 = rows().length;
+const post = (fn, args, dev) => JSON.parse(run(`doPost({postData:{contents:${JSON.stringify(JSON.stringify({ fn, args, dev }))}}}).getContent()`));
+post('apiDashboard', ['Ziv', '4821'], 'iPhone, app');
+post('apiDashboard', ['Ziv', '4821'], 'iPhone, app');
+const opens = rows().slice(n0).filter(r => r.Who === 'Ziv' && r.Action === 'open');
+check('a kid open is kept once per half hour, with the device', opens.length === 1 && opens[0].Device === 'iPhone, app' && opens[0].Role === 'kid' && opens[0].Group, JSON.stringify(opens));
+post('apiDashboard', ['Ziv', '4821'], 'Android phone, browser');
+check('the same kid on another phone is a second open', rows().slice(n0).filter(r => r.Who === 'Ziv' && r.Action === 'open').length === 2);
+post('apiDashboard', ['Ron', '7356'], 'Mozilla/5.0 (X11; Linux) something long');
+check('a made-up device label is not kept', rows().slice(-1)[0].Who === 'Ron' && rows().slice(-1)[0].Device === '');
+post('apiDashboard', ['Ron', '0000'], 'Computer, browser');
+const w = rows().slice(-1)[0];
+check('a wrong PIN is kept, without the PIN', w.Action === 'wrong PIN' && w.Who === 'Ron' && w.Ok === 'no' && w.Detail === 'attempt 1' && !JSON.stringify(w).includes('0000'), JSON.stringify(w));
+for (let i = 0; i < 7; i++) post('apiDashboard', ['Ron', '0000'], 'Computer, browser');
+check('the eighth wrong PIN says the lock', rows().slice(-1)[0].Detail === 'locked for 15 minutes', rows().slice(-1)[0].Detail);
+const before = rows().length;
+post('apiDashboard', ['Ron', '0000'], 'Computer, browser');
+check('tries while locked add nothing', rows().length === before);
+Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
+post('apiParent', ['5566'], 'Computer, browser');
+post('apiParent', ['1234'], 'Android phone, app');
+run("REQ_DEV = ''");
+check('wrong parent PIN and the admin open are kept', rows().some(r => r.Role === 'parent' && r.Action === 'wrong PIN') && rows().slice(-1)[0].Role === 'admin' && rows().slice(-1)[0].Action === 'open');
+run("apiAdminSettings('1234', 17, 20)");
+const rh = rows().filter(r => r.Action === 'reminder hours').pop() || {};
+check('an admin change is kept', rh.Role === 'admin' && rh.Detail === '17:00, last call 20:00', rh.Detail);
+run("apiPilotInvite('1234', true, '')"); run("apiPilotInvite('1234', false, '')");
+check('opening and closing the invite link are kept', rows().slice(-2).map(r => r.Detail).join('|') === 'opened|closed');
+const nJ = rows().length; run("apiJoinCheck('nope')"); run("apiJoinCheck('nope')");
+check('a refused invite is kept once', rows().slice(nJ).filter(r => r.Action === 'invite refused').length === 1);
+const cell = (sh, row, col, value) => ({ value, range: { getSheet: () => ({ getName: () => sh, getRange: (r, c) => ({ getValue: () => sheets[sh].rows[r - 1][c - 1] }) }),
+  getA1Notation: () => String.fromCharCode(64 + col) + row, getNumRows: () => 1, getNumColumns: () => 1, getColumn: () => col, getRow: () => row } });
+run('onEdit(__e)', ctx.__e = cell('Girls', 2, 3, '9999'));
+ctx.__e = cell('Girls', 2, 3, '9999'); run('onEdit(__e)');
+let e1 = rows().slice(-1)[0];
+check('a hand edit of a PIN is kept without the value', e1.Role === 'owner' && e1.Detail === 'Girls!C2 (PIN)', e1.Detail);
+ctx.__e = cell('Girls', 2, 4, 'b1'); run('onEdit(__e)');
+check('a hand edit of a level keeps the value', rows().slice(-1)[0].Detail === 'Girls!D2 (Level) = b1', rows().slice(-1)[0].Detail);
+ctx.__e = cell('Audit', 2, 4, 'x'); const nA = rows().length; run('onEdit(__e)');
+check('edits in the Audit tab itself are not kept', rows().length === nA);
+fails('the audit for a parent', () => run("apiAudit('5566', 7)"));
+const a = run("apiAudit('1234', 30)");
+check('the timeline is newest first', a.events.every((e, i) => !i || a.events[i - 1].at >= e.at));
+check('it merges practice with the trail', a.events.some(e => e.action === 'game') && a.events.some(e => e.action === 'open') && a.events.some(e => e.action === 'talk with Coco'),
+  [...new Set(a.events.map(e => e.action))].join(','));
+const fam = a.families.find(f => f.kidOpens >= 3);
+check('the family summary counts opens and devices', fam && fam.devices.includes('iPhone, app') && fam.wrong >= 1 && fam.last, JSON.stringify(fam));
+check('the device split counts people per device', a.devices['iPhone, app'] >= 1 && a.devices['Android phone, app'] === 1, JSON.stringify(a.devices));
+check('the days are capped at 30', run("apiAudit('1234', 400)").days === 30);
 }

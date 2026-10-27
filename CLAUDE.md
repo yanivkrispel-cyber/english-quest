@@ -202,5 +202,9 @@ the admin's Pilot card. Writing rules for new scripts: `tools/TALK-WRITING.md`. 
 clips recorded the same day (`TALK_V` 2, @37). After changing a script, run `python tools/talk_audio.py` (it records only
 changed lines and resumes where it stopped), then raise `TALK_V`, build Pages and push.
 
+The audit trail (built 2026-10-27, spec `specs/audit.md`, server `src/Audit.js`, tab Audit, SETUP v19): opens, wrong PINs,
+grown-ups' changes and hand edits in the sheet, with a coarse device label the app sends (`dev` in every call); the admin's
+Audit card merges it with the practice tabs. New server calls that change something for a grown-up should call `audit()`.
+
 Home in five tabs (owner's choice 2026-10-27 from the mockup canvas, spec `specs/home-tabs.md`): Today (pet, one Start, two
 pills, no scroll), Journey (the map), Play, Pet, Me. Live on Pages and @36 the same day.

@@ -1145,6 +1145,14 @@ function serverError(msg){
   msg = String(msg || '');
   return INFRA.test(msg) ? Object.assign(netError('busy'), { raw: msg }) : Object.assign(new Error(msg), { app: true });
 }
+// A coarse label of this phone for the admin's audit trail: the kind of device and whether the app is installed (no ids).
+const DEVICE = (() => {
+  const u = navigator.userAgent || '', touch = navigator.maxTouchPoints > 1;
+  const kind = /iPhone|iPod/.test(u) ? 'iPhone' : /iPad/.test(u) || (/Macintosh/.test(u) && touch) ? 'iPad'
+    : /Android/.test(u) ? (/Mobile/.test(u) ? 'Android phone' : 'Android tablet') : 'Computer';
+  const installed = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  return kind + ', ' + (installed ? 'app' : 'browser');
+})();
 async function call(fn, ...args){
   const tries = CALL_TWICE[fn] ? 2 : 1;
   for (let i = 1; ; i++) {
@@ -1161,7 +1169,7 @@ function callOnce(fn, args, ms){
     });
   }
   const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), ms);
-  return fetch(API_URL, { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args }), signal: ctl.signal })
+  return fetch(API_URL, { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args, dev: DEVICE }), signal: ctl.signal })
     .then(r => r.text(), () => { throw netError(ctl.signal.aborted ? 'timeout' : 'offline'); })
     .then(text => {
       let r;
@@ -6652,6 +6660,7 @@ function joinWelcome(){
       <h2>פרטיות</h2>
       <ul class="helist">
         <li>שומרים רק את השם הפרטי של הילד, הכיתה, התשובות וההתקדמות. מכם: שם, וכתובת מייל אם תבחרו.</li>
+        <li>נרשם גם מתי נכנסו לאפליקציה ומאיזה סוג מכשיר (למשל אייפון או אנדרואיד), כדי שנדע איך הפיילוט עובד.</li>
         <li>אין פרסומות. לא מקליטים קול ולא שומרים הקלטות. לא מעבירים מידע לאף אחד.</li>
         <li>אפשר לבקש מחיקה מלאה של כל המידע בכל רגע, בהודעה למי ששלח לכם את הקישור.</li>
         <li>הילדים יכולים לשחק עם ילדים ממשפחות אחרות בפיילוט. רואים רק שם פרטי, ואין צ'אט חופשי.</li>
@@ -6836,6 +6845,66 @@ async function pilotLoad(pin, open, code){
   card.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(b.dataset.copy));
   document.getElementById('pilotref').onclick = () => pilotLoad(pin);
   document.getElementById('pilotopen').onclick = () => pilotLoad(pin, !s.invite.open);
+}
+
+// ---------- The admin's audit trail (Audit.js) ----------
+function auditCard(){
+  return `<div class="glass panel" id="auditcard"><div class="row-flex between"><h2>Audit</h2><button class="btn btn-glass btn-sm" id="auditload">${icon('clipboard-text')} Show</button></div>
+    <div class="sub mt-s" style="font-size:13px">Who came in and when, on which kind of device, wrong PINs, what parents and the admin changed, hand edits in the sheet, and every task, game and talk.</div></div>`;
+}
+const AUD = { days: 7, show: 'all', fam: '', limit: 150 };
+const AUD_SHOW = { all: 'All', visit: 'Visits', adult: 'Grown-ups', practice: 'Practice', problem: 'Problems' };
+const audHm = ms => new Date(ms).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
+const audWhen = (ms, t) => { if (!ms) return 'not yet'; const d = new Date(ms).toLocaleDateString('en-CA', { timeZone: 'Asia/Jerusalem' }); return (d === t ? 'today' : fmtDate(d)) + ' ' + audHm(ms); };
+const audKind = e => !e.ok ? 'problem' : e.action === 'open' ? 'visit' : e.practice ? 'practice' : 'adult';
+async function auditLoad(pin, days){
+  const card = document.getElementById('auditcard');
+  if (days) AUD.days = days;
+  card.innerHTML = '<div class="spinner"></div>';
+  try { AUD.data = await call('apiAudit', pin, AUD.days); }
+  catch(e){ card.innerHTML = '<div class="sub">' + esc(e.message) + '</div>'; return; }
+  AUD.limit = 150;
+  auditRender(pin);
+}
+function auditRender(pin){
+  const a = AUD.data, card = document.getElementById('auditcard');
+  const visits = a.events.filter(e => e.action === 'open'), wrong = a.events.filter(e => !e.ok).length;
+  const list = a.events.filter(e => (AUD.show === 'all' || audKind(e) === AUD.show) && (!AUD.fam || e.group === AUD.fam));
+  let day = '';
+  const rows = list.slice(0, AUD.limit).map(e => {
+    const head = e.date !== day ? `<div class="label mt-s">${e.date === a.today ? 'Today' : fmtDate(e.date)}</div>` : '';
+    day = e.date;
+    const bad = !e.ok ? ' style="color:var(--orange,#f59e0b)"' : '';
+    return head + `<div class="soft row-flex" style="padding:6px 10px;border-radius:10px;font-size:13px;gap:10px;align-items:flex-start">
+      <b style="flex:none;width:42px">${audHm(e.at)}</b>
+      <span style="flex:1;min-width:0"><b>${esc(e.who || e.role)}</b>${e.family && e.family !== e.who ? ' · ' + esc(e.family) : ''} ${e.who && e.who !== e.role ? `<span class="sub" style="font-size:11px">${esc(e.role)}</span>` : ''}
+        <div${bad}>${esc(e.action)}${e.detail ? ' · ' + esc(e.detail) : ''}</div>
+        ${e.device ? `<div class="sub" style="font-size:11px">${esc(e.device)}</div>` : ''}</span></div>`;
+  }).join('');
+  const dev = Object.keys(a.devices).sort((x, y) => a.devices[y] - a.devices[x]);
+  card.innerHTML = `<div class="row-flex between"><h2>Audit</h2><button class="btn btn-glass icon-btn" id="audref">${icon('arrows-clockwise')}</button></div>
+    <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">${[1, 7, 30].map(n => `<button class="btn ${AUD.days === n ? 'btn-primary' : 'btn-glass'} btn-sm" data-auddays="${n}">${n === 1 ? 'Today' : n + ' days'}</button>`).join('')}</div>
+    <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">
+      <span class="chip purple">${visits.filter(e => e.role === 'kid').length} kid visits</span><span class="chip">${visits.filter(e => e.role === 'parent').length} parent visits</span>
+      <span class="chip ${wrong ? 'orange' : ''}">${wrong} wrong PINs or links</span></div>
+    <div class="label mt">Devices (people on each)</div>
+    <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">${dev.length ? dev.map(d => `<span class="chip">${esc(d)} · ${a.devices[d]}</span>`).join('') : '<span class="sub">Nobody yet in these days (the label starts with this version).</span>'}</div>
+    <div class="label mt">Families · last seen</div>
+    <div class="stack mt-s" style="gap:6px">${a.families.map(f => `<div class="soft" style="padding:8px 12px;border-radius:12px;font-size:13px">
+      <div class="row-flex between"><b>${esc(f.name)}</b><span class="sub" style="font-size:12px">${audWhen(f.last, a.today)}</span></div>
+      <div>${f.kidOpens} kid visits · ${f.kidDays} kid-days active · ${f.parentOpens} parent visits${f.wrong ? ` · <b style="color:var(--orange,#f59e0b)">${f.wrong} wrong</b>` : ''}</div>
+      ${f.devices.length ? `<div class="sub" style="font-size:11px">${f.devices.map(esc).join(' · ')}</div>` : ''}</div>`).join('')}</div>
+    <div class="label mt">Timeline</div>
+    <div class="row-flex mt-s" style="gap:6px;flex-wrap:wrap">${Object.keys(AUD_SHOW).map(k => `<button class="btn ${AUD.show === k ? 'btn-primary' : 'btn-glass'} btn-sm" data-audshow="${k}">${AUD_SHOW[k]}</button>`).join('')}</div>
+    <select id="audfam" class="mt-s" style="width:100%;padding:8px;border-radius:10px"><option value="">Every family</option>${a.families.map(f => `<option value="${esc(f.id)}"${AUD.fam === f.id ? ' selected' : ''}>${esc(f.name)}</option>`).join('')}</select>
+    <div class="stack mt-s" style="gap:4px">${rows || '<div class="sub">Nothing here.</div>'}</div>
+    ${list.length > AUD.limit ? `<button class="btn btn-glass btn-sm mt-s" id="audmore">Show more (${list.length - AUD.limit})</button>` : ''}
+    ${a.more ? `<div class="sub mt-s" style="font-size:12px">The oldest ${a.more} are left out; choose fewer days.</div>` : ''}`;
+  document.getElementById('audref').onclick = () => auditLoad(pin);
+  card.querySelectorAll('[data-auddays]').forEach(b => b.onclick = () => auditLoad(pin, Number(b.dataset.auddays)));
+  card.querySelectorAll('[data-audshow]').forEach(b => b.onclick = () => { AUD.show = b.dataset.audshow; AUD.limit = 150; auditRender(pin); });
+  document.getElementById('audfam').onchange = e => { AUD.fam = e.target.value; AUD.limit = 150; auditRender(pin); };
+  const more = document.getElementById('audmore'); if (more) more.onclick = () => { AUD.limit += 150; auditRender(pin); };
 }
 
 // ---------- Teacher review: ?missions&t=<code> ----------
@@ -7671,12 +7740,13 @@ function renderParent(p, pin){
     ${createdCard(p.created)}
     ${p.groups.map((g, i) => groupBlock(g, p, i)).join('')}
     ${notifyCard(p)}
-    ${p.isAdmin ? pilotCard() + settingsCard(p) + manageCard(p) : feedbackCard()}
+    ${p.isAdmin ? pilotCard() + auditCard() + settingsCard(p) + manageCard(p) : feedbackCard()}
   </div>`;
   app.querySelectorAll('details.acc').forEach(d => d.addEventListener('toggle', () => store.set('eq_acc_' + d.dataset.acc, d.open)));
   renderParentPush(p, pin);
   bindFeedback(pin);
   const pl = document.getElementById('pilotload'); if (pl) pl.onclick = () => pilotLoad(pin);
+  const al = document.getElementById('auditload'); if (al) al.onclick = () => auditLoad(pin);
   document.getElementById('refresh').onclick = () => parent(pin, true);
   document.getElementById('logout').onclick = () => { store.del('eq_admin'); loadHome(); };
   app.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(b.dataset.copy));

@@ -13,7 +13,9 @@ function inviteOk(code) {
 // The join screen asks this first, so a closed or wrong link says so before the parent types anything.
 function apiJoinCheck(code) {
   ensureSetup();
-  return { ok: inviteOk(code) };
+  var ok = inviteOk(code);
+  if (!ok) auditInviteRefused(code);
+  return { ok: ok };
 }
 
 // data: { family, parent, parentPin, email, consent, kids: [{ name, grade }] }
@@ -63,6 +65,7 @@ function apiJoin(code, data) {
     lock.releaseLock();
   }
   try { notifyAdmin({ title: 'משפחה חדשה הצטרפה: ' + family, body: parentName + ' · ' + out.map(function (k) { return k.name; }).join(', ') }); } catch (e) { console.error(e); }
+  audit('parent', name, id, 'joined', parentName + ' · ' + out.map(function (k) { return k.name; }).join(', '));
   return { groupId: id, family: family, link: groupLink(id), parentPin: parentPin, kids: out };
 }
 
@@ -128,6 +131,7 @@ function apiTeacherCheck(code) {
   ensureSetup();
   var want = String(getSetting('TeacherCode') || '').trim();
   checkPin('teacher', !!want && String(code || '').trim() === want);
+  auditOpen('teacher', 'teacher', '');
   return { ok: true };
 }
 
@@ -179,6 +183,7 @@ function apiPilotInvite(pin, open, code) {
   if (code) setSetting('InviteCode', code);
   if (!getSetting('InviteCode')) setSetting('InviteCode', Math.random().toString(36).slice(2, 8));
   setSetting('InviteOpen', open ? 'yes' : 'no');
+  audit('admin', 'admin', '', 'invite link', (open ? 'opened' : 'closed') + (code ? ', new code' : ''));
   return apiPilotStats(pin);
 }
 

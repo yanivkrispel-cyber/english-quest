@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v18';
+var SETUP_VERSION = 'v19';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 // The kids' front end (Cloudflare, docs/). Until 2026-10 it was https://yanivkrispel-cyber.github.io/english-quest/.
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
@@ -76,7 +76,9 @@ var HEADERS = {
   Placements: ['Timestamp', 'Girl', 'Date', 'Form', 'Start', 'Level', 'Correct', 'Total', 'Detail'],
   Feedback: ['Timestamp', 'Who', 'Group', 'Date', 'Score', 'Text'],
   // Talk to Coco (Talk.js): one row per talk; Voice / Tiles = answers said aloud / tapped, Said = what the phone heard.
-  Chats: ['Timestamp', 'Girl', 'Date', 'Talk', 'Where', 'Level', 'Turns', 'Voice', 'Tiles', 'Mic', 'XP', 'Seconds', 'Said']
+  Chats: ['Timestamp', 'Girl', 'Date', 'Talk', 'Where', 'Level', 'Turns', 'Voice', 'Tiles', 'Mic', 'XP', 'Seconds', 'Said'],
+  // The audit trail (Audit.js): opens, wrong PINs, and what parents, the admin, the teacher and the owner changed.
+  Audit: ['Timestamp', 'Date', 'Role', 'Who', 'Group', 'Action', 'Detail', 'Ok', 'Device']
 };
 
 var WORDS = [
@@ -137,7 +139,7 @@ function api() {
   apiMissionResult: apiMissionResult, apiFlag: apiFlag,
   apiJoinCheck: apiJoinCheck, apiJoin: apiJoin, apiPlacement: apiPlacement, apiFeedback: apiFeedback,
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
-  apiChatResult: apiChatResult
+  apiChatResult: apiChatResult, apiAudit: apiAudit
   };
 }
 
@@ -147,6 +149,7 @@ function doPost(e) {
     var req = JSON.parse(e.postData.contents);
     var API = api();
     if (!API.hasOwnProperty(req.fn)) throw new Error('Unknown call');
+    REQ_DEV = cleanDev(req.dev);
     out = { ok: true, data: API[req.fn].apply(null, req.args || []) };
   } catch (err) {
     out = { ok: false, error: String((err && err.message) || err) };
@@ -166,6 +169,7 @@ function checkPin(key, ok) {
   if (fails >= 8) throw new Error('Too many attempts — try again in 15 minutes');
   if (!ok) {
     c.put(k, String(fails + 1), 900);
+    auditPin(key, fails + 1);
     throw new Error('Wrong PIN');
   }
   if (fails) c.remove(k);
@@ -220,6 +224,7 @@ function apiWarm() {
 
 function apiDashboard(name, pin) {
   var kid = auth(name, pin);
+  auditOpen('kid', kid.Name, groupOf(kid));
   var dash = buildDashboard(kid);
   // Play together card (Duels.js); only here, so parent views and other calls stay fast.
   if (!dash.levelTest) dash.duels = duelHome(kid);
@@ -493,6 +498,7 @@ function apiGateResult(name, pin, correct, total, missed, right) {
 function apiParent(pin) {
   ensureSetup();
   var access = parentAccess(pin);
+  if (access.isAdmin) auditOpen('admin', 'admin', ''); else auditOpen('parent', access.group.Name, String(access.group.Id));
   return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
 }
 
@@ -579,6 +585,7 @@ function apiAdminAddGroup(pin, name, email) {
   } finally {
     lock.releaseLock();
   }
+  audit('admin', 'admin', id, 'add family', name);
   var data = apiParent(pin);
   data.created = { type: 'group', name: name, pin: parentPin, link: groupLink(id) };
   return data;
@@ -603,6 +610,7 @@ function apiAdminAddKid(pin, name, age, groupId, level, missions) {
   } finally {
     lock.releaseLock();
   }
+  audit('admin', 'admin', groupId, 'add kid', name + ' · ' + level);
   var data = apiParent(pin);
   data.created = { type: 'kid', name: name, pin: kidPin, link: groupLink(groupId), group: findGroup(groupId).Name };
   return data;
@@ -619,6 +627,7 @@ function apiAdminSettings(pin, reminderHour, lastCallHour) {
   setSetting('ReminderHour', String(r));
   setSetting('LastCallHour', String(l));
   installTriggers();
+  audit('admin', 'admin', '', 'reminder hours', r + ':00' + (l === '' ? ', no last call' : ', last call ' + l + ':00'));
   return apiParent(pin);
 }
 
@@ -1068,8 +1077,9 @@ function clearCache() {
 }
 
 // Simple trigger: any manual edit in the spreadsheet (PIN, level, rewards...) drops the cache.
-function onEdit() {
+function onEdit(e) {
   clearCache();
+  auditSheetEdit(e);
 }
 
 function readTableUncached(name) {

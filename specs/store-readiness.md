@@ -57,12 +57,16 @@ Kept in the private Google Sheet, written only by the app's own server (Apps Scr
 - Talk with Coco: the text the phone heard (no audio), counts of spoken and tapped answers.
 - Feedback and "Something wrong here?" notes.
 - Devices: push subscription endpoints and the browser's user-agent string.
+- Audit trail (tab Audit, `specs/audit.md`): when a kid, parent, admin or teacher opened the app (once per half hour),
+  wrong PIN attempts (not the PIN), grown-ups' changes, hand edits in the sheet (not PIN values), and a coarse device
+  label (iPhone / Android phone / Computer..., app or browser).
 
 On the phone (local storage): the remembered kid and PIN, the group, the last dashboard, settings (sound, voice).
 
 ## Known gaps before a store submission
 
-- No in-app deletion of a kid or a family (today the owner deletes rows in the sheet).
+- No in-app deletion of a kid or a family (today the owner deletes rows in the sheet). The deletion must cover the
+  Audit tab too (rows by Who and Group).
 - Kids can share to WhatsApp (certificate, duel invite links) and a kid with `Girls.Missions = no` is sent to
   test-english.com: both need a parental gate or must move to the parents' area.
 - Play together reaches kids in other groups by default (a group opts out with `Groups.Friends = no`); for the stores it

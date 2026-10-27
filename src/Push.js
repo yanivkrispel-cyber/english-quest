@@ -318,6 +318,7 @@ function apiParentPushSubscribe(pin, endpoint, agent, welcome) {
       if (row.Who !== who) setParentDevice(endpoint, 'Who', who);
     } else {
       appendRow('ParentPush', { Who: who, Endpoint: endpoint, Created: today(), Agent: String(agent || '').slice(0, 120), Instant: 'yes' });
+      audit(who === 'admin' ? 'admin' : 'parent', who === 'admin' ? 'admin' : (findGroup(who) || {}).Name, who === 'admin' ? '' : who, 'notifications on', '');
     }
   } finally {
     lock.releaseLock();
@@ -402,7 +403,10 @@ function apiPushSubscribe(name, pin, endpoint, agent, welcome) {
       if (values[i][gc] !== kid.Name) sh.getRange(i + 1, gc + 1).setValue(kid.Name);
     }
     if (found) invalidate('Push');
-    else appendRow('Push', { Girl: kid.Name, Endpoint: endpoint, Created: today(), Agent: String(agent || '').slice(0, 120) });
+    else {
+      appendRow('Push', { Girl: kid.Name, Endpoint: endpoint, Created: today(), Agent: String(agent || '').slice(0, 120) });
+      audit('kid', kid.Name, groupOf(kid), 'reminders on', '');
+    }
   } finally {
     lock.releaseLock();
   }
@@ -427,6 +431,7 @@ function apiAdminTestPush(pin, name) {
   if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can send test reminders');
   var kid = findGirl(name);
   if (!kid) throw new Error('Unknown kid');
+  audit('admin', 'admin', groupOf(kid), 'test reminder', kid.Name);
   return pushToKid(kid.Name, { title: 'Test reminder', body: 'Hi ' + kid.Name + ', notifications are working.' });
 }
 
