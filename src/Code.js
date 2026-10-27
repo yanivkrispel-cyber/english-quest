@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v20';
+var SETUP_VERSION = 'v21';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 // The kids' front end (Cloudflare, docs/). Until 2026-10 it was https://yanivkrispel-cyber.github.io/english-quest/.
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
@@ -48,7 +48,7 @@ var WORLDS = { a1: 'Sunny Meadow', a2: 'Whisper Woods', b1: 'Crystal Caves', 'b1
 // The sheet tab for kids is still called "Girls" (it predates groups).
 var HEADERS = {
   // Missions: "no" keeps her daily task on test-english.com (the old link); empty = Today's Mission in the app.
-  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince', 'Missions'],
+  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince', 'Missions', 'NestPerDay'],
   Games: ['Timestamp', 'Girl', 'Date', 'Game', 'Level', 'Correct', 'Total', 'XP', 'Missed'],
   Review: ['Girl', 'Items'],
   Gates: ['Timestamp', 'Girl', 'Date', 'From', 'To', 'Correct', 'Total', 'Passed', 'Tasks', 'XP'],
@@ -142,7 +142,7 @@ function api() {
   apiMissionResult: apiMissionResult, apiFlag: apiFlag,
   apiJoinCheck: apiJoinCheck, apiJoin: apiJoin, apiPlacement: apiPlacement, apiFeedback: apiFeedback,
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
-  apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge
+  apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay
   };
 }
 
@@ -677,7 +677,8 @@ function buildDashboard(kid) {
   var assigned = ensureAssignments(kid, active);
   var logs = readTable('Log').filter(function (l) { return l.Girl === kid.Name; });
   var byDate = {};
-  logs.forEach(function (l) { byDate[l.Date] = l; });
+  // A Nest day can have more lessons (one more lesson): the day shows its own, the first one.
+  logs.forEach(function (l) { if (!byDate[l.Date] || l.Section !== 'nest') byDate[l.Date] = l; });
   var missions = !pending && missionsOn(kid), nest = isNest(kid);
 
   var week = dates.map(function (d) {

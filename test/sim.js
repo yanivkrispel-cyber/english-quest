@@ -1288,9 +1288,22 @@ check('the unit is in the played list', d.nest.played[0] === units[0][0]);
 check('each word\'s first try is kept, and the review stats come back', R.Detail === 'hello:1,yes:0,baby:1' && d.nest.known.hello[0] === 1 && d.nest.known.yes[1] === 1 && d.nest.known.baby[2] === today, JSON.stringify(d.nest.known));
 d = run(`apiNestResult('${TALI}', '${tali.PIN}', '${today}', '${units[0][0]}', 8, 8, 200)`);
 check('the same unit again is free play', d.free === true && sheets.Log.rows.filter(r => r[1] === TALI).length === 1);
+check('one lesson a day by default: no next lesson', d.nest.perDay === 1 && d.nest.next === null, JSON.stringify([d.nest.perDay, d.nest.next]));
+d = run(`apiNestResult('${TALI}', '${tali.PIN}', '${today}', '${units[1][0]}', 6, 8, 200)`);
+check('the next day of the program today is free play while the parent allows one', d.free === true && sheets.Log.rows.filter(r => r[1] === TALI).length === 1);
+fails('lessons a day from another family', () => run(`apiParentNestPerDay('0000', '${TALI}', 2)`));
+run(`apiParentNestPerDay('7788', '${TALI}', 2)`);
+d = run(`apiDashboard('${TALI}', '${tali.PIN}')`);
+check('the parent allows two: the next day of the program is offered', d.nest.perDay === 2 && d.nest.next === units[1][0], JSON.stringify([d.nest.perDay, d.nest.next]));
+fails('a day further ahead as the extra lesson', () => { const r = run(`apiNestResult('${TALI}', '${tali.PIN}', '${today}', '${units[2][0]}', 6, 8, 200)`); if (r.free) throw new Error('free'); });
+d = run(`apiNestResult('${TALI}', '${tali.PIN}', '${today}', '${units[1][0]}', 6, 8, 200)`);
+check('one more lesson is logged, the program moves on, and the week still shows the day\'s own lesson',
+  d.justEarned === 15 && sheets.Log.rows.filter(r => r[1] === TALI).length === 2 && d.nest.played.includes(units[1][0]) && d.nest.next === null
+  && d.week.find(w => w.isToday).percent === Math.round(3 / 8 * 100), JSON.stringify([d.justEarned, d.nest.next, d.week.find(w => w.isToday).percent]));
+run(`apiParentNestPerDay('7788', '${TALI}', 1)`);
 const day0 = ctx.__day; ctx.__day = run(`addDays('${day0}', 1)`);
 d = run(`apiDashboard('${TALI}', '${tali.PIN}')`);
-check('the next day brings the next unit', units.length < 2 || d.nest.today === units[1][0], d.nest.today);
+check('the next day brings the next unit not played yet (the extra lesson took the second)', units.length < 3 || d.nest.today === units[2][0], d.nest.today);
 ctx.__day = day0;
 check('Nest kids never meet other kids', run(`duelCanMeet(findGirl('${TALI}'), findGirl('${GAL}'))`) === false && run(`duelCanMeet(findGirl('${GAL}'), findGirl('Aviv'))`) === true);
 check('other kids do not see Nest kids in Play together', !run(`apiDashboard('Aviv', '2694')`).duels.friends.some(f => f.name === TALI || f.name === OMER));
