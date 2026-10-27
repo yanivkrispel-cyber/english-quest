@@ -1,0 +1,62 @@
+<!doctype html><meta charset="utf-8"><title>Nest games</title>
+<!-- Coco's Nest games in phone frames (served by test/dev-server.js):
+     http://localhost:8787/test/nest-games.html?unit=n07&game=give&age=4[&step=1]  one game, two phones (390x800 and 360x640)
+     http://localhost:8787/test/nest-games.html?all                                 every game at every age: stage or page scroll = a bug
+     Nothing is saved (the teacher's preview). Sound is off: nestPlay ends at once, so demos and rounds run fast. -->
+<style>body{margin:0;background:#333;color:#eee;font:14px system-ui;display:flex;flex-wrap:wrap;gap:20px;justify-content:center;padding:16px}
+iframe{border:0;border-radius:24px;background:#fff}#out{width:100%;white-space:pre-wrap;font-family:Consolas,monospace}</style>
+<iframe id="a" width="390" height="800"></iframe><iframe id="b" width="360" height="640"></iframe>
+<div id="out"></div>
+<script>
+const q = new URLSearchParams(location.search), frames = [document.getElementById('a'), document.getElementById('b')], out = document.getElementById('out');
+const GAMES = ['meet', 'find', 'move', 'say', 'give', 'peek', 'sound', 'pop', 'sort', 'pairs', 'missing', 'odd', 'chant', 'story', 'scene', 'color', 'dress', 'teach'];
+async function ready(f){
+  for (let i = 0; i < 80; i++) {
+    try { if (f.contentWindow.eval('typeof nestGalleryDash') === 'function' && f.contentDocument.getElementById('app')) return; } catch(e){}
+    await new Promise(r => setTimeout(r, 250));
+  }
+  throw new Error('the app did not open in ' + f.id);
+}
+// Starts a game in the frame (muted when asked) and measures it: the page and the stage must not scroll.
+async function play(f, unit, game, age, step, mute){
+  const w = f.contentWindow, ev = s => w.eval(s);
+  if (mute) ev("nestPlay = function(k, cb){ if (cb) setTimeout(cb, 30); }");
+  ev(`nestLeave(); NG_AGE = ${age}; nestGalleryDash()`);
+  await ev('loadNest()');
+  ev(`nestStart(${JSON.stringify(unit)}, true, ${JSON.stringify(game)})`);
+  if (step) ev(`NE.si = ${step}; nestRender(false)`);
+  await new Promise(r => setTimeout(r, 900));
+  const d = f.contentDocument, st = d.getElementById('nkst');
+  const page = d.scrollingElement.scrollHeight - w.innerHeight, over = st ? st.scrollHeight - st.clientHeight : -1;
+  const errs = d.querySelectorAll('#app > .glass.panel').length;
+  return { page, over, errs, steps: ev("NE ? NE.steps.map(s => s.t).join(' ') : 'none'") };
+}
+(async () => {
+  // Fresh files: the app's service worker (scope test/) keeps old copies of this page, nest.js and play.js. Drop it and
+  // its caches; a page it served loads once more.
+  if (navigator.serviceWorker) for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister();
+  if (window.caches) for (const k of await caches.keys()) await caches.delete(k);
+  if (navigator.serviceWorker && navigator.serviceWorker.controller && !sessionStorage.nkOnce) { sessionStorage.nkOnce = 1; return location.reload(); }
+  delete sessionStorage.nkOnce;
+  for (const f of frames) f.src = 'dev.html?nest';
+  for (const f of frames) await ready(f);
+  if (q.has('all')) {
+    const bad = [];
+    let n = 0;
+    for (const age of [3, 4, 5, 7]) for (const game of GAMES) for (const f of frames) {
+      const unit = game === 'dress' ? 'n13' : game === 'sound' ? 'n04' : game === 'give' ? 'n07' : 'n05';
+      const r = await play(f, unit, game, age, 0, true);
+      n++;
+      if (r.page > 0 || r.over > 2 || r.errs) bad.push(`${f.id} age ${age} ${game}: page ${r.page}, stage ${r.over}${r.errs ? ', error on screen' : ''}`);
+    }
+    out.textContent = n + ' screens checked\n' + (bad.length ? bad.join('\n') : 'no scrolling, no errors');
+    return;
+  }
+  const lines = [];
+  for (const f of frames) {
+    const r = await play(f, q.get('unit') || 'n05', q.get('game') || 'find', Number(q.get('age') || 4), Number(q.get('step') || 0), q.has('mute'));
+    lines.push(`${f.id}: ${r.steps} | page scroll ${r.page}, stage scroll ${r.over}`);
+  }
+  out.textContent = lines.join('\n');
+})();
+</script>

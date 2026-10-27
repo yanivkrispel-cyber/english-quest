@@ -1,15 +1,23 @@
 // Checks Coco's Nest content in docs/nest/nest.js (specs/nest.md): unit order and ids, 6 words a new unit, exactly one
 // picture kind per word, colors and counts, core words, the phrase, Coco says moves, the parents' home ideas, one meaning
-// per English word across units, reviews that point back, safe words, the shared Hebrew and English lines,
-// every picture and clip on disk, and that src/NestIndex.js has the same units in the same order.
+// per English word across units, reviews that point back, safe words, Coco's English lines (no Hebrew voice), the games'
+// content (chants, stories, sounds, things to give and wear, coloring pages, the grown-ups' notes), every picture and
+// clip on disk, that docs/nest/play.js never reuses a top-level name of src/Index.html, and that src/NestIndex.js has
+// the same days in the same order.
 // Exits with 1 when something is wrong.
 //   node test/nest-check.js
 //   require('./nest-check.js').check({ files: false, index: false })  -> list of errors (tools/nest-index.js)
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const { load, clips } = require('../tools/nest-audio-list.js');
 const ROOT = path.join(__dirname, '..');
-const HE_KEYS = ['hello', 'meet', 'phrase', 'find', 'again', 'move', 'say', 'done', 'pet', 'start', 'review'];
-const EN_KEYS = ['hi', 'meet', 'find', 'move', 'say', 'great', 'yes', 'wow', 'super', 'try', 'bye', 'listen'];
+const EN_KEYS = ['hi', 'listen', 'meet', 'find', 'turn', 'give', 'with', 'color', 'say', 'sing', 'again', 'move', 'who', 'peek',
+  'whosays', 'popit', 'sort', 'pairs', 'close', 'open', 'missing', 'odd', 'look', 'story', 'theend', 'teach', 'dress', 'yummy',
+  'thanks', 'yes', 'wow', 'super', 'great', 'try', 'done', 'bye'];
+const GAMES = ['meet', 'phrase', 'find', 'move', 'say', 'give', 'peek', 'sound', 'pop', 'sort', 'pairs', 'missing', 'odd', 'chant',
+  'story', 'scene', 'color', 'dress', 'teach', 'done'];
+const PAGES = ['ball', 'car', 'house', 'fish', 'flower', 'balloon', 'apple', 'kite', 'boat', 'tree', 'star', 'sun'];
+const PLACES = ['home', 'playroom', 'kitchen', 'farm', 'savanna', 'park', 'town', 'beach', 'sky'];
+const SLOTS = ['head', 'face', 'neck', 'body', 'hands', 'legs', 'feet'];
 const HEB = /[֐-׿]/;
 const HARSH = /\b(kill|die|dead|death|blood|guns?|knife|knives|sword|bomb|war|army|monster|ghost|witch|skull|devil|zombie|beer|wine|kiss|church|mosque|synagogue|god|jesus|allah|stupid|ugly|fat)\b/i;
 
@@ -141,11 +149,50 @@ function check(opts) {
   if (!Array.isArray(rv) || !rv.length) err('parent', 'needs review ideas');
   else rv.forEach((t, k) => homeLine('parent review ' + (k + 1), t));
 
-  HE_KEYS.forEach(k => { if (!HEB.test((nest.he || {})[k] || '')) err('he', 'missing line ' + k); });
+  // The kid hears only Coco's English (owner, 2026-10-27): no Hebrew lines to record.
+  if (nest.he) err('he', 'the Nest has no Hebrew voice any more: remove the he lines');
   EN_KEYS.forEach(k => { if (!((nest.en || {})[k] || '').trim()) err('en', 'missing line ' + k); });
-  Object.keys(nest.en || {}).forEach(k => { if (HEB.test(nest.en[k])) err('en.' + k, 'must be English'); });
-  Object.keys(nest.he || {}).forEach(k => { if (/[A-Za-z]/.test(nest.he[k])) err('he.' + k, 'Latin letters in a Hebrew line (the voice reads them badly)'); });
-  ok.push(Object.keys(nest.he || {}).length + ' Hebrew lines, ' + Object.keys(nest.en || {}).length + ' English lines');
+  Object.keys(nest.en || {}).forEach(k => english('en.' + k, nest.en[k], 7));
+  ok.push(Object.keys(nest.en || {}).length + ' English lines');
+  // The grown-ups' notes (a long press on Coco): Hebrew text for every game.
+  GAMES.forEach(g => { const t = (nest.hints || {})[g]; if (!HEB.test(t || '')) err('hints', 'missing Hebrew note for ' + g); else if (t.length > 150) err('hints.' + g, 'too long'); });
+
+  // The games' content.
+  const word = {}, unitOf = {};
+  units.forEach(u => (u.words || []).forEach(w => { word[w.id] = w; unitOf[w.id] = u; }));
+  const known = (where, id) => { if (!word[id]) err(where, 'unknown word ' + id); return !!word[id]; };
+  (nest.give || []).forEach(id => known('give', id));
+  if (new Set(nest.give || []).size !== (nest.give || []).length) err('give', 'a word twice');
+  Object.keys(nest.sounds || {}).forEach(id => { if (known('sounds', id)) english('sounds.' + id, nest.sounds[id], 5); });
+  Object.keys(nest.dress || {}).forEach(id => { if (known('dress', id) && !SLOTS.includes(nest.dress[id])) err('dress.' + id, 'unknown place ' + nest.dress[id]); });
+  const colorWords = new Set(Object.values(word).filter(w => w.color).map(w => w.en));
+  (nest.color || []).forEach((c, i) => {
+    const where = 'color ' + (c.id || i);
+    if (!PAGES.includes(c.id)) err(where, 'no coloring page drawn for it (docs/nest/play.js NK_PAGES)');
+    if (!colorWords.has(c.color)) err(where, 'color ' + c.color + ' is not a Nest color word');
+    english(where, c.say, 6);
+    if (c.say && c.color && !c.say.toLowerCase().includes(c.color)) err(where, 'Coco does not say the color');
+  });
+  if ((nest.color || []).length < 6) err('color', 'needs at least 6 pages');
+  units.filter(u => !u.review).forEach(u => {
+    const ids = u.words.map(w => w.id), c = (nest.chants || {})[u.id], st = (nest.stories || {})[u.id];
+    if (!Array.isArray(c) || c.length !== 4) err('chant ' + u.id, 'needs 4 lines');
+    else c.forEach((l, i) => { english('chant ' + u.id + ' line ' + (i + 1), l[0], 9); if (!ids.includes(l[1])) err('chant ' + u.id + ' line ' + (i + 1), 'picture ' + l[1] + ' is not a word of the unit'); });
+    if (!st) return err('story ' + u.id, 'missing');
+    if (!PLACES.includes(st.place)) err('story ' + u.id, 'unknown place ' + st.place);
+    if (!Array.isArray(st.pages) || st.pages.length < 4 || st.pages.length > 6) err('story ' + u.id, 'needs 4 to 6 pages');
+    else st.pages.forEach((pg, i) => {
+      const where = 'story ' + u.id + ' page ' + (i + 1);
+      english(where, pg[0], 8);
+      if (!Array.isArray(pg[1]) || !pg[1].length || pg[1].length > 3) err(where, 'needs 1 to 3 pictures');
+      else pg[1].forEach(id => known(where, id));
+    });
+    const asked = new Set([].concat(...(st.pages || []).map(pg => pg[1] || [])).filter(id => id !== 'parrot' && word[id]));
+    if (asked.size < 3) err('story ' + u.id, 'needs 3 words to ask about afterwards');
+  });
+  ['chants', 'stories'].forEach(k => Object.keys(nest[k] || {}).forEach(id => { if (!units.some(u => u.id === id && !u.review)) err(k + '.' + id, 'no such new unit'); }));
+  ok.push(Object.keys(nest.chants || {}).length + ' chants, ' + Object.keys(nest.stories || {}).length + ' stories, ' + Object.keys(nest.sounds || {}).length +
+    ' sounds, ' + (nest.give || []).length + ' things to give, ' + Object.keys(nest.dress || {}).length + ' clothes, ' + (nest.color || []).length + ' coloring pages');
 
   if (opts.files) {
     let missing = 0;
@@ -168,11 +215,24 @@ function check(opts) {
       const ctx = {};
       try {
         new vm.Script(fs.readFileSync(p, 'utf8') + '\n;this.NEST_UNITS = NEST_UNITS;').runInNewContext(ctx);
-        const want = JSON.stringify(units.map(u => [u.id, u.title, u.review ? 1 : 0]));
+        const want = JSON.stringify([].concat(...units.map(u => (u.review ? [''] : ['', '.b', '.c', '.d']).map(d => [u.id + d, u.title, u.review ? 1 : 0]))));
         if (JSON.stringify(ctx.NEST_UNITS) !== want) err('src/NestIndex.js', 'out of date (node tools/nest-index.js)');
         else ok.push('src/NestIndex.js matches');
       } catch (e) { err('src/NestIndex.js', e.message); }
     }
+  }
+  if (opts.files) {
+    // docs/nest/play.js runs in the app's global scope: a top-level name it shares with src/Index.html would replace the
+    // app's function (or stop play.js from loading at all).
+    const names = src => new Set([...src.matchAll(/^(?:async\s+)?function\s+([A-Za-z_$][\w$]*)|^(?:const|let|var)\s+([A-Za-z_$][\w$]*)/gm)].map(m => m[1] || m[2]));
+    const html = fs.readFileSync(path.join(ROOT, 'src/Index.html'), 'utf8'), play = fs.readFileSync(path.join(ROOT, 'docs/nest/play.js'), 'utf8');
+    const app = names(html), own = [...names(play)];
+    own.filter(n => app.has(n)).forEach(n => err('docs/nest/play.js', 'top-level name ' + n + ' is also in src/Index.html'));
+    own.filter(n => !/^(nk|NK|nest)/.test(n)).forEach(n => err('docs/nest/play.js', 'top-level name ' + n + ' should start with nk / NK'));
+    try { new vm.Script(play, { filename: 'play.js' }); } catch (e) { err('docs/nest/play.js', e.message); }
+    // Every game the day plans has its activity in play.js.
+    GAMES.forEach(g => { if (!new RegExp('^NK\\.' + g + ' = ', 'm').test(play)) err('docs/nest/play.js', 'no activity NK.' + g); });
+    ok.push('docs/nest/play.js: ' + own.length + ' names, none shared with the app');
   }
   if (opts.print) ok.forEach(s => console.log('ok ' + s));
   return errors;

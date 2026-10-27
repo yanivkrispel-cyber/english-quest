@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v19';
+var SETUP_VERSION = 'v20';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 // The kids' front end (Cloudflare, docs/). Until 2026-10 it was https://yanivkrispel-cyber.github.io/english-quest/.
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
@@ -54,7 +54,8 @@ var HEADERS = {
   Gates: ['Timestamp', 'Girl', 'Date', 'From', 'To', 'Correct', 'Total', 'Passed', 'Tasks', 'XP'],
   Assignments: ['Girl', 'Date', 'Section', 'Level', 'Title', 'URL'],
   // Mission and Seconds: a task played as a mission in the app (Missions.js); empty for the old link.
-  Log: ['Timestamp', 'Girl', 'Date', 'DoneOn', 'Section', 'Level', 'Title', 'URL', 'Correct', 'Total', 'Percent', 'Points', 'Mission', 'Seconds'],
+  // Detail: a Nest day's first try per word ("cat:1,dog:0", Nest.js), for the review days and the parents' view.
+  Log: ['Timestamp', 'Girl', 'Date', 'DoneOn', 'Section', 'Level', 'Title', 'URL', 'Correct', 'Total', 'Percent', 'Points', 'Mission', 'Seconds', 'Detail'],
   Rewards: ['Points', 'Reward', 'Group'],
   Settings: ['Key', 'Value'],
   // Parent, Joined, Consent: a family that joined on its own from the invite link (Pilot.js).

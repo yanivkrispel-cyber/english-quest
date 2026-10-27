@@ -207,13 +207,16 @@ changed lines and resumes where it stopped), then raise `TALK_V`, build Pages an
 
 Coco's Nest (built 2026-10-27, spec `specs/nest.md`, server `src/Nest.js`, content `docs/nest/`): ages 2 to 7, `Girls.Level = nest`
 (outside `LEVELS` on purpose: a level not in the chain falls back to a2 in several places, so every new code path that reads
-`kid.Level` must check `isNest(kid)` first). Home `renderNest`, session `nestStart` (meet, find, say, done), audio
-`nestPlay` (one Audio element per session for iPhones). Content: edit `docs/nest/nest.js`, then `python tools/nest_pics.py`,
+`kid.Level` must check `isNest(kid)` first). Home `renderNest` and audio `nestPlay` (one Audio element per session for
+iPhones) are in Index.html; the session engine and its 18 games are `docs/nest/play.js` (loaded with nest.js; every
+top-level name starts with nk/NK, and nest-check fails on a name shared with Index.html). A unit is four days (`n04`,
+`n04.b`, `n04.c`, `n04.d`), a review one (`r02`). Content: edit `docs/nest/nest.js`, then `python tools/nest_pics.py`,
 `python tools/nest_audio.py`, `node tools/nest-index.js`, `node test/nest-check.js`, and raise `NEST_V`. Dev: Mia 5151 (age 4),
-`test/tablet.html?screen=nest|nest-meet|nest-find|nest-say|nest-done&phones`. A new audio folder needs its path in
+`test/tablet.html?screen=nest|nest-meet|nest-find|nest-say|nest-done&phones`; every game in phone frames:
+`test/nest-games.html?all` (lists screens that scroll) or `?unit=n07&game=give&age=4`. A new audio folder needs its path in
 `run_worker_first` (wrangler.jsonc), or Safari plays nothing.
-**Coco is a he** (Hebrew: קוקו אומר, שואל). Nest pictures are clay stickers made for the app (`tools/NEST-ART.md`), never emoji;
-the Hebrew narrator is `en-US-EmmaMultilingualNeural` (`tools/nest_audio.py`).
+**Coco is a he** (Hebrew: קוקו אומר, שואל). Nest pictures are clay stickers made for the app (`tools/NEST-ART.md`), never emoji.
+**The Nest kid hears no Hebrew** (owner, 2026-10-27): Coco (Kokoro) shows each game; Hebrew is text for grown-ups only.
 
 The audit trail (built 2026-10-27, spec `specs/audit.md`, server `src/Audit.js`, tab Audit, SETUP v19): opens, wrong PINs,
 grown-ups' changes and hand edits in the sheet, with a coarse device label the app sends (`dev` in every call); the admin's

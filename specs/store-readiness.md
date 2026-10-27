@@ -56,6 +56,8 @@ Kept in the private Google Sheet, written only by the app's own server (Apps Scr
 - Parent / family: family name, parent's first name, parent PIN, optional email, consent date.
 - Activity: tasks and missions with scores and time spent, game rounds, missed items for review, gate challenges,
   level tests, duels and their answers, duo streaks, shop purchases (coins), what the pet wears, saved words, bonus XP.
+  Coco's Nest: the day played and, for each word of the day, whether it was found on the first try (Log.Detail, for the
+  review days); deleted with the kid's Log rows.
 - Talk with Coco: the text the phone heard (no audio), counts of spoken and tapped answers.
 - Feedback and "Something wrong here?" notes.
 - Devices: push subscription endpoints and the browser's user-agent string.
@@ -63,7 +65,9 @@ Kept in the private Google Sheet, written only by the app's own server (Apps Scr
   wrong PIN attempts (not the PIN), grown-ups' changes, hand edits in the sheet (not PIN values), and a coarse device
   label (iPhone / Android phone / Computer..., app or browser).
 
-On the phone (local storage): the remembered kid and PIN, the group, the last dashboard, settings (sound, voice).
+On the phone (local storage): the remembered kid and PIN, the group, the last dashboard, settings (sound, voice). Coco's
+Nest also keeps, on the phone only: how many times each game was played (Coco shows a new game first), the microphone
+choice, and the kid's last 12 colored pictures (which colors went where; no drawing, photo or sound).
 
 ## Known gaps before a store submission
 
