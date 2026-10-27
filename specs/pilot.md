@@ -17,12 +17,12 @@ kid, "open on this phone", install steps for iPhone or Android, and the way into
   `GRADE_LEVEL`). A taken kid name gets the family's initial ("Tali L."). At most 15 families a day.
 - The admin's phone gets a push when a family joins.
 - **Simpler since 2026-10-27** (the first family pressed back on the done screen, lost the codes and signed up twice): each step
-  is a history entry and the draft is kept as typed (); the phone keeps the family (), so the invite
-  opened again, or back, shows the **family page** (), never a fresh form. Each kid gets a **personal link**
-  (: , the #part never reaches a server,  signs her in), sent by WhatsApp or
+  is a history entry and the draft is kept as typed (`eq_join`); the phone keeps the family (`eq_family`), so the invite
+  opened again, or back, shows the **family page** (`familyPage`), never a fresh form. Each kid gets a **personal link**
+  (`kidLink`: `?g=<id>#hi=<base64 name.PIN>`; the #part never reaches a server, `takeHi` signs her in), sent by WhatsApp or
   opened on this phone; the PIN is only a backup. The parent area has the same two buttons per kid, so the parent code is the
   one thing a parent remembers. A phone that knows no family (the installed iPhone app starts with empty storage) shows
-   (name, then PIN) instead of the default group's kids.
+  `signIn` (name, then PIN) instead of the default group's kids.
 
 ## The level test in the app
 
