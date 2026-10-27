@@ -18,7 +18,7 @@ PICS = {
     # hello and feelings
     'wave': 'Waving hand', 'happy': 'Grinning face with big eyes', 'sad': 'Crying face', 'angry': 'Angry face',
     'sleepy': 'Sleeping face', 'surprised': 'Astonished face', 'yummy': 'Face savoring food', 'hot': 'Hot face',
-    'cold': 'Cold face', 'sick': 'Face with thermometer', 'silly': 'Zany face', 'cool': 'Smiling face with sunglasses',
+    'cold': 'Cold face', 'yes': 'Thumbs up', 'no': 'Thumbs down', 'friend': 'People hugging', 'parrot': 'Parrot', 'sick': 'Face with thermometer', 'silly': 'Zany face', 'cool': 'Smiling face with sunglasses',
     # colors, numbers, shapes
     'palette': 'Artist palette', 'rainbow': 'Rainbow', 'abacus': 'Abacus', 'cake': 'Birthday cake', 'heart': 'Red heart',
     # animals
@@ -26,14 +26,14 @@ PICS = {
     'lion': 'Lion', 'elephant': 'Elephant', 'monkey': 'Monkey', 'giraffe': 'Giraffe', 'zebra': 'Zebra', 'penguin': 'Penguin',
     # family and people
     'mom': 'Woman', 'dad': 'Man', 'brother': 'Boy', 'sister': 'Girl', 'grandma': 'Old woman', 'grandpa': 'Old man',
-    'baby': 'Baby', 'farmer': 'Farmer', 'teacher': 'Teacher', 'doctor': 'Health worker',
+    'baby': 'Baby', 'pilot': 'Pilot', 'farmer': 'Farmer', 'teacher': 'Teacher', 'doctor': 'Health worker',
     'firefighter': 'Firefighter', 'astronaut': 'Astronaut',
     # body
     'eyes': 'Eyes', 'ear': 'Ear', 'nose': 'Nose', 'mouth': 'Mouth', 'tooth': 'Tooth', 'tongue': 'Tongue',
     'hand': 'Hand with fingers splayed', 'foot': 'Foot', 'leg': 'Leg', 'arm': 'Flexed biceps',
     'finger': 'Index pointing up', 'face': 'Slightly smiling face',
     # food
-    'apple': 'Red apple', 'banana': 'Banana', 'orange-fruit': 'Tangerine', 'grapes': 'Grapes', 'strawberry': 'Strawberry',
+    'apple': 'Red apple', 'pear': 'Pear', 'banana': 'Banana', 'orange-fruit': 'Tangerine', 'grapes': 'Grapes', 'strawberry': 'Strawberry',
     'watermelon': 'Watermelon', 'bread': 'Bread', 'cheese': 'Cheese wedge', 'egg': 'Egg', 'milk': 'Glass of milk',
     'juice': 'Beverage box', 'ice-cream': 'Soft ice cream',
     # toys and things that go
@@ -65,10 +65,11 @@ CDN = 'https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/'
 
 
 def used():
-    """Every picture name nest.js uses (word pics and unit icons)."""
+    """Every picture name nest.js uses (word pics, unit icons and Coco says pictures)."""
     js = ("const vm=require('vm'),fs=require('fs');const w={};"
           "vm.runInNewContext(fs.readFileSync('docs/nest/nest.js','utf8'),{window:w});const s=new Set();"
           "w.EQ_NEST.units.forEach(u=>{s.add(u.icon);(u.words||[]).forEach(x=>{if(x.pic)s.add(x.pic)})});"
+          "Object.values(w.EQ_NEST.moves||{}).forEach(m=>{if(m.pic)s.add(m.pic)});"
           "process.stdout.write(JSON.stringify([...s]))")
     return json.loads(subprocess.check_output(['node', '-e', js], cwd=APP).decode('utf-8'))
 
