@@ -237,3 +237,9 @@ Audit card merges it with the practice tabs. New server calls that change someth
 
 Home in five tabs (owner's choice 2026-10-27 from the mockup canvas, spec `specs/home-tabs.md`): Today (pet, one Start, two
 pills, no scroll), Journey (the map), Play, Pet, Me. Live on Pages and @36 the same day.
+
+The living Nest home (built 2026-10-28, spec `specs/nest-home.md`, @53, NEST_V 9): `docs/nest/home.js` (the scene, `nkHome`),
+`echo.js` (Coco repeats you, `nkEchoStart`), `stickers.js` (sticker book `nkStickers`, parents' postcard `nkPostcard`). Shown to
+`nestInfo.home` = the NestAll try-out kids and `Settings.NestHome` (names or `all`); everyone else keeps `renderNest`'s old home.
+Screens: `test/tablet.html?screen=nest-living|nest-living-night|nest-living-many|nest-living-pet`, `test/nest-echo.html`,
+`test/nest-stickers.html?view=book|free|places|postcard`.
