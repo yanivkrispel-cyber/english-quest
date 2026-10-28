@@ -37,7 +37,7 @@ const ctx = {
     computeDigest: (alg, str) => toSigned(crypto.createHash('sha256').update(str, 'utf8').digest()),
     computeHmacSha256Signature: (value, key) => toSigned(crypto.createHmac('sha256', key).update(value, 'utf8').digest()),
     base64EncodeWebSafe: v => (typeof v === 'string' ? Buffer.from(v, 'utf8') : Buffer.from(v.map(b => b & 255))).toString('base64').replace(/\+/g, '-').replace(/\//g, '_') },
-  LockService: { getScriptLock: () => ({ waitLock(){}, releaseLock(){} }) },
+  LockService: { getScriptLock: () => ({ waitLock(){}, tryLock(){ return true; }, releaseLock(){} }) },
   PropertiesService: { getScriptProperties: () => ({ p: {}, getProperty(k){ return this.p[k] || null; }, setProperty(k,v){ this.p[k]=v; }, setProperties(o){ Object.assign(this.p, o); } }) },
   ScriptApp: { getProjectTriggers: () => [], newTrigger: n => { trigLog.push(n); const t = { timeBased: () => t, everyDays: () => t, everyMinutes: () => t, atHour: () => t, inTimezone: () => t, onWeekDay: () => t, create: () => t }; return t; },
     WeekDay: {}, getService: () => ({ getUrl: () => 'APPURL' }) },
@@ -1202,7 +1202,8 @@ check('the admin board shows who talks aloud', b && b.week === 1 && b.talks === 
 {
 const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
 const fails = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + label); } catch (e) { console.log('ok: ' + label + ' is rejected: ' + e.message); } };
-const rows = () => sheets.Audit.rows.slice(1).map(r => Object.fromEntries(sheets.Audit.rows[0].map((h, i) => [h, r[i]])));
+// Opens wait in the cache until auditFlush (the warmCache trigger, or the admin reading the trail).
+const rows = () => (run('auditFlush()'), sheets.Audit.rows.slice(1)).map(r => Object.fromEntries(sheets.Audit.rows[0].map((h, i) => [h, r[i]])));
 Object.keys(cacheStore).filter(k => k.startsWith('AO:') || k.startsWith('F:')).forEach(k => delete cacheStore[k]);
 const n0 = rows().length;
 const post = (fn, args, dev) => JSON.parse(run(`doPost({postData:{contents:${JSON.stringify(JSON.stringify({ fn, args, dev }))}}}).getContent()`));
@@ -1227,6 +1228,19 @@ post('apiParent', ['5566'], 'Computer, browser');
 post('apiParent', ['1234'], 'Android phone, app');
 run("REQ_DEV = ''");
 check('wrong parent PIN and the admin open are kept', rows().some(r => r.Role === 'parent' && r.Action === 'wrong PIN') && rows().slice(-1)[0].Role === 'admin' && rows().slice(-1)[0].Action === 'open');
+// perf phase 2: an open waits in the cache (no sheet write in the call), carries the phone's last open, and calls are timed.
+Object.keys(cacheStore).filter(k => k.startsWith('AO:')).forEach(k => delete cacheStore[k]);
+const nRaw = sheets.Audit.rows.length;
+JSON.parse(run(`doPost({postData:{contents:${JSON.stringify(JSON.stringify({ fn: 'apiDashboard', args: ['Aviv', '2694'], dev: 'iPad, app', open: '1.4s saved' }))}}}).getContent()`));
+check('an open is not written during the call', sheets.Audit.rows.length === nRaw);
+const lo = rows().filter(r => r.Who === 'Aviv' && r.Action === 'open').pop() || {};
+check('the flush writes it with the last open', lo.Detail === 'last open 1.4s saved' && lo.Device === 'iPad, app' && lo.Timestamp instanceof Date, JSON.stringify(lo));
+Object.keys(cacheStore).filter(k => k.startsWith('AO:')).forEach(k => delete cacheStore[k]);
+post('apiDashboard', ['Aviv', '2694'], 'iPad, app');
+run("REQ_OPEN = cleanOpen('2.0s server; DROP')");
+check('a made-up open measure is not kept', run('REQ_OPEN') === '' && (rows().filter(r => r.Who === 'Aviv' && r.Action === 'open').pop() || {}).Detail === '');
+const pf = run("apiAudit('1234', 7)").perf || [];
+check('the admin sees the server times', pf.some(p => p.fn === 'apiDashboard' && p.n > 0) && pf.some(p => p.fn === 'apiDashboard.build'), JSON.stringify(pf.slice(0, 3)));
 run("apiAdminSettings('1234', 17, 20)");
 const rh = rows().filter(r => r.Action === 'reminder hours').pop() || {};
 check('an admin change is kept', rh.Role === 'admin' && rh.Detail === '17:00, last call 20:00', rh.Detail);

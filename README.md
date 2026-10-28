@@ -150,6 +150,11 @@ Phone / browser                     GitHub Pages (docs/)            Google
   table for 6 hours with a version stamp against stale copies, and the `warmCache` trigger refills it every
   10 minutes by day. The service worker opens the app from the phone and keeps pictures and the game bank;
   a newer app is announced with "A new version is ready".
+  Phase 2 (spec: `specs/perf-phase2.md`): never a bare spinner (a wait screen with words, then Try again), the silent
+  sign-in gives up after 12 s, the parents' view is kept on the phone too, later opens of the day skip the animation when
+  the screen is on the phone, Coco's Nest files load side by side, the icon fonts come from `docs/fonts/`, opens are
+  written to the Audit tab by the warm-up trigger instead of during the call, and the admin's Audit card shows how fast
+  the opens and the server were.
 
 ## Sheet tabs
 
@@ -200,6 +205,7 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | `docs/games.js` | Mini-game content for A1–C1, and the Talk & Tap words with their don't-say words (edited by hand; not in `src/`, so clasp never pushes it; raise `BANK_V` in Index.html after a change) |
 | `docs/missions/` | Mission content per level (`a1.js` … `c1.js`, `bp` = B1+; edited by hand, out of `src/`; raise `MISSIONS_V` in Index.html after a change) and the recordings (`audio/<mission>-<part>.mp3`) |
 | `docs/talk/` | Talk with Coco scripts per level (`a1.js` … `c1.js`; format and writing rules: `tools/TALK-WRITING.md`; raise `TALK_V` in Index.html after a change) and Coco's lines (`audio/<clip>.mp3`, `python tools/talk_audio.py`) |
+| `docs/fonts/` | The Phosphor icon fonts (bold, duotone; woff2 only), linked by `build-pages.js` instead of unpkg |
 | `docs/pets/`, `docs/pics/` | Pet stickers (`<pet>/<stage>-<mood>.webp`) and A1 picture words |
 | `docs/items/`, `docs/coco/` | Shop items (`<id>.webp`, and two props: `jack-o-lantern`, `gift-box`), the Studio's gray bases (`base-<id>.webp`) and Coco the parrot (`<mood>.webp`) |
 | `tools/` | Art pipeline: `cut_sheet.py` (sticker sheet → stickers), `pics.py` + `pics_fetch.sh`, `PETS.md` (prompts); shop: `cut_items.py` (item sheets → `docs/items/`), `pet_fit.py` (the eyes of every pet sticker → `pet-fit.json`, fixes in `pet-fit-fix.json`), `wear_fit.py` + `wear-fit.json` (how items sit; contact sheets; `export` writes the FIT block into Index.html) |
@@ -270,6 +276,7 @@ node test/preview.js      # then serve app/ and open /test/preview.html (mock da
 node test/dev-server.js   # two players locally (seeded duo history): /test/dev.html on localhost:8787 and 127.0.0.1:8787
                           # the shop: Aviv may shop early; /dev/coins?who=Aviv&n=1500, /dev/day?d=2026-10-24 (opening, Halloween)
                           # bad networks: /dev/chaos?mode=hang|500|html|busy&n=2 ; the page gets the service worker
+                          # slow files: /dev/slow?path=/docs/nest/&ms=4000 (the Nest's scripts on a weak line), /dev/slow?ms=0 stops it
                           # missions: /dev/mission?who=Aviv&id=a2l01 (turns missions on for her, makes it today's task)
                           # the play frame: /test/fit.html measures every mission screen in two phone sizes
                           # the home tabs: /test/home-fit.html checks Today fits in three phone sizes

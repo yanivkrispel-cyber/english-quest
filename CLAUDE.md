@@ -152,6 +152,12 @@ first. Tablets get the phone layout scaled (`tabletFit`); never add width breakp
 - **Tablets draw the phone layout scaled up** (`tabletFit` at the top of Index.html, `specs/tablet.md`): the viewport is set to
   520 px wide (portrait) or 640 px tall (landscape). Do not add tablet breakpoints by width; check new screens at
   `http://localhost:8787/test/tablet.html`. iPadOS Safari reports a Mac: use `isIos()`, never a user-agent test of your own.
+- **Never leave a bare spinner** (`specs/perf-phase2.md`): a screen that waits uses `loading()` (`WAIT_HTML` + `waitArm()`:
+  words, then Try again after 10 s), and code that draws when something finishes loading must draw the *current* `dash`
+  if its wait screen is still up, never compare with the object it started with (a background refresh replaces `dash`;
+  that left Nest kids on a spinner forever, 2026-10-28). Test with `/dev/slow` and `/dev/chaos`.
+- **Opens are not in the Audit tab right away**: `auditOpen` keeps them in the cache (`AQ`) and `auditFlush` writes them
+  (the warmCache trigger every 10 minutes, and `apiAudit`). Tests read the tab after `auditFlush()`.
 - Default PINs are random; the real PINs live only in the private sheet. The repo is public:
   never commit real PINs, emails or the sheet's contents (tests use fake PINs 4821/7356/2694/1234).
 
@@ -243,3 +249,7 @@ The living Nest home (built 2026-10-28, spec `specs/nest-home.md`, @54, NEST_V 1
 `nestInfo.home` = the NestAll try-out kids and `Settings.NestHome` (names or `all`); everyone else keeps `renderNest`'s old home.
 Screens: `test/tablet.html?screen=nest-living|nest-living-night|nest-living-many|nest-living-pet`, `test/nest-echo.html`,
 `test/nest-stickers.html?view=book|free|places|postcard`.
+
+Performance, phase 2 (2026-10-28, spec `specs/perf-phase2.md`): the wait screen instead of a bare spinner, the Nest spinner race fixed,
+the parents' view kept on the phone, later opens skip the animation when the screen is on the phone, icon fonts from
+`docs/fonts/`, opens written by the warm-up trigger, and a Speed line on the admin's Audit card (opens and server times).

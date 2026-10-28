@@ -20,15 +20,77 @@ function audit(role, who, group, action, detail, ok) {
   } catch (e) { console.error(e); }
 }
 
+// The detail is how long this phone's previous open took to show its first screen ("1.4s saved", "20s wait" = still
+// waiting after 20 s), sent by the app (specs/perf-phase2.md). An open is not written to the sheet during the call (a
+// sheet write costs the kid most of a second): it waits in the cache, and auditFlush writes the waiting rows (the
+// warmCache trigger every 10 minutes, and before the admin reads the trail).
 function auditOpen(role, who, group) {
   var k = 'AO:' + role + ':' + String(who).toLowerCase() + ':' + REQ_DEV;
+  var row = { Timestamp: new Date().toISOString(), Date: today(), Role: role, Who: String(who || ''), Group: String(group || ''), Action: 'open',
+    Detail: REQ_OPEN ? 'last open ' + REQ_OPEN : '', Ok: 'yes', Device: REQ_DEV };
+  var lock = LockService.getScriptLock();
   try {
     var c = CacheService.getScriptCache();
     if (c.get(k)) return;
     c.put(k, '1', AUDIT.openGapSec);
+    if (lock.tryLock(1500)) {
+      try {
+        var q = JSON.parse(c.get('AQ') || '[]');
+        if (q.length < 300) { q.push(row); c.put('AQ', JSON.stringify(q), 21600); return; }
+      } finally { lock.releaseLock(); }
+    }
   } catch (e) {}
-  audit(role, who, group, 'open', '');
+  audit(role, who, group, 'open', row.Detail);
 }
+
+// Writes the opens waiting in the cache to the Audit tab, in one write.
+function auditFlush() {
+  var lock = LockService.getScriptLock(), q;
+  try {
+    if (!lock.tryLock(5000)) return;
+    try {
+      var c = CacheService.getScriptCache();
+      q = JSON.parse(c.get('AQ') || '[]');
+      if (!q.length) return;
+      c.remove('AQ');
+    } finally { lock.releaseLock(); }
+    var sh = sheet('Audit'), head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+    sh.getRange(sh.getLastRow() + 1, 1, q.length, head.length).setValues(q.map(function (r) {
+      return head.map(function (h) { return h === 'Timestamp' ? new Date(r.Timestamp) : r[h] === undefined ? '' : r[h]; });
+    }));
+    invalidate('Audit');
+  } catch (e) { console.error(e); }
+}
+
+// The app's measure of its last open: seconds to the first screen and where it came from.
+var REQ_OPEN = '';
+function cleanOpen(s) {
+  s = String(s || '');
+  return /^\d{1,3}(\.\d)?s (saved|server|offline|wait)$/.test(s) ? s : '';
+}
+
+// How long the server takes (specs/perf-phase2.md): the last 40 times of each call, and of apiDashboard's parts, in the
+// cache (no sheet). The admin's Audit card shows the median and the slowest. apiDuelPoll is left out (every 2 s in a duel).
+var PERF_KEEP = 40;
+function perfNote(fn, ms, parts) {
+  if (fn === 'apiDuelPoll') return;
+  try {
+    var c = CacheService.getScriptCache(), p = JSON.parse(c.get('PERF') || '{}');
+    var add = function (k, v) { (p[k] = p[k] || []).push(Math.round(v)); if (p[k].length > PERF_KEEP) p[k].shift(); };
+    add(fn, ms);
+    if (parts) Object.keys(parts).forEach(function (k) { add(fn + '.' + k, parts[k]); });
+    c.put('PERF', JSON.stringify(p), 21600);
+  } catch (e) {}
+}
+function perfSummary() {
+  var p = {};
+  try { p = JSON.parse(CacheService.getScriptCache().get('PERF') || '{}'); } catch (e) {}
+  return Object.keys(p).sort().map(function (k) {
+    var a = p[k].slice().sort(function (x, y) { return x - y; });
+    return { fn: k, n: a.length, median: a[Math.floor(a.length / 2)], max: a[a.length - 1] };
+  });
+}
+var PERF_PARTS = null;
 
 // A wrong PIN or code (checkPin keys: 'girl:<name>', 'parent', 'teacher').
 function auditPin(key, fails) {
@@ -71,7 +133,8 @@ function auditSheetEdit(e) {
 function apiAudit(pin, days) {
   ensureSetup();
   if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can see this');
-  days = Math.max(1, Math.min(AUDIT.maxDays, Number(days) || 7));
+  auditFlush();
+  days =Math.max(1, Math.min(AUDIT.maxDays, Number(days) || 7));
   var t = today(), from = addDays(t, 1 - days);
   var kids = {}, gname = {};
   readTable('Girls').forEach(function (k) { kids[k.Name] = groupOf(k); });
@@ -130,7 +193,7 @@ function apiAudit(pin, days) {
   var split = {};
   Object.keys(devices).forEach(function (k) { split[devices[k]] = (split[devices[k]] || 0) + 1; });
   return {
-    days: days, from: from, today: t,
+    days: days, from: from, today: t, perf: perfSummary(),
     events: ev.slice(0, AUDIT.max).map(function (e) { e.family = gname[e.group] || ''; return e; }),
     more: Math.max(0, ev.length - AUDIT.max),
     families: Object.keys(fams).map(function (id) {

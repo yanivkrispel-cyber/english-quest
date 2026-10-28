@@ -68,9 +68,12 @@ Kept in the private Google Sheet, written only by the app's own server (Apps Scr
 - Devices: push subscription endpoints and the browser's user-agent string.
 - Audit trail (tab Audit, `specs/audit.md`): when a kid, parent, admin or teacher opened the app (once per half hour),
   wrong PIN attempts (not the PIN), grown-ups' changes, hand edits in the sheet (not PIN values), and a coarse device
-  label (iPhone / Android phone / Computer..., app or browser).
+  label (iPhone / Android phone / Computer..., app or browser). A kid's or parent's open also carries how long that
+  phone's previous open took to show its first screen ("1.4s saved"), a number and a word only (`specs/perf-phase2.md`).
 
-On the phone (local storage): the remembered kid and PIN, the group, the last dashboard, settings (sound, voice). Coco's
+On the phone (local storage): the remembered kid and PIN, the group, the last dashboard, settings (sound, voice), the
+last parents' view of a parent who chose to be remembered (`eq_par`, deleted on sign-out), and how long the last open
+took (`eq_open_m`). Coco's
 Nest also keeps, on the phone only: how many times each game was played (Coco shows a new game first), the microphone
 choice, the kid's last 12 colored pictures (which colors went where; no drawing, photo or sound), and the sticker book
 (`docs/nest/stickers.js`): which stickers the kid has already seen pop (word ids, `eq_nest_stickers_<kid>`) and the
@@ -86,7 +89,8 @@ parents' area (behind the parents' code); nothing new is stored on the server.
   test-english.com: both need a parental gate or must move to the parents' area.
 - Play together reaches kids in other groups by default (a group opts out with `Groups.Friends = no`); for the stores it
   should be off by default and switched on by a parent, with report and block.
-- Fonts and icons load from Google Fonts and unpkg (third parties see the kid's IP address): self-host them in `docs/`.
+- Fonts load from Google Fonts (a third party sees the kid's IP address): self-host it in `docs/`. The icon fonts are
+  served from `docs/fonts/` since 2026-10-28 (the Apps Script copy for adults still uses unpkg).
 - No public privacy policy page and no terms page (the stores need a URL): write them, in Hebrew and English.
 - The data lives in the owner's personal Google account: a business account (or a proper database) and a data
   processing note are needed before selling.

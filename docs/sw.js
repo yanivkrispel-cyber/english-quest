@@ -4,7 +4,7 @@
 // Caching (specs/perf-phase1.md):
 // - the app page: from the phone at once, refreshed in the background; a newer page is announced to the app
 //   ("eq-update"), which offers a tap to update, and the next open shows it anyway;
-// - pictures, icons and the versioned game bank (games.js?v=N): from the phone once they are there, since
+// - pictures, icons, the icon fonts (fonts/<name>-<version>/) and the versioned game bank (games.js?v=N): from the phone once they are there, since
 //   they never change under the same address;
 // - anything else of this site: network first, the phone's copy when offline.
 const SHELL = 'eq-shell-v6', ASSETS = 'eq-assets-v2';
@@ -26,7 +26,7 @@ self.addEventListener('activate', e => {
 // to the browser: audio asks for byte ranges, and a whole file from here can leave the player stuck (Safari above all).
 // Without a connection the app reads the episode aloud instead.
 const isAudio = url => /\.mp3$/.test(url.pathname);
-const isAsset = url => /\/(pets|pics|icons|items|coco)\//.test(url.pathname) || (/games\.js$/.test(url.pathname) && url.searchParams.has('v')) ||
+const isAsset = url => /\/(pets|pics|icons|items|coco|fonts)\//.test(url.pathname) || (/games\.js$/.test(url.pathname) && url.searchParams.has('v')) ||
   (/\/(missions|talk|nest)\/[^/]+\.js$/.test(url.pathname) && url.searchParams.has('v'));
 const isPage = (req, url) => req.mode === 'navigate' || /\/$|\.html$/.test(url.pathname);
 

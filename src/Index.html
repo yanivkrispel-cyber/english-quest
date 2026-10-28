@@ -512,6 +512,9 @@ textarea{width:100%;min-height:150px;border-radius:20px;border:1px solid rgba(25
 .toast{position:fixed;left:50%;top:22px;transform:translateX(-50%);z-index:40;padding:12px 20px;font-weight:700;border-radius:22px;
   animation:fade .2s;width:max-content;max-width:calc(100vw - 32px);text-align:center;line-height:1.35}
 .toast.err{color:#be123c}
+.wait{display:grid;justify-items:center;gap:14px;padding-top:80px;text-align:center}
+.wait .spinner{margin:0}
+.wait .sub{margin:0}
 .spinner{width:42px;height:42px;border-radius:50%;margin:80px auto;border:4px solid rgba(255,255,255,.6);border-top-color:var(--primary);animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .confetti{position:fixed;top:-20px;z-index:50;width:9px;height:14px;pointer-events:none;animation:fall linear forwards}
@@ -1406,7 +1409,7 @@ html:has(.tabbar) .netbar:not(.upd){bottom:calc(88px + env(safe-area-inset-botto
 </head>
 <body>
 <div class="bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div></div>
-<div id="app"><div class="spinner"></div></div>
+<div id="app"><div class="wait"><div class="spinner"></div><div class="sub">Getting your day ready…</div></div></div>
 
 <script>
 window.onerror = (m, src, l, c) => { document.getElementById('app').insertAdjacentHTML('beforeend', '<div class="glass panel" style="margin-top:12px;color:#be123c">Error: ' + m + ' @' + l + ':' + c + '</div>'); };
@@ -1439,6 +1442,7 @@ const API_URL = 'https:' + '/' + '/script.google.com/macros/s/AKfycbzN95JPrZcVFt
 // as a short "try again". e.app = the server said no; e.net = the call did not get through.
 const CALL_MS = 15000, CALL_SHORT = { apiDuelPoll: 8000, apiDuelHome: 10000, apiWarm: 10000 };
 const CALL_TWICE = { apiPublic: 1, apiDashboard: 1, apiParent: 1, apiTugCheck: 1 };
+const OPEN_CALLS = { apiDashboard: 1, apiParent: 1 };
 const INFRA = /Service|Exception|lock|too many times|timed out|unavailable|internal error|quota|rate limit/i;
 const netError = kind => Object.assign(new Error(kind === 'timeout' ? 'The server is taking too long. Try again in a moment.'
   : kind === 'offline' ? 'No internet connection. Check it and try again.' : 'The server is busy right now. Try again in a moment.'), { net: kind });
@@ -1454,6 +1458,10 @@ const DEVICE = (() => {
   const installed = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
   return kind + ', ' + (installed ? 'app' : 'browser');
 })();
+// A call with a total time limit (both tries included): the silent sign-in at the open waits at most this long.
+function callBy(ms, fn, ...args){
+  return Promise.race([call(fn, ...args), new Promise((res, rej) => setTimeout(() => rej(netError('timeout')), ms))]);
+}
 async function call(fn, ...args){
   const tries = CALL_TWICE[fn] ? 2 : 1;
   for (let i = 1; ; i++) {
@@ -1470,7 +1478,7 @@ function callOnce(fn, args, ms){
     });
   }
   const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), ms);
-  return fetch(API_URL, { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args, dev: DEVICE }), signal: ctl.signal })
+  return fetch(API_URL, { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args, dev: DEVICE, open: OPEN_CALLS[fn] ? store.get('eq_open_m') || undefined : undefined }), signal: ctl.signal })
     .then(r => r.text(), () => { throw netError(ctl.signal.aborted ? 'timeout' : 'offline'); })
     .then(text => {
       let r;
@@ -1596,7 +1604,18 @@ function installCard(){
   return '<button class="btn btn-glass btn-block mt" id="install"' + (installPrompt ? '' : ' hidden') + '>' + icon('download-simple') + ' Install app</button>';
 }
 
-function loading(){ app.innerHTML = '<div class="spinner"></div>'; }
+// The wait screen (specs/perf-phase2.md): never a bare spinner. After 10 s it says so and offers to try again.
+const WAIT_HTML = '<div class="wait"><div class="spinner"></div><div class="sub">Getting your day ready…</div></div>';
+function loading(){ app.innerHTML = WAIT_HTML; waitArm(); }
+function waitArm(){
+  const w = app.querySelector('.wait');
+  if (!w) return;
+  setTimeout(() => {
+    if (!w.isConnected || w.querySelector('button')) return;
+    w.insertAdjacentHTML('beforeend', '<div class="sub">This is taking longer than usual.</div><button class="btn btn-glass" data-waitagain>' + icon('arrows-clockwise') + ' Try again</button>');
+    w.querySelector('[data-waitagain]').onclick = () => location.reload();
+  }, 10000);
+}
 function colorOf(name){ const g = (pub?.girls || []).find(x => x.name === name); return g?.color || '#6366f1'; }
 function fmtDate(d){ const [y,m,dd] = d.split('-'); return dd + '/' + m; }
 
@@ -6804,16 +6823,52 @@ function splashScreen(quick){
 
 // Starts the app behind the opening animation and lifts it when both are ready (at most 9 s). The full
 // animation plays on the first open of the day; later opens play it faster.
+// The full animation plays on the first open of the day. Later opens skip it when the kid's (or the parent's) screen is
+// kept on the phone, so it shows at once; otherwise they play it faster. The animation never waits long for the server:
+// when it ends, the wait screen (words, then Try again) shows instead (owner's choice, 2026-10-28, specs/perf-phase2.md).
 async function boot(){
   if (OLD_HOST) return movedScreen();
   const day = new Date().toLocaleDateString('en-CA'), quick = store.get('eq_splash_day') === day;
   if (!quick) store.set('eq_splash_day', day);
-  const s = splashScreen(quick);
   netBar();
+  openWatch();
+  waitArm();
+  if (quick && localOpen()) {
+    await start().catch(() => {});
+    try { performance.mark('eq-open'); } catch(e){}
+    return;
+  }
+  const s = splashScreen(quick);
   const ready = start().catch(() => {});
-  await Promise.race([Promise.all([s.done, ready]), new Promise(r => setTimeout(r, 9000))]);
+  await s.done;
+  await Promise.race([ready, new Promise(r => setTimeout(r, 1500))]);
   s.close();
   try { performance.mark('eq-open'); } catch(e){}
+}
+// Is this open's first screen on the phone already (a remembered kid's dashboard, or a remembered parent's view)?
+function localOpen(){
+  const qs = new URLSearchParams(location.search);
+  if (['missions', 'nest', 'talk', 'join', 'duel'].some(k => qs.has(k))) return false;
+  const saved = store.get('eq_auth'), kept = saved && store.get(dashKey(saved.name));
+  if (saved) return !!(kept && kept.girl && kept.week);
+  const par = store.get('eq_admin') && store.get('eq_par');
+  return !!(par && par.groups);
+}
+// How long this open took to show its first screen (not the wait screen), kept on the phone and sent with the next
+// dashboard call for the admin's Audit card: "1.4s saved" (from the phone), "server", "offline", or "20s wait" when the
+// wait screen was still up after 20 s. A number and a word only.
+let openSrc = 'server';
+function openWatch(){
+  if (typeof MutationObserver !== 'function') return;
+  const waiting = () => app.children.length === 1 && !!app.querySelector(':scope > .wait, :scope > .spinner');
+  const secs = () => Math.min(999, Math.round(performance.now() / 100) / 10);
+  const stuck = setTimeout(() => { if (waiting()) store.set('eq_open_m', '20s wait'); }, 20000);
+  const obs = new MutationObserver(() => {
+    if (waiting()) return;
+    obs.disconnect(); clearTimeout(stuck);
+    store.set('eq_open_m', secs() + 's ' + openSrc);
+  });
+  obs.observe(app, { childList: true });
 }
 
 // ---------- The friends' pilot (Pilot.js, specs/pilot.md) ----------
@@ -7221,6 +7276,21 @@ async function auditLoad(pin, days){
   AUD.limit = 150;
   auditRender(pin);
 }
+// Speed (specs/perf-phase2.md): the opens' own measure (seconds to the first screen) and the server's time per call.
+function audSpeed(a){
+  const m = a.events.map(e => e.action === 'open' && /^last open ([\d.]+)s (\w+)/.exec(e.detail || '')).filter(Boolean);
+  const med = xs => { const v = xs.slice().sort((x, y) => x - y); return v.length ? v[Math.floor(v.length / 2)] : 0; };
+  const net = m.filter(x => x[2] === 'server').map(x => +x[1]), saved = m.filter(x => x[2] === 'saved').map(x => +x[1]);
+  const stuck = m.filter(x => x[2] === 'wait').length, sec = ms => (ms / 1000).toFixed(1) + ' s';
+  const names = { apiDashboard: 'Kid opens', 'apiDashboard.build': 'the dashboard', 'apiDashboard.auth': 'the PIN', 'apiDashboard.open': 'the visit',
+    'apiDashboard.duels': 'play together', apiParent: 'Parent view', apiPublic: 'Family page' };
+  const perf = (a.perf || []).filter(p => names[p.fn]);
+  return `<div class="label mt">Speed</div>
+    <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">
+      <span class="chip">${m.length ? 'Opens from the phone ' + (saved.length ? med(saved) + ' s' : '-') + ' · from the server ' + (net.length ? med(net) + ' s' : '-') : 'No open measured yet'}</span>
+      <span class="chip ${stuck ? 'orange' : ''}">${stuck} stuck on the wait screen</span></div>
+    ${perf.length ? `<div class="sub mt-s" style="font-size:12px">Server, last calls (median · slowest): ${perf.map(p => esc(names[p.fn]) + ' ' + sec(p.median) + ' · ' + sec(p.max)).join(', ')}</div>` : ''}`;
+}
 function auditRender(pin){
   const a = AUD.data, card = document.getElementById('auditcard');
   const visits = a.events.filter(e => e.action === 'open'), wrong = a.events.filter(e => !e.ok).length;
@@ -7244,6 +7314,7 @@ function auditRender(pin){
       <span class="chip ${wrong ? 'orange' : ''}">${wrong} wrong PINs or links</span></div>
     <div class="label mt">Devices (people on each)</div>
     <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">${dev.length ? dev.map(d => `<span class="chip">${esc(d)} · ${a.devices[d]}</span>`).join('') : '<span class="sub">Nobody yet in these days (the label starts with this version).</span>'}</div>
+    ${audSpeed(a)}
     <div class="label mt">Families · last seen</div>
     <div class="stack mt-s" style="gap:6px">${a.families.map(f => `<div class="soft" style="padding:8px 12px;border-radius:12px;font-size:13px">
       <div class="row-flex between"><b>${esc(f.name)}</b><span class="sub" style="font-size:12px">${audWhen(f.last, a.today)}</span></div>
@@ -7270,16 +7341,20 @@ const NEST_V = 10, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
 let NE = null, nestLoading = null, nestAudioEl = null, nestQueue = null, nestMic = null;
 function loadNest(){
   if (window.EQ_NEST && typeof NK === 'object' && typeof nkHome === 'function' && typeof nkEchoStart === 'function' && typeof nkStickers === 'function') return Promise.resolve(window.EQ_NEST);
+  // All five download at once and run in this order (async = false); each has 15 s.
   const one = (file, ready) => ready() ? Promise.resolve() : new Promise((res, rej) => {
     const s = document.createElement('script');
+    const fail = msg => { clearTimeout(t); s.onload = s.onerror = null; s.remove(); rej(new Error(msg)); };
+    const t = setTimeout(() => fail('Could not load. Check the connection and try again.'), 15000);
+    s.async = false;
     s.src = ASSETS + 'nest/' + file + '?v=' + NEST_V;
-    s.onload = () => ready() ? res() : rej(new Error("Coco's Nest is not ready yet."));
-    s.onerror = () => { s.remove(); rej(new Error('Could not load. Check the connection and try again.')); };
+    s.onload = () => { clearTimeout(t); ready() ? res() : rej(new Error("Coco's Nest is not ready yet.")); };
+    s.onerror = () => fail('Could not load. Check the connection and try again.');
     document.head.appendChild(s);
   });
-  return nestLoading = nestLoading || one('nest.js', () => !!window.EQ_NEST).then(() => one('play.js', () => typeof NK === 'object'))
-    // The living home (specs/nest-home.md): the scene, Coco repeats you, the sticker book and the parents' postcard.
-    .then(() => Promise.all([one('home.js', () => typeof nkHome === 'function'), one('echo.js', () => typeof nkEchoStart === 'function'), one('stickers.js', () => typeof nkStickers === 'function')]))
+  // The living home (specs/nest-home.md): the scene, Coco repeats you, the sticker book and the parents' postcard.
+  return nestLoading = nestLoading || Promise.all([one('nest.js', () => !!window.EQ_NEST), one('play.js', () => typeof NK === 'object'),
+    one('home.js', () => typeof nkHome === 'function'), one('echo.js', () => typeof nkEchoStart === 'function'), one('stickers.js', () => typeof nkStickers === 'function')])
     .then(() => window.EQ_NEST).catch(e => { nestLoading = null; throw e; });
 }
 // A unit by its id or by a day's id ('n04.c' is the unit n04).
@@ -7438,8 +7513,10 @@ function renderNest(d){
   // n.next: one more lesson (the parent allows more than one a day), so the big button starts it instead of a replay.
   const n = d.nest, again = n.done && !n.next, u = nestUnit(n.done && n.next ? n.next : n.today);
   if (!window.EQ_NEST || typeof NK !== 'object' || typeof nkHome !== 'function') {
-    app.innerHTML = '<div class="spinner"></div>';
-    loadNest().then(() => { if (dash === d && !NE) renderNest(d); })
+    app.innerHTML = WAIT_HTML.replace('class="wait"', 'class="wait" id="nkwait"');
+    waitArm();
+    // The dashboard on screen now (a fresh one may have come in meanwhile), if the wait screen is still up.
+    loadNest().then(() => { if (!NE && dash && dash.nest && document.getElementById('nkwait')) renderNest(dash); })
       .catch(e => { app.innerHTML = `<div class="glass panel" style="text-align:center;display:grid;gap:12px">${esc(e.message)}<button class="btn btn-primary btn-block" id="nkagain">${icon('arrows-clockwise')} Try again</button></div>`;
         document.getElementById('nkagain').onclick = () => renderNest(d); });
     return;
@@ -7715,6 +7792,7 @@ async function start(){
   const saved = store.get('eq_auth'), admin = store.get('eq_admin');
   const kept = saved && store.get(dashKey(saved.name));
   if (kept && kept.girl && kept.week) {
+    openSrc = 'saved';
     session = { name: saved.name, pin: saved.pin, keep: true };
     dash = kept;
     renderDash();
@@ -7723,6 +7801,8 @@ async function start(){
     return;
   }
   if (saved && await login(saved.name, saved.pin, true)) return;
+  const par = !saved && admin && store.get('eq_par');
+  if (par && par.groups) { openSrc = 'saved'; renderParent(par, admin); parentFresh(admin); return; }
   if (!saved && admin && await parent(admin, true)) return;
   await loadHome();
 }
@@ -7732,7 +7812,7 @@ async function loadHome(){
   const key = 'eq_pub_' + groupId(), kept = store.get(key);
   if (!IN_APPS_SCRIPT && !groupId() && !kept) return signIn();
   if (!pub && kept && kept.group && kept.girls) {
-    pub = kept; home();
+    openSrc = 'saved'; pub = kept; home();
     call('apiPublic', groupId()).then(p => {
       const changed = JSON.stringify(p) !== JSON.stringify(pub);
       pub = p; store.set(key, p);
@@ -7885,7 +7965,7 @@ function setDash(d){
   if (session && session.keep) store.set(dashKey(session.name), d);
 }
 const dashSig = d => JSON.stringify(d, (k, v) => k === 'now' ? undefined : v);
-const onDashboard = () => !G && !DU && !TW && !!document.querySelector('.tabview,.tabmap');
+const onDashboard = () => !G && !DU && !TW && !!document.querySelector('.tabview,.tabmap,#nkwait');
 function syncState(s){
   syncNow = s;
   const b = document.getElementById('refresh');
@@ -7926,7 +8006,7 @@ function signOut(){
 
 async function login(name, pin, silent, remember){
   try {
-    const d = await call('apiDashboard', name, pin);
+    const d = await (silent ? callBy(12000, 'apiDashboard', name, pin) : call('apiDashboard', name, pin));
     name = (d.girl && d.girl.name) || name;
     session = { name, pin, keep: !!(remember || silent) }; dashTab = 'today'; homeEntered = false;
     SHOP = null;
@@ -7937,7 +8017,7 @@ async function login(name, pin, silent, remember){
     return true;
   } catch(e){
     if (silent) {
-      if (!e.app) { offlineStart(); return true; }
+      if (!e.app) { offlineStart(e); return true; }
       if (/Wrong PIN/.test(e.message)) { store.del('eq_auth'); deviceKidDrop(name); } else toast(e.message, true);
     }
     else toast(e.message.includes('PIN') ? 'Wrong PIN, try again' : e.message, true);
@@ -7946,10 +8026,12 @@ async function login(name, pin, silent, remember){
 }
 
 // No connection on an open without a saved dashboard: the kid stays remembered, a tap tries again.
-function offlineStart(){
+function offlineStart(e){
+  const off = !e || e.net === 'offline';
+  openSrc = 'offline';
   app.innerHTML = `<div class="glass panel" style="text-align:center;display:grid;gap:12px;justify-items:center">
-    <span class="gate-hero" style="--na:#c7d2fe;--nb:#818cf8">${icon('wifi-slash', 'duotone')}</span>
-    <h2>No connection</h2><div class="sub" style="margin:0">Check the internet and try again.</div>
+    <span class="gate-hero" style="--na:#c7d2fe;--nb:#818cf8">${icon(off ? 'wifi-slash' : 'hourglass-medium', 'duotone')}</span>
+    <h2>${off ? 'No connection' : 'The server is slow right now'}</h2><div class="sub" style="margin:0">${off ? 'Check the internet and try again.' : 'Wait a moment and try again.'}</div>
     <button class="btn btn-primary btn-block" id="startagain">${icon('arrows-clockwise')} Try again</button></div>`;
   document.getElementById('startagain').onclick = () => { loading(); start(); };
 }
@@ -8359,16 +8441,43 @@ function confetti(){
 async function parent(pin, silent, remember){
   try {
     if (silent) loading();
-    const p = await call('apiParent', pin);
+    const p = await (silent ? callBy(12000, 'apiParent', pin) : call('apiParent', pin));
     if (remember) store.set('eq_admin', pin);
     renderParent(p, pin);
     return true;
   } catch(e){
-    if (silent) store.del('eq_admin');
+    // A silent open that did not get through keeps the parent remembered; only a refused PIN forgets it.
+    if (silent && !e.app) { offlineStart(e); return true; }
+    if (silent) { store.del('eq_admin'); store.del('eq_par'); }
     else toast(e.message.includes('PIN') ? 'Wrong PIN' : e.message, true);
     return false;
   }
 }
+// The parents' view of a remembered parent stays on the phone (eq_par; signing out deletes it): the next open shows it at
+// once and this brings fresh data. It is drawn again only if the parent has not touched the screen yet (or tapped
+// refresh), so nothing moves under a finger or a half-typed form.
+let parTouched = false, parSync = null;
+app.addEventListener('pointerdown', () => { parTouched = true; }, true);
+app.addEventListener('input', () => { parTouched = true; }, true);
+function parentFresh(pin, manual){
+  if (parSync) return parSync;
+  const b = document.getElementById('refresh');
+  if (b) { b.classList.add('spin'); b.classList.remove('off'); }
+  return parSync = call('apiParent', pin).then(p => {
+    const here = store.get('eq_admin') === pin && document.getElementById('parentview');
+    if (here && (manual || !parTouched)) { const y = window.scrollY; renderParent(p, pin); window.scrollTo(0, y); }
+    else if (store.get('eq_admin') === pin) keepParent(p);
+  }).catch(e => {
+    if (e.app && /PIN/.test(e.message)) { store.del('eq_admin'); store.del('eq_par'); toast('Please sign in again', true); return loadHome(); }
+    const r = document.getElementById('refresh');
+    if (r) { r.classList.add('off'); r.title = 'Could not update. Showing what is saved on this phone.'; }
+    if (manual) toast(e.message, true);
+  }).finally(() => {
+    parSync = null;
+    const r = document.getElementById('refresh'); if (r) r.classList.remove('spin');
+  });
+}
+const keepParent = p => store.set('eq_par', Object.assign({}, p, { created: null }));
 
 async function copyText(text){
   try { await navigator.clipboard.writeText(text); }
@@ -8563,8 +8672,10 @@ let PHE = false;
 const T = (en, he) => PHE ? he : en;
 function renderParent(p, pin){
   PHE = !p.isAdmin;
+  parTouched = false;
+  if (store.get('eq_admin') === pin) keepParent(p);
   app.innerHTML = `
-  <div class="stack"${PHE ? ' dir="rtl" lang="he"' : ''}>
+  <div class="stack" id="parentview"${PHE ? ' dir="rtl" lang="he"' : ''}>
     <div class="row-flex between">
       <div><h1>${p.isAdmin ? 'Admin view' : 'אזור ההורים'}</h1><div class="sub">${p.isAdmin ? p.groups.length + ' groups · ' + fmtDate(p.today) : 'English with Coco'}</div></div>
       <div class="row-flex" style="gap:8px">
@@ -8585,8 +8696,8 @@ function renderParent(p, pin){
   app.querySelectorAll('[data-kidhere]').forEach(b => b.onclick = () => kidHere(b.dataset.kidgroup, b.dataset.kidhere, b.dataset.kidpin));
   const pl = document.getElementById('pilotload'); if (pl) pl.onclick = () => pilotLoad(pin);
   const al = document.getElementById('auditload'); if (al) al.onclick = () => auditLoad(pin);
-  document.getElementById('refresh').onclick = () => parent(pin, true);
-  document.getElementById('logout').onclick = () => { store.del('eq_admin'); loadHome(); };
+  document.getElementById('refresh').onclick = () => parentFresh(pin, true);
+  document.getElementById('logout').onclick = () => { store.del('eq_admin'); store.del('eq_par'); loadHome(); };
   app.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(b.dataset.copy));
   app.querySelectorAll('[data-msg]').forEach(ta => {
     const i = ta.dataset.msg, wa = app.querySelector(`[data-wa="${i}"]`);

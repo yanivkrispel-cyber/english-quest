@@ -24,8 +24,17 @@ const head = [
   '<meta property="og:image:alt" content="Coco the parrot, English with Coco">',
   '<meta name="twitter:card" content="summary_large_image">'
 ].join('\n');
-const out = src.replace('<base target="_top">', head);
+let out = src.replace('<base target="_top">', head);
 if (out === src) throw new Error('head marker not found');
+// The icon fonts from our own site (docs/fonts/, kept on the phone by the service worker) instead of unpkg: no other
+// server to reach before the first screen. The Apps Script copy (src/Index.html as it is) keeps unpkg.
+['duotone', 'bold'].forEach(w => {
+  const cdn = '<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/' + w + '/style.css">';
+  const font = 'fonts/phosphor-2.1.1/' + w + '/Phosphor-' + w[0].toUpperCase() + w.slice(1) + '.woff2';
+  if (!out.includes(cdn)) throw new Error('icon font link not found: ' + w);
+  out = out.replace(cdn, '<link rel="preload" as="font" type="font/woff2" crossorigin href="' + font + '">\n' +
+    '<link rel="stylesheet" href="fonts/phosphor-2.1.1/' + w + '/style.css">');
+});
 fs.mkdirSync(path.join(__dirname, 'docs'), { recursive: true });
 fs.writeFileSync(path.join(__dirname, 'docs', 'index.html'), out);
 console.log('docs/index.html written');

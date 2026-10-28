@@ -153,7 +153,11 @@ function doPost(e) {
     var API = api();
     if (!API.hasOwnProperty(req.fn)) throw new Error('Unknown call');
     REQ_DEV = cleanDev(req.dev);
+    REQ_OPEN = cleanOpen(req.open);
+    PERF_PARTS = null;
+    var t0 = Date.now();
     out = { ok: true, data: API[req.fn].apply(null, req.args || []) };
+    perfNote(req.fn, Date.now() - t0, PERF_PARTS);
   } catch (err) {
     out = { ok: false, error: String((err && err.message) || err) };
   }
@@ -227,11 +231,17 @@ function apiWarm() {
 }
 
 function apiDashboard(name, pin) {
+  var t = Date.now(), lap = function (k) { var n = Date.now(); PERF_PARTS[k] = n - t; t = n; };
+  PERF_PARTS = {};
   var kid = auth(name, pin);
+  lap('auth');
   auditOpen('kid', kid.Name, groupOf(kid));
+  lap('open');
   var dash = buildDashboard(kid);
+  lap('build');
   // Play together card (Duels.js); only here, so parent views and other calls stay fast.
   if (!dash.levelTest && !dash.nest) dash.duels = duelHome(kid);
+  lap('duels');
   return dash;
 }
 
@@ -947,6 +957,7 @@ function installTriggers() {
 // 90 minutes of trigger time a day.
 var WARM = { everyMin: 10, from: 7, to: 22, tables: ['Girls', 'Groups', 'Settings', 'Rewards', 'Assignments', 'Log', 'Games', 'Review', 'Gates', 'Duels', 'Duos', 'Bonus', 'Push', 'Shop', 'Wardrobe', 'Words'] };
 function warmCache() {
+  auditFlush();
   var h = Number(Utilities.formatDate(new Date(), TZ, 'H'));
   if (h < WARM.from || h >= WARM.to) return;
   ensureSetup();

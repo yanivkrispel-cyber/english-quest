@@ -65,7 +65,7 @@ figure{margin:0;display:grid;gap:8px;justify-items:center}iframe{border:0;border
 
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css', '.json': 'application/json',
   '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json', '.mp3': 'audio/mpeg' };
-let chaos = { mode: 'off', n: 0 };
+let chaos = { mode: 'off', n: 0 }, slow = { path: '', ms: 0 };
 http.createServer((req, res) => {
   const url = new URL(req.url, 'http://x');
   // Move the server's date: /dev/day?d=2026-10-24 (the shop's opening), 2026-10-31 (Halloween); /dev/day shows it.
@@ -108,6 +108,13 @@ http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(JSON.stringify({ ok: out }));
   }
+  // Slow files on purpose: /dev/slow?path=/docs/nest/&ms=4000 delays every file under that path (the Nest's scripts on a
+  // weak connection); /dev/slow?ms=0 stops it.
+  if (url.pathname === '/dev/slow') {
+    slow = { path: url.searchParams.get('path') || '', ms: Number(url.searchParams.get('ms')) || 0 };
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify(slow));
+  }
   if (url.pathname === '/dev/chaos') {
     if (url.searchParams.get('mode')) chaos = { mode: url.searchParams.get('mode'), n: Number(url.searchParams.get('n')) || 1 };
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -144,6 +151,10 @@ http.createServer((req, res) => {
   if (url.pathname === '/test/dev.html') fs.writeFileSync('test/dev.html', devPage());
   const file = path.join(APP, decodeURIComponent(url.pathname));
   if (!file.startsWith(APP) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.writeHead(404); return res.end('not found'); }
-  res.writeHead(200, { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
-  fs.createReadStream(file).pipe(res);
+  const send = () => {
+    res.writeHead(200, { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
+    fs.createReadStream(file).pipe(res);
+  };
+  if (slow.ms && slow.path && url.pathname.startsWith(slow.path)) return setTimeout(send, slow.ms);
+  send();
 }).listen(PORT, () => console.log('dev server: http://localhost:' + PORT + '/test/duo.html (latency ' + LATENCY + ' ms)'));
