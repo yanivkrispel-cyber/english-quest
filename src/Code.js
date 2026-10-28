@@ -188,7 +188,8 @@ function kidsIn(groupId) { return readTable('Girls').filter(function (k) { retur
 
 function groupLink(id) {
   var base = publicUrl();
-  return id === defaultGroupId() ? base : base + (base.indexOf('?') < 0 ? '?' : '&') + 'g=' + encodeURIComponent(id);
+  // The main family's link carries its id too: a phone that remembers another family is switched back by it.
+  return base + (base.indexOf('?') < 0 ? '?' : '&') + 'g=' + encodeURIComponent(id);
 }
 
 // Rewards rows with a Group apply to that group only; rows without one apply to every group

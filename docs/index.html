@@ -7824,9 +7824,11 @@ function home(){
       <div class="sub" style="color:#3b3f55">${esc(pub.word.meaning)}</div>
     </div>
     ${installCard()}
+    <div class="mt" style="text-align:center"><button class="btn btn-glass btn-sm" id="swfam">${icon('arrows-left-right')} Not your family? Switch</button></div>
   </div>`;
   const ib = document.getElementById('install');
   if (ib) ib.onclick = async () => { if (!installPrompt) return; installPrompt.prompt(); await installPrompt.userChoice; installPrompt = null; ib.hidden = true; };
+  document.getElementById('swfam').onclick = switchFamily;
   app.querySelectorAll('.who button').forEach(b => b.onclick = () => {
     call('apiWarm').catch(() => {});
     const k = deviceKids().find(x => x.nest && x.name === b.dataset.name);
@@ -7834,6 +7836,16 @@ function home(){
     pinPad(b.dataset.name);
   });
   document.getElementById('pbtn').onclick = () => { call('apiWarm').catch(() => {}); pinPad(null); };
+}
+
+// "Not your family?" on the kids' picker: the phone forgets the remembered family (a parent who tried another family's
+// link, a shared phone) and shows signIn, where any kid types her name and PIN and any parent taps the lock. The admin had
+// no way back to the main family after a test sign-up (2026-10-28).
+function switchFamily(){
+  store.del('eq_group'); store.del('eq_auth');
+  try { Object.keys(localStorage).filter(k => k.startsWith('eq_pub_')).forEach(k => localStorage.removeItem(k)); } catch(e){}
+  try { history.replaceState(null, '', location.pathname); } catch(e){}
+  signIn();
 }
 
 // ---------- PIN ----------

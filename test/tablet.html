@@ -9,7 +9,7 @@ iframe{border:0;transform-origin:0 0}
 b{display:block;margin:4px 0}
 pre{white-space:pre-wrap;margin:12px 0 0}
 </style>
-<!-- The app on tablets (served by test/dev-server.js: http://localhost:8787/test/tablet.html?screen=today|journey|game|mission|parent|nest|nest-meet|nest-phrase|nest-find|nest-move|nest-say|nest-done|nest-all|nest-living|nest-living-night|nest-living-many|nest-living-pet[&phones]).
+<!-- The app on tablets (served by test/dev-server.js: http://localhost:8787/test/tablet.html?screen=today|journey|game|mission|parent|picker|signin|nest|nest-meet|nest-phrase|nest-find|nest-move|nest-say|nest-done|nest-all|nest-living|nest-living-night|nest-living-many|nest-living-pet[&phones]).
      Each frame is the page size the tablet script picks, scaled to the real screen and drawn at 0.42. -->
 <div class="row" id="row"></div>
 <pre id="out">Loading…</pre>
@@ -38,6 +38,9 @@ async function show(f){
   // nest-cheer freezes the right-answer moment half way instead of turning animations off.
   d.head.insertAdjacentHTML('beforeend', screen === 'nest-cheer' ? '<style>*,*::before,*::after{animation-play-state:paused!important;animation-delay:-.4s!important;transition:none!important}</style>' : '<style>*,*::before,*::after{animation:none!important;transition:none!important}</style>');
   if (screen === 'parent') await ev("parent('1234', false, false)");
+  // picker: the kids of the family with "Not your family? Switch"; signin: the screen that button opens.
+  else if (screen === 'picker') await ev("(async () => { pub = await call('apiPublic', ''); home(); })()");
+  else if (screen === 'signin') await ev("(async () => { pub = await call('apiPublic', ''); home(); document.getElementById('swfam').click(); })()");
   // Coco's Nest: Mia, 4 (dev-server.js). nest = her home, nest-meet / nest-phrase / nest-find / nest-move / nest-say / nest-done = a session step.
   else if (screen.startsWith('nest')) {
     await ev("(async () => { await login('Mia', '5151', false, false); })()");
