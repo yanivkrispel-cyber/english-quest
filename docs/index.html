@@ -102,9 +102,67 @@ body{
 .nk-played::-webkit-scrollbar{display:none}
 .nk-unit{flex:none;width:68px;height:68px;border-radius:50%;border:1px solid rgba(255,255,255,.95);background:rgba(255,255,255,.75);display:grid;place-items:center;cursor:pointer}
 .nk-unit img{width:46px;height:46px;object-fit:contain}
+.nk-dayicon{width:48px;height:48px;object-fit:contain}
+.nk-today.three{gap:10px}.nk-today.three .nk-coco{width:64px;height:64px}
+.nk-playb{width:88px;height:88px;border-radius:50%;border:0;background:linear-gradient(145deg,#5eead4,#0d9488);color:#fff;font-size:44px;display:grid;place-items:center;cursor:pointer;box-shadow:0 14px 30px rgba(13,148,136,.35),inset 0 1px 0 rgba(255,255,255,.55)}
+.nk-playb:active,.nk-game:active{transform:scale(.96)}
+.nk-games{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-content:start}
+html.tablet .nk-games{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+.nk-game{min-height:118px;border-radius:24px;display:grid;justify-items:center;align-content:center;gap:8px;cursor:pointer;font:inherit;color:var(--ink);padding:10px 6px}
+.nk-game .tile{width:64px;height:64px;border-radius:20px;font-size:36px}
+.nk-game span:last-child{font-weight:700;font-size:13px;color:var(--muted)}
+.nk-days{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.nk-day{min-height:110px;border-radius:22px;display:grid;justify-items:center;align-content:center;gap:6px;cursor:pointer;font:inherit;color:var(--ink);padding:12px}
+.nk-day .tile{width:52px;height:52px;border-radius:18px;font-size:28px}
+.nk-day b{font-size:13px;color:var(--muted);line-height:1}
+.nk-day span:last-child{font-weight:700;font-size:15px}
+.nk-day:active{transform:scale(.97)}
 .nk-top .nk-prog{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;flex:1;padding:0 8px}
 .nk-prog i{width:7px;height:7px;border-radius:50%;background:rgba(99,102,241,.18)}
-.nk-prog i.ok{background:#22c55e}
+.nk-prog i.ok{background:radial-gradient(circle at 35% 30%,#fde68a,#f59e0b);box-shadow:0 0 6px rgba(245,158,11,.6)}
+.nk-prog i.got{animation:nkpop .4s ease}
+/* The play sky (nkSkyOn): behind #app, one of four palettes a session */
+.nk-sky{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:linear-gradient(180deg,var(--k1),var(--k2) 70%)}
+.nk-sky.p0{--k1:#bde3ff;--k2:#fff3c4;--h1:#a7f3d0;--h2:#6ee7b7}
+.nk-sky.p1{--k1:#fbcfe8;--k2:#ede9fe;--h1:#ddd6fe;--h2:#c4b5fd}
+.nk-sky.p2{--k1:#a5f3fc;--k2:#e0f2fe;--h1:#99f6e4;--h2:#5eead4}
+.nk-sky.p3{--k1:#fed7aa;--k2:#fce7f3;--h1:#fde68a;--h2:#fdba74}
+.nk-sun{position:absolute;top:6%;right:8%;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,#fff7cc,#fde047 60%,rgba(253,224,71,0) 72%);animation:nksun 6s ease-in-out infinite alternate}
+.nk-cloud{position:absolute;width:120px;height:38px;border-radius:40px;background:rgba(255,255,255,.85);filter:blur(1px);animation:nkcloud 38s linear infinite}
+.nk-cloud::before{content:'';position:absolute;left:22px;top:-22px;width:56px;height:52px;border-radius:50%;background:inherit}
+.nk-cloud.c1{top:12%;left:-140px}.nk-cloud.c2{top:26%;left:-140px;transform:scale(.7);animation-duration:52s;animation-delay:-24s}
+.nk-bub{position:absolute;bottom:-40px;width:var(--s);height:var(--s);border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.95),rgba(255,255,255,.25) 60%);border:1px solid rgba(255,255,255,.7);animation:nkbub var(--t) linear infinite}
+.nk-hills{position:absolute;left:0;right:0;bottom:0;width:100%;height:22%}
+.nk-hills .h1{fill:var(--h1)}.nk-hills .h2{fill:var(--h2)}
+@keyframes nksun{to{transform:scale(1.08)}}
+@keyframes nkcloud{to{transform:translateX(calc(100vw + 300px))}}
+@keyframes nkbub{to{transform:translateY(-115vh) translateX(18px)}}
+/* A right answer (nkCheer) */
+.nk-card.nk-joy{animation:nkjoy .7s cubic-bezier(.3,1.6,.5,1)}
+@keyframes nkjoy{0%{transform:scale(1)}25%{transform:scale(1.18) translateY(-14px) rotate(-4deg)}50%{transform:scale(.96) rotate(3deg)}75%{transform:scale(1.06) rotate(-1deg)}100%{transform:scale(1)}}
+.nk-coco.nk-hop{animation:nkhop .7s ease}
+@keyframes nkhop{0%,100%{transform:none}30%{transform:translateY(-22px) rotate(-10deg) scale(1.08)}60%{transform:translateY(0) rotate(6deg)}80%{transform:translateY(-8px)}}
+.nk-burst{position:fixed;z-index:30;pointer-events:none;width:0;height:0}
+.nk-burst span{position:absolute;left:-14px;top:-14px;width:28px;height:28px;animation:nkfly .95s cubic-bezier(.2,.8,.3,1) both}
+.nk-burst span svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 2px 3px rgba(0,0,0,.15))}
+.nk-burst span b{display:block;width:60%;height:60%;margin:20%;border-radius:50%;background:currentColor}
+@keyframes nkfly{0%{transform:rotate(var(--a)) translateX(0) scale(.2);opacity:1}70%{opacity:1}100%{transform:rotate(var(--a)) translateX(var(--d)) scale(var(--z)) rotate(180deg);opacity:0}}
+.nk-wave{position:absolute;left:-60px;top:-60px;width:120px;height:120px;border-radius:50%;border:6px solid #fde047;animation:nkwave .7s ease-out both}
+@keyframes nkwave{from{transform:scale(.3);opacity:1}to{transform:scale(2.6);opacity:0}}
+.nk-flystar{position:fixed;z-index:31;width:46px;height:46px;pointer-events:none;color:#fbbf24;transform:translate(-50%,-50%)}
+.nk-flystar svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 0 8px rgba(251,191,36,.8))}
+.nk-party{position:fixed;inset:0;z-index:29;pointer-events:none;display:grid;place-items:end center;overflow:hidden}
+.nk-rainbow{position:absolute;left:50%;bottom:12%;width:min(92vw,560px);transform:translateX(-50%);opacity:.9}
+.nk-rainbow path{stroke-dasharray:1;stroke-dashoffset:1;animation:nkdraw .8s ease-out forwards}
+.nk-rainbow path:nth-child(2){animation-delay:.06s}.nk-rainbow path:nth-child(3){animation-delay:.12s}.nk-rainbow path:nth-child(4){animation-delay:.18s}.nk-rainbow path:nth-child(5){animation-delay:.24s}.nk-rainbow path:nth-child(6){animation-delay:.3s}
+@keyframes nkdraw{to{stroke-dashoffset:0}}
+.nk-partypet{width:min(46vw,230px);aspect-ratio:1;margin-bottom:4%;animation:nkpetup .6s cubic-bezier(.3,1.5,.5,1) both,nkdance .5s ease-in-out .6s 2 alternate}
+.nk-partypet .nk-petart,.nk-partypet img{width:100%;height:100%;object-fit:contain}
+.nk-party.out{transition:opacity .5s;opacity:0}
+@keyframes nkpetup{from{transform:translateY(110%)}to{transform:none}}
+@keyframes nkdance{from{transform:rotate(-8deg) translateY(0)}to{transform:rotate(8deg) translateY(-14px)}}
+.nk-card.yes{box-shadow:0 0 0 6px #fff,0 0 0 11px #fbbf24,0 0 34px 12px rgba(251,191,36,.55)!important}
+@media (prefers-reduced-motion:reduce){.nk-sky *{animation:none!important}.nk-card.nk-joy,.nk-coco.nk-hop{animation:none}}
 .nk-prog i.on{background:#6366f1;transform:scale(1.3)}
 .nk-stage{align-items:center;justify-content:center;gap:16px}
 .nk-card{border:0;border-radius:30px;background:rgba(255,255,255,.88);box-shadow:0 8px 24px rgba(60,60,120,.12);display:grid;place-items:center;padding:0;position:relative;width:100%;max-width:220px;aspect-ratio:1;cursor:pointer;transition:transform .15s,opacity .3s,filter .3s;-webkit-tap-highlight-color:transparent}
@@ -112,7 +170,6 @@ body{
 .nk-card.big{max-width:min(68vw,290px)}
 .nk-card:active{transform:scale(.96)}
 .nk-card.pop{animation:nkpop .35s ease}
-.nk-card.yes{box-shadow:0 0 0 7px #22c55e,0 10px 26px rgba(34,197,94,.3);animation:nkpop .4s ease}
 .nk-card.no{opacity:.3;filter:grayscale(1)}
 .nk-card.away{opacity:.25}
 .nk-cap{position:absolute;bottom:6px;left:0;right:0;text-align:center;font-weight:800;font-size:20px;color:var(--ink)}
@@ -133,7 +190,6 @@ body{
 .nk-ring.heard::before{box-shadow:0 0 0 10px #22c55e}
 .nk-coach{gap:10px;align-items:center}
 .nk-coach .nk-coco{width:72px;height:72px}
-.nk-he{font-size:15px;color:var(--muted);font-weight:600;flex:1;line-height:1.4}
 .nk-slot{min-height:100px;display:grid;place-items:center}
 .nk-next{width:96px;height:96px;border-radius:50%;border:0;background:linear-gradient(145deg,#a5b4fc,#6366f1);color:#fff;font-size:42px;display:grid;place-items:center;box-shadow:0 10px 24px rgba(99,102,241,.35);opacity:.55;cursor:pointer;transition:opacity .2s}
 .nk-next.ready{opacity:1;animation:nkpulse 1.6s ease-in-out infinite}
@@ -4319,7 +4375,7 @@ async function previewMission(id, label){
 // Coco says each line (a recording, or the phone's voice without one), the kid answers aloud with the mic button
 // (the phone's own speech recognition; nothing is recorded or sent but the words it heard), or with a tile. Every answer
 // moves the talk on; there is no wrong answer. A mission talk comes after Use it; a home scene once a day from home.
-const TALK_V = 3;
+const TALK_V = 4;
 const CHAT_PET = {
   start: ['Your turn soon! Tap the mic and talk.', 'Talk to Coco! I am right here.', 'Speak English with Coco. You can do it!'],
   voice: ['You said it!', 'Wow, great English!', 'Coco understood you!', 'So cool! Keep going!', 'Yes! Out loud!'],
@@ -7103,21 +7159,25 @@ function auditRender(pin){
 }
 
 // ---------- Coco's Nest: ages 2 to 7 (specs/nest.md) ----------
-// Listening and pictures only: Coco says a word, the kid taps it or says it. No reading, timers or fail screens, and the
-// pet is the only reward. Content: docs/nest/nest.js (EQ_NEST); recordings: docs/nest/audio (tools/nest_audio.py).
-const NEST_V = 4, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
+// Listening and pictures only, and only Coco's English (no Hebrew voice): he shows each game first. No reading, timers
+// or fail screens, and the pet is the only reward. Content: docs/nest/nest.js (EQ_NEST); the session engine and its
+// games: docs/nest/play.js; recordings: docs/nest/audio (tools/nest_audio.py).
+const NEST_V = 8, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
 let NE = null, nestLoading = null, nestAudioEl = null, nestQueue = null, nestMic = null;
 function loadNest(){
-  if (window.EQ_NEST) return Promise.resolve(window.EQ_NEST);
-  return nestLoading = nestLoading || new Promise((res, rej) => {
+  if (window.EQ_NEST && typeof NK === 'object') return Promise.resolve(window.EQ_NEST);
+  const one = (file, ready) => ready() ? Promise.resolve() : new Promise((res, rej) => {
     const s = document.createElement('script');
-    s.src = ASSETS + 'nest/nest.js?v=' + NEST_V;
-    s.onload = () => window.EQ_NEST ? res(window.EQ_NEST) : rej(new Error("Coco's Nest is not ready yet."));
-    s.onerror = () => { nestLoading = null; s.remove(); rej(new Error('Could not load. Check the connection and try again.')); };
+    s.src = ASSETS + 'nest/' + file + '?v=' + NEST_V;
+    s.onload = () => ready() ? res() : rej(new Error("Coco's Nest is not ready yet."));
+    s.onerror = () => { s.remove(); rej(new Error('Could not load. Check the connection and try again.')); };
     document.head.appendChild(s);
   });
+  return nestLoading = nestLoading || one('nest.js', () => !!window.EQ_NEST).then(() => one('play.js', () => typeof NK === 'object'))
+    .then(() => window.EQ_NEST).catch(e => { nestLoading = null; throw e; });
 }
-const nestUnit = id => (window.EQ_NEST && EQ_NEST.units.find(u => u.id === id)) || null;
+// A unit by its id or by a day's id ('n04.c' is the unit n04).
+const nestUnit = id => { const u = String(id || '').split('.')[0]; return (window.EQ_NEST && EQ_NEST.units.find(x => x.id === u)) || null; };
 // Ages 2 and 3 play the unit's 4 core words (a review: the core words of its units).
 const nestCore = u => u.core ? u.words.filter(w => u.core.includes(w.id)) : u.words;
 const nestWordsOf = (u, core) => !u ? [] : u.review ? [].concat(...u.review.map(id => { const x = nestUnit(id); return x && x.words ? (core ? nestCore(x) : x.words) : []; })) : core ? nestCore(u) : u.words;
@@ -7145,6 +7205,13 @@ function nestText(key){
   if (key.startsWith('w-')) return w ? w.say : '';
   if (key.startsWith('f-')) return w ? w.find : '';
   if (key.startsWith('en-')) return (N.en || {})[key.slice(3)] || '';
+  if (key.startsWith('g-')) return w ? 'Give me ' + (w.color ? '' : 'the ') + w.en.replace(/-/g, ' ') + '!' : '';
+  if (key.startsWith('s-')) return (N.sounds || {})[id] || '';
+  if (key.startsWith('d-')) return w ? 'Put on the ' + w.en + '!' : '';
+  if (key.startsWith('k-')) return ((N.color || []).find(c => c.id === id) || {}).say || '';
+  const m = /^([ct])-([nr]\d\d)-(\d+)$/.exec(key);
+  if (m && m[1] === 'c') return (((N.chants || {})[m[2]] || [])[m[3]] || [])[0] || '';
+  if (m) return ((((N.stories || {})[m[2]] || {}).pages || [])[m[3]] || [])[0] || '';
   return '';
 }
 function nestSpeak(key, done){
@@ -7225,20 +7292,60 @@ function nestMicStop(){
 }
 
 // ---- Home ----
+// A unit's days in a sheet (Settings.NestAll): free play, nothing is logged.
+function nestDays(u){
+  if (!u) return;
+  const days = u.review ? [[u.id, 'Review', 'arrows-clockwise', 't-star']]
+    : [[u.id, 'New words', 'sparkle', 't-vocab'], [u.id + '.b', 'Move', 'person-simple-run', 't-fire'], [u.id + '.c', 'Song and story', 'music-notes', 't-listen'], [u.id + '.d', 'Games', 'puzzle-piece', 't-together']];
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="sheet glass">
+    <div class="row-flex between"><span class="row-flex" style="gap:10px"><img class="nk-dayicon" src="${esc(nestPicSrc(u.icon))}" alt=""><h2>${esc(u.title)}</h2></span>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x" aria-label="Close">${icon('x')}</button></div>
+    <div class="nk-days mt">${days.map(([id, l, ic, t], i) => `<button class="nk-day soft" data-nkday="${esc(id)}"><span class="tile ${t}">${icon(ic, 'duotone')}</span><b>${u.review ? '' : i + 1}</b><span>${l}</span></button>`).join('')}</div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  ov.onclick = e => { if (e.target === ov) close(); };
+  ov.querySelector('#x').onclick = close;
+  ov.querySelectorAll('[data-nkday]').forEach(b => b.onclick = () => { close(); nestStart(b.dataset.nkday); });
+}
+
+// The playground (specs/nest.md): every game on the words the kid has met, as often as she likes; nothing is saved.
+function nestPlayground(){
+  const games = dash && dash.nest && window.EQ_NEST ? nkPlayGames() : [];
+  if (!games.length) return renderDash();
+  const L = Object.fromEntries(NG_GAMES);
+  app.innerHTML = `<div class="nk-home">
+    <div class="row-flex between"><button class="btn btn-glass icon-btn" id="nkback" aria-label="Home">${icon('house')}</button>
+      <img class="nk-coco" src="${cocoSrc('happy')}" alt="Coco" style="width:64px;height:64px"></div>
+    <div class="nk-games">${games.map(([g, , ic, t]) => `<button class="nk-game soft" data-nkgame="${g}" aria-label="${esc(L[g])}">
+      <span class="tile ${t}">${icon(ic, 'duotone')}</span><span>${esc(L[g])}</span></button>`).join('')}</div>
+  </div>`;
+  document.getElementById('nkback').onclick = () => renderDash();
+  app.querySelectorAll('[data-nkgame]').forEach(b => b.onclick = () => nkPlayStart(b.dataset.nkgame));
+  nestPlay(['en-hi']);
+}
+
 function renderNest(d){
-  const n = d.nest, u = nestUnit(n.today);
-  if (!window.EQ_NEST) {
+  { const sky = document.getElementById('nksky'); if (sky) sky.remove(); }
+  // n.next: one more lesson (the parent allows more than one a day), so the big button starts it instead of a replay.
+  const n = d.nest, again = n.done && !n.next, u = nestUnit(n.done && n.next ? n.next : n.today);
+  if (!window.EQ_NEST || typeof NK !== 'object') {
     app.innerHTML = '<div class="spinner"></div>';
     loadNest().then(() => { if (dash === d && !NE) renderNest(d); })
       .catch(e => { app.innerHTML = `<div class="glass panel" style="text-align:center;display:grid;gap:12px">${esc(e.message)}<button class="btn btn-primary btn-block" id="nkagain">${icon('arrows-clockwise')} Try again</button></div>`;
         document.getElementById('nkagain').onclick = () => renderNest(d); });
     return;
   }
-  const played = n.played.map(nestUnit).filter(Boolean).filter(x => x.id !== n.today);
+  // Settings.NestAll (n.all): every unit is open now, each with its days to pick.
+  const games = nkPlayGames();
+  const played = (n.all ? EQ_NEST.units : [...new Set(n.played.map(id => String(id).split('.')[0]))].map(nestUnit).filter(Boolean)).filter(x => x.id !== (u && u.id));
   app.innerHTML = `<div class="nk-home">
     <div class="row-flex between">
       <div class="row-flex">${petFace(d.pet, d.girl.color, d.girl.name)}<h2 style="font-size:22px">${esc(d.girl.name)}</h2></div>
       <div class="row-flex" style="gap:8px">
+        ${nkHasArt() ? `<button class="btn btn-glass icon-btn" id="nkart" title="My pictures">${icon('palette', 'duotone')}</button>` : ''}
         <button class="btn btn-glass icon-btn" id="nkhear" title="Listen">${icon('speaker-high')}</button>
         <button class="btn btn-glass icon-btn" id="logout" title="Who is playing?">${icon('users-three')}</button></div>
     </div>
@@ -7247,18 +7354,23 @@ function renderNest(d){
         <div class="nk-petname">${esc(d.pet.name)}</div>`
       : `<div class="nk-adopt">${PETS.filter(p => PET_ART[p[0]]).slice(0, 6).map(([id]) => `<button class="nk-adoptb" data-nkpet="${id}" aria-label="${esc(petName(id))}"><img src="${petSrc(id, 1, 'happy')}" alt=""></button>`).join('')}</div>`}
     </div>
-    <div class="nk-today">
+    <div class="nk-today${games.length ? ' three' : ''}">
       <img class="nk-coco" id="nkcoco" src="${cocoSrc(n.done ? 'celebrate' : 'happy')}" alt="Coco">
-      ${u ? `<button class="nk-start${n.done ? ' again' : ''}" id="nkgo" aria-label="${esc(u.title)}">
-        <img src="${esc(nestPicSrc(u.icon))}" alt=""><span class="nk-play">${icon(n.done ? 'arrow-counter-clockwise' : 'play', 'bold')}</span></button>` : ''}
+      ${u ? `<button class="nk-start${again ? ' again' : ''}" id="nkgo" aria-label="${esc(u.title)}">
+        <img src="${esc(nestPicSrc(u.icon))}" alt=""><span class="nk-play">${icon(again ? 'arrow-counter-clockwise' : 'play', 'bold')}</span></button>` : ''}
+      ${games.length ? `<button class="nk-playb" id="nkplay" aria-label="Play">${icon('puzzle-piece', 'duotone')}</button>` : ''}
       ${n.done ? `<div class="nk-stars">${icon('star', 'duotone')}${icon('star', 'duotone')}${icon('star', 'duotone')}</div>` : ''}
     </div>
     ${played.length ? `<div class="nk-played">${played.map(x => `<button class="nk-unit" data-nkunit="${esc(x.id)}" aria-label="${esc(x.title)}"><img src="${esc(nestPicSrc(x.icon))}" alt=""></button>`).join('')}</div>` : '<div></div>'}
   </div>`;
   const go = document.getElementById('nkgo');
-  if (go) go.onclick = () => nestStart(n.today);
-  app.querySelectorAll('[data-nkunit]').forEach(b => b.onclick = () => nestStart(b.dataset.nkunit));
-  document.getElementById('nkhear').onclick = () => nestPlay([d.pet ? 'he-start' : 'he-pet']);
+  if (go) go.onclick = () => nestStart(n.done && n.next ? n.next : n.today);
+  const pg = document.getElementById('nkplay'); if (pg) pg.onclick = nestPlayground;
+  // A unit played before: one of its days again, as free play.
+  app.querySelectorAll('[data-nkunit]').forEach(b => b.onclick = () => n.all ? nestDays(nestUnit(b.dataset.nkunit))
+    : nestStart(nkPick(n.played.filter(id => String(id).split('.')[0] === b.dataset.nkunit).concat([b.dataset.nkunit]))));
+  document.getElementById('nkhear').onclick = () => nestPlay(['en-hi']);
+  const art = document.getElementById('nkart'); if (art) art.onclick = nkAlbum;
   document.getElementById('logout').onclick = nestSwitch;
   const pet = document.getElementById('nkpet');
   if (pet) pet.onclick = () => { paMood(pet.querySelector('svg'), 'celebrate'); buzz(true); };
@@ -7301,191 +7413,16 @@ function nestSwitch(){
   });
 }
 
-// ---- A session: meet the words, find them, say them ----
-// Meet the words and the phrase, find them, Coco says (do it with the body), say them. preview: the teacher's ?nest page.
-function nestStart(id, preview){
-  const u = nestUnit(id);
-  if (!u) return;
-  const core = dash.nest.age <= 3, review = !!u.review, rounds = review ? 10 : 8, k = dash.nest.choices;
-  const words = nestWordsOf(u, core), steps = [];
-  if (!review) {
-    words.forEach((w, i) => steps.push({ t: 'meet', w, first: i === 0 }));
-    if (u.phrase) steps.push({ t: 'phrase' });
-  }
-  let order = [];
-  while (order.length < rounds) {
-    const more = shuffle(words);
-    if (order.length && more[0].id === order[order.length - 1].id) more.push(more.shift());
-    order = order.concat(more);
-  }
-  order.slice(0, rounds).forEach((w, i) => steps.push({ t: 'find', w, first: i === 0,
-    opts: shuffle([w].concat(shuffle(words.filter(x => x.id !== w.id && x.en !== w.en)).slice(0, k - 1))) }));
-  // Coco says: the unit's moves (a review mixes those of its units), two for the youngest.
-  const M = EQ_NEST.moves || {}, mv = review ? shuffle([...new Set([].concat(...u.review.map(x => (nestUnit(x) || {}).moves || [])))]) : (u.moves || []);
-  mv.filter(m => M[m]).slice(0, core ? 2 : 3).forEach((m, i) => steps.push({ t: 'move', id: m, m: M[m], first: i === 0 }));
-  // Say it: three words; from age 4 the last one is the unit's phrase.
-  const says = shuffle(words).slice(0, 3).map(w => ({ t: 'say', w, clip: 'w-' + w.id }));
-  if (!core && !review && u.phrase) says[says.length - 1] = { t: 'say', phrase: true, clip: 'p-' + u.id };
-  says.forEach((x, i) => { x.first = i === 0; steps.push(x); });
-  steps.push({ t: 'done' });
-  NE = { u, steps, si: 0, correct: 0, total: rounds, t0: Date.now(), review, tries: 0, heard: false, preview: !!preview };
-  window.scrollTo(0, 0);
-  nestRender(true);
-}
-function nestLeave(){ nestStopAudio(); nestMicStop(); NE = null; }
-function nestExit(){ const pv = NE && NE.preview; nestLeave(); if (pv) nestGallery(); else renderDash(); }
-// What Coco says when a step opens: the session's hello and each part's Hebrew line the first time, then the word.
-function nestPrompt(s, opening){
-  const hello = opening ? ['he-hello', 'en-hi'] : [];
-  if (s.t === 'meet') return hello.concat(s.first ? ['he-meet', 'en-meet'] : [], ['w-' + s.w.id]);
-  if (s.t === 'find') return hello.concat(s.first && NE.review ? ['he-review'] : [], s.first ? ['he-find', 'en-find'] : [], ['f-' + s.w.id]);
-  if (s.t === 'phrase') return ['he-phrase', 'p-' + NE.u.id];
-  if (s.t === 'move') return (s.first ? ['he-move'] : []).concat(['en-move', 'm-' + s.id]);
-  if (s.t === 'say') return (s.first ? ['he-say', 'en-say'] : []).concat([s.clip]);
-  return ['en-great', 'he-done', 'en-bye'];
-}
-const nestHeLine = s => {
-  const he = (window.EQ_NEST && EQ_NEST.he) || {};
-  return s.t === 'meet' ? he.meet : s.t === 'phrase' ? he.phrase : s.t === 'find' ? he.find : s.t === 'move' ? he.move : s.t === 'say' ? he.say : he.done;
-};
-function nestRender(opening){
-  if (!NE) return;
-  const s = NE.steps[NE.si], showWord = dash.nest.words;
-  nestMicStop();
-  const dots = NE.steps.filter(x => x.t !== 'done').map((x, i) => `<i class="${i < NE.si ? 'ok' : i === NE.si ? 'on' : ''}"></i>`).join('');
-  let stage = '', dockBtn = '';
-  if (s.t === 'meet') {
-    stage = `<button class="nk-card big" id="nkpic">${nestPic(s.w)}</button>${showWord ? `<div class="nk-word">${esc(s.w.en)}</div>` : ''}`;
-    dockBtn = `<button class="nk-next" id="nknext" aria-label="Next">${icon('arrow-right', 'bold')}</button>`;
-  } else if (s.t === 'find') {
-    stage = `<div class="nk-opts n${s.opts.length}">${s.opts.map((o, i) => `<button class="nk-card" data-nkopt="${i}">${nestPic(o)}<span class="nk-cap"></span></button>`).join('')}</div>`;
-  } else if (s.t === 'phrase') {
-    stage = `<button class="nk-card big" id="nkpic">${nestPhrasePic(NE.u)}</button>${showWord ? `<div class="nk-word long">${esc(NE.u.phrase.en)}</div>` : ''}`;
-    dockBtn = `<button class="nk-next" id="nknext" aria-label="Next">${icon('arrow-right', 'bold')}</button>`;
-  } else if (s.t === 'move') {
-    stage = `<button class="nk-card big" id="nkpic">${nestPic(s.m)}</button>${showWord ? `<div class="nk-word long">${esc(s.m.en)}</div>` : ''}`;
-    dockBtn = `<button class="nk-next said" id="nkdid" aria-label="I did it">${icon('check', 'bold')}</button>`;
-  } else if (s.t === 'say') {
-    const pic = s.phrase ? nestPhrasePic(NE.u) : nestPic(s.w), txt = s.phrase ? NE.u.phrase.en : s.w.en;
-    stage = `<div class="nk-ring" id="nkring"><button class="nk-card big" id="nkpic">${pic}</button></div>${showWord ? `<div class="nk-word${s.phrase ? ' long' : ''}">${esc(txt)}</div>` : ''}`;
-    dockBtn = `<button class="nk-next said" id="nksaid" aria-label="I said it">${icon('hand-waving', 'bold')}</button>`;
-  } else {
-    // Three stars every time: at this age the effort is what counts (the score goes to the parents' view).
-    const stars = 3;
-    stage = `<div class="nk-done">${dash.pet ? petArt(dash.pet, 'celebrate', 'nk-petart') : `<img src="${cocoSrc('celebrate')}" alt="">`}
-      <div class="nk-stars big">${[0, 1, 2].map(i => `<span class="${i < stars ? 'on' : ''}">${icon('star', 'duotone')}</span>`).join('')}</div></div>`;
-    dockBtn = `<button class="nk-next home" id="nkhome" aria-label="Home">${icon('house', 'bold')}</button>`;
-  }
-  const he = nestHeLine(s);
-  app.innerHTML = `<div class="gscreen gplay nk">
-    <div class="row-flex between nk-top">
-      <button class="btn btn-glass icon-btn" id="nkx" aria-label="Close">${icon('x')}</button>
-      <div class="nk-prog">${dots}</div>
-      <button class="btn btn-glass icon-btn" id="nkagain" aria-label="Listen again">${icon('speaker-high')}</button>
-    </div>
-    <div class="gstage nk-stage">${stage}</div>
-    <div class="gdock nk-dock">
-      <div class="row-flex nk-coach"><img class="nk-coco" id="nkcoco" src="${cocoSrc(s.t === 'done' ? 'celebrate' : 'happy')}" alt="Coco">
-        ${he ? `<div class="nk-he" dir="rtl" lang="he">${esc(he)}</div>` : ''}</div>
-      <div class="nk-slot">${dockBtn}</div>
-    </div>
-  </div>`;
-  document.getElementById('nkx').onclick = nestExit;
-  const say = () => nestPlay(nestPrompt(s, false).slice(-1));
-  document.getElementById('nkagain').onclick = () => nestPlay(s.t === 'done' ? ['en-great'] : nestPrompt(s, false));
-  const pic = document.getElementById('nkpic');
-  if (pic) pic.onclick = () => { pic.classList.remove('pop'); void pic.offsetWidth; pic.classList.add('pop'); say(); };
-  if (s.t === 'meet' || s.t === 'phrase') {
-    const nx = document.getElementById('nknext');
-    nx.onclick = nestAdvance;
-    nestPlay(nestPrompt(s, opening), () => nx.classList.add('ready'));
-  } else if (s.t === 'find') {
-    NE.tries = 0;
-    app.querySelectorAll('[data-nkopt]').forEach(b => b.onclick = () => nestPick(b, s));
-    nestPlay(nestPrompt(s, opening));
-  } else if (s.t === 'move') {
-    // A moment to do it before the button glows; it works at any time.
-    NE.heard = false;
-    const did = document.getElementById('nkdid');
-    did.onclick = () => nestDid(s);
-    nestPlay(nestPrompt(s, opening), () => setTimeout(() => { if (NE && NE.steps[NE.si] === s) did.classList.add('ready'); }, 1500));
-  } else if (s.t === 'say') {
-    NE.heard = false;
-    document.getElementById('nksaid').onclick = () => nestHeard(s);
-    nestPlay(nestPrompt(s, opening), () => nestListen(s));
-  } else {
-    document.getElementById('nkhome').onclick = nestExit;
-    confetti(); buzz(true);
-    nestPlay(nestPrompt(s), () => document.getElementById('nkhome') && document.getElementById('nkhome').classList.add('ready'));
-    nestFinish();
-  }
-}
-function nestAdvance(){
-  if (!NE) return;
-  nestStopAudio();
-  NE.si = Math.min(NE.si + 1, NE.steps.length - 1);
-  nestRender(false);
-}
-function nestPick(b, s){
-  if (!NE || b.disabled || NE.locked) return;
-  const o = s.opts[Number(b.dataset.nkopt)], ok = o.id === s.w.id;
-  NE.tries++;
-  if (dash.nest.words) b.querySelector('.nk-cap').textContent = o.en;
-  if (!ok) {
-    b.disabled = true; b.classList.add('no');
-    buzz(false);
-    nestPlay(['en-try', 'f-' + s.w.id]);
-    return;
-  }
-  if (NE.tries === 1) NE.correct++;
-  NE.locked = true;
-  b.classList.add('yes');
-  app.querySelectorAll('[data-nkopt]').forEach(x => { if (x !== b) x.classList.add('away'); });
-  const c = document.getElementById('nkcoco'); if (c) c.src = cocoSrc('celebrate');
-  buzz(true);
-  nestPlay(['w-' + s.w.id, 'en-' + NEST_PRAISE[Math.floor(Math.random() * NEST_PRAISE.length)]], () => { if (NE) { NE.locked = false; nestAdvance(); } });
-}
-// Say it: with the microphone on, a voice that is loud enough counts; otherwise (or anytime) the big button.
-function nestListen(s){
-  if (!NE || NE.steps[NE.si] !== s) return;
-  const pref = store.get('eq_nest_mic');
-  if (pref === 'off' || !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) return document.getElementById('nksaid').classList.add('ready');
-  if (pref !== 'on') return nestMicAsk(s);
-  nestMicStart(() => nestHeard(s)).then(on => { if (!on) { store.set('eq_nest_mic', 'off'); const b = document.getElementById('nksaid'); if (b) b.classList.add('ready'); } });
-}
-// The first time: a sentence for the parent before the phone asks for the microphone.
-function nestMicAsk(s){
-  const ov = document.createElement('div');
-  ov.className = 'overlay';
-  ov.innerHTML = `<div class="sheet glass he" dir="rtl" lang="he" style="display:grid;gap:12px">
-    <h2>קוקו רוצה לשמוע</h2>
-    <div class="sub" style="margin:0">כדי שהטלפון ידע שהילד אמר את המילה, צריך לאשר את המיקרופון. הוא רק בודק שיש קול: שום דבר לא מוקלט ולא נשלח.</div>
-    <button class="btn btn-primary btn-block" id="nkmicon">${icon('microphone')} לאשר מיקרופון</button>
-    <button class="btn btn-glass btn-block" id="nkmicoff">בלי מיקרופון</button></div>`;
-  document.body.appendChild(ov);
-  ov.querySelector('#nkmicon').onclick = () => { ov.remove(); store.set('eq_nest_mic', 'on'); nestListen(s); };
-  ov.querySelector('#nkmicoff').onclick = () => { ov.remove(); store.set('eq_nest_mic', 'off'); nestListen(s); };
-}
-function nestDid(s){
-  if (!NE || NE.steps[NE.si] !== s || NE.heard) return;
-  NE.heard = true;
-  const c = document.getElementById('nkcoco'); if (c) c.src = cocoSrc('celebrate');
-  buzz(true);
-  nestPlay(['en-' + NEST_PRAISE[Math.floor(Math.random() * NEST_PRAISE.length)]], nestAdvance);
-}
-function nestHeard(s){
-  if (!NE || NE.steps[NE.si] !== s || NE.heard) return;
-  NE.heard = true;
-  nestMicStop();
-  const ring = document.getElementById('nkring'); if (ring) ring.classList.add('heard');
-  const c = document.getElementById('nkcoco'); if (c) c.src = cocoSrc('celebrate');
-  buzz(true);
-  nestPlay(['en-' + NEST_PRAISE[Math.floor(Math.random() * NEST_PRAISE.length)]], nestAdvance);
-}
+// ---- A session: the engine and every activity live in docs/nest/play.js (nestStart, nestRender, NK.*) ----
+function nestLeave(){ const sky = document.getElementById('nksky'); if (sky) sky.remove(); if (typeof nkHandStop === 'function') nkHandStop(); const mic = document.getElementById('nkmic'); if (mic) mic.remove(); if (NE && NE.chant) NE.chant.stop(); if (NE) clearTimeout(NE.idleT); nestStopAudio(); nestMicStop(); NE = null; }
+function nestExit(){ const pv = NE && NE.preview, pl = NE && NE.play; nestLeave(); if (pv) nestGallery(); else if (pl) nestPlayground(); else renderDash(); }
+// The day's result: the day id the server gave, the score of the rounds that count, and each word's first try
+// ("cat:1,dog:0") for the review days and the parents' view.
 async function nestFinish(){
-  if (NE.preview) return;
+  if (NE.preview || NE.play) return;
   const t = dash.week.find(w => w.isToday);
-  const R = { fn: 'nest', args: [t ? t.date : dash.today, NE.u.id, NE.correct, NE.total, Math.round((Date.now() - NE.t0) / 1000)] };
+  const detail = Object.keys(NE.res).map(id => id + ':' + (NE.res[id] ? 1 : 0)).join(',');
+  const R = { fn: 'nest', args: [t ? t.date : dash.today, NE.dayId, NE.correct, NE.total, Math.round((Date.now() - NE.t0) / 1000), detail] };
   try { setDash(await call('apiNestResult', session.name, session.pin, ...R.args)); }
   catch(e){ if (!e.app) queueResult(R); }
 }
@@ -7502,7 +7439,20 @@ function ageRow(g){
     <span class="chip">${icon(g.nest ? 'bird' : 'graduation-cap')} ${esc(ageLabel(ageValue(g)))}</span>
     <button class="btn btn-glass btn-sm" data-ageopen="${esc(g.girl.name)}">${icon('pencil-simple')} שינוי גיל או כיתה</button></div>`;
 }
+// Coco's Nest: how many lessons a day (Girls.NestPerDay; 0 = no limit). The playground is open either way.
+function nestPerDayRow(g){
+  if (!g.nest) return '';
+  const v = g.nest.perDay == null ? 1 : g.nest.perDay;
+  return `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:6px;flex-wrap:wrap;align-items:center">
+    <span class="sub" style="margin:0;font-size:13px">שיעורים ביום:</span>
+    ${[[1, 'אחד'], [2, 'שניים'], [3, 'שלושה'], [0, 'בלי הגבלה']].map(([n, l]) => `<button class="btn btn-sm ${v === n ? 'btn-primary' : 'btn-glass'}" data-perday="${n}" data-perkid="${esc(g.girl.name)}">${l}</button>`).join('')}</div>`;
+}
 function bindAgeRows(p, pin){
+  app.querySelectorAll('[data-perday]').forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try { renderParent(await call('apiParentNestPerDay', pin, b.dataset.perkid, Number(b.dataset.perday)), pin); toast(b.dataset.perkid + ': ' + b.textContent.trim()); }
+    catch(err){ toast(err.message, true); b.disabled = false; }
+  });
   app.querySelectorAll('[data-ageopen]').forEach(b => b.onclick = () => {
     const name = b.dataset.ageopen, box = b.closest('[data-agebox]');
     const g = [].concat(...p.groups.map(x => x.girls)).find(x => x.girl.name === name);
@@ -7552,6 +7502,9 @@ function nestFillParent(){
 // ---- The preview for the early-years teacher and the owner: every unit, its parts, and a session at each age ----
 let NG_AGE = 5;
 const NG_AGES = [[3, 'Age 2 to 3'], [4, 'Age 4'], [5, 'Age 5'], [7, 'Age 6 to 7']];
+const NG_GAMES = [['meet', 'Meet'], ['find', 'Find it'], ['move', 'Coco says'], ['say', 'Say it'], ['give', 'Give it to me'], ['peek', 'Peekaboo'],
+  ['sound', 'Who says that?'], ['pop', 'Pop it'], ['sort', 'Sort it'], ['pairs', 'Pairs'], ['missing', "What's missing?"], ['odd', 'Odd one out'],
+  ['chant', 'Chant'], ['story', 'Story'], ['scene', 'Big picture'], ['color', 'Color it'], ['dress', 'Get dressed'], ['teach', 'Teach Mom']];
 function nestGalleryDash(){
   if (!dash || !dash.preview) dash = { preview: true, pet: { id: 'fawn', name: 'Fern', stage: 3, xp: 600, wear: [], move: 'spin' }, girl: { name: 'Preview', level: 'nest', levelLabel: '' }, week: [], games: Object.assign({}, GAMES_DEFAULT), stats: { streak: 0 } };
   dash.nest = { age: NG_AGE, choices: NG_AGE <= 4 ? 2 : 3, words: NG_AGE >= 6, today: null, done: false, played: [] };
@@ -7566,7 +7519,7 @@ async function nestGallery(){
   app.innerHTML = `<div class="stack">
     <div class="glass panel"><div class="row-flex between"><h2>Coco's Nest preview</h2><span class="chip purple">${units.length} units</span></div>
       <div class="sub mt-s" style="font-size:13px">${TEACHER ? "<b>Teacher review.</b> Open a unit to see its words, phrase, Coco says moves and the parents' card, and play it at each age. A note on a unit goes straight to the owner." : 'Play any unit as practice. Nothing is saved.'}</div>
-      <div class="sub mt-s" style="font-size:13px">Ages 2 and 3 play the 4 core words with 2 pictures and 2 moves. Age 4: all the words, 2 pictures. Age 5: 3 pictures. Ages 6 and 7 also see the written word. From age 4 the last Say it is the phrase.</div>
+      <div class="sub mt-s" style="font-size:13px">Every unit is four days: new words, move, song and story, games (a review is one day). Ages 2 and 3 play the 4 core words with 2 pictures. Age 4: all the words, 2 pictures. Age 5: 3 pictures. Ages 6 and 7 also see the written word. Coco shows each game himself the first times; a long press on Coco shows the grown-up's note.</div>
       <div class="row-flex mt" style="gap:6px;flex-wrap:wrap">${nestAgeBtns()}</div></div>
     <div class="stack" style="gap:10px">${units.map(u => `<button class="soft task clickable" data-nkg="${u.id}" style="text-align:left;width:100%;font:inherit;border:0">
       <img class="nk-gicon" src="${esc(nestPicSrc(u.icon))}" alt=""><div class="task-main"><div class="task-top">${u.id} · ${u.review ? 'review of ' + u.review.join(' and ') : u.words.length + ' words'}</div>
@@ -7587,7 +7540,11 @@ function nestGalleryUnit(id){
       <div class="row-flex between"><button class="btn btn-glass icon-btn" id="ngback" aria-label="Back">${icon('arrow-left')}</button><span class="chip">${u.id}</span></div>
       <div class="row-flex mt-s" style="gap:10px"><img class="nk-gicon" src="${esc(nestPicSrc(u.icon))}" alt=""><div><h2>${esc(u.title)}</h2><div class="sub" dir="rtl" lang="he" style="margin:0">${esc(u.he)}</div></div></div>
       <div class="row-flex mt" style="gap:6px;flex-wrap:wrap">${nestAgeBtns()}</div>
-      <button class="btn btn-primary btn-block mt" id="ngplay">${icon('play')} Play it (${esc(NG_AGES.find(x => x[0] === NG_AGE)[1])})</button>
+      <div class="label mt">Play a day (${esc(NG_AGES.find(x => x[0] === NG_AGE)[1])})</div>
+      <div class="row-flex mt-s" style="gap:6px;flex-wrap:wrap">${(u.review ? [[u.id, 'Review day']] : [[u.id, '1 New words'], [u.id + '.b', '2 Move'], [u.id + '.c', '3 Song and story'], [u.id + '.d', '4 Games']])
+        .map(([d, l]) => `<button class="btn btn-primary btn-sm" data-ngday="${d}">${icon('play')} ${l}</button>`).join('')}</div>
+      <div class="label mt">Or one game</div>
+      <div class="row-flex mt-s" style="gap:6px;flex-wrap:wrap">${NG_GAMES.map(([t, l]) => `<button class="btn btn-glass btn-sm" data-nggame="${t}">${l}</button>`).join('')}</div>
     </div>
     <div class="glass panel"><div class="label">Words · tap to hear</div>
       <div class="nk-gwords">${words.map(w => `<button class="nk-lw${core.has(w.id) ? ' core' : ''}" data-nkw="${esc(w.id)}">${nestPic(w)}<span dir="ltr">${esc(w.en)}</span><small dir="rtl" lang="he">${esc(w.he)}</small></button>`).join('')}</div>
@@ -7602,7 +7559,8 @@ function nestGalleryUnit(id){
       <button class="btn btn-primary btn-sm mt-s" id="ngsend">${icon('paper-plane-tilt')} Send to the owner</button></div>` : ''}
   </div>`;
   document.getElementById('ngback').onclick = nestGallery;
-  document.getElementById('ngplay').onclick = () => nestStart(u.id, true);
+  app.querySelectorAll('[data-ngday]').forEach(b => b.onclick = () => nestStart(b.dataset.ngday, true));
+  app.querySelectorAll('[data-nggame]').forEach(b => b.onclick = () => nestStart(u.id, true, b.dataset.nggame));
   app.querySelectorAll('[data-ngage]').forEach(b => b.onclick = () => { NG_AGE = Number(b.dataset.ngage); nestGalleryUnit(id); });
   app.querySelectorAll('[data-nkw]').forEach(b => b.onclick = () => nestPlay(['w-' + b.dataset.nkw]));
   app.querySelectorAll('[data-nkp]').forEach(b => b.onclick = () => nestPlay(['p-' + b.dataset.nkp]));
@@ -8577,6 +8535,7 @@ function girlCard(g, isAdmin, grp){
     ${placementLine(g)}
     ${nestParentCard(g)}
     ${ageRow(g)}
+    ${nestPerDayRow(g)}
     ${!isAdmin && g.pin && grp ? `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:8px;flex-wrap:wrap">
       <a class="btn btn-teal btn-sm" href="${esc(waLink(kidInvite(grp.link, { name: g.girl.name, pin: g.pin, nest: !!g.nest })))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} שליחת הקישור האישי</a>
       <button class="btn btn-glass btn-sm" data-kidhere="${esc(g.girl.name)}" data-kidpin="${esc(g.pin)}" data-kidgroup="${esc(grp.id)}">${icon('device-mobile')} משחק בטלפון הזה</button>

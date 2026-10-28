@@ -562,20 +562,36 @@ function nkKnownUnits(){
   const ids = new Set(((dash.nest || {}).played || []).map(id => String(id).split('.')[0]));
   return EQ_NEST.units.filter(u => !u.review && ids.has(u.id));
 }
+// A tile shows only when its game really has rounds on the kid's words (a dry run of the session): with only "hello" met
+// there is nothing to give, and one sound word makes a round with one card. A game that would fall back to Find it is hidden.
 function nkPlayGames(){
   const known = nkKnownUnits(), age = dash.nest.age;
   if (!known.length) return [];
   return NK_PLAY.filter(([g, from]) => age >= from && (g !== 'dress' || known.some(u => u.theme === 'clothes'))
-    && (g !== 'chant' || known.some(u => (EQ_NEST.chants || {})[u.id])));
+    && (g !== 'chant' || known.some(u => (EQ_NEST.chants || {})[u.id])) && nkPlayOk(g));
+}
+function nkPlayOk(game){
+  const keep = NE;
+  try { const s = nkPlaySession(game); return !!s && s.steps.some(x => x.t === game && (!x.opts || x.opts.length >= 2)); }
+  catch (e) { return false; }
+  finally { NE = keep; }
+}
+// Sort it and Odd one out need one theme against another: they play on one met unit (a random one with pictures), not on
+// everything met mixed together (then no theme is left for the other box, and the game turned into Find it).
+function nkPlaySession(game){
+  const known = nkKnownUnits();
+  if (!known.length) return null;
+  const n = dash.nest, one = game === 'sort' || game === 'odd';
+  const last = one ? nkPick(known.filter(x => x.theme !== 'hello' && x.words.filter(w => w.pic).length >= 3)) : known[known.length - 1];
+  if (!last) return null;
+  const u = one ? last : { id: last.id, title: last.title, icon: last.icon, theme: last.theme, review: known.map(x => x.id) };
+  NE = { u, dayId: last.id, day: one ? 'd' : 'r', si: 0, correct: 0, total: 0, res: {}, t0: Date.now(), review: !one, tries: 0, heard: false,
+    preview: false, play: game, age: n.age, k: n.choices, words: n.words, tok: 0 };
+  NE.steps = nkCompose(u, NE.day, game);
+  return NE;
 }
 function nkPlayStart(game){
-  const known = nkKnownUnits();
-  if (!known.length) return;
-  const last = known[known.length - 1], n = dash.nest;
-  const u = { id: last.id, title: last.title, icon: last.icon, theme: last.theme, review: known.map(x => x.id) };
-  NE = { u, dayId: last.id, day: 'r', si: 0, correct: 0, total: 0, res: {}, t0: Date.now(), review: true, tries: 0, heard: false,
-    preview: false, play: game, age: n.age, k: n.choices, words: n.words, tok: 0 };
-  NE.steps = nkCompose(u, 'r', game);
+  if (!nkPlaySession(game)) return;
   window.scrollTo(0, 0);
   nestRender(true);
 }

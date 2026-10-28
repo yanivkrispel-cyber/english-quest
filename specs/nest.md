@@ -183,7 +183,10 @@ Proposal and the owner's pick: https://claude.ai/artifact/TEp9sYUzd8VUWfGB21H684
 - **Playground** (`nestPlayground`, `nkPlayStart`, `NK_PLAY` in play.js): the teal puzzle button on the Nest home opens a grid
   of games; each plays one activity (`nkCompose(.., only)`) on every word of the units the kid has played, as a review-like
   unit. Free play: nothing is sent (`NE.play`), Done goes back to the playground. Games open by age (`NK_PLAY[i][1]`); Get
-  dressed only after the clothes unit, Chant only with a chant.
+  dressed only after the clothes unit, Chant only with a chant. A tile shows only when a dry run of its session has rounds of that game (`nkPlayOk`): Give it to me
+  needs two met words from `EQ_NEST.give` (none in n01), Who says that? two sound words (from n04). Sort it and Odd one out
+  play on one met unit against another theme (`nkPlaySession`), not on every met word mixed (2026-10-28: Give it to me
+  opened straight onto the end screen for a kid who had met only n01).
 - **One more lesson**: `Girls.NestPerDay` (SETUP v21; empty = 1, 0 = no limit), set by the parent in the kid card
   (`apiParentNestPerDay`). Once the day's own lesson is logged, `nestInfo.next` is the next day of the program (`nestNext`) and
   the big button starts it; `apiNestResult` logs it with points only while today's count is under the number. The week strip
