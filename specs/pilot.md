@@ -64,3 +64,6 @@ level. A Writing Friday (no writing missions yet) gives a kid with missions a Us
 The app is called **English with Coco** (2026-10-26): the store and trademark check found no app with that name and
 both `englishwithcoco.com` and `.app` free. Coco the parrot is the app icon (`make-icons.py`). The repo, the sheet and the
 code keep the old name.
+
+**Switching family (2026-10-28):** the phone remembers one family (`eq_group`). The kids' picker has "Not your family? Switch"
+(`switchFamily`: forgets the family and its cached kids, opens `signIn`), and every family link, the main one too, carries `?g=`.
