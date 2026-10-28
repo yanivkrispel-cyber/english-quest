@@ -125,9 +125,10 @@ function nkHome(d){
   const games = nkPlayGames().length > 0, pet = d.pet && PET_ART[d.pet.id] ? d.pet : null;
   const base = c.night ? 'sleepy' : 'happy';
   NKH.mood = base;
-  // Today's visitor: a picture of today's unit (its icon word when it is one of the unit's words).
+  // Today's visitor: a word of today's unit, one that makes a sound first; never the unit's own picture, which is the
+  // played unit's "again" bubble in the garden.
   const ws = u ? nestWordsOf(u).filter(w => w.pic) : [], sounds = EQ_NEST.sounds || {};
-  const vis = ws.find(w => w.pic === u.icon) || ws.find(w => sounds[w.id]) || ws[0];
+  const vis = ws.find(w => sounds[w.id]) || ws.find(w => w.pic !== u.icon) || ws[0];
   const stars = [[12, 34], [30, 12], [52, 22], [60, 16], [84, 26], [42, 40], [8, 50], [92, 40]];
   const fall = c.season === 'autumn' ? 'leaf' : c.season === 'winter' ? 'snow' : '';
   app.innerHTML = `<div class="nkh ${c.phase} ${c.season}" id="nkh" role="application" aria-label="Coco's Nest">
@@ -224,11 +225,11 @@ function nkhGarden(W, H, grow){
   const n = d.nest, days = Math.max(0, Number(n.days) || 0);
   let units = [...new Set((n.played || []).map(id => String(id).split('.')[0]))].map(nestUnit).filter(Boolean);
   const gw = W * .96, gh = H * .15;
-  // Friends in front: as big as fits (88 px at most); the oldest go behind the "more" button when there are too many.
-  const fmax = Math.min(88, gh * .95), fmin = Math.min(54, fmax), more = n.all || units.length * fmin * .72 > gw;
-  const slots = more ? Math.max(1, Math.floor(gw / (fmin * .72)) - 1) : units.length;
-  const shown = units.slice(-slots), count = shown.length + (more ? 1 : 0);
-  const f = count ? Math.max(fmin, Math.min(fmax, gw / count * 1.1)) : 0, step = count > 1 ? Math.min(f * 1.25, (gw - f) / (count - 1)) : 0, x0 = (gw - ((count - 1) * step + f)) / 2;
+  // The units played, in front: at most four big "again" bubbles that never overlap (88 px at most); the older ones go
+  // behind the "more" button.
+  const fmax = Math.min(88, gh * .95), more = n.all || units.length > 4;
+  const shown = units.slice(more ? -3 : -4), count = shown.length + (more ? 1 : 0);
+  const f = count ? Math.min(fmax, gw / (count * 1.25)) : 0, step = f * 1.25, x0 = (gw - ((count - 1) * step + f)) / 2;
   const fl = Math.max(24, Math.min(54, H * .065)), cap = Math.max(1, Math.floor(gw / (fl * .55)));
   let html = '';
   // Flowers behind, up to three rows going up the hill.
@@ -243,7 +244,7 @@ function nkhGarden(W, H, grow){
   // Buds waiting for the next days.
   if (days < 3) [0, 1].forEach(i => { html += `<i class="nkh-bud" style="left:${(gw * (.38 + i * .2)).toFixed(0)}px;bottom:${(f * .3 + 4).toFixed(0)}px"></i>`; });
   shown.forEach((x, i) => {
-    html += `<button class="nkh-hot nkh-friend" data-nkh="unit" data-unit="${esc(x.id)}" aria-label="${esc(x.title)}" style="left:${(x0 + i * step).toFixed(1)}px;width:${f.toFixed(1)}px;height:${f.toFixed(1)}px"><span class="nkh-in"><img src="${nkhPic(x.icon)}" alt="" draggable="false"></span></button>`;
+    html += `<button class="nkh-hot nkh-friend" data-nkh="unit" data-unit="${esc(x.id)}" aria-label="${esc(x.title)}" style="left:${(x0 + i * step).toFixed(1)}px;width:${f.toFixed(1)}px;height:${f.toFixed(1)}px"><span class="nkh-in"><img src="${nkhPic(x.icon)}" alt="" draggable="false"><span class="nkh-again" style="font-size:${(f * .22).toFixed(0)}px">${icon('arrow-counter-clockwise', 'bold')}</span></span></button>`;
   });
   if (more) html += `<button class="btn btn-glass icon-btn nkh-more" data-nkh="more" aria-label="All" style="left:${(x0 + (count - 1) * step + (f - Math.min(f, 64)) / 2).toFixed(1)}px;width:${Math.min(f, 64).toFixed(0)}px;height:${Math.min(f, 64).toFixed(0)}px;bottom:${((f - Math.min(f, 64)) / 2).toFixed(0)}px">${icon('squares-four', 'duotone')}</button>`;
   g.innerHTML = html;

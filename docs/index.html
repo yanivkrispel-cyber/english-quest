@@ -310,8 +310,11 @@ html:has(.nkh),html:has(.nkh) body{height:100%;overflow:hidden;overscroll-behavi
 .nkh-fl{position:absolute;height:auto;cursor:pointer;-webkit-user-drag:none;filter:hue-rotate(var(--hue)) drop-shadow(0 4px 4px rgba(30,27,58,.14));transform-origin:50% 100%}
 .nkh-fl.nkh-grow{animation:nkh-grow 1.2s .4s cubic-bezier(.3,1.5,.5,1) both}
 .nkh-bud{position:absolute;width:14px;height:14px;border-radius:50% 50% 50% 0;background:#4caf50;transform:rotate(-45deg);opacity:.85}
+/* A unit played: a glass bubble with its picture and the green "again" badge of the old home, so it reads as "play it again". */
 .nkh-friend{bottom:0;z-index:4}
-.nkh-friend img{width:100%;height:100%;object-fit:contain}
+.nkh-friend .nkh-in{position:relative;width:100%;height:100%;border-radius:50%;background:rgba(255,255,255,.78);border:2px solid rgba(255,255,255,.95);box-shadow:0 8px 18px rgba(30,27,58,.18),inset 0 1px 0 #fff;display:grid;place-items:center}
+.nkh-friend img{width:66%;height:66%;object-fit:contain}
+.nkh-again{position:absolute;right:-6%;bottom:-6%;width:40%;height:40%;border-radius:50%;background:#22c55e;color:#fff;display:grid;place-items:center;font-size:calc(var(--s) * 4.6);border:3px solid #fff;box-shadow:0 3px 8px rgba(30,27,58,.2)}
 .nkh-more{position:absolute;z-index:4}
 .nkh-fall{position:absolute;top:0;height:100%;width:0;z-index:7;pointer-events:none;animation:nkh-fall 16s linear infinite}
 .nkh.autumn .nkh-flake img{filter:hue-rotate(-62deg) saturate(1.4) drop-shadow(0 6px 8px rgba(30,27,58,.16))}
@@ -7281,7 +7284,7 @@ function auditRender(pin){
 // Listening and pictures only, and only Coco's English (no Hebrew voice): he shows each game first. No reading, timers
 // or fail screens, and the pet is the only reward. Content: docs/nest/nest.js (EQ_NEST); the session engine and its
 // games: docs/nest/play.js; recordings: docs/nest/audio (tools/nest_audio.py).
-const NEST_V = 9, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
+const NEST_V = 10, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
 let NE = null, nestLoading = null, nestAudioEl = null, nestQueue = null, nestMic = null;
 function loadNest(){
   if (window.EQ_NEST && typeof NK === 'object' && typeof nkHome === 'function' && typeof nkEchoStart === 'function' && typeof nkStickers === 'function') return Promise.resolve(window.EQ_NEST);
