@@ -226,13 +226,21 @@ function check(opts) {
     // app's function (or stop play.js from loading at all).
     const names = src => new Set([...src.matchAll(/^(?:async\s+)?function\s+([A-Za-z_$][\w$]*)|^(?:const|let|var)\s+([A-Za-z_$][\w$]*)/gm)].map(m => m[1] || m[2]));
     const html = fs.readFileSync(path.join(ROOT, 'src/Index.html'), 'utf8'), play = fs.readFileSync(path.join(ROOT, 'docs/nest/play.js'), 'utf8');
-    const app = names(html), own = [...names(play)];
-    own.filter(n => app.has(n)).forEach(n => err('docs/nest/play.js', 'top-level name ' + n + ' is also in src/Index.html'));
-    own.filter(n => !/^(nk|NK|nest)/.test(n)).forEach(n => err('docs/nest/play.js', 'top-level name ' + n + ' should start with nk / NK'));
-    try { new vm.Script(play, { filename: 'play.js' }); } catch (e) { err('docs/nest/play.js', e.message); }
+    const app = names(html), seen = new Map();
+    // play.js and the living home's files (specs/nest-home.md) share the app's scope and each other's.
+    ['play.js', 'home.js', 'echo.js', 'stickers.js'].forEach(file => {
+      const where = 'docs/nest/' + file, p = path.join(ROOT, where);
+      if (!fs.existsSync(p)) return err(where, 'missing (loadNest in src/Index.html loads it)');
+      const code = fs.readFileSync(p, 'utf8'), own = [...names(code)];
+      own.filter(n => app.has(n)).forEach(n => err(where, 'top-level name ' + n + ' is also in src/Index.html'));
+      own.filter(n => !/^(nk|NK|nest)/.test(n)).forEach(n => err(where, 'top-level name ' + n + ' should start with nk / NK'));
+      own.filter(n => seen.has(n)).forEach(n => err(where, 'top-level name ' + n + ' is also in docs/nest/' + seen.get(n)));
+      own.forEach(n => seen.set(n, file));
+      try { new vm.Script(code, { filename: file }); } catch (e) { err(where, e.message); }
+    });
     // Every game the day plans has its activity in play.js.
     GAMES.forEach(g => { if (!new RegExp('^NK\\.' + g + ' = ', 'm').test(play)) err('docs/nest/play.js', 'no activity NK.' + g); });
-    ok.push('docs/nest/play.js: ' + own.length + ' names, none shared with the app');
+    ok.push('docs/nest/*.js: ' + seen.size + ' names, none shared with the app or each other');
   }
   if (opts.print) ok.forEach(s => console.log('ok ' + s));
   return errors;

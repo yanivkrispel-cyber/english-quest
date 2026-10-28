@@ -50,6 +50,10 @@ function nestInfo(kid, t, assigned, logs) {
     played: played,
     known: words,
     all: nestAllOpen(kid),
+    // The living home (specs/nest-home.md): the try-out kids of NestAll, and Settings.NestHome (names or 'all').
+    home: nestAllOpen(kid) || nestNamesOpen('NestHome', kid),
+    // Days played (distinct dates with a Nest row): a flower each in the home's garden.
+    days: logs.filter(function (l) { return l.Section === 'nest'; }).map(function (l) { return String(l.Date); }).filter(function (d, i, a) { return a.indexOf(d) === i; }).length,
     perDay: perDay,
     // One more lesson: once the day's own is done, the next day of the program while the parent's daily number allows.
     next: done && (!perDay || today < perDay) ? String(nestNext(kid, logs).url).slice(5) : null
@@ -78,8 +82,9 @@ function apiParentNestPerDay(pin, name, n) {
 
 // Settings.NestAll: the names (comma separated, or 'all') whose Nest home shows every unit and day now, as free play.
 // A try-out switch for the owner; the day's own session still comes one a day.
-function nestAllOpen(kid) {
-  var v = String(getSetting('NestAll') || '').toLowerCase().split(',').map(function (s) { return s.trim(); });
+function nestAllOpen(kid) { return nestNamesOpen('NestAll', kid); }
+function nestNamesOpen(setting, kid) {
+  var v = String(getSetting(setting) || '').toLowerCase().split(',').map(function (s) { return s.trim(); });
   return v.indexOf('all') >= 0 || v.indexOf(String(kid.Name || '').toLowerCase()) >= 0;
 }
 

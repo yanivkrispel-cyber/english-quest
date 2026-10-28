@@ -466,7 +466,12 @@ window.EQ_NEST = {
     great: 'Great job!',
     try: 'Try again!',
     done: 'All done! Great job!',
-    bye: 'Bye bye! See you tomorrow!'
+    bye: 'Bye bye! See you tomorrow!',
+    // The living home (specs/nest-home.md)
+    hello: 'Hello!',
+    morning: 'Good morning!',
+    night: 'Good night!',
+    echo: 'Talk to me!'
   },
   // What a grown-up reads on a long press on Coco during a game (Hebrew text only, never spoken to the kid).
   hints: {

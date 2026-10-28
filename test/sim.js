@@ -1301,6 +1301,13 @@ check('one more lesson is logged, the program moves on, and the week still shows
   d.justEarned === 15 && sheets.Log.rows.filter(r => r[1] === TALI).length === 2 && d.nest.played.includes(units[1][0]) && d.nest.next === null
   && d.week.find(w => w.isToday).percent === Math.round(3 / 8 * 100), JSON.stringify([d.justEarned, d.nest.next, d.week.find(w => w.isToday).percent]));
 run(`apiParentNestPerDay('7788', '${TALI}', 1)`);
+// The living home (specs/nest-home.md): off by default, on for Settings.NestHome names (or 'all') and NestAll's try-out kids.
+check('the living home is off by default, and the days played count distinct dates', d.nest.home === false && d.nest.days === 1, JSON.stringify([d.nest.home, d.nest.days]));
+run("setSetting('NestHome', 'nobody, " + TALI + "')");
+check('Settings.NestHome opens the living home for a named kid', run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.home === true && run(`apiDashboard('${OMER}', '${omer.PIN}')`).nest.home === false);
+run("setSetting('NestHome', 'all')");
+check('NestHome all opens it for every Nest kid', run(`apiDashboard('${OMER}', '${omer.PIN}')`).nest.home === true);
+run("setSetting('NestHome', '')");
 const nestyId = run("JSON.stringify(groups().filter(function (g) { return g.Name === 'Nesty'; })[0].Id)").replace(/"/g, '');
 fails('a parents code from a parent', () => run(`apiAdminParentPin('7788', '${nestyId}', '3434')`));
 const otherPin = run("JSON.stringify(groups().filter(function (g) { return g.Name !== 'Nesty' && g.ParentPIN; })[0].ParentPIN)").replace(/"/g, '');

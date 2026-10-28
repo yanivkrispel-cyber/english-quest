@@ -215,6 +215,125 @@ html.tablet .nk-games{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
   .nk-home{flex:1;min-height:0}
 }
 @media (max-height:680px){.nk-start{width:120px;height:120px}.nk-start img{width:74px;height:74px}.nk-coco{width:70px;height:70px}.nk-next{width:84px;height:84px}.nk-slot{min-height:88px}}
+/* ---------- The living Nest home (docs/nest/home.js, specs/nest-home.md): one full-screen scene with its own sky (design.md rule 8) ---------- */
+html:has(.nkh),html:has(.nkh) body{height:100%;overflow:hidden;overscroll-behavior:none}
+.nkh{position:fixed;inset:0;overflow:hidden;--s:3.6px;user-select:none;-webkit-user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  --sk1:#bfe3ff;--sk2:#e3f1ff;--sk3:#fdf3dc;--hl1:#9fdc8c;--hl2:#7fcf73;--pond1:#bfe9ff;--pond2:#66b8f0;--blanket:#c4b5fd;--blanket2:#a78bfa}
+.nkh.evening{--sk1:#a5b4fc;--sk2:#fbcfe8;--sk3:#fed7aa;--hl1:#93cf86;--hl2:#6fb866}
+.nkh.night{--sk1:#141a4a;--sk2:#2b2f7a;--sk3:#4b3f8f;--hl1:#3d6a5a;--hl2:#2f5a4c;--pond1:#6f86d6;--pond2:#3a4fa8}
+.nkh.winter:not(.night){--hl1:#c8e6c9;--hl2:#a5d6a7}
+.nkh.autumn:not(.night){--hl1:#b5d98a;--hl2:#94c973}
+.nkh-sky{position:absolute;inset:0;background:linear-gradient(180deg,var(--sk1) 0%,var(--sk2) 45%,var(--sk3) 70%)}
+.nkh-hot{position:absolute;background:none;border:0;padding:0;margin:0;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.nkh-in{display:block;width:100%;height:100%;transform-origin:50% 90%}
+.nkh-hot img{width:100%;height:auto;display:block;pointer-events:none;-webkit-user-drag:none;filter:drop-shadow(0 6px 8px rgba(30,27,58,.16))}
+.nkh-sun{left:4%;top:calc(env(safe-area-inset-top) + 2%);width:calc(var(--s) * 24);animation:nkh-bob 7s ease-in-out infinite}
+.nkh.evening .nkh-sun{top:auto;bottom:58%;filter:saturate(1.2) hue-rotate(-12deg)}
+.nkh-stars{position:absolute;inset:0 0 50% 0}
+.nkh-star{width:calc(var(--s) * 9);min-width:30px;animation:nkh-twinkle 2.6s ease-in-out infinite}
+.nkh-rainbow{left:31%;top:calc(env(safe-area-inset-top) + 2%);width:calc(var(--s) * 26);opacity:.95}
+.nkh.night .nkh-cloud img{filter:brightness(.72) saturate(.8)}
+.nkh-lane{position:absolute;left:0;width:100%;height:0;animation:nkh-drift 40s linear infinite;pointer-events:none}
+.nkh-lane.l1{top:13%}.nkh-lane.l2{top:27%;animation-duration:56s;animation-delay:-30s}
+.nkh-cloud{pointer-events:auto;width:calc(var(--s) * 26);top:0;left:0}
+.nkh-cloud.c2{width:calc(var(--s) * 19)}
+.nkh-kite{left:56%;top:calc(env(safe-area-inset-top) + 9%);width:calc(var(--s) * 15);animation:nkh-bob 3.4s ease-in-out infinite}
+.nkh-balloon{left:31%;top:23%;width:calc(var(--s) * 24);min-width:88px;animation:nkh-bob 4s ease-in-out infinite}
+.nkh-balloon img{width:80%;margin:0 auto}
+.nkh-balloon.up{animation:nkh-away .7s ease-in forwards}
+.nkh-hills{position:absolute;left:0;bottom:0;width:100%;height:50%}
+.nkh-hills .h1{fill:var(--hl1)}.nkh-hills .h2{fill:var(--hl2)}
+.nkh-wild{width:calc(var(--s) * 8);filter:hue-rotate(var(--hue));opacity:.95}
+.nkh-pond{position:absolute;left:3%;bottom:48%;width:calc(var(--s) * 30);height:calc(var(--s) * 9);border-radius:50%;background:radial-gradient(ellipse at 50% 40%,var(--pond1),var(--pond2))}
+.nkh-duck{left:28%;bottom:30%;width:calc(var(--s) * 15);min-width:56px;animation:nkh-bob 3s ease-in-out infinite}
+.nkh-treebox{position:absolute;right:-5%;bottom:31%;width:calc(var(--s) * 66);aspect-ratio:1}
+.nkh-tree{inset:0;width:100%}
+.nkh-nest{position:absolute;left:17%;width:66%;pointer-events:none}
+.nkh-nest.back{top:-1%}.nkh-nest.front{top:2%;filter:drop-shadow(0 4px 4px rgba(60,30,10,.25))}
+.nkh-coco{left:20%;bottom:82%;width:60%;transform-origin:50% 100%}
+.nkh-coco .nkh-in{transform-origin:50% 100%}
+.nkh-coco img{animation:nkh-breathe 3.2s ease-in-out infinite;transform-origin:50% 100%}
+.nkh-coco img.talk{animation:nkh-talk .45s ease-in-out infinite alternate}
+.nkh-ring{position:absolute;left:50%;top:50%;width:120%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%) scale(.8);border:5px solid rgba(34,197,94,.75);opacity:0;pointer-events:none;transition:opacity .2s}
+.nkh-coco{--lv:0}
+.nkh-coco.listen .nkh-ring{opacity:1;transform:translate(-50%,-50%) scale(calc(.82 + var(--lv) * .3));box-shadow:0 0 0 calc(var(--lv) * 18px) rgba(34,197,94,.25);transition:transform .08s,box-shadow .08s,opacity .2s}
+.nkh-mic{position:absolute;right:-6%;top:-4%;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:22px;color:#16a34a;background:var(--glass);border:1px solid var(--stroke);box-shadow:var(--inner);opacity:0;transform:scale(.5);transition:opacity .2s,transform .2s}
+.nkh-coco.listen .nkh-mic{opacity:1;transform:none}
+.nkh-coco.nkh-fly{animation:nkh-fly 1.4s cubic-bezier(.25,1.2,.45,1)}
+.nkh-petc{position:absolute;left:2%;bottom:13.5%;width:calc(var(--s) * 36);aspect-ratio:1}
+.nkh-pet,.nkh-adopt{inset:0;width:100%;height:100%}
+.nkh-pet .nkh-in{position:relative;animation:nkh-breathe 3.6s ease-in-out infinite}
+.nkh-petart{width:100%;height:100%;display:block;filter:drop-shadow(0 8px 10px rgba(30,27,58,.18))}
+.nkh-blanket{position:absolute;left:4%;bottom:-1%;width:92%;height:36%;pointer-events:none;filter:drop-shadow(0 -2px 4px rgba(30,27,58,.18))}
+.nkh-blanket path{fill:var(--blanket)}.nkh-blanket .fold{fill:none;stroke:var(--blanket2);stroke-width:3;stroke-linecap:round}
+.nkh-blanket .dots{fill:rgba(255,255,255,.75)}
+.nkh-adopt .nkh-in{position:relative}
+.nkh-adopt img{position:absolute;width:58%;filter:drop-shadow(0 6px 8px rgba(30,27,58,.18))}
+.nkh-adopt .a0{left:0;bottom:4%;animation:nkh-peek 2.4s ease-in-out infinite}
+.nkh-adopt .a1{left:21%;bottom:22%;animation:nkh-peek 2.4s ease-in-out -.8s infinite}
+.nkh-adopt .a2{left:42%;bottom:4%;animation:nkh-peek 2.4s ease-in-out -1.6s infinite}
+.nkh-food{left:calc(2% + var(--s) * 4);bottom:calc(13.5% + var(--s) * 33);width:calc(var(--s) * 18);min-width:64px;z-index:6;touch-action:none;transition:transform .35s cubic-bezier(.3,1.4,.5,1),opacity .3s}
+.nkh-food.drag{transition:none}
+.nkh-food.eaten{opacity:0;transition:opacity .25s}
+.nkh-egg{left:40%;bottom:15%;width:calc(var(--s) * 30);min-width:96px;z-index:4}
+.nkh-egg .nkh-in{position:relative;animation:nkh-wobble 3.2s ease-in-out infinite}
+.nkh-glow{position:absolute;inset:-28%;border-radius:50%;background:radial-gradient(circle,rgba(255,214,102,.85),rgba(255,214,102,0) 65%);animation:nkh-glow 2s ease-in-out infinite;pointer-events:none}
+.nkh-egg img{position:relative}
+.nkh-egg.gold > .nkh-in > img:not(.nkh-eggstar){filter:sepia(1) saturate(3.2) hue-rotate(-14deg) brightness(.98) drop-shadow(0 6px 8px rgba(120,80,0,.25))}
+.nkh-egg.gold .nkh-in{animation:none}
+.nkh-eggstar{position:absolute!important;left:28%;top:30%;width:44%!important}
+.nkh-crack{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.nkh-crack path{fill:none;stroke:#7a4a26;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+.nkh-egg.open .nkh-in{animation:nkh-crackle .8s ease-in-out}
+.nkh-egg.open .nkh-crack path{animation:nkh-draw .4s .3s ease-out forwards}
+.nkh-visitor{left:calc(40% + var(--s) * 28);bottom:14%;width:calc(var(--s) * 24);min-width:88px;z-index:4}
+.nkh-garden{position:absolute;left:2%;width:96%;bottom:env(safe-area-inset-bottom);height:15%;z-index:5;pointer-events:none}
+.nkh-garden > *{pointer-events:auto}
+.nkh-fl{position:absolute;height:auto;cursor:pointer;-webkit-user-drag:none;filter:hue-rotate(var(--hue)) drop-shadow(0 4px 4px rgba(30,27,58,.14));transform-origin:50% 100%}
+.nkh-fl.nkh-grow{animation:nkh-grow 1.2s .4s cubic-bezier(.3,1.5,.5,1) both}
+.nkh-bud{position:absolute;width:14px;height:14px;border-radius:50% 50% 50% 0;background:#4caf50;transform:rotate(-45deg);opacity:.85}
+.nkh-friend{bottom:0;z-index:4}
+.nkh-friend img{width:100%;height:100%;object-fit:contain}
+.nkh-more{position:absolute;z-index:4}
+.nkh-fall{position:absolute;top:0;height:100%;width:0;z-index:7;pointer-events:none;animation:nkh-fall 16s linear infinite}
+.nkh.autumn .nkh-flake img{filter:hue-rotate(-62deg) saturate(1.4) drop-shadow(0 6px 8px rgba(30,27,58,.16))}
+.nkh-flake{pointer-events:auto;width:calc(var(--s) * 11);min-width:40px;top:0;left:0;animation:nkh-sway 3s ease-in-out infinite alternate}
+.nkh-top{position:absolute;top:calc(env(safe-area-inset-top) + 12px);right:14px;display:flex;gap:8px;z-index:10}
+.nkh-units{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-height:60vh;overflow:auto}
+.nkh-boing{animation:nkh-boing .55s cubic-bezier(.3,1.5,.5,1)!important}
+.nkh-munch{animation:nkh-munch .5s ease 2!important}
+.nkh-stretch{animation:nkh-stretch 1.2s ease-in-out!important}
+/* Landscape (a tablet on its side): the tree moves aside, the garden runs the whole width. */
+.nkh.wide .nkh-sun{left:3%;width:calc(var(--s) * 20)}
+.nkh.wide .nkh-rainbow{left:22%;top:calc(env(safe-area-inset-top) + 2%)}
+.nkh.wide .nkh-balloon{left:31%;top:22%}
+.nkh.wide .nkh-kite{left:52%;top:calc(env(safe-area-inset-top) + 6%)}
+.nkh.wide .nkh-hills{height:46%}
+.nkh.wide .nkh-pond{left:3%;bottom:40%}
+.nkh.wide .nkh-treebox{right:5%;bottom:24%;width:calc(var(--s) * 60)}
+.nkh.wide .nkh-petc{left:10%;bottom:14%;width:calc(var(--s) * 34)}
+.nkh.wide .nkh-food{left:calc(10% + var(--s) * 34);bottom:16%}
+.nkh.wide .nkh-egg{left:44%;bottom:15%;width:calc(var(--s) * 28)}
+.nkh.wide .nkh-visitor{left:calc(44% + var(--s) * 27);bottom:14%;width:calc(var(--s) * 22)}
+@keyframes nkh-breathe{50%{transform:scale(1.03,.97)}}
+@keyframes nkh-talk{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-5px) rotate(3deg) scale(1.03)}}
+@keyframes nkh-bob{50%{transform:translateY(-10px) rotate(3deg)}}
+@keyframes nkh-twinkle{50%{transform:scale(.75);opacity:.7}}
+@keyframes nkh-drift{from{transform:translateX(100%)}to{transform:translateX(-35%)}}
+@keyframes nkh-glow{50%{transform:scale(1.12);opacity:.65}}
+@keyframes nkh-wobble{0%,80%,100%{transform:none}84%{transform:rotate(-6deg)}88%{transform:rotate(5deg)}92%{transform:rotate(-3deg)}96%{transform:rotate(2deg)}}
+@keyframes nkh-crackle{20%{transform:rotate(-12deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-7deg)}80%{transform:rotate(4deg) scale(1.08)}100%{transform:scale(1.12)}}
+@keyframes nkh-draw{to{stroke-dashoffset:0}}
+@keyframes nkh-boing{0%{transform:scale(1)}25%{transform:scale(1.18,.84)}55%{transform:scale(.9,1.12)}100%{transform:scale(1)}}
+@keyframes nkh-fly{0%{transform:translate(160%,-140%) rotate(-25deg) scale(.6)}70%{transform:translate(-6%,4%) rotate(4deg)}100%{transform:none}}
+@keyframes nkh-peek{50%{transform:translateY(-8%)}}
+@keyframes nkh-munch{0%,100%{transform:scale(1)}30%{transform:scale(1.08,.92)}60%{transform:scale(.95,1.06)}}
+@keyframes nkh-stretch{30%{transform:scale(.94,1.1)}60%{transform:scale(1.06,.94)}}
+@keyframes nkh-grow{from{transform:scale(0) translateY(20%)}}
+@keyframes nkh-away{to{transform:translateY(-120vh) rotate(-8deg)}}
+@keyframes nkh-fall{from{transform:translateY(-12%)}to{transform:translateY(100%)}}
+@keyframes nkh-sway{from{transform:translateX(-14px) rotate(-18deg)}to{transform:translateX(14px) rotate(18deg)}}
+@media (prefers-reduced-motion:reduce){.nkh *,.nkh *::before{animation:none!important;transition:none!important}.nkh-lane.l1{transform:translateX(52%)}.nkh-lane.l2{transform:translateX(8%)}.nkh-fall{transform:translateY(30%)}}
 .glass{background:var(--glass);backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);
   border:1px solid var(--stroke);box-shadow:var(--shadow),var(--inner);border-radius:30px}
 .soft{background:var(--glass-soft);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
@@ -6870,7 +6989,7 @@ function joinWelcome(){
         <ul class="helist">
           <li>שומרים רק את השם הפרטי של הילד, הכיתה, התשובות וההתקדמות. מכם: שם, וכתובת מייל אם תבחרו.</li>
           <li>נרשם גם מתי נכנסו לאפליקציה ומאיזה סוג מכשיר (למשל אייפון או אנדרואיד), כדי שנדע איך הפיילוט עובד.</li>
-          <li>אין פרסומות. לא מקליטים קול ולא שומרים הקלטות. לא מעבירים מידע לאף אחד.</li>
+          <li>אין פרסומות. לא שומרים הקלטות ולא מעבירים מידע לאף אחד. בקן של קוקו, כשקוקו חוזר על מה שהילד אומר, הקול נשאר בזיכרון של הטלפון לכמה שניות, מושמע פעם אחת ונמחק.</li>
           <li>אפשר לבקש מחיקה מלאה של כל המידע בכל רגע, בהודעה למי ששלח לכם את הקישור.</li>
           <li>הילדים יכולים לשחק עם ילדים ממשפחות אחרות בפיילוט. רואים רק שם פרטי, ואין צ'אט חופשי.</li>
           <li>התוכן נכתב בעזרת בינה מלאכותית ונבדק על ידי מורה לאנגלית.</li>
@@ -7144,10 +7263,10 @@ function auditRender(pin){
 // Listening and pictures only, and only Coco's English (no Hebrew voice): he shows each game first. No reading, timers
 // or fail screens, and the pet is the only reward. Content: docs/nest/nest.js (EQ_NEST); the session engine and its
 // games: docs/nest/play.js; recordings: docs/nest/audio (tools/nest_audio.py).
-const NEST_V = 8, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
+const NEST_V = 9, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
 let NE = null, nestLoading = null, nestAudioEl = null, nestQueue = null, nestMic = null;
 function loadNest(){
-  if (window.EQ_NEST && typeof NK === 'object') return Promise.resolve(window.EQ_NEST);
+  if (window.EQ_NEST && typeof NK === 'object' && typeof nkHome === 'function' && typeof nkEchoStart === 'function' && typeof nkStickers === 'function') return Promise.resolve(window.EQ_NEST);
   const one = (file, ready) => ready() ? Promise.resolve() : new Promise((res, rej) => {
     const s = document.createElement('script');
     s.src = ASSETS + 'nest/' + file + '?v=' + NEST_V;
@@ -7156,6 +7275,8 @@ function loadNest(){
     document.head.appendChild(s);
   });
   return nestLoading = nestLoading || one('nest.js', () => !!window.EQ_NEST).then(() => one('play.js', () => typeof NK === 'object'))
+    // The living home (specs/nest-home.md): the scene, Coco repeats you, the sticker book and the parents' postcard.
+    .then(() => Promise.all([one('home.js', () => typeof nkHome === 'function'), one('echo.js', () => typeof nkEchoStart === 'function'), one('stickers.js', () => typeof nkStickers === 'function')]))
     .then(() => window.EQ_NEST).catch(e => { nestLoading = null; throw e; });
 }
 // A unit by its id or by a day's id ('n04.c' is the unit n04).
@@ -7313,13 +7434,15 @@ function renderNest(d){
   { const sky = document.getElementById('nksky'); if (sky) sky.remove(); }
   // n.next: one more lesson (the parent allows more than one a day), so the big button starts it instead of a replay.
   const n = d.nest, again = n.done && !n.next, u = nestUnit(n.done && n.next ? n.next : n.today);
-  if (!window.EQ_NEST || typeof NK !== 'object') {
+  if (!window.EQ_NEST || typeof NK !== 'object' || typeof nkHome !== 'function') {
     app.innerHTML = '<div class="spinner"></div>';
     loadNest().then(() => { if (dash === d && !NE) renderNest(d); })
       .catch(e => { app.innerHTML = `<div class="glass panel" style="text-align:center;display:grid;gap:12px">${esc(e.message)}<button class="btn btn-primary btn-block" id="nkagain">${icon('arrows-clockwise')} Try again</button></div>`;
         document.getElementById('nkagain').onclick = () => renderNest(d); });
     return;
   }
+  // The living home (n.home: specs/nest-home.md, docs/nest/home.js).
+  if (n.home && typeof nkHome === 'function') return nkHome(d);
   // Settings.NestAll (n.all): every unit is open now, each with its days to pick.
   const games = nkPlayGames();
   const played = (n.all ? EQ_NEST.units : [...new Set(n.played.map(id => String(id).split('.')[0]))].map(nestUnit).filter(Boolean)).filter(x => x.id !== (u && u.id));
@@ -7396,7 +7519,7 @@ function nestSwitch(){
 }
 
 // ---- A session: the engine and every activity live in docs/nest/play.js (nestStart, nestRender, NK.*) ----
-function nestLeave(){ const sky = document.getElementById('nksky'); if (sky) sky.remove(); if (typeof nkHandStop === 'function') nkHandStop(); const mic = document.getElementById('nkmic'); if (mic) mic.remove(); if (NE && NE.chant) NE.chant.stop(); if (NE) clearTimeout(NE.idleT); nestStopAudio(); nestMicStop(); NE = null; }
+function nestLeave(){ if (typeof nkHomeStop === 'function') nkHomeStop(); const sky = document.getElementById('nksky'); if (sky) sky.remove(); if (typeof nkHandStop === 'function') nkHandStop(); const mic = document.getElementById('nkmic'); if (mic) mic.remove(); if (NE && NE.chant) NE.chant.stop(); if (NE) clearTimeout(NE.idleT); nestStopAudio(); nestMicStop(); NE = null; }
 function nestExit(){ const pv = NE && NE.preview, pl = NE && NE.play; nestLeave(); if (pv) nestGallery(); else if (pl) nestPlayground(); else renderDash(); }
 // The day's result: the day id the server gave, the score of the rounds that count, and each word's first try
 // ("cat:1,dog:0") for the review days and the parents' view.
@@ -7458,7 +7581,7 @@ function bindAgeRows(p, pin){
 // The parents' card for a Nest kid: today's words with their pictures, each one plays Coco's word.
 function nestParentCard(g){
   if (!g.nest || !g.nest.today) return '';
-  return `<div class="nk-learn mt-s" data-nkfill="${esc(g.nest.today)}"></div>`;
+  return `<div class="nk-learn mt-s" data-nkfill="${esc(g.nest.today)}" data-nkkid="${esc(g.girl.name)}"></div>`;
 }
 // An idea for home: Hebrew, with the English parts in {braces} kept left to right.
 const nestHomeLine = t => esc(t).replace(/\{([^}]+)\}/g, '<bdi dir="ltr">$1</bdi>');
@@ -7467,7 +7590,7 @@ function nestCardMore(u){
   return `${u.phrase ? `<div class="he" dir="rtl" lang="he"><button class="nk-phr" data-nkp="${esc(u.id)}">${icon('speaker-high')}<span><bdi dir="ltr">${esc(u.phrase.en)}</bdi><div class="sub">${esc(u.phrase.he)}</div></span></button></div>` : ''}
     ${tips.length ? `<div class="he nk-tips" dir="rtl" lang="he"><b>לשחק בבית</b><ul>${tips.map(t => `<li>${nestHomeLine(t)}</li>`).join('')}</ul></div>` : ''}`;
 }
-function nestFillParent(){
+function nestFillParent(p){
   const els = [...app.querySelectorAll('[data-nkfill]')];
   if (!els.length) return;
   loadNest().then(() => els.forEach(el => {
@@ -7478,6 +7601,8 @@ function nestFillParent(){
       ${nestCardMore(u)}`;
     el.querySelectorAll('[data-nkw]').forEach(b => b.onclick = () => nestPlay(['w-' + b.dataset.nkw]));
     el.querySelectorAll('[data-nkp]').forEach(b => b.onclick = () => nestPlay(['p-' + b.dataset.nkp]));
+    // The week's postcard (docs/nest/stickers.js), for the kid this card belongs to.
+    if (typeof nkPostcard === 'function') nkPostcard(el, el.dataset.nkkid, p ? [].concat(...p.groups.map(x => x.girls)).find(x => x.girl.name === el.dataset.nkkid) : null);
   })).catch(() => {});
 }
 
@@ -8440,7 +8565,7 @@ function renderParent(p, pin){
   app.querySelectorAll('details.acc').forEach(d => d.addEventListener('toggle', () => store.set('eq_acc_' + d.dataset.acc, d.open)));
   renderParentPush(p, pin);
   bindFeedback(pin);
-  nestFillParent();
+  nestFillParent(p);
   bindAgeRows(p, pin);
   app.querySelectorAll('[data-kidhere]').forEach(b => b.onclick = () => kidHere(b.dataset.kidgroup, b.dataset.kidhere, b.dataset.kidpin));
   const pl = document.getElementById('pilotload'); if (pl) pl.onclick = () => pilotLoad(pin);

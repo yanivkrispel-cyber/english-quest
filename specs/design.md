@@ -26,7 +26,9 @@ screen is built from these pieces, not from new ones.
 7. **Chips and status:** `.chip` with `.purple`, `.teal`, `.orange`, `.red`. Right/wrong: teal and `--danger`, the same as
    the games.
 8. **Background:** the body gradient with the four `.blob`s. A screen does not set its own page background (except the
-   full-screen play frames and the worlds, which use the world's colors, and the Nest's play sky, `nkSkyOn`).
+   full-screen play frames and the worlds, which use the world's colors, the Nest's play sky, `nkSkyOn`, and the Nest's
+   living home, `.nkh` in `docs/nest/home.js`: a full-screen clay scene with its own sky by the clock, hills and tree; its
+   colors are variables on `.nkh`, and its buttons on top stay `.btn-glass` icon buttons).
 9. **Motion:** short and soft (`.btn:active` scale .97, sheets rise with `up`). Nothing that flashes or shakes for long;
    nothing moves when a button in a play screen is tapped (the play frame rules in `CLAUDE.md`).
 10. **The Nest (ages 2 to 7)** uses the same glass and tokens, bigger: tap targets at least 88 px, pictures instead of

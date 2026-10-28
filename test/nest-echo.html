@@ -1,0 +1,69 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Coco repeats you</title>
+<!-- "Coco repeats you" (docs/nest/echo.js, specs/nest-home.md), served by test/dev-server.js:
+     http://localhost:8787/test/nest-echo.html          the app as Mia (PIN 5151), with buttons inside it: tap "Talk to Coco", speak, hear it back.
+     http://localhost:8787/test/nest-echo.html?auto     runs it once by itself (headless Chrome/Edge with a fake microphone).
+     http://localhost:8787/test/nest-echo.html?ask      forgets the mic choice and starts: the parent's sheet.
+     The microphone needs a secure page: localhost on the computer; on a phone, an https address (http://192.168... has none).
+     "Forget the mic choice" clears eq_nest_mic, so the parent's sheet shows again. Every state and every microphone track is
+     logged below: after "done" every track must read "ended". -->
+<style>body{margin:0;background:#333;color:#eee;font:14px system-ui;display:flex;flex-wrap:wrap;gap:16px;justify-content:center;padding:12px}
+iframe{border:0;border-radius:24px;background:#fff;width:390px;height:760px;max-width:100%}
+#out{width:100%;max-width:760px;white-space:pre-wrap;font-family:Consolas,monospace;font-size:13px}</style>
+<iframe id="f" allow="microphone; autoplay"></iframe>
+<div id="out">Loading…</div>
+<script>
+const q = new URLSearchParams(location.search), f = document.getElementById('f'), out = document.getElementById('out'), t0 = Date.now();
+const log = m => { const line = ((Date.now() - t0) / 1000).toFixed(2) + 's ' + m; out.textContent += '\n' + line; console.log('ECHO ' + line); };
+async function ready(){
+  for (let i = 0; i < 120; i++) {
+    try { if (f.contentWindow.eval('typeof login') === 'function' && f.contentDocument.getElementById('app')) return; } catch(e){}
+    await new Promise(r => setTimeout(r, 250));
+  }
+  throw new Error('the app did not open');
+}
+(async () => {
+  // Fresh files: drop the app's service worker and its caches (scope test/), then load once more.
+  if (navigator.serviceWorker) for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister();
+  if (window.caches) for (const k of await caches.keys()) await caches.delete(k);
+  if (navigator.serviceWorker && navigator.serviceWorker.controller && !sessionStorage.nkOnce) { sessionStorage.nkOnce = 1; return location.reload(); }
+  delete sessionStorage.nkOnce;
+  out.textContent = 'secure page: ' + window.isSecureContext;
+  f.src = 'dev.html';
+  await ready();
+  const w = f.contentWindow, d = f.contentDocument, ev = s => w.eval(s);
+  await ev("(async () => { await login('Mia', '5151', false, false); })()");
+  await ev('loadNest()');
+  log('Mia is in, echo.js loaded: ' + ev('typeof nkEchoStart') + ', mic choice: ' + ev("JSON.stringify(store.get('eq_nest_mic'))"));
+  // Every microphone track the page opens, to prove they are stopped.
+  const tracks = [];
+  if (w.navigator.mediaDevices && w.navigator.mediaDevices.getUserMedia) {
+    const gum = w.navigator.mediaDevices.getUserMedia.bind(w.navigator.mediaDevices);
+    w.navigator.mediaDevices.getUserMedia = c => gum(c).then(s => { s.getTracks().forEach(t => tracks.push(t)); log('microphone open (' + s.getTracks().length + ' track)'); return s; });
+  }
+  const trackLine = () => 'tracks: ' + (tracks.map(t => t.readyState).join(', ') || 'none');
+  let h = null, lv = 0;
+  const run = () => {
+    log('start');
+    h = w.nkEchoStart({
+      onState: s => { log('state ' + s + (s === 'talk' ? ' (loudest ' + lv.toFixed(2) + ')' : '') + (s === 'idle' ? ' | loudest ' + lv.toFixed(2) + ' | ' + trackLine() : '')); if (s === 'listen') lv = 0; },
+      onLevel: v => { if (v > lv) lv = v; },
+      onDone: ok => { log('done ' + ok + ' | ' + trackLine() + ' | NKECHO ' + (w.eval('NKECHO') ? 'still set' : 'cleared')); setTimeout(() => log('1 s later: ' + trackLine()), 1000); }
+    });
+  };
+  // The controls live inside the app's page, so a tap there unlocks its sound on iPhones.
+  const bar = d.createElement('div');
+  bar.style.cssText = 'position:fixed;left:8px;right:8px;top:8px;z-index:9999;display:flex;gap:6px;flex-wrap:wrap;justify-content:center';
+  bar.innerHTML = '<button class="btn btn-primary" id="tgo">Talk to Coco</button><button class="btn btn-glass" id="tstop">Stop</button><button class="btn btn-glass" id="tforget">Forget the mic choice</button>';
+  d.body.appendChild(bar);
+  d.getElementById('tgo').onclick = run;
+  d.getElementById('tstop').onclick = () => { if (h) h.stop(); log('stop() | ' + trackLine()); };
+  d.getElementById('tforget').onclick = () => { ev("store.del('eq_nest_mic')"); log('mic choice cleared'); };
+  if (q.has('ask')) { ev("store.del('eq_nest_mic')"); run(); }
+  if (q.has('auto')) {
+    ev("store.set('eq_nest_mic', 'on')");
+    run();
+    // A second run stopped while listening: stop() must end the tracks at once.
+    setTimeout(() => { log('second run, stopped after 3 s'); run(); setTimeout(() => { h.stop(); log('stop() | ' + trackLine() + ' | NKECHO ' + (w.eval('NKECHO') ? 'still set' : 'cleared')); log('AUTO END'); }, 3000); }, 16000);
+  }
+})().catch(e => log('error: ' + e.message));
+</script>

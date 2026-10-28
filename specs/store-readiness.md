@@ -29,7 +29,10 @@ commit.
 6. **Permissions in context, and the app works without them.** Ask for the microphone or notifications only at the moment
    they are used, with a sentence that says why; every feature needs a fallback when the answer is no (the tiles for Talk
    with Coco, the reminders being optional). New permissions need the purpose strings for the native shell
-   (`NSMicrophoneUsageDescription`, `NSSpeechRecognitionUsageDescription`) noted here.
+   (`NSMicrophoneUsageDescription`, `NSSpeechRecognitionUsageDescription`) noted here. The Nest asks once, in context, with
+   a Hebrew sentence for the parent (Say it, or tapping Coco for "Coco repeats you"), and keeps the answer on the phone
+   (`eq_nest_mic`); without the microphone Say it shows its button and Coco just says "Hello!". The microphone string must
+   cover both: it hears whether the child spoke, and replays the child's voice once from memory, nothing kept or sent.
 7. **No money outside the store, and no gambling.** Anything digital that is ever sold (subscription, coins, items) goes
    through Apple In-App Purchase and Google Play Billing, and never through a link to a payment page. Coins are earned,
    never bought, as long as this holds. No random rewards for coins or money (loot boxes); if a surprise box is ever
@@ -52,7 +55,9 @@ Kept in the private Google Sheet, written only by the app's own server (Apps Scr
 
 - Kid: first name (English), age or grade (a Coco's Nest kid: the real age, 2 to 7), level, PIN, color, pet and its name,
   group. Optional email (older setups). The Nest's Say it step uses the microphone for loudness only, on the phone:
-  nothing is recorded or sent.
+  nothing is recorded or sent. The Nest's "Coco repeats you" (`docs/nest/echo.js`) holds the kid's few seconds of voice in
+  the phone's memory only, plays it back once in a parrot's voice and drops it: never written to storage, never sent, no
+  speech recognition, the microphone off before the replay.
 - Parent / family: family name, parent's first name, parent PIN, optional email, consent date.
 - Activity: tasks and missions with scores and time spent, game rounds, missed items for review, gate challenges,
   level tests, duels and their answers, duo streaks, shop purchases (coins), what the pet wears, saved words, bonus XP.
@@ -67,7 +72,11 @@ Kept in the private Google Sheet, written only by the app's own server (Apps Scr
 
 On the phone (local storage): the remembered kid and PIN, the group, the last dashboard, settings (sound, voice). Coco's
 Nest also keeps, on the phone only: how many times each game was played (Coco shows a new game first), the microphone
-choice, and the kid's last 12 colored pictures (which colors went where; no drawing, photo or sound).
+choice, the kid's last 12 colored pictures (which colors went where; no drawing, photo or sound), and the sticker book
+(`docs/nest/stickers.js`): which stickers the kid has already seen pop (word ids, `eq_nest_stickers_<kid>`) and the
+free page (the place and up to 40 stickers with their spots, `eq_nest_board_<kid>`). The parents' weekly postcard is
+drawn on the phone from the parents' view data and leaves the phone only when a parent shares or saves it from the
+parents' area (behind the parents' code); nothing new is stored on the server.
 
 ## Known gaps before a store submission
 
@@ -83,6 +92,8 @@ choice, and the kid's last 12 colored pictures (which colors went where; no draw
   processing note are needed before selling.
 - No `assetlinks.json` / native shell yet; no store listing, age rating questionnaire or data safety form yet.
 - The app name and Coco: trademark check in Israel not done.
+- The Nest's microphone: a parent who said "no" (or a phone that refused) cannot turn the microphone back on in the app
+  (`eq_nest_mic` has no switch in the parents' area yet).
 - Coco's Nest (ages 2 to 7, `specs/nest.md`) puts kids under 5 in the same app as teenagers. Apple's Kids Category takes
   one age band an app (5 and under, 6 to 8, 9 to 11): choose a band, ship the Nest as its own app, or stay out of the
   Kids Category. Google Families allows several age groups, with stricter rules for "5 and under".

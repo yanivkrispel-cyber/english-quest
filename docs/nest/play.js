@@ -856,7 +856,7 @@ function nkMicAsk(s){
   ov.id = 'nkmic';
   ov.innerHTML = `<div class="sheet glass he" dir="rtl" lang="he" style="display:grid;gap:12px">
     <h2>קוקו רוצה לשמוע</h2>
-    <div class="sub" style="margin:0">כדי שהטלפון ידע שהילד אמר את המילה, צריך לאשר את המיקרופון. הוא רק בודק שיש קול: שום דבר לא מוקלט ולא נשלח.</div>
+    <div class="sub" style="margin:0">כדי שהטלפון ידע שהילד אמר את המילה, וכדי שקוקו יוכל לחזור על מה שהילד אומר בקול של תוכי, צריך לאשר את המיקרופון. הקול נשאר בזיכרון של הטלפון רק לכמה שניות, מושמע פעם אחת ונמחק: שום דבר לא נשמר ולא נשלח.</div>
     <button class="btn btn-primary btn-block" id="nkmicon">${icon('microphone')} לאשר מיקרופון</button>
     <button class="btn btn-glass btn-block" id="nkmicoff">בלי מיקרופון</button></div>`;
   document.body.appendChild(ov);

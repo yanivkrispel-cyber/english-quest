@@ -1,0 +1,107 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Nest stickers</title>
+<style>
+body{margin:0;background:#2b2b33;color:#eee;font:14px/1.45 system-ui,sans-serif;padding:12px}
+.row{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.box{overflow:hidden;border-radius:14px;background:#fff}
+iframe{border:0;transform-origin:0 0}
+b{display:block;margin:4px 0}
+pre{white-space:pre-wrap;margin:12px 0 0}
+#card{width:540px;border-radius:12px}
+</style>
+<!-- The sticker book and the parents' postcard (docs/nest/stickers.js), served by test/dev-server.js:
+     http://localhost:8787/test/nest-stickers.html?view=book|free|places|postcard[&tablets]
+     Mia (5151, age 4) gets some fake played units and met words (dash.nest.known) on the phone only; nothing is sent.
+     book: a unit page (its new stickers pop); free: the free page with stickers on it; places: the place picker;
+     postcard[&unit=n06&tip=0]: the admin's parents' view, Mia's card, the postcard sheet, and the postcard picture at full size below. -->
+<div class="row" id="row"></div>
+<pre id="out">Loading…</pre>
+<img id="card" hidden alt="">
+<script>
+const q = new URLSearchParams(location.search), view = q.get('view') || 'book', out = document.getElementById('out');
+const SIZES = q.has('tablets') ? [[768, 1024, 'iPad portrait'], [1024, 768, 'iPad landscape']] : [[360, 640, 'Small phone'], [390, 844, 'iPhone']];
+const S = q.has('tablets') ? 0.5 : 0.75, row = document.getElementById('row');
+const fitK = (w, h) => q.has('tablets') ? Math.max(1, Math.min(2, w > h ? h / 640 : w / 520)) : 1;
+const frames = SIZES.map(([w, h, label], i) => {
+  const k = fitK(w, h), lw = Math.round(w / k), lh = Math.round(h / k);
+  row.insertAdjacentHTML('beforeend', `<div><b>${label} ${w}x${h} (page ${lw}x${lh})</b><div class="box" style="width:${w * S}px;height:${h * S}px"><iframe id="f${i}" width="${lw}" height="${lh}" style="transform:scale(${S * k})"></iframe></div></div>`);
+  return document.getElementById('f' + i);
+});
+const wait = ms => new Promise(r => setTimeout(r, ms));
+async function ready(f){
+  for (let i = 0; i < 80; i++) {
+    try { if (f.contentWindow.eval('typeof renderDash') === 'function' && f.contentDocument.getElementById('app')) return; } catch(e){}
+    await wait(250);
+  }
+  throw new Error('the app did not open in ' + f.id);
+}
+// Fake progress for Mia: three units played, some words met this week and one met long ago.
+const FAKE = `(() => {
+  const t = dash.today, d = n => { const x = new Date(t + 'T12:00:00'); x.setDate(x.getDate() - n); return x.toISOString().slice(0, 10); };
+  dash.nest.played = ['n01', 'n01.b', 'n01.c', 'n02', 'n02.b', 'r01', 'n03'];
+  dash.nest.known = { hello: [2, 0, d(0)], yes: [1, 1, d(1)], no: [1, 0, d(1)], baby: [1, 0, d(20)], red: [1, 0, d(2)], blue: [2, 0, d(2)],
+    yellow: [0, 1, d(3)], one: [1, 0, d(0)], three: [1, 0, d(0)] };
+})()`;
+async function show(f){
+  const w = f.contentWindow, d = w.document, ev = s => w.eval(s);
+  ev("nestPlay = function(k, cb){ if (cb) setTimeout(cb, 30); }");
+  if (view === 'postcard') {
+    await ev('loadNest()');
+    await ev("parent('1234', false, false)");
+    await wait(800);
+    // Mia's card in the admin view, with the fake progress in the parents' data, drawn again.
+    ev(`(() => { const p = NKS.parent.p, g = [].concat(...p.groups.map(x => x.girls)).find(x => x.girl.name === 'Mia');
+      const t = g.today, dd = n => { const x = new Date(t + 'T12:00:00'); x.setDate(x.getDate() - n); return x.toISOString().slice(0, 10); };
+      g.nest.played = ['n01', 'n01.b', 'n01.c', 'n02', 'n02.b', 'r01', 'n03']; g.nest.today = '${q.get('unit') || 'n03.b'}'; EQ_NEST.units.forEach(u => { if (u.home && ${q.has('tip')}) u.home = [u.home[${Number(q.get('tip'))}]]; });
+      g.nest.known = { hello: [2, 0, dd(5)], yes: [1, 1, dd(4)], no: [1, 0, dd(4)], baby: [1, 0, dd(20)], red: [1, 0, dd(2)], blue: [2, 0, dd(2)], yellow: [0, 1, dd(1)], one: [1, 0, dd(0)], three: [1, 0, dd(0)] };
+      g.week.forEach((x, i) => { if (i < 3) x.done = true; });
+      renderParent(p, NKS.parent.pin); })()`);
+    await wait(1200);
+    const btn = d.querySelector('.nks-pcrow button');
+    if (!btn) return f.id + ': no postcard button';
+    btn.scrollIntoView({ block: 'center' });
+    btn.click();
+    for (let i = 0; i < 40 && !d.querySelector('img.nks-pc'); i++) await wait(250);
+    const img = d.querySelector('img.nks-pc');
+    if (img && f.id === 'f0') { const c = document.getElementById('card'); c.src = img.src; c.hidden = false; }
+    return f.id + ': postcard ' + (img ? 'drawn ' + img.naturalWidth + 'x' + img.naturalHeight : 'missing') + ', share button ' + !!d.getElementById('nksshare');
+  }
+  await ev("(async () => { await login('Mia', '5151', false, false); })()");
+  await wait(1500);
+  await ev('loadNest()');
+  ev(FAKE);
+  ev("store.del('eq_nest_stickers_Mia')");
+  if (view === 'free' || view === 'places') ev(`store.set('eq_nest_board_Mia', { p: 'park', s: [['hello', 22, 62], ['red', 46, 70], ['blue', 70, 64], ['three', 82, 30], ['yes', 30, 30]] }); NKS.tab = 'free'`);
+  else ev("NKS.tab = 'n01'");
+  ev('nkStickers()');
+  if (view === 'places') ev('nksPlaces()');
+  await wait(1500);
+  // The free page: a finger drag from the tray onto the board adds a sticker, a placed one dragged off the board is removed.
+  let drag = '';
+  if (view === 'free') {
+    const P = (type, at, x, y) => at.dispatchEvent(new w.PointerEvent(type, { bubbles: true, cancelable: true, clientX: x, clientY: y, pointerId: 1, pointerType: 'mouse', button: 0 }));
+    const c = el => { const r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+    const pull = async (el, x1, y1) => { const [x0, y0] = c(el); P('pointerdown', el, x0, y0); for (let i = 1; i <= 6; i++) P('pointermove', d, x0 + (x1 - x0) * i / 6, y0 + (y1 - y0) * i / 6); P('pointerup', d, x1, y1); await wait(400); };
+    const n0 = d.querySelectorAll('.nks-pl').length, [bx, by] = c(d.getElementById('nksboard'));
+    await pull(d.querySelector('.nks-ti'), bx, by);
+    const n1 = d.querySelectorAll('.nks-pl').length;
+    await pull(d.querySelector('.nks-pl'), 4, 4);
+    const n2 = d.querySelectorAll('.nks-pl').length, kept = (ev("store.get('eq_nest_board_Mia')").s || []).length;
+    drag = `, drag in ${n0} -> ${n1}, drag off -> ${n2}, saved ${kept}`;
+  }
+  const app = d.getElementById('app');
+  return f.id + ': page scroll ' + (d.scrollingElement.scrollHeight - w.innerHeight) + ', stickers ' + d.querySelectorAll('.nks-stk').length + ' (met ' + d.querySelectorAll('.nks-stk.met').length + '), placed ' + d.querySelectorAll('.nks-pl').length + ', tray ' + d.querySelectorAll('.nks-ti').length + drag;
+}
+(async () => {
+  // Fresh files: the app's service worker (scope test/) keeps old copies of stickers.js.
+  if (navigator.serviceWorker) for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister();
+  if (window.caches) for (const k of await caches.keys()) await caches.delete(k);
+  if (navigator.serviceWorker && navigator.serviceWorker.controller && !sessionStorage.nksOnce) { sessionStorage.nksOnce = 1; return location.reload(); }
+  delete sessionStorage.nksOnce;
+  for (const f of frames) f.src = 'dev.html';
+  const lines = [];
+  for (const f of frames) { try { await ready(f); lines.push(await show(f)); } catch(e){ lines.push(f.id + ': ' + e.message); } }
+  out.textContent = lines.join('\n');
+})();
+</script>
