@@ -112,3 +112,4 @@ function platformPushTtl() { return PUSH_TTL; }
 cfIntercept = function () { return null; };
 apiCfExport = function () { throw new Error('Not on this server: use /admin/export'); };
 apiCfMode = function () { throw new Error('Not on this server'); };
+cfMirror = function () { throw new Error('Not on this server'); };

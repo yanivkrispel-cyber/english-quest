@@ -14,6 +14,7 @@ function mkSheet(name){ const rows = []; return sheets[name] = {
   getLastRow: () => rows.length, getLastColumn: () => Math.max(0, ...rows.map(r => r.length)),
   getRange(a, b, nr, nc){ if (typeof a === 'string') return { setNumberFormat(){ return this; } };
     return { setValues(v){ v.forEach((r,i)=>{ rows[a-1+i] = rows[a-1+i]||[]; r.forEach((x,j)=> rows[a-1+i][b-1+j]=x); }); return this; },
+      clearContent(){ for (let i = a - 1; i < a - 1 + nr && i < rows.length; i++) for (let j = 0; j < (nc || 0); j++) rows[i][b - 1 + j] = ''; return this; },
       setFontWeight(){ return this; }, setValue(x){ rows[a-1] = rows[a-1] || []; rows[a-1][b-1] = x; return this; },
       getValues(){ const w = Math.max(...rows.map(r=>r.length)); return rows.slice(a-1, a-1+nr).map(r => Array.from({length: nc||w}, (_,j)=> r[b-1+j] ?? '')); } }; },
   getDataRange(){ return this.getRange(1, 1, rows.length, this.getLastColumn()); },
@@ -1415,10 +1416,22 @@ if (!PLATFORM_MODE) {
   check2('relay: the export has every sheet and the script properties, Dates as $d', ex.ok && ex.data.names.indexOf('Girls') >= 0 && ex.data.sheets.Girls.length > 1 &&
     JSON.stringify(ex.data.sheets.Log).indexOf('$d') > 0 && typeof ex.data.props === 'object', ex.ok ? ex.data.names.length + ' sheets' : ex.error);
   check2('relay: a relay needs the /api address', post('apiCfMode', ['1234', 'relay', 'https://x.example/']).ok === false);
-  post('apiCfMode', ['1234', 'relay', 'https://coco.example/api']);
+  trigLog.length = 0;
+  post('apiCfMode', ['1234', 'relay', 'https://coco.example/api', 't0k']);
+  check2('relay: the move stops the reminders here and starts the nightly copy', trigLog.join() === 'cfMirror', trigLog.join());
   const r = post('apiDashboard', ['Aviv', '2694']);
   check2('relay: calls go to the new server and its answer comes back', r.data === 'from cloudflare' && relayLog.length === 1 && relayLog[0].url === 'https://coco.example/api' && JSON.parse(relayLog[0].body).fn === 'apiDashboard');
-  check2('relay: back to normal from outside', post('apiCfMode', ['1234', '', '']).ok && post('apiPublic', ['']).data.group && relayLog.length === 1);
+  // the nightly copy: the new server's export is written into the sheets
+  const exp = JSON.parse(JSON.stringify(ex.data));
+  exp.sheets.Girls[1][0] = 'Copied';
+  ctx.UrlFetchApp.fetch = (url, o) => { relayLog.push({ url, token: o.headers && o.headers['X-Admin-Token'] }); return { getResponseCode: () => 200, getContentText: () => JSON.stringify({ ok: true, data: exp }) }; };
+  const before = sheets.Log.rows.length;
+  run('cfMirror()');
+  check2('relay: the nightly copy writes the new server data into the sheet', relayLog[relayLog.length - 1].url === 'https://coco.example/admin/export' && relayLog[relayLog.length - 1].token === 't0k' &&
+    sheets.Girls.rows[1][0] === 'Copied' && sheets.Log.rows.length === before && sheets.Log.rows[1][0] instanceof SimDate, sheets.Girls.rows[1][0]);
+  sheets.Girls.rows[1][0] = ex.data.sheets.Girls[1][0];
+  trigLog.length = 0;
+  check2('relay: back to normal from outside, reminders back', post('apiCfMode', ['1234', '', '']).ok && post('apiPublic', ['']).data.group && trigLog.indexOf('dailyReminder') >= 0 && trigLog.indexOf('cfMirror') < 0);
 }
 
 // Platform mode: the database holds exactly what the server has in memory.
