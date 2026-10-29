@@ -4,7 +4,7 @@
 const fs = require('fs'), path = require('path');
 const root = path.join(__dirname, '..');
 const FILES = ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js',
-  'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Relay.js'];
+  'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Relay.js', 'Admin.js'];
 const read = f => fs.readFileSync(path.join(root, f), 'utf8').replace(/\r\n/g, '\n');
 const SERVICES = ['SpreadsheetApp', 'CacheService', 'LockService', 'PropertiesService', 'Utilities', 'UrlFetchApp', 'MailApp',
   'ScriptApp', 'Session', 'ContentService', 'HtmlService'];

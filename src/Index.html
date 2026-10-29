@@ -7680,6 +7680,65 @@ function auditCard(){
   return `<div class="glass panel" id="auditcard"><div class="row-flex between"><h2>Audit</h2><button class="btn btn-glass btn-sm" id="auditload">${icon('clipboard-text')} Show</button></div>
     <div class="sub mt-s" style="font-size:13px">Who came in and when, on which kind of device, wrong PINs, what parents and the admin changed, hand edits in the sheet, and every task, game and talk.</div></div>`;
 }
+// The admin's Data card (src/Admin.js): what used to be edited by hand in the sheet, kids, families and settings.
+function dataCard(){
+  return `<div class="glass panel" id="datacard"><div class="row-flex between"><h2>Data</h2><button class="btn btn-glass btn-sm" id="dataload">${icon('pencil-simple')} Edit</button></div>
+    <div class="sub mt-s" style="font-size:13px">Change a kid's PIN, level or redeemed points, a family's code or goal, or a setting. Every change is in the audit trail.</div></div>`;
+}
+const DATA = { table: 'Girls', open: '', q: '' };
+const DATA_TABLES = { Girls: 'Kids', Groups: 'Families', Settings: 'Settings' };
+const DATA_HINT = { Missions: 'empty = Today\'s Mission, no = test-english.com', Friends: 'empty = plays with other families, no = only its own',
+  Redeemed: 'points spent on rewards', NestPerDay: 'Nest sessions a day', NestArcadeMin: 'arcade minutes a day', Group: 'family id' };
+async function dataLoad(pin){
+  const card = document.getElementById('datacard');
+  card.innerHTML = '<div class="spinner"></div>';
+  try { DATA.data = await call('apiAdminData', pin); }
+  catch(e){ card.innerHTML = '<div class="sub">' + esc(e.message) + '</div>'; return; }
+  dataRender(pin);
+}
+function dataRender(pin){
+  const d = DATA.data, t = d[DATA.table], card = document.getElementById('datacard');
+  const fam = id => ((d.Groups.rows.find(g => g.key === id) || {}).values || {}).Name || id;
+  const q = DATA.q.trim().toLowerCase();
+  const rows = t.rows.filter(r => !q || (r.key + ' ' + Object.values(r.values).join(' ')).toLowerCase().includes(q));
+  const line = r => DATA.table === 'Girls' ? esc(fam(r.values.Group)) + ' · ' + esc((r.values.Level || '').toUpperCase())
+    : DATA.table === 'Groups' ? esc(r.values.Name) : esc(r.values.Value);
+  const field = (r, f) => {
+    const v = r.values[f], id = 'df-' + f;
+    const input = f === 'Level' ? `<select class="input" id="${id}">${d.levels.map(l => `<option value="${l}" ${l === v ? 'selected' : ''}>${l === 'nest' ? 'Coco\'s Nest' : l.toUpperCase()}</option>`).join('')}</select>`
+      : f === 'Group' ? `<select class="input" id="${id}">${d.Groups.rows.map(g => `<option value="${esc(g.key)}" ${g.key === v ? 'selected' : ''}>${esc(g.values.Name)}</option>`).join('')}</select>`
+      : `<input class="input" id="${id}" value="${esc(v)}" ${/PIN|Age|Redeemed|Goal|Nest/.test(f) ? 'inputmode="numeric"' : ''}>`;
+    return `<div class="label mt-s">${esc(DATA.table === 'Settings' ? r.key : f)}</div>${input}${DATA_HINT[f] ? `<div class="sub" style="font-size:11px">${esc(DATA_HINT[f])}</div>` : ''}`;
+  };
+  const item = r => r.key === DATA.open
+    ? `<div class="soft" style="padding:10px 12px;border-radius:12px">
+        <div class="row-flex between"><b>${esc(r.key)}</b><button class="btn btn-glass btn-sm" data-dclose="1">Close</button></div>
+        ${t.fields.map(f => field(r, f)).join('')}
+        <div class="sub mt-s" id="df-msg" style="font-size:12px"></div>
+        <button class="btn btn-primary btn-block mt-s" id="df-save">${icon('check')} Save</button></div>`
+    : `<button class="soft row-flex between" data-dopen="${esc(r.key)}" style="width:100%;padding:8px 12px;border-radius:12px;font-size:13px;text-align:left;border:0;cursor:pointer">
+        <b>${esc(r.key)}</b><span class="sub" style="font-size:12px">${line(r)}</span></button>`;
+  card.innerHTML = `<div class="row-flex between"><h2>Data</h2><button class="btn btn-glass icon-btn" id="dataref">${icon('arrows-clockwise')}</button></div>
+    <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">${Object.keys(DATA_TABLES).map(k => `<button class="btn ${k === DATA.table ? 'btn-primary' : 'btn-glass'} btn-sm" data-dtable="${k}" aria-pressed="${k === DATA.table}">${DATA_TABLES[k]} · ${d[k].rows.length}</button>`).join('')}</div>
+    <input class="input mt-s" id="df-q" placeholder="Search" value="${esc(DATA.q)}">
+    <div class="stack mt-s" style="gap:6px">${rows.map(item).join('') || '<div class="sub">Nothing here.</div>'}</div>`;
+  document.getElementById('dataref').onclick = () => dataLoad(pin);
+  card.querySelectorAll('[data-dtable]').forEach(b => b.onclick = () => { DATA.table = b.dataset.dtable; DATA.open = ''; dataRender(pin); });
+  card.querySelectorAll('[data-dopen]').forEach(b => b.onclick = () => { DATA.open = b.dataset.dopen; dataRender(pin); });
+  card.querySelectorAll('[data-dclose]').forEach(b => b.onclick = () => { DATA.open = ''; dataRender(pin); });
+  const qi = document.getElementById('df-q');
+  qi.oninput = () => { DATA.q = qi.value; const at = qi.selectionStart; dataRender(pin); const n = document.getElementById('df-q'); n.focus(); n.setSelectionRange(at, at); };
+  const save = document.getElementById('df-save');
+  if (save) save.onclick = async () => {
+    const r = t.rows.find(x => x.key === DATA.open), changes = {};
+    t.fields.forEach(f => { const el = document.getElementById('df-' + f); if (el && el.value.trim() !== r.values[f]) changes[f] = el.value.trim(); });
+    const msg = document.getElementById('df-msg');
+    if (!Object.keys(changes).length) { msg.textContent = 'Nothing changed.'; return; }
+    save.disabled = true;
+    try { DATA.data = await call('apiAdminEdit', pin, DATA.table, DATA.open, changes); toast('Saved'); dataRender(pin); }
+    catch(e){ msg.textContent = e.message; save.disabled = false; }
+  };
+}
 const AUD = { days: 7, show: 'all', fam: '', limit: 150 };
 const AUD_SHOW = { all: 'All', visit: 'Visits', adult: 'Grown-ups', practice: 'Practice', problem: 'Problems' };
 const audHm = ms => new Date(ms).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' });
@@ -9094,7 +9153,7 @@ function manageBody(p){
     <button class="btn btn-primary btn-block mt-s" id="nk-btn">${icon('user-plus')} Add kid</button>
     <div class="sub mt-s" style="font-size:12px">A PIN is created automatically. New kids take the level test first; their daily tasks and the games open after it.</div>
     <a class="btn btn-glass btn-block mt" href="${esc(p.sheetUrl)}" target="_blank" rel="noopener">Open Google Sheet ${icon('arrow-up-right')}</a>
-    <div class="sub mt-s" style="font-size:12px">Edit PINs, levels, reminder emails, redeemed points, goals and rewards in the sheet. Missions = no on a kid's row keeps their daily task on test-english.com.</div>
+    <div class="sub mt-s" style="font-size:12px">${p.sheetCopy ? 'Edit PINs, levels, redeemed points, family codes and settings in the Data card. The sheet is a copy made every night: changes made there are not read back.' : 'Edit PINs, levels, redeemed points, family codes and settings in the Data card, or reminder emails and rewards in the sheet. Missions = no on a kid row keeps their daily task on test-english.com.'}</div>
   </div>`;
 }
 
@@ -9117,7 +9176,7 @@ function renderParent(p, pin){
     ${createdCard(p.created)}
     ${p.groups.map((g, i) => groupBlock(g, p, i)).join('')}
     ${notifyCard(p)}
-    ${p.isAdmin ? pilotCard() + auditCard() + settingsCard(p) + manageCard(p) : feedbackCard()}
+    ${p.isAdmin ? pilotCard() + auditCard() + dataCard() + settingsCard(p) + manageCard(p) : feedbackCard()}
   </div>`;
   app.querySelectorAll('details.acc').forEach(d => d.addEventListener('toggle', () => store.set('eq_acc_' + d.dataset.acc, d.open)));
   renderParentPush(p, pin);
@@ -9127,6 +9186,7 @@ function renderParent(p, pin){
   app.querySelectorAll('[data-kidhere]').forEach(b => b.onclick = () => kidHere(b.dataset.kidgroup, b.dataset.kidhere, b.dataset.kidpin));
   const pl = document.getElementById('pilotload'); if (pl) pl.onclick = () => pilotLoad(pin);
   const al = document.getElementById('auditload'); if (al) al.onclick = () => auditLoad(pin);
+  const dl = document.getElementById('dataload'); if (dl) dl.onclick = () => dataLoad(pin);
   document.getElementById('refresh').onclick = () => parentFresh(pin, true);
   document.getElementById('logout').onclick = () => { store.del('eq_admin'); store.del('eq_par'); loadHome(); };
   app.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(b.dataset.copy));

@@ -22,7 +22,7 @@ export class CocoServer extends DurableObject {
   }
 
   boot() {
-    this.G = createGas({ store: sqliteStore(this.sql), crypto: nodeCrypto, ownerEmail: this.env.OWNER_EMAIL || '', appUrl: this.env.APP_URL || '' });
+    this.G = createGas({ store: sqliteStore(this.sql), crypto: nodeCrypto, ownerEmail: this.env.OWNER_EMAIL || '', appUrl: this.env.APP_URL || '', sheetUrl: this.env.SHEET_URL || '' });
     this.S = createServer({ services: this.G.services, freeze: false, asyncPush: true, outbox: this.G.outbox });
   }
 

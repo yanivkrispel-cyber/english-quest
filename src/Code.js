@@ -143,7 +143,7 @@ function api() {
   apiJoinCheck: apiJoinCheck, apiJoin: apiJoin, apiPlacement: apiPlacement, apiFeedback: apiFeedback,
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
   apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade,
-  apiCfExport: apiCfExport, apiCfMode: apiCfMode
+  apiCfExport: apiCfExport, apiCfMode: apiCfMode, apiAdminData: apiAdminData, apiAdminEdit: apiAdminEdit
   };
 }
 
@@ -572,6 +572,7 @@ function parentData(list, isAdmin, who) {
     isAdmin: !!isAdmin,
     groups: out,
     sheetUrl: isAdmin ? SpreadsheetApp.getActive().getUrl() : null,
+    sheetCopy: typeof PLATFORM !== 'undefined',   // on Cloudflare the sheet is a nightly copy (specs/cloudflare.md)
     settings: isAdmin ? { reminderHour: Number(getSetting('ReminderHour')) || 17, lastCallHour: Number(getSetting('LastCallHour')) || null } : null,
     push: {
       key: vapidPublicKey(),

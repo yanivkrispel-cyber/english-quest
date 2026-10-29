@@ -66,7 +66,7 @@ if (PLATFORM_MODE) {
 }
 vm.createContext(ctx);
 const strict = PLATFORM_MODE ? '"use strict";' : '';
-for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Relay.js']) if (f !== 'NestIndex.js' || fs.existsSync('src/' + f)) vm.runInContext(strict + fs.readFileSync('src/' + f, 'utf8'), ctx, { filename: f });
+for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Relay.js', 'Admin.js']) if (f !== 'NestIndex.js' || fs.existsSync('src/' + f)) vm.runInContext(strict + fs.readFileSync('src/' + f, 'utf8'), ctx, { filename: f });
 if (PLATFORM_MODE) vm.runInContext(fs.readFileSync('platform/overrides.js', 'utf8'), ctx, { filename: 'overrides.js' });
 // Each call is a fresh request: per-request table memo resets, CacheService persists.
 const run = s => {
@@ -1432,6 +1432,31 @@ if (!PLATFORM_MODE) {
   sheets.Girls.rows[1][0] = ex.data.sheets.Girls[1][0];
   trigLog.length = 0;
   check2('relay: back to normal from outside, reminders back', post('apiCfMode', ['1234', '', '']).ok && post('apiPublic', ['']).data.group && trigLog.indexOf('dailyReminder') >= 0 && trigLog.indexOf('cfMirror') < 0);
+}
+
+// The admin's Data card (src/Admin.js): edits that used to be made by hand in the sheet.
+{
+  const kid = n => JSON.parse(run('JSON.stringify(findGirl(' + JSON.stringify(n) + '))'));
+  const check3 = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+  const rej = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + label); } catch (e) { console.log('ok: ' + label + ' is rejected: ' + e.message); } };
+  Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
+  const dd = run("apiAdminData('1234')");
+  check3('data: kids, families and settings, without the reminder hours', dd.Girls.rows.length > 2 && dd.Groups.rows.length > 0 && !dd.Settings.rows.some(r => r.key === 'ReminderHour') && dd.Settings.rows.some(r => r.key === 'AdminPIN'));
+  rej('data: a parent code', () => run("apiAdminData('9999')"));
+  Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
+  rej('data: a PIN another kid has', () => run("apiAdminEdit('1234', 'Girls', 'Ziv', { PIN: '7356' })"));
+  rej('data: a 3-digit PIN', () => run("apiAdminEdit('1234', 'Girls', 'Ziv', { PIN: '123' })"));
+  rej('data: an unknown level', () => run("apiAdminEdit('1234', 'Girls', 'Ziv', { Level: 'z9' })"));
+  rej('data: a field that is not editable', () => run("apiAdminEdit('1234', 'Girls', 'Ziv', { Name: 'Zoe' })"));
+  rej('data: the reminder hour (its own card)', () => run("apiAdminEdit('1234', 'Settings', 'ReminderHour', { Value: '5' })"));
+  const lv0 = kid('Ziv').Level, red0 = kid('Ziv').Redeemed;
+  const after = run("apiAdminEdit('1234', 'Girls', 'Ziv', { Level: 'b2', Redeemed: '40' })");
+  check3('data: a kid edit is saved and read back', kid('Ziv').Level === 'b2' && String(kid('Ziv').Redeemed) === '40' && after.Girls.rows.find(r => r.key === 'Ziv').values.Level === 'b2');
+  run("apiAdminEdit('1234', 'Girls', 'Ziv', { PIN: '4822' })");
+  const aud = sheets.Audit.rows.filter(r => r[5] === 'edit').map(r => String(r[6]));
+  check3('data: edits are in the audit trail, PINs masked', aud.some(x => /Level = b2/.test(x)) && aud.some(x => /PIN \(changed\)/.test(x)) && !aud.some(x => /4822/.test(x)), aud.slice(-2).join(' / '));
+  run("apiAdminEdit('1234', 'Girls', 'Ziv', { PIN: '4821', Level: '" + lv0 + "', Redeemed: '" + red0 + "' })");
+  check3('data: and back', kid('Ziv').PIN == '4821' && kid('Ziv').Level === lv0);
 }
 
 // Platform mode: the database holds exactly what the server has in memory.

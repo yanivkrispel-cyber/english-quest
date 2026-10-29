@@ -10,7 +10,7 @@ const fs = require('fs'), vm = require('vm'), crypto = require('crypto'), path =
 const file = process.argv[2] || process.env.CF_DATA;
 if (!file) { console.log('usage: node test/cf-parity.js <export.json>'); process.exit(2); }
 
-const FILES = ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Relay.js'];
+const FILES = ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Relay.js', 'Admin.js'];
 const NOW = Date.parse(process.env.CF_NOW || '2026-10-29T18:30:00+02:00');
 const RealDate = Date;
 class FixedDate extends RealDate { constructor(...a) { if (a.length) super(...a); else super(NOW); } static now() { return NOW; } }
@@ -94,7 +94,9 @@ let uuid = 0;
   const dig = (o, p) => p.split(".").slice(1).reduce((x, k) => (x == null ? x : x[k]), o);
   let same = 0, diff = 0, errors = 0;
   const both = (label, fn, args) => {
-    const a = callBase(fn, args), b = callPlat(fn, args);
+    // sheetCopy is the one field meant to differ: on Cloudflare the admin is told the sheet is a nightly copy.
+    const strip = t => t.replace(/,"sheetCopy":(true|false)/, '');
+    const a = strip(callBase(fn, args)), b = strip(callPlat(fn, args));
     if (JSON.parse(a).ok === false) errors++;
     if (a === b) { same++; return; }
     diff++;
