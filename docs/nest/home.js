@@ -131,8 +131,9 @@ function nkHome(d){
   const vis = ws.find(w => sounds[w.id]) || ws.find(w => w.pic !== u.icon) || ws[0];
   const stars = [[12, 34], [30, 12], [52, 22], [60, 16], [84, 26], [42, 40], [8, 50], [92, 40]];
   const fall = c.season === 'autumn' ? 'leaf' : c.season === 'winter' ? 'snow' : '';
-  app.innerHTML = `<div class="nkh ${c.phase} ${c.season}" id="nkh" role="application" aria-label="Coco's Nest">
-    <div class="nkh-sky"></div>
+  const painted = !!n.arcade;
+  app.innerHTML = `<div class="nkh ${c.phase} ${c.season}${painted ? ' painted' : ''}" id="nkh" role="application" aria-label="Coco's Nest">
+    <div class="nkh-sky"></div>${painted ? '<div class="nkh-paint" id="nkh-paint"></div><div class="nkh-light"></div>' : ''}
     ${c.night ? `<div class="nkh-stars">${stars.map(([x, y], i) => `<button class="nkh-hot nkh-star" data-nkhw="star" data-hz="${900 + i * 60}" style="left:${x}%;top:${y}%;animation-delay:${(i * .37).toFixed(2)}s" aria-label="Star"><span class="nkh-in"><img src="${nkhPic('star')}" alt="" draggable="false"></span></button>`).join('')}</div>` : ''}
     <button class="nkh-hot nkh-sun" data-nkhw="${c.night ? 'moon' : 'sun'}" data-hz="${c.night ? 520 : 660}" aria-label="${c.night ? 'Moon' : 'Sun'}"><span class="nkh-in"><img src="${nkhPic(c.night ? 'moon' : 'sun')}" alt="" draggable="false"></span></button>
     ${n.done && !c.night ? `<button class="nkh-hot nkh-rainbow" data-nkhw="rainbow" data-hz="600" aria-label="Rainbow"><span class="nkh-in"><img src="${nkhPic('rainbow')}" alt="" draggable="false"></span></button>` : ''}
@@ -215,7 +216,24 @@ function nkhLayout(){
   const s = wide ? Math.min(W * .55, H * .8) / 100 : Math.min(W, H * .6) / 100;
   root.classList.toggle('wide', wide);
   root.style.setProperty('--s', s.toFixed(2) + 'px');
+  nkhPaint(root, W, H, wide);
   nkhGarden(W, H);
+}
+
+// The painted meadow (stage C, arcade kids; specs/nest-home.md): docs/nest/home/<phase>[-wide].webp, a clay painting of the
+// day, the evening or the night, standing or on its side, drawn with cover. The pond is the painting's: the drawn pond becomes
+// an invisible box over it (from NKH_PAINT, in % of the painting), so the duck still swims on it.
+const NKH_PAINT = { tall: { ratio: 9 / 16, pond: [20, 58, 40, 6] }, wide: { ratio: 16 / 9, pond: [16, 56, 25, 6] } };
+function nkhPaint(root, W, H, wide){
+  const el = document.getElementById('nkh-paint');
+  if (!el) return;
+  const P = NKH_PAINT[wide ? 'wide' : 'tall'], ph = nkhClock().phase;
+  const src = ASSETS + 'nest/home/' + ph + (wide ? '-wide' : '') + '.webp?v=' + NEST_V;
+  if (el.dataset.src !== src) { el.dataset.src = src; el.style.backgroundImage = `url('${src}')`; }
+  // cover: the painting's size on this screen and where its top-left corner is.
+  const bw = Math.max(W, H * P.ratio), bh = bw / P.ratio, ox = (W - bw) / 2, oy = (H - bh) / 2;
+  const pond = root.querySelector('.nkh-pond'), [x, y, w, h] = P.pond;
+  if (pond) pond.style.cssText = `left:${(ox + (x - w / 2) / 100 * bw).toFixed(1)}px;top:${(oy + (y - h / 2) / 100 * bh).toFixed(1)}px;bottom:auto;width:${(w / 100 * bw).toFixed(1)}px;height:${(h / 100 * bh).toFixed(1)}px`;
 }
 
 // The garden: a flower for every day played (never wilting), and a friend for every unit played (tap = play it again).

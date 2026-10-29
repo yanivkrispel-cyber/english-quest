@@ -149,7 +149,7 @@ function nkArcade(){
 .nka-tab.on{background:linear-gradient(145deg,var(--primary-2),var(--primary));color:#fff;box-shadow:0 8px 18px rgba(99,102,241,.35)}
 .nka-tab img{width:46px;height:46px;object-fit:contain}
 .nka-coco{width:82px;height:82px;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(40,30,60,.25));cursor:pointer}
-.nka-shelf{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:center;min-height:0;width:min(100%,62cqh);margin:0 auto}
+.nka-shelf{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:center;min-height:0;width:min(100%,56cqh);margin:0 auto}
 .nka-shelf.learn{grid-template-columns:repeat(3,1fr);gap:10px;width:min(100%,58cqh)}
 .nka-card{position:relative;aspect-ratio:1;border-radius:28px;border:1px solid var(--stroke);background:var(--glass);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
   box-shadow:var(--shadow),var(--inner);display:grid;grid-template-rows:1fr auto;place-items:center;padding:8px 6px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s}

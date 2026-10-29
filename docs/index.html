@@ -206,6 +206,10 @@ html.tablet .nk-games{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
 @media (prefers-reduced-motion:reduce){.nk.alive .nk-coach .nk-coco{animation:none}}
 /* Stage B: the places are clay paintings (docs/nest/places); the pictures stand on them with a soft shadow */
 .nk-scene.painted .nk-it img{filter:drop-shadow(0 8px 10px rgba(40,30,60,.28))}
+.nk-hot{position:absolute;z-index:0;border:0;padding:0;border-radius:50%;background:transparent no-repeat;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.nk-hot.up{z-index:1;animation:nkhot .9s ease-out;box-shadow:0 10px 22px rgba(40,30,60,.3),0 0 0 3px rgba(255,255,255,.85)}
+@keyframes nkhot{0%{transform:scale(1)}25%{transform:scale(1.28) rotate(-6deg)}45%{transform:scale(1.22) rotate(6deg)}65%{transform:scale(1.25) rotate(-3deg)}100%{transform:scale(1);box-shadow:none}}
+@media (prefers-reduced-motion:reduce){.nk-hot.up{animation:none}}
 .nk-slot{min-height:100px;display:grid;place-items:center}
 .nk-next{width:96px;height:96px;border-radius:50%;border:0;background:linear-gradient(145deg,#a5b4fc,#6366f1);color:#fff;font-size:42px;display:grid;place-items:center;box-shadow:0 10px 24px rgba(99,102,241,.35);opacity:.55;cursor:pointer;transition:opacity .2s}
 .nk-next.ready{opacity:1;animation:nkpulse 1.6s ease-in-out infinite}
@@ -276,6 +280,15 @@ html:has(.nkh),html:has(.nkh) body{height:100%;overflow:hidden;overscroll-behavi
 .nkh-balloon img{width:80%;margin:0 auto}
 .nkh-balloon.up{animation:nkh-away .7s ease-in forwards}
 .nkh-hills{position:absolute;left:0;bottom:0;width:100%;height:50%}
+/* The painted meadow (arcade kids): the painting under everything; the drawn hills and pond step aside */
+.nkh-paint{position:absolute;inset:0;background:center / cover no-repeat;animation:nkh-in .6s ease both}
+.nkh-light{position:absolute;inset:0;pointer-events:none;background:radial-gradient(70% 45% at 30% 8%,rgba(255,255,255,.35),transparent 70%)}
+.nkh.night .nkh-light{background:radial-gradient(60% 40% at 70% 6%,rgba(190,200,255,.18),transparent 70%)}
+.nkh.painted .nkh-hills{display:none}
+.nkh.painted .nkh-pond{background:none}
+.nkh.painted .nkh-duck{left:40%;bottom:10%;width:calc(var(--s) * 13)}
+.nkh.wide.painted .nkh-duck{left:62%}
+@keyframes nkh-in{from{opacity:0}to{opacity:1}}
 .nkh-hills .h1{fill:var(--hl1)}.nkh-hills .h2{fill:var(--hl2)}
 .nkh-wild{width:calc(var(--s) * 8);filter:hue-rotate(var(--hue));opacity:.95}
 .nkh-pond{position:absolute;left:3%;bottom:48%;width:calc(var(--s) * 30);height:calc(var(--s) * 9);border-radius:50%;background:radial-gradient(ellipse at 50% 40%,var(--pond1),var(--pond2))}
@@ -7371,10 +7384,10 @@ function auditRender(pin){
 // Listening and pictures only, and only Coco's English (no Hebrew voice): he shows each game first. No reading, timers
 // or fail screens, and the pet is the only reward. Content: docs/nest/nest.js (EQ_NEST); the session engine and its
 // games: docs/nest/play.js; recordings: docs/nest/audio (tools/nest_audio.py).
-const NEST_V = 13, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
+const NEST_V = 14, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
 let NE = null, nestLoading = null, nestAudioEl = null, nestQueue = null, nestMic = null;
 function loadNest(){
-  if (window.EQ_NEST && typeof NK === 'object' && typeof nkActorOn === 'function' && typeof nkHome === 'function' && typeof nkEchoStart === 'function' && typeof nkStickers === 'function') return Promise.resolve(window.EQ_NEST);
+  if (window.EQ_NEST && typeof NK === 'object' && typeof nkActorOn === 'function' && typeof nkHome === 'function' && typeof nkEchoStart === 'function' && typeof nkStickers === 'function' && typeof nkArcade === 'function') return Promise.resolve(window.EQ_NEST);
   // All six download at once and run in this order (async = false); each has 15 s.
   const one = (file, ready) => ready() ? Promise.resolve() : new Promise((res, rej) => {
     const s = document.createElement('script');
@@ -7388,7 +7401,8 @@ function loadNest(){
   });
   // The living home (specs/nest-home.md): the scene, Coco repeats you, the sticker book and the parents' postcard.
   return nestLoading = nestLoading || Promise.all([one('nest.js', () => !!window.EQ_NEST), one('play.js', () => typeof NK === 'object'), one('actor.js', () => typeof nkActorOn === 'function'),
-    one('home.js', () => typeof nkHome === 'function'), one('echo.js', () => typeof nkEchoStart === 'function'), one('stickers.js', () => typeof nkStickers === 'function')])
+    one('home.js', () => typeof nkHome === 'function'), one('echo.js', () => typeof nkEchoStart === 'function'), one('stickers.js', () => typeof nkStickers === 'function'),
+    one('arcade.js', () => typeof nkArcade === 'function')])
     .then(() => window.EQ_NEST).catch(e => { nestLoading = null; throw e; });
 }
 // A unit by its id or by a day's id ('n04.c' is the unit n04).
@@ -7529,6 +7543,8 @@ function nestDays(u){
 
 // The playground (specs/nest.md): every game on the words the kid has met, as often as she likes; nothing is saved.
 function nestPlayground(){
+  // Coco's arcade (docs/nest/arcade.js): the playground with two shelves, for the arcade kids.
+  if (window.EQ_NEST && typeof nkArcade === 'function' && nkArcOn()) return nkArcade();
   const games = dash && dash.nest && window.EQ_NEST ? nkPlayGames() : [];
   if (!games.length) return renderDash();
   const L = Object.fromEntries(NG_GAMES);
@@ -7667,7 +7683,20 @@ function nestPerDayRow(g){
     <span class="sub" style="margin:0;font-size:13px">שיעורים ביום:</span>
     ${[[1, 'אחד'], [2, 'שניים'], [3, 'שלושה'], [0, 'בלי הגבלה']].map(([n, l]) => `<button class="btn btn-sm ${v === n ? 'btn-primary' : 'btn-glass'}" data-perday="${n}" data-perkid="${esc(g.girl.name)}">${l}</button>`).join('')}</div>`;
 }
+// Coco's arcade: minutes a day (Girls.NestArcadeMin; 15 when empty, 0 = no limit), for the kids who have the arcade.
+function nestArcadeRow(g){
+  if (!g.nest || !g.nest.arcade) return '';
+  const v = g.nest.arcadeMin == null ? 15 : g.nest.arcadeMin;
+  return `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:6px;flex-wrap:wrap;align-items:center">
+    <span class="sub" style="margin:0;font-size:13px">משחקי קוקו ביום:</span>
+    ${[[10, 'עשר דקות'], [15, 'רבע שעה'], [30, 'חצי שעה'], [0, 'בלי הגבלה']].map(([n, l]) => `<button class="btn btn-sm ${v === n ? 'btn-primary' : 'btn-glass'}" data-arcmin="${n}" data-arckid="${esc(g.girl.name)}">${l}</button>`).join('')}</div>`;
+}
 function bindAgeRows(p, pin){
+  app.querySelectorAll('[data-arcmin]').forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try { renderParent(await call('apiParentNestArcade', pin, b.dataset.arckid, Number(b.dataset.arcmin)), pin); toast(b.dataset.arckid + ': ' + b.textContent.trim()); }
+    catch(err){ toast(err.message, true); b.disabled = false; }
+  });
   app.querySelectorAll('[data-perday]').forEach(b => b.onclick = async () => {
     b.disabled = true;
     try { renderParent(await call('apiParentNestPerDay', pin, b.dataset.perkid, Number(b.dataset.perday)), pin); toast(b.dataset.perkid + ': ' + b.textContent.trim()); }
@@ -8804,7 +8833,7 @@ function girlCard(g, isAdmin, grp){
     ${placementLine(g)}
     ${nestParentCard(g)}
     ${ageRow(g)}
-    ${nestPerDayRow(g)}
+    ${nestPerDayRow(g)}${nestArcadeRow(g)}
     ${!isAdmin && g.pin && grp ? `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:8px;flex-wrap:wrap">
       <a class="btn btn-teal btn-sm" href="${esc(waLink(kidInvite(grp.link, { name: g.girl.name, pin: g.pin, nest: !!g.nest })))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} שליחת הקישור האישי</a>
       <button class="btn btn-glass btn-sm" data-kidhere="${esc(g.girl.name)}" data-kidpin="${esc(g.pin)}" data-kidgroup="${esc(grp.id)}">${icon('device-mobile')} משחק בטלפון הזה</button>

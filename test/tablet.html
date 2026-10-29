@@ -47,6 +47,8 @@ async function show(f){
     await new Promise(r => setTimeout(r, 1500));
     // nest-all: Settings.NestAll on (every unit open) and one unit's days in the sheet.
     // nest-ground: the playground; nest-home2: the home with it; nest-cheer: a right answer, the third in a row (the party). Try-out kid, two units played.
+    // nest-arcade: Coco's arcade (stage C), an arcade kid with colors, numbers, the farm and food met.
+    if (screen === 'nest-arcade') { ev("dash.nest.arcade = true; dash.nest.played = ['n01', 'n02', 'n03', 'n04', 'n05', 'n07']; dash.nest.home = true; nestPlayground()"); }
     if (['nest-ground', 'nest-home2', 'nest-cheer'].includes(screen)) { ev("dash.nest.all = true; dash.nest.played = ['n01', 'n01.b', 'n02']; dash.nest.done = true; renderNest(dash)"); if (screen === 'nest-ground') ev('nestPlayground()'); }
     if (screen === 'nest-cheer') { ev('nestPlay = function(k, cb){}; window.setTimeout = (st => (f, t) => t >= 300 ? 0 : st(f, t))(window.setTimeout); nkPlayStart("find")'); ev('const b = document.querySelector("[data-nkopt]"); b.classList.add("yes"); NE.run = 2; nkCheer({})'); }
     // The living home (specs/nest-home.md): nest-living = day, no pet (Mia); -night = 21:00 with a pet; -many = 25 days and
@@ -57,10 +59,12 @@ async function show(f){
       if (v) ev("dash.pet = { id: 'fawn', name: 'Fern', stage: 2, xp: 300, wear: [], move: '' }");
       if (v === 'many') ev("dash.nest.days = 25; dash.nest.done = true; dash.nest.played = ['n01', 'n01.b', 'n02', 'n02.c', 'n03', 'n04', 'n05', 'r02', 'n06', 'n07']");
       if (v === 'pet' || v === 'night') ev("dash.nest.days = 3; dash.nest.played = ['n01', 'n07']");
+      // &arcade: an arcade kid (the painted meadow, stage C).
+      if (q.has('arcade')) ev('dash.nest.arcade = true');
       ev('dash.nest.home = true; renderNest(dash)');
     }
     if (screen === 'nest-all') ev('dash.nest.all = true; renderNest(dash);' + (location.search.includes('home') ? '' : ' nestDays(EQ_NEST.units[1])'));
-    const step = ['nest-all', 'nest-ground', 'nest-home2', 'nest-cheer'].includes(screen) || screen.startsWith('nest-living') ? '' : screen.slice(5);
+    const step = ['nest-all', 'nest-arcade', 'nest-ground', 'nest-home2', 'nest-cheer'].includes(screen) || screen.startsWith('nest-living') ? '' : screen.slice(5);
     if (step) { ev('nestPlay = function(k, cb){}'); ev('nestStart(dash.nest.today)'); ev("NE.si = Math.max(0, NE.steps.findIndex(x => x.t === '" + step + "')); nestRender(false)"); }
   }
   else {
