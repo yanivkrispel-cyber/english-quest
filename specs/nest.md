@@ -206,7 +206,7 @@ approved 2026-10-29): https://claude.ai/artifact/MiheFspiErSg9JXUiiJ8Ek. The own
 library, no composer), real animal and thing sounds allowed (never a human voice), a live Coco and painted worlds before new
 games, new games in an arcade plus one on each unit's games day, an arcade time limit the parent sets (15 minutes by default).
 
-Try-out first: `nestInfo.arcade` = the NestAll kids and `Settings.NestArcade` (names or `all`); the teacher's preview always.
+Open to every Nest kid since 2026-10-29 (the owner; before that the NestAll try-out kids and `Settings.NestArcade` names): `nestInfo.arcade` is true unless `Settings.NestArcade` = `off`; the teacher's preview always.
 `docs/nest/actor.js` (loaded after play.js; `nkAlive()` is the gate):
 
 - **Coco acts** (`nkActorOn`, called at the end of `nestRender`): in the dock he is bigger (`.nk.alive`), breathes, and every

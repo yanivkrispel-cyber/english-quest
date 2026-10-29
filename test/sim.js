@@ -1325,13 +1325,11 @@ run(`apiParentNestArcade('7788', '${TALI}', 30)`);
 check('half an hour, and it is in the audit trail', run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.arcadeMin === 30
   && sheets.Audit.rows.some(r => r.join('|').includes('nest arcade minutes') && r.join('|').includes(TALI + ': 30')));
 run(`apiParentNestArcade('7788', '${TALI}', 15)`);
-// The living home (specs/nest-home.md): off by default, on for Settings.NestHome names (or 'all') and NestAll's try-out kids.
-check('the living home is off by default, and the days played count distinct dates', d.nest.home === false && d.nest.days === 1, JSON.stringify([d.nest.home, d.nest.days]));
-run("setSetting('NestHome', 'nobody, " + TALI + "')");
-check('Settings.NestHome opens the living home for a named kid', run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.home === true && run(`apiDashboard('${OMER}', '${omer.PIN}')`).nest.home === false);
-run("setSetting('NestHome', 'all')");
-check('NestHome all opens it for every Nest kid', run(`apiDashboard('${OMER}', '${omer.PIN}')`).nest.home === true);
-run("setSetting('NestHome', '')");
+// The living home and the arcade (specs/nest-home.md, nest.md): on for every Nest kid since 2026-10-29; 'off' closes them.
+check('the living home and the arcade are on for every Nest kid, and the days played count distinct dates', d.nest.home === true && d.nest.arcade === true && d.nest.days === 1, JSON.stringify([d.nest.home, d.nest.arcade, d.nest.days]));
+run("setSetting('NestHome', 'off'); setSetting('NestArcade', 'off')");
+check('NestHome / NestArcade off closes them for everyone', run(`apiDashboard('${OMER}', '${omer.PIN}')`).nest.home === false && run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.arcade === false);
+run("setSetting('NestHome', ''); setSetting('NestArcade', '')");
 const nestyId = run("JSON.stringify(groups().filter(function (g) { return g.Name === 'Nesty'; })[0].Id)").replace(/"/g, '');
 fails('a parents code from a parent', () => run(`apiAdminParentPin('7788', '${nestyId}', '3434')`));
 const otherPin = run("JSON.stringify(groups().filter(function (g) { return g.Name !== 'Nesty' && g.ParentPIN; })[0].ParentPIN)").replace(/"/g, '');

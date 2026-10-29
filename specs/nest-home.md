@@ -7,7 +7,7 @@ kid's name); yes to "Coco repeats you" with the microphone; soft music and birds
 
 ## Who sees it
 
-`nestInfo.home` (src/Nest.js): the try-out kids of `Settings.NestAll`, and `Settings.NestHome` (names, or `all`).
+`nestInfo.home` (src/Nest.js): every Nest kid since 2026-10-29 (the owner); `Settings.NestHome` = `off` brings back `renderNest`'s old home for everyone.
 Everyone else keeps the old home (`renderNest`). `nestInfo.days` = the distinct dates with a Nest row (a flower each).
 
 ## Files (each runs in the app's global scope: every top-level name starts with nk / NK, none shared with

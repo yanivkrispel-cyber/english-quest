@@ -50,10 +50,10 @@ function nestInfo(kid, t, assigned, logs) {
     played: played,
     known: words,
     all: nestAllOpen(kid),
-    // The living home (specs/nest-home.md): the try-out kids of NestAll, and Settings.NestHome (names or 'all').
-    home: nestAllOpen(kid) || nestNamesOpen('NestHome', kid),
-    // The arcade stages (a live Coco, real sounds, the band, new games): the try-out kids of NestAll, and Settings.NestArcade.
-    arcade: nestAllOpen(kid) || nestNamesOpen('NestArcade', kid),
+    // The living home (specs/nest-home.md) and the arcade (a live Coco, real sounds, the band, Coco's games): every Nest kid
+    // since 2026-10-29 (the owner). Settings.NestHome / NestArcade = 'off' closes one again for everyone.
+    home: !nestOff('NestHome'),
+    arcade: !nestOff('NestArcade'),
     // Days played (distinct dates with a Nest row): a flower each in the home's garden.
     days: logs.filter(function (l) { return l.Section === 'nest'; }).map(function (l) { return String(l.Date); }).filter(function (d, i, a) { return a.indexOf(d) === i; }).length,
     perDay: perDay,
@@ -107,6 +107,7 @@ function apiParentNestArcade(pin, name, n) {
 // Settings.NestAll: the names (comma separated, or 'all') whose Nest home shows every unit and day now, as free play.
 // A try-out switch for the owner; the day's own session still comes one a day.
 function nestAllOpen(kid) { return nestNamesOpen('NestAll', kid); }
+function nestOff(setting) { return String(getSetting(setting) || '').trim().toLowerCase() === 'off'; }
 function nestNamesOpen(setting, kid) {
   var v = String(getSetting(setting) || '').toLowerCase().split(',').map(function (s) { return s.trim(); });
   return v.indexOf('all') >= 0 || v.indexOf(String(kid.Name || '').toLowerCase()) >= 0;
