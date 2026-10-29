@@ -273,7 +273,8 @@ function nkhTap(e){
   if (role === 'visitor') {
     const id = el.dataset.id;
     nkhBoing(el); nkhBlip(560);
-    return nestPlay([(EQ_NEST.sounds || {})[id] ? 's-' + id : 'w-' + id]);
+    const real = dash && dash.nest && dash.nest.arcade && (EQ_NEST.real || []).includes(id) ? ['x-' + id] : [];
+    return nestPlay(real.concat([(EQ_NEST.sounds || {})[id] ? 's-' + id : 'w-' + id]));
   }
   if (role === 'egg') {
     // Wobble, crack, then today's lesson (or the next one when the parent allows more; a golden egg plays it again).

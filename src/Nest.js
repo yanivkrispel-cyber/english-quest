@@ -52,6 +52,8 @@ function nestInfo(kid, t, assigned, logs) {
     all: nestAllOpen(kid),
     // The living home (specs/nest-home.md): the try-out kids of NestAll, and Settings.NestHome (names or 'all').
     home: nestAllOpen(kid) || nestNamesOpen('NestHome', kid),
+    // The arcade stages (a live Coco, real sounds, the band, new games): the try-out kids of NestAll, and Settings.NestArcade.
+    arcade: nestAllOpen(kid) || nestNamesOpen('NestArcade', kid),
     // Days played (distinct dates with a Nest row): a flower each in the home's garden.
     days: logs.filter(function (l) { return l.Section === 'nest'; }).map(function (l) { return String(l.Date); }).filter(function (d, i, a) { return a.indexOf(d) === i; }).length,
     perDay: perDay,

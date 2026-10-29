@@ -6,7 +6,7 @@
   "name": "english-with-coco",
   "compatibility_date": "2026-10-23",
   "main": "worker/range.js",
-  "assets": { "directory": "docs", "binding": "ASSETS", "run_worker_first": ["/missions/audio/*", "/talk/audio/*", "/nest/audio/*"] },
+  "assets": { "directory": "docs", "binding": "ASSETS", "run_worker_first": ["/missions/audio/*", "/talk/audio/*", "/nest/audio/*", "/nest/sounds/*"] },
   "routes": [{ "pattern": "coco.coachkrispel.com", "custom_domain": true }],
   "workers_dev": true
 }

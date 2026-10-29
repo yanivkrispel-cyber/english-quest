@@ -1,0 +1,23 @@
+{
+  "license": "BigSoundBank, CC0 (public domain equivalent; commercial use, no credit needed): https://bigsoundbank.com/licenses.html",
+  "sounds": {
+    "cow": { "id": "0546", "page": "https://bigsoundbank.com/cow-moos-s0546.html" },
+    "dog": { "id": "0916", "page": "https://bigsoundbank.com/barking-dog-s0916.html" },
+    "cat": { "id": "1890", "page": "https://bigsoundbank.com/meow-cat-2-s1890.html" },
+    "horse": { "id": "0284", "page": "https://bigsoundbank.com/neighing-of-a-horse-1-s0284.html" },
+    "chicken": { "id": "0282", "page": "https://bigsoundbank.com/henhouse-s0282.html" },
+    "duck": { "id": "0276", "page": "https://bigsoundbank.com/ducks-s0276.html" },
+    "car": { "id": "0260", "page": "https://bigsoundbank.com/car-horn-4-s0260.html" },
+    "train": { "id": "2847", "page": "https://bigsoundbank.com/train-horn-3-s2847.html" },
+    "plane": { "id": "3004", "page": "https://bigsoundbank.com/airplane-pass-1-s3004.html" },
+    "boat": { "id": "0261", "page": "https://bigsoundbank.com/horn-of-a-ship-1-s0261.html" },
+    "bike": { "id": "1102", "page": "https://bigsoundbank.com/bell-bike-5-s1102.html" },
+    "drum": { "id": "2338", "page": "https://bigsoundbank.com/bass-tom-1-s2338.html" },
+    "clock": { "id": "2816", "page": "https://bigsoundbank.com/tic-tac-mechanical-alarm-clock-5-s2816.html" },
+    "rain": { "id": "1290", "page": "https://bigsoundbank.com/rain-on-puddle-s1290.html" },
+    "sea": { "id": "1046", "page": "https://bigsoundbank.com/small-waves-facing-the-ocean-s1046.html" },
+    "bus": { "id": "3594", "page": "https://bigsoundbank.com/bus-horn-s3594.html" },
+    "balloon": { "id": "0551", "page": "https://bigsoundbank.com/balloon-burst-s0551.html" }
+  },
+  "coco": "lion, monkey and baby keep Coco saying them: no CC0 lion or monkey on BigSoundBank, and a baby is a human voice"
+}

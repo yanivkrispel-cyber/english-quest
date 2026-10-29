@@ -633,6 +633,7 @@ function nestRender(opening){
   nkTipBind(s);
   if (s.first && s.t !== 'done') { nkSeenAdd(s.t); const c = document.getElementById('nkcue'); if (c) c.classList.add('on'); }
   NK[s.t].render(s, opening);
+  if (typeof nkActorOn === 'function') nkActorOn(s);  // stage A: a live Coco and the pet (docs/nest/actor.js)
 }
 // A long press on Coco: a short Hebrew note for the grown-up (text only).
 function nkTipBind(s){
@@ -663,10 +664,11 @@ function nkWin(s, keys, wait){
   nkCoco('celebrate');
   buzz(true);
   nkCheer(s);
+  if (typeof nkActorWin === 'function') nkActorWin(s);
   NE.locked = true;
   nestPlay(keys.concat(s.demo ? ['en-turn'] : []), () => setTimeout(() => { if (NE && NE.tok === tok) nestAdvance(); }, wait || 150));
 }
-function nkMiss(keys){ buzz(false); nkCoco('thinking'); if (NE) NE.run = 0; nestPlay(keys); }
+function nkMiss(keys){ buzz(false); nkCoco('thinking'); if (NE) NE.run = 0; if (typeof nkActorMiss === 'function') nkActorMiss(); nestPlay(keys); }
 
 // ---------- The play sky: a soft colored world behind the cards (one of four per session), on until the session ends ----------
 function nkSkyOn(){
@@ -922,7 +924,7 @@ NK.peek = {
       if (s.opts && !s.demo) nkScore(s.w.id, NE.tries === 1);
       b.classList.remove('wiggle'); b.classList.add('out');
       nkSfx('boing');
-      nkWin(s, ['en-peek', 'w-' + o.id].concat(s.opts ? [nkPraise()] : []), 500);
+      nkWin(s, ['en-peek'].concat(nkReal(o.id), ['w-' + o.id]).concat(s.opts ? [nkPraise()] : []), 500);
     };
     app.querySelectorAll('[data-nkb]').forEach(b => b.onclick = () => tap(b));
     nestPlay(nestPrompt(s, opening), () => {
@@ -936,8 +938,8 @@ const nkKidBushes = () => NE.age <= 3 ? 2 : 3;
 
 // Who says that? Coco makes a sound; tap who makes it.
 NK.sound = {
-  say: s => ['s-' + s.w.id, 'en-whosays'], demo: true,
-  render(s, opening){ nkChoice(s, opening, ['en-try', 's-' + s.w.id]); }
+  say: s => nkSnd(s.w.id).concat(['en-whosays']), demo: true,
+  render(s, opening){ nkChoice(s, opening, ['en-try'].concat(nkSnd(s.w.id))); }
 };
 
 // Pop it: bubbles float up slowly (no clock); pop the one with the picture Coco asks for. A few targets in a row.
@@ -1167,6 +1169,7 @@ NK.chant = {
       while (t0 + b * beat < ctx.currentTime + .25) {
         const at = t0 + b * beat, q = b % 4;
         nkSfx(q === 0 || q === 2 ? 'kick' : 'snare', at); nkSfx('hat', at + beat / 2);
+        if (q === 0 && typeof nkBandBar === 'function') nkBandBar(ctx, at, beat, b >> 2, s.unit);
         const d = dots[q]; setTimeout(() => { dots.forEach(x => x.classList.remove('on')); if (d) d.classList.add('on'); }, Math.max(0, (at - ctx.currentTime) * 1000));
         b++;
       }

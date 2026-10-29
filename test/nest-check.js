@@ -227,8 +227,16 @@ function check(opts) {
     const names = src => new Set([...src.matchAll(/^(?:async\s+)?function\s+([A-Za-z_$][\w$]*)|^(?:const|let|var)\s+([A-Za-z_$][\w$]*)/gm)].map(m => m[1] || m[2]));
     const html = fs.readFileSync(path.join(ROOT, 'src/Index.html'), 'utf8'), play = fs.readFileSync(path.join(ROOT, 'docs/nest/play.js'), 'utf8');
     const app = names(html), seen = new Map();
+    // The real sounds (docs/nest/sounds): every word in EQ_NEST.real has its clip, a line in tools/nest-sounds.json and a
+    // Coco line in sounds (it plays after the real one).
+    const listed = JSON.parse(fs.readFileSync(path.join(ROOT, 'tools/nest-sounds.json'), 'utf8')).sounds;
+    (nest.real || []).forEach(id => {
+      if (!listed[id]) err('real ' + id, 'not in tools/nest-sounds.json');
+      if (!fs.existsSync(path.join(ROOT, 'docs/nest/sounds', id + '.mp3'))) err('real ' + id, 'no docs/nest/sounds/' + id + '.mp3 (python tools/nest_sounds.py)');
+      if (!(nest.sounds || {})[id]) err('real ' + id, 'no Coco line in sounds');
+    });
     // play.js and the living home's files (specs/nest-home.md) share the app's scope and each other's.
-    ['play.js', 'home.js', 'echo.js', 'stickers.js'].forEach(file => {
+    ['play.js', 'actor.js', 'home.js', 'echo.js', 'stickers.js'].forEach(file => {
       const where = 'docs/nest/' + file, p = path.join(ROOT, where);
       if (!fs.existsSync(p)) return err(where, 'missing (loadNest in src/Index.html loads it)');
       const code = fs.readFileSync(p, 'utf8'), own = [...names(code)];

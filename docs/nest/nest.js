@@ -432,6 +432,9 @@ window.EQ_NEST = {
   // every day, are the instructions, and Coco shows each game first.
   en: {
     hi: "Hi! Let's play!",
+    tickle: 'Hee hee! That tickles!',
+    whee: 'Wheee!',
+    achoo: 'Ah... ah... achoo!',
     listen: 'Listen!',
     meet: "Let's meet new words!",
     find: 'Find it!',
@@ -507,6 +510,9 @@ window.EQ_NEST = {
     lion: 'Roar!', monkey: 'Ooh, ooh, ah, ah!', car: 'Beep, beep!', train: 'Choo, choo!', plane: 'Zoom!', boat: 'Toot, toot!',
     bike: 'Ring, ring!', drum: 'Boom, boom!', clock: 'Tick, tock!', baby: 'Waa, waa!', rain: 'Drip, drop!', sea: 'Splash!',
     bus: 'Honk, honk!', balloon: 'Pop!' },
+  // The words with a real sound before Coco's (docs/nest/sounds, tools/nest_sounds.py and nest-sounds.json; arcade kids).
+  real: ['cow', 'dog', 'cat', 'horse', 'chicken', 'duck', 'car', 'train', 'plane', 'boat', 'bike', 'drum', 'clock', 'rain', 'sea', 'bus',
+    'balloon'],
   // Clothes and where they go on the teddy in "Let's get dressed" (Coco records d-<id>: "Put on the ...!").
   dress: { cap: 'head', glasses: 'face', scarf: 'neck', shirt: 'body', coat: 'body', dress: 'body', swimsuit: 'body',
     pants: 'legs', shorts: 'legs', gloves: 'hands', socks: 'feet', shoes: 'feet' },

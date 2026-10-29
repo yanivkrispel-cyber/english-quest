@@ -198,3 +198,35 @@ Proposal and the owner's pick: https://claude.ai/artifact/TEp9sYUzd8VUWfGB21H684
   removed by `nestLeave` and `renderNest`.
 - Open to every Nest kid since 2026-10-28 (the owner: open to all, the palettes change by unit, the party every third).
   Check: `test/tablet.html?screen=nest-home2|nest-ground|nest-cheer[&phones]`.
+
+## The arcade plan, stage A: a live Coco (2026-10-29)
+
+Review of the games and the owner's picks: https://claude.ai/artifact/4TZtfZ6p11tvZiepqSuq9B. The plan (seven stages, A to G,
+approved 2026-10-29): https://claude.ai/artifact/MiheFspiErSg9JXUiiJ8Ek. The owner's answers: music made in code only (no
+library, no composer), real animal and thing sounds allowed (never a human voice), a live Coco and painted worlds before new
+games, new games in an arcade plus one on each unit's games day, an arcade time limit the parent sets (15 minutes by default).
+
+Try-out first: `nestInfo.arcade` = the NestAll kids and `Settings.NestArcade` (names or `all`); the teacher's preview always.
+`docs/nest/actor.js` (loaded after play.js; `nkAlive()` is the gate):
+
+- **Coco acts** (`nkActorOn`, called at the end of `nestRender`): in the dock he is bigger (`.nk.alive`), breathes, and every
+  5 to 9 seconds, when he is quiet, looks around, tilts his head, flaps or hops (`nkFidget`). A tap on him: he giggles,
+  spins or sneezes feathers, with a line (`en-tickle`, `en-whee`, `en-achoo`) when he is not talking (`nkCocoTap`).
+- **The pet plays** (`#nkdpet`): the kid's pet sits on the other side of the dock (not in Give it to me, Get dressed or the
+  end screen, where it is on the stage), bounces with Coco, cheers on a right answer, thinks on a wrong one, and answers a tap.
+- **A right answer** (`nkActorWin`, from `nkWin`): Coco flies to the right card, hops on it twice and flies back (a copy
+  of him, `#nkflyer`, over the screen; nothing in the layout moves). **A wrong tap** (`nkActorMiss`): he shakes his head or
+  jumps in surprise, the pet thinks, a soft boing.
+- **Poses** (`nkPose`): `docs/coco/<pose>.webp`; a pose with no picture yet borrows the closest of the six (`NK_POSE_NEAR`).
+  Stage A's art adds point, laugh, surprised, shy, dance, eat, fly, listen, whisper, shout, confused, cheer, wave, sneeze,
+  sad and sleep (`NK_POSES` lists what exists).
+- **Real sounds** (`nkSnd`, `nkReal`): `x-<word>` plays `docs/nest/sounds/<word>.mp3` (`nestClip`), before Coco's own
+  "Moo!", in Who says that?, Peekaboo and the living home's visitor. 17 words (`EQ_NEST.real`); lion, monkey and baby keep
+  Coco only. `python tools/nest_sounds.py` fetches them from BigSoundBank (CC0, the list and pages in
+  `tools/nest-sounds.json`), keeps the originals in `../art/nest/sounds/` and cuts the loudest 2.2 s. Their own folder,
+  because `tools/nest_audio.py` removes any file in `docs/nest/audio` it did not record; `/nest/sounds/*` is in
+  `run_worker_first` (Safari).
+- **Coco's band** (`nkBandBar`): under every chant, a bar at a time on the drums' clock: a bass, a marimba tune and a bell,
+  one of six tunes and four keys by unit, chords I V vi IV. Coco still says the lines (Kokoro cannot sing).
+
+Checks: nest-check covers actor.js's names and every real sound (clip, list entry, Coco's line).
