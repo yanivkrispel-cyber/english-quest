@@ -8,10 +8,9 @@ const NKA = { idle: 0, flying: false };
 
 // ---------- Coco's poses ----------
 // docs/coco/<pose>.webp. A pose without its own picture yet borrows the closest one (stage A's art adds them).
-const NK_POSES = new Set(['happy', 'celebrate', 'cool', 'oops', 'sleepy', 'thinking']);
-const NK_POSE_NEAR = { point: 'happy', laugh: 'celebrate', surprised: 'oops', shy: 'oops', dance: 'celebrate', eat: 'happy',
-  fly: 'celebrate', listen: 'thinking', whisper: 'thinking', shout: 'celebrate', confused: 'thinking', cheer: 'celebrate',
-  wave: 'happy', sneeze: 'oops', sad: 'sleepy', sleep: 'sleepy' };
+const NK_POSES = new Set(['happy', 'celebrate', 'cool', 'oops', 'sleepy', 'thinking', 'point', 'laugh', 'surprised', 'shy', 'dance', 'eat',
+  'fly', 'listen', 'whisper', 'shout', 'confused', 'cheer', 'wave', 'sneeze', 'sad', 'sleep', 'clap', 'thumbs']);
+const NK_POSE_NEAR = {};
 const nkPoseSrc = p => cocoSrc(NK_POSES.has(p) ? p : NK_POSE_NEAR[p] || 'happy');
 function nkPose(p, ms){
   const c = document.getElementById('nkcoco');
@@ -46,6 +45,7 @@ const nkPetEl = () => document.getElementById('nkdpet');
 // Called at the end of nestRender: Coco gets bigger and breathes, fidgets now and then, answers a tap; the pet sits on
 // the other side of the dock (not in games where the pet is already on the stage).
 function nkActorOn(s){
+  if (!NKA.pre && nkAlive()) { NKA.pre = 1; ['fly', 'cheer', 'clap', 'thumbs', 'dance', 'confused', 'surprised', 'laugh', 'sneeze', 'wave'].forEach(p => { new Image().src = nkPoseSrc(p); }); }
   clearTimeout(NKA.idle);
   const old = document.getElementById('nkflyer');
   if (old) old.remove();
@@ -64,6 +64,9 @@ function nkActorOn(s){
     p.onclick = nkPetTap;
     dock.appendChild(p);
   }
+  // A pose that says what the screen is about: listening for a sound, waving at the end.
+  if (s.t === 'sound') nkPose('listen', 2600);
+  else if (s.t === 'done') nkPose('wave');
   nkFidget();
 }
 function nkActorOff(){ clearTimeout(NKA.idle); clearTimeout(NKA.poseT); const f = document.getElementById('nkflyer'); if (f) f.remove(); }
@@ -148,7 +151,7 @@ function nkActorWin(s){
       { transform: `translate(${dx * .5}px,${dy - 70}px) rotate(8deg)`, offset: .86 },
       { transform: 'translate(0,0)' }
     ], { duration: 1500, easing: 'ease-in-out' });
-    setTimeout(() => { fly.src = nkPoseSrc('cheer'); nkSfx('flip'); }, 560);
+    setTimeout(() => { fly.src = nkPoseSrc(['cheer', 'clap', 'thumbs', 'dance'][Math.floor(Math.random() * 4)]); nkSfx('flip'); }, 560);
     an.onfinish = done; an.oncancel = done;
   } catch(e){ done(); }
   setTimeout(() => { if (NKA.flying) done(); }, 1900);
@@ -156,7 +159,9 @@ function nkActorWin(s){
 // A wrong tap: Coco shakes his head (or looks surprised), the pet thinks, a soft boing.
 function nkActorMiss(){
   if (!nkAlive()) return;
-  nkMove(nkCocoEl(), Math.random() < .5 ? 'no' : 'surprise');
+  const surprised = Math.random() < .5;
+  nkMove(nkCocoEl(), surprised ? 'surprise' : 'no');
+  setTimeout(() => nkPose(surprised ? 'surprised' : 'confused', 1300), 0);
   const p = nkPetEl();
   if (p) { nkMove(p, 'no'); const v = p.querySelector('svg'); if (v) { paMood(v, 'thinking'); setTimeout(() => { const x = nkPetEl(); const w = x && x.querySelector('svg'); if (w) paMood(w, 'happy'); }, 1400); } }
   nkSfx('boing');
@@ -189,6 +194,7 @@ function nkNote(ctx, t, f, len, vol, kind){
 }
 function nkBandBar(ctx, t, beat, bar, unit){
   if (!ctx || !nkAlive()) return;
+  if (bar === 0) nkPose('dance');  // Coco dances to his band
   const h = nkHash(unit), root = NK_KEYS[h % 4], tune = NK_TUNES[(h >> 3) % NK_TUNES.length], ch = NK_CHORDS[bar % 4];
   const hz = semi => root * Math.pow(2, semi / 12);
   try {
