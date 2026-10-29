@@ -138,3 +138,13 @@ Passing the kid's data as a third argument (`nkPostcard(el, name, g)`) skips all
 
 Check: `http://localhost:8787/test/nest-stickers.html?view=book|free|places|postcard[&tablets]` (Mia with fake progress;
 `free` also drags a sticker on and one off; `postcard&unit=n06&tip=0` picks an idea line).
+
+## The painted meadow (stage C of the arcade plan, 2026-10-29)
+
+The owner: the home must be a wow and match the painted worlds. For the arcade kids (`dash.nest.arcade`) the scene gets the class
+`painted`: under everything a clay painting from Gemini, `docs/nest/home/<day|evening|night>[-wide].webp` (9:16 standing, 16:9 on
+its side, by the clock's phase), drawn with cover (`nkhPaint`), and a soft light over it. The drawn hills step aside, and the drawn
+pond becomes an invisible box over the painted one (`NKH_PAINT`, in % of the painting), so the duck still swims on it. Sun, moon,
+stars, clouds, the tree with Coco's nest, the egg, the pet and the garden stay the live stickers they were. Prompts and the
+full-size pictures: `EnglishLessons-work/arcade-art/home-*.txt` and `home/`. Check: `test/tablet.html?screen=nest-living-pet&arcade`
+(and `-night`), `?screen=nest-arcade` for the arcade.
