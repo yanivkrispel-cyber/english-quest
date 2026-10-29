@@ -1377,6 +1377,87 @@ button{touch-action:manipulation}
 .tdot{position:absolute;top:7px;left:calc(50% + 7px);width:10px;height:10px;border-radius:50%;background:var(--danger);border:2px solid #fff}
 html:has(.tabbar) #app{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 html:has(.tabbar) .netbar:not(.upd){bottom:calc(88px + env(safe-area-inset-bottom))}
+/* The Play tab in one screen (specs/play-tab.md): the friends row, the stage (cards swiped sideways) and the games alone */
+.tv-play{display:flex;flex-direction:column;gap:12px}
+.phead{flex:none}
+.phead h1{margin:0}
+.crew{display:flex;justify-content:space-around;align-items:flex-start;gap:4px;padding:10px 8px 8px;border-radius:26px;flex:none}
+.crew .fr{flex:1;min-width:0;max-width:90px;padding:2px;background:none;border:0}
+.crew .fr .av .pet-face,.crew .fr .av .avatar,.crew .addc{width:52px;height:52px}
+.crew .addc{font-size:20px}
+.crew .fr b{font-size:13.5px}
+.deck{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;margin:-6px -16px -14px;padding:6px 16px 14px;
+  scroll-padding-inline:16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.deck::-webkit-scrollbar{display:none}
+.deck>.spot{flex:0 0 calc(100% - 26px);scroll-snap-align:start;scroll-snap-stop:always}
+.deck>.spot:only-child{flex-basis:100%}
+.spot{display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:30px;min-height:0;overflow:hidden;box-sizing:border-box}
+.spot .grow{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.spot h2{margin:0;text-wrap:balance}
+.spot .sub{margin:0}
+.spot .btns{margin-top:0}
+.meet{text-align:center;align-items:stretch}
+.meet h2{font-size:21px}
+.vs2{display:flex;align-items:center;justify-content:center;gap:10px}
+.vs2 .pa,.vs2 .duel-av{width:clamp(70px,13vh,110px);height:clamp(70px,13vh,110px);font-size:34px;filter:drop-shadow(0 10px 10px rgba(38,40,80,.2))}
+.vs2 b{font-size:22px;color:var(--faint)}
+.spot .chip{flex:none;white-space:nowrap}
+.spot button.chip{font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.spot .flamerow{margin-bottom:14px}
+.spot .flamerow .duopet{width:clamp(64px,12vh,100px);height:clamp(64px,12vh,100px)}
+.spot .flame{width:clamp(70px,11vh,98px);height:clamp(82px,13vh,114px)}
+.wk{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;text-align:center;font-size:11px;font-weight:800;color:var(--muted)}
+.wk>div{display:grid;gap:3px}
+.wk>div.off{opacity:.45}
+.wk i{height:9px;border-radius:5px;background:rgba(255,255,255,.55)}
+.wk i.me{background:linear-gradient(180deg,#a5b4fc,#6366f1)}
+.wk i.them{background:linear-gradient(180deg,#fdba74,#f97316)}
+.wk i.saved{background:rgba(13,148,136,.45)}
+.wk .now span{color:#9a3412}
+.wk .now i:not(.me):not(.them):not(.saved){background:none;outline:2px dashed rgba(234,88,12,.6);outline-offset:-2px}
+.dstat{text-align:center;font-size:14px;font-weight:700;color:#3b3f55}
+.dbadge{text-align:center;font-size:12.5px;font-weight:700;color:#9a3412}
+.qring{width:100px;height:100px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--primary) var(--p),rgba(255,255,255,.65) 0)}
+.qring b{width:80px;height:80px;border-radius:50%;display:grid;place-content:center;background:var(--clay-face);font-size:28px;font-weight:800;line-height:1}
+.qring small{font-size:12px;color:var(--muted);font-weight:700}
+.spot .legend{justify-content:center}
+.pdots{display:flex;justify-content:center;gap:4px;flex:none;min-height:12px}
+.pdots button{width:18px;height:12px;padding:0;border:0;background:none;cursor:pointer;display:grid;place-items:center}
+.pdots button::before{content:'';width:7px;height:7px;border-radius:4px;background:rgba(60,58,105,.22)}
+.pdots button.on::before{width:18px;background:var(--primary)}
+.solo{padding:12px;border-radius:26px;flex:none}
+.solo4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px}
+.solo4 .gt{position:relative;display:grid;justify-items:center;gap:4px;padding:10px 2px 8px;border-radius:20px;font:inherit;color:var(--ink);cursor:pointer}
+.solo4 .gt b{font-size:12.5px;white-space:nowrap}
+.solo4 .gt.rec::after{content:'';position:absolute;top:7px;right:8px;width:9px;height:9px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 3px rgba(99,102,241,.2)}
+.fsheet{max-height:82vh;display:flex;flex-direction:column}
+.fsheet .flist{overflow-y:auto;min-height:0;overscroll-behavior:contain}
+@media (orientation:portrait),(min-height:501px){
+  html:has(.tv-play),html:has(.tv-play) body{height:100%;overflow:hidden;overscroll-behavior:none}
+  html:has(.tv-play) #app{height:100vh;height:100dvh;padding:calc(12px + env(safe-area-inset-top)) 16px calc(90px + env(safe-area-inset-bottom));display:flex;flex-direction:column}
+  .tv-play{flex:1;min-height:0}
+  .deck{flex:1;min-height:0}
+}
+@media (orientation:landscape){html.tablet .deck>.spot{flex-basis:calc(50% - 18px)}}
+@media (max-height:700px){
+  .tv-play{gap:10px}
+  .phead h1{font-size:24px}
+  .crew{padding:6px 8px}
+  .crew .fr small{display:none}
+  .crew .fr .av .pet-face,.crew .fr .av .avatar,.crew .addc{width:44px;height:44px}
+  .crew .fr .av .pet-face img{width:82px;height:82px}
+  .spot{padding:14px;gap:8px}
+  .spot .grow{gap:6px}
+  .spot .wk,.spot .dbadge{display:none}
+  .spot .flamerow{margin-bottom:0}
+  .spot .flamerow .duopet{width:58px;height:58px}
+  .spot .flame{width:62px;height:72px}
+  .spot .flame b{margin-top:22px;font-size:22px}
+  .spot .flame small{display:none}
+  .qring{width:78px;height:78px}
+  .qring b{width:62px;height:62px;font-size:22px}
+  .meet h2{font-size:18px}
+}
 .tv-today{display:flex;flex-direction:column;gap:12px}
 .htop{display:flex;align-items:center;gap:8px;flex:none}
 .hme{border:0;background:none;padding:0;cursor:pointer;flex:none;border-radius:50%}
@@ -3439,20 +3520,6 @@ const WARMUP = { vocabulary: 'match', listening: 'listen', grammar: 'build', rea
 const warmupGame = d => { const t = d.week.find(w => w.isToday); return WARMUP[t && t.section] || 'match'; };
 const GAMES_DEFAULT = { todayRounds: 0, todayXp: 0, dayCap: 60, weekRounds: 0, weekAvg: null, total: 0, recent: {}, review: [] };
 
-function gamesPanel(d){
-  const g = d.games, rec = warmupGame(d), full = g.todayXp >= g.dayCap, mine = d.upgrades && d.upgrades.saver;
-  return `<div class="glass panel">
-    <div class="row-flex between"><h2>Play &amp; learn</h2><span class="chip ${full ? 'teal' : 'orange'}">${icon('lightning')} ${g.todayXp}/${g.dayCap} XP today</span></div>
-    <div class="sub mt-s" style="font-size:13px">${full ? 'Your pet is full for today. Games still help you learn!' : 'Two minutes a game. Your score saves by itself.'}</div>
-    <div class="game-grid mt">${Object.keys(GAME_INFO).map(k => `<button class="soft game-tile ${k === rec ? 'rec' : ''}" data-game="${k}">
-      ${k === rec ? '<span class="chip purple">Warm-up</span>' : ''}
-      <span class="tile ${GAME_INFO[k].tile}">${icon(GAME_INFO[k].icon, 'duotone')}</span>
-      <b>${GAME_INFO[k].name}</b><span class="sub">${GAME_INFO[k].desc}</span></button>`).join('')}</div>
-    ${msDue(d).length ? `<button class="soft mywordsrow mt-s" id="msreview"><span class="tile sm t-target">${icon('arrows-clockwise', 'duotone')}</span><b>Mission review</b><span class="sub">${Math.min(5, msDue(d).length)} questions</span>${icon('caret-right')}</button>` : ''}
-    ${mine ? `<button class="soft mywordsrow mt-s" id="mywords"><span class="tile sm t-vocab">${icon('bookmarks-simple', 'duotone')}</span><b>My words</b><span class="sub">${(g.saved || []).length} saved</span>${icon('caret-right')}</button>` : ''}
-  </div>`;
-}
-
 const BANK_V = 2, ROUND = 5;
 const LV_ORDER = ['a1', 'a2', 'b1', 'b2', 'c1'];
 const NEXT_LV = { a1: 'a2', a2: 'b1', b1: 'b2', b2: 'c1' };
@@ -5036,43 +5103,107 @@ async function dcall(fn, ...args){
   return v;
 }
 
-// ---- Home: invite banner and the Play together card ----
-function duelBanner(){
-  const h = duelsHome, inv = h && h.incoming[0], ch = h && h.challenges[0], pl = h && h.playing && h.playing[0];
-  let body = '';
-  if (pl) body = `<div class="today iri duel-banner">
-      <div class="row-flex" style="gap:12px">${faceOf(duelThem(pl))}<div style="min-width:0"><span class="label" style="color:#3b3f55">Playing now</span>
-        <h2 style="margin-top:2px">${modeTitle(pl)} with ${esc((duelThem(pl) || {}).name || 'a friend')}</h2></div></div>
-      <button class="btn btn-primary btn-block mt-s" data-duelopen="${pl.code}">${icon('play')} Back to the game</button></div>`;
-  else if (inv) body = `<div class="today iri duel-banner">
-      <div class="row-flex" style="gap:12px">${faceOf(inv.host)}<div style="min-width:0"><span class="label" style="color:#3b3f55">Invitation · ${duelLeft(inv)}</span>
-        <h2 style="margin-top:2px">${esc(inv.host.name)} invites you to ${modeInvite(inv)}</h2></div></div>
-      <div class="btns"><button class="btn btn-glass" data-duelno="${inv.code}">Not now</button><button class="btn btn-teal" data-dueljoin="${inv.code}">${icon('play')} Join</button></div></div>`;
-  else if (ch) body = `<div class="today iri duel-banner">
-      <div class="row-flex" style="gap:12px">${faceOf(ch.host)}<div style="min-width:0"><span class="label" style="color:#3b3f55">Challenge · ${duelLeft(ch)}</span>
-        <h2 style="margin-top:2px">${esc(ch.host.name)} challenged you! Beat ${ch.host.score}/${DUEL_ITEMS}</h2></div></div>
-      <button class="btn btn-primary btn-block mt-s" data-dueljoin="${ch.code}">${icon('ghost')} Play the challenge</button></div>`;
-  return `<div id="duelbanner">${body}</div>`;
+// ---- The Play tab in one screen (specs/play-tab.md) ----
+// Three floors that never scroll: who is here (#together), the stage (#pstage: one card at a time, swiped sideways,
+// the most urgent first) and the four games to play alone. Only the first card of the stage gets the primary button:
+// cards write "btn-main" and playStage() turns it into btn-primary on the first card and btn-glass on the rest.
+let playCard = null;
+
+// Online first, then the kids I played with lately, then my group, then the other groups.
+function playFriends(h){
+  const recent = h.results.map(v => (duelThem(v) || {}).name);
+  const rank = f => (f.online && f.ready ? 0 : 4) + (recent.includes(f.name) ? 0 : 2) + (f.group ? 1 : 0);
+  return h.friends.slice().sort((a, b) => rank(a) - rank(b));
+}
+const friendTile = f => `<button class="fr ${f.ready ? '' : 'off'}" data-friend="${esc(f.name)}">
+    <span class="av">${petFace(f.pet, f.color, f.name)}${f.online ? '<i class="on"></i>' : ''}</span>
+    <b>${esc(f.name)}</b><small class="${f.online ? 'ok' : ''}">${!f.ready ? 'New' : f.online ? 'Online' : f.group ? esc(f.group) : 'Level ' + esc(f.level)}</small></button>`;
+
+function playHead(){
+  const h = duelsHome, on = h ? h.friends.filter(f => f.online && f.ready).length : 0;
+  return `<div class="row-flex between phead" id="phead"><h1>Play</h1>${on ? `<span class="chip teal"><i class="gdot"></i>${on} online</span>` : ''}</div>`;
 }
 
+// Up to four faces; with more friends, three faces and "+N All", which opens the whole list.
 function togetherCard(){
   const h = duelsHome;
-  if (!h) return '<div id="together"></div>';
-  const on = h.friends.filter(f => f.online && f.ready).length;
-  // My group first; kids from the other groups show their group's name.
-  const tile = f => `<button class="fr ${f.ready ? '' : 'off'}" data-friend="${esc(f.name)}">
-      <span class="av">${petFace(f.pet, f.color, f.name)}${f.online ? '<i class="on"></i>' : ''}</span>
-      <b>${esc(f.name)}</b><small class="${f.online ? 'ok' : ''}">${!f.ready ? 'New' : f.online ? 'Online' : f.group ? esc(f.group) : 'Level ' + esc(f.level)}</small></button>`;
-  const mates = h.friends.filter(f => !f.group), others = h.friends.filter(f => f.group).sort((a, b) => (b.online ? 1 : 0) - (a.online ? 1 : 0));
-  const friends = mates.map(tile).join('');
+  if (!h) return '<div class="glass crew" id="together"></div>';
+  const all = playFriends(h), show = all.length > 4 ? all.slice(0, 3) : all;
+  return `<div class="glass crew" id="together">${show.map(friendTile).join('')}
+    ${all.length > show.length ? `<button class="fr" id="allfriends"><span class="addc">+${all.length - show.length}</span><b>All</b><small>friends</small></button>` : ''}
+    <button class="fr" id="duelcode"><span class="addc">${icon('user-plus')}</span><b>Code</b><small>Invite</small></button></div>`;
+}
+
+function friendsSheet(){
+  const h = duelsHome;
+  if (!h) return;
+  const all = playFriends(h), mates = all.filter(f => !f.group), others = all.filter(f => f.group);
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="sheet glass fsheet">
+    <div class="row-flex between"><span class="label">Play with a friend</span>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
+    ${all.length > 8 ? `<input class="input mt-s" id="fsearch" placeholder="Find a name" autocomplete="off">` : ''}
+    <div class="flist mt-s">
+      ${others.length ? '<div class="label">Your group</div>' : ''}<div class="friends mt-s">${mates.map(friendTile).join('')}</div>
+      ${others.length ? `<div class="label mt">Other groups</div><div class="friends mt-s">${others.map(friendTile).join('')}</div>` : ''}
+    </div></div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  ov.onclick = e => {
+    if (e.target === ov) return close();
+    const t = e.target.closest('[data-friend]');
+    if (t) { close(); inviteSheet(t.dataset.friend); }
+  };
+  ov.querySelector('#x').onclick = close;
+  const s = ov.querySelector('#fsearch');
+  if (s) s.oninput = () => ov.querySelectorAll('[data-friend]').forEach(b => b.hidden = !b.dataset.friend.toLowerCase().includes(s.value.trim().toLowerCase()));
+}
+
+// A stage card with two pets and one line: a live game, an invite, a challenge, a duo request.
+const meetCard = (id, label, them, title, sub, buttons) => ({ id, urgent: true, html: `<div class="today iri spot meet" data-card="${id}">
+    <span class="label" style="color:#3b3f55">${label}</span>
+    <div class="grow"><div class="vs2">${petPic(meAsPlayer(), 'happy', '')}<b>+</b>${petPic(them, 'celebrate', 'flip')}</div>
+      <h2>${title}</h2>${sub ? `<div class="sub">${sub}</div>` : ''}</div>
+    ${buttons}</div>` });
+
+function playCards(d){
+  const h = duelsHome, D = h && h.duos, cards = [];
+  if (h) {
+    const pl = h.playing && h.playing[0], inv = h.incoming[0], ch = h.challenges[0], r = D && D.incoming[0];
+    if (pl) cards.push(meetCard('pl:' + pl.code, 'Playing now', duelThem(pl), `${modeTitle(pl)} with ${esc((duelThem(pl) || {}).name || 'a friend')}`, '',
+      `<button class="btn btn-main btn-block" data-duelopen="${pl.code}">${icon('play')} Back to the game</button>`));
+    if (inv) cards.push(meetCard('in:' + inv.code, 'Invitation · ' + duelLeft(inv), inv.host, `${esc(inv.host.name)} invites you to ${modeInvite(inv)}`, '',
+      `<div class="btns"><button class="btn btn-glass" data-duelno="${inv.code}">Not now</button><button class="btn btn-main" data-dueljoin="${inv.code}">${icon('play')} Join</button></div>`));
+    if (ch) cards.push(meetCard('ch:' + ch.code, 'Challenge · ' + duelLeft(ch), ch.host, `${esc(ch.host.name)} challenged you!`, `Beat ${ch.host.score}/${DUEL_ITEMS}`,
+      `<button class="btn btn-main btn-block" data-dueljoin="${ch.code}">${icon('ghost')} Play the challenge</button>`));
+    if (r) cards.push(meetCard('dr:' + r.id, 'Duo streak', r.partner, `${esc(r.partner.name)} wants a duo streak with you`, 'Practice on the same days. One missed day a week is forgiven.',
+      `<div class="btns"><button class="btn btn-glass" data-duono="${esc(r.id)}">Not now</button><button class="btn btn-main" data-duoyes="${esc(r.id)}">${icon('fire')} Yes!</button></div>`));
+    if (D && D.active.length) {
+      const v = D.active.find(x => x.id === featuredDuo) || D.active[0];
+      cards.push({ id: 'du', html: duoCard(v, D.active) }, { id: 'qu', html: questCard(v) });
+    }
+  }
+  const due = msDue(d).length, mine = d.upgrades && d.upgrades.saver;
+  if (due || mine) cards.push({ id: 'rv', html: `<div class="glass spot" data-card="rv"><span class="label">Review</span>
+    <div class="grow"><div class="sub" style="margin:0;text-align:center">Words you met before come back here, a few at a time.</div>
+      ${due ? `<button class="soft drow" id="msreview"><span class="tile t-target">${icon('arrows-clockwise', 'duotone')}</span><span class="drow-main"><b>Mission review</b><small>${Math.min(5, due)} questions</small></span>${icon('caret-right')}</button>` : ''}
+      ${mine ? `<button class="soft drow" id="mywords"><span class="tile t-vocab">${icon('bookmarks-simple', 'duotone')}</span><span class="drow-main"><b>My words</b><small>${(d.games.saved || []).length} saved</small></span>${icon('caret-right')}</button>` : ''}</div></div>` });
+  cards.push({ id: 'la', html: lastCard(h) });
+  // Five cards at most, so the dots stay readable: the last games card (with Tug of War) always stays.
+  return cards.length > 5 ? cards.slice(0, 4).concat(cards.slice(-1)) : cards;
+}
+
+// Invites I sent, the last results with a rematch, Tug of War and the Helper stars.
+function lastCard(h){
   const rows = [];
-  h.waiting.forEach(v => {
+  ((h && h.waiting) || []).slice(0, 1).forEach(v => {
     const to = v.guest ? esc(v.guest.name) : 'code ' + esc(v.code);
     rows.push(`<button class="soft drow" data-duelopen="${v.code}">${v.guest ? faceOf(v.guest) : `<span class="tile sm t-read">${icon('key', 'duotone')}</span>`}
       <span class="drow-main"><b>${v.state === 'challenge' ? 'Challenge to ' + to : 'Invite to ' + to}</b>
       <small>${v.state === 'challenge' ? 'You got ' + v.host.score + '/' + DUEL_ITEMS + ' · ' + duelLeft(v) : 'Waiting · ' + duelLeft(v)}</small></span>${icon('caret-right')}</button>`);
   });
-  h.results.slice(0, 3).forEach(v => {
+  ((h && h.results) || []).slice(0, 3 - rows.length).forEach(v => {
     const me = duelMe(v), them = duelThem(v) || { name: '?' };
     const res = v.mode === 'talk' ? (v.team == null ? '' : v.team + '/' + v.items + ' words') + (v.winner === 'team' ? ' · Team win' : '')
       : v.mode === 'boss' ? (v.winner === 'team' ? 'Victory!' : 'The boss got away') : v.winner === me.name ? 'You won' : v.winner === 'draw' ? 'A draw' : esc(them.name) + ' won';
@@ -5081,47 +5212,87 @@ function togetherCard(){
       <small>${res}${v.mode === 'boss' || v.mode === 'talk' ? '' : ' · ' + modeTitle(v)}</small></span>
       <span class="chip purple" data-rematch="${v.code}">${icon('arrows-clockwise')} Rematch</span></button>`);
   });
-  return `<div class="glass panel" id="together">
-    <div class="row-flex between" style="gap:10px"><div class="row-flex" style="gap:12px;min-width:0"><span class="tile t-together">${icon('users-three', 'duotone')}</span>
-      <div style="min-width:0"><h2>Play together</h2><div class="sub" style="margin-top:2px;font-size:13px">Invite someone. Learn as a team.</div></div></div>
-      ${on ? `<span class="chip teal"><i class="gdot"></i>${on} online</span>` : ''}</div>
-    ${others.length ? '<div class="label mt">Your group</div>' : ''}
-    <div class="friends ${others.length ? 'mt-s' : 'mt'}">${friends}<button class="fr" id="duelcode"><span class="addc">${icon('user-plus')}</span><b>Code</b><small>Join or share</small></button></div>
-    ${others.length ? `<div class="label mt">Other groups</div><div class="friends mt-s">${others.map(tile).join('')}</div>` : ''}
-    <button class="soft drow mt" id="tugopen"><span class="tile t-write">${icon('rope', 'duotone')}</span>
-      <span class="drow-main"><b>Tug of War</b><small>Two players, one phone, face to face</small></span>${icon('caret-right')}</button>
-    ${rows.length ? `<div class="stack mt" style="gap:8px">${rows.join('')}</div>` : ''}
-    ${h.helper ? `<div class="sub mt-s" style="font-size:12.5px">${icon('star', 'duotone')} ${plural(h.helper, 'Helper star')} for explaining to a friend</div>` : ''}
-  </div>`;
+  return `<div class="glass spot" data-card="la"><span class="label">Last games</span>
+    <div class="grow">${rows.length ? rows.join('') : '<div class="sub" style="margin:0;text-align:center">Your games with friends show up here. Tap a friend to start one.</div>'}</div>
+    <button class="soft drow" id="tugopen"><span class="tile t-write">${icon('rope', 'duotone')}</span>
+      <span class="drow-main"><b>Tug of War</b><small>Two players, one phone</small></span>${icon('caret-right')}</button>
+    ${h && h.helper ? `<div class="sub" style="margin:0;font-size:12.5px">${icon('star', 'duotone')} ${plural(h.helper, 'Helper star')} for explaining to a friend</div>` : ''}</div>`;
 }
 
+function playStage(d){
+  const cards = playCards(d);
+  let i = cards.findIndex(c => c.id === playCard);
+  if (i < 0) i = 0;
+  return `<div class="deck" id="pstage" data-at="${i}">${cards.map((c, k) => c.html.replace(/btn-main/g, k ? 'btn-glass' : 'btn-primary')).join('')}</div>
+    <div class="pdots" id="pdots">${cards.length > 1 ? cards.map((c, k) => `<button class="${k === i ? 'on' : ''}" data-dot="${k}" aria-label="Card ${k + 1} of ${cards.length}"></button>`).join('') : ''}</div>`;
+}
+
+// The stage keeps the card on screen across redraws, unless something urgent has just arrived.
+function placeStage(){
+  const st = document.getElementById('pstage');
+  if (!st) return;
+  const step = () => st.children[1] ? st.children[1].offsetLeft - st.children[0].offsetLeft : st.clientWidth;
+  st.scrollLeft = Number(st.dataset.at) * step();
+  st.onscroll = () => {
+    const k = Math.max(0, Math.min(st.children.length - 1, Math.round(st.scrollLeft / step())));
+    const c = st.children[k];
+    playCard = c ? c.dataset.card : null;
+    document.querySelectorAll('#pdots [data-dot]').forEach(b => b.classList.toggle('on', Number(b.dataset.dot) === k));
+  };
+}
+
+function gamesPanel(d){
+  const g = d.games, rec = warmupGame(d), full = g.todayXp >= g.dayCap;
+  return `<div class="glass solo"><div class="row-flex between"><span class="label">Play alone</span><span class="chip ${full ? 'teal' : 'orange'}">${icon('lightning')} ${g.todayXp}/${g.dayCap} XP</span></div>
+    <div class="solo4">${Object.keys(GAME_INFO).map(k => `<button class="soft gt ${k === rec ? 'rec' : ''}" data-game="${k}" aria-label="${GAME_INFO[k].name}: ${GAME_INFO[k].desc}${k === rec ? ' (warm-up)' : ''}">
+      <span class="tile ${GAME_INFO[k].tile}">${icon(GAME_INFO[k].icon, 'duotone')}</span><b>${GAME_INFO[k].name}</b></button>`).join('')}</div></div>`;
+}
+
+function playTab(d){
+  return `${playHead()}${togetherCard()}${playStage(d)}${gamesPanel(d)}`;
+}
+
+// One handler for the friends row and the stage: duels, duo streaks, review and the dots.
 function bindTogether(){
-  ['together', 'duelbanner'].forEach(id => {
+  ['together', 'pstage', 'pdots'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     el.onclick = e => {
       const t = e.target.closest('[data-rematch],button');
-      if (!t) return;
+      if (!t || t.disabled) return;
       if (t.dataset.rematch) return duelRematch(t.dataset.rematch);
       if (t.dataset.friend) return inviteSheet(t.dataset.friend);
+      if (t.dataset.dot) { const st = document.getElementById('pstage'), c = st && st.children[t.dataset.dot]; return c && st.scrollTo({ left: c.offsetLeft - st.children[0].offsetLeft, behavior: 'smooth' }); }
+      if (t.id === 'allfriends') return friendsSheet();
       if (t.id === 'duelcode') return codeSheet();
       if (t.id === 'tugopen') return tugSheet();
+      if (t.id === 'msreview') return startMissionReview();
+      if (t.id === 'mywords') return openMyWords();
       if (t.dataset.duelopen) return openDuel(t.dataset.duelopen);
       if (t.dataset.dueljoin) return joinDuel(t.dataset.dueljoin);
       if (t.dataset.duelno) return replyDuel(t.dataset.duelno, 'no');
+      return duoTap(t);
     };
   });
+  placeStage();
 }
 
+// Redraws the Play tab's friends and stage (when it is open), Today's pills and the tab bar.
 function refreshTogether(){
-  const b = document.getElementById('duelbanner'), c = document.getElementById('together'), hp = document.getElementById('hpills'), tb = document.getElementById('tabbar');
-  if (b) b.outerHTML = duelBanner();
-  if (c) c.outerHTML = togetherCard();
+  const hp = document.getElementById('hpills'), tb = document.getElementById('tabbar'), st = document.getElementById('pstage');
   if (hp && dash) { hp.outerHTML = homePills(dash); bindPills(); }
   if (tb && dash) tb.outerHTML = tabBar(dash);
+  if (st && dash) {
+    const was = st.firstElementChild && st.firstElementChild.dataset.card, first = playCards(dash)[0];
+    if (first && first.urgent && first.id !== was) playCard = first.id;
+    document.getElementById('phead').outerHTML = playHead();
+    document.getElementById('together').outerHTML = togetherCard();
+    document.getElementById('pdots').remove();
+    st.outerHTML = playStage(dash);
+  }
   bindTogether();
   bindTabs();
-  refreshDuos();
+  checkDuoParty();
 }
 
 // The tabs ask for invites every 20 s while one is open (this also keeps the online dot).
@@ -6462,110 +6633,72 @@ const FLAME = `<svg viewBox="0 0 100 120" aria-hidden="true"><defs><linearGradie
   <path d="M51 50c6 12 19 19 19 36 0 13-9 23-20 23s-19-10-19-23c0-8 4-14 8-17 1 6 4 9 7 10-1-10 1-19 5-29z" fill="url(#dfl2)"/></svg>`;
 const duoMood = (did, both) => both ? 'celebrate' : did ? 'happy' : 'sleepy';
 
-function duoBanner(){
-  const r = duelsHome && duelsHome.duos && duelsHome.duos.incoming[0];
-  return `<div id="duobanner">${r ? `<div class="today iri duel-banner">
-      <div class="row-flex" style="gap:12px">${faceOf(r.partner)}<div style="min-width:0"><span class="label" style="color:#3b3f55">Duo streak</span>
-        <h2 style="margin-top:2px">${esc(r.partner.name)} wants a duo streak with you</h2></div></div>
-      <div class="sub" style="color:#3b3f55;font-size:13px;margin-top:8px">Practice on the same days and grow a streak together. One missed day a week is forgiven.</div>
-      <div class="btns"><button class="btn btn-glass" data-duono="${esc(r.id)}">Not now</button><button class="btn btn-teal" data-duoyes="${esc(r.id)}">${icon('fire')} Yes!</button></div></div>` : ''}</div>`;
-}
-
-function duoSection(){
-  const D = duelsHome && duelsHome.duos;
-  if (!D || !D.active.length) return '<div id="duos"></div>';
-  const list = D.active.slice(), i = list.findIndex(x => x.id === featuredDuo);
-  if (i > 0) list.unshift(list.splice(i, 1)[0]);
-  const v = list[0], others = list.slice(1);
-  return `<div id="duos" class="stack">${duoCard(v)}${questCard(v)}
-    ${others.length ? `<div class="stack" style="gap:8px">${others.map(o => `<button class="soft drow" data-duofocus="${esc(o.id)}">${faceOf(o.partner)}
-      <span class="drow-main"><b>Duo streak with ${esc(o.partner.name)}</b><small>${o.todayMe && o.todayThem ? 'You both practiced today' : o.todayThem ? esc(o.partner.name) + ' practiced today. Your turn!' : o.todayMe ? 'Waiting for ' + esc(o.partner.name) : 'Practice today, both of you'}</small></span>
-      <span class="chip orange">${icon('fire')} ${o.days}</span></button>`).join('')}</div>` : ''}</div>`;
-}
-
-function duoCard(v){
+// The duo streak card on the Play stage: the flame, both pets, this week in two thin rows and one action.
+// Other duo streaks are chips in its header (tap one to show it).
+function duoCard(v, list){
   const p = v.partner, me = meAsPlayer(), both = v.todayMe && v.todayThem;
-  const status = both ? `You both practiced today. ${v.days === 1 ? 'Day 1!' : 'Day ' + v.days + '!'}`
+  const status = both ? `You and ${esc(p.name)} both practiced. ${v.days === 1 ? 'Day 1!' : 'Day ' + v.days + '!'}`
     : v.todayMe ? `Waiting for ${esc(p.name)}. A nudge might help!`
-    : v.todayThem ? `${esc(p.name)} practiced today. Your turn!` : 'Practice today, both of you.';
-  const cell = (w, who) => w.saved ? `<i class="wd saved">${icon('shield-check', 'bold')}</i>`
-    : `<i class="wd ${w[who] ? who : w.future || w.before ? 'off' : w.date === dash.today ? 'wait' : ''}"></i>`;
-  const action = !v.todayMe ? `<button class="btn btn-primary btn-block" data-duoplay="1">${icon('play')} Practice now</button>`
-    : !v.todayThem ? `<button class="btn btn-teal btn-block" data-duonudge="${esc(v.id)}" ${v.nudged ? 'disabled' : ''}>${icon('bell-ringing')} ${v.nudged ? 'Nudge sent' : 'Nudge ' + esc(p.name)}</button>` : '';
-  const prev = v.next ? [0].concat(duelsHome.duos.milestones).filter(m => m < v.next).pop() : 0;
-  return `<div class="duocard iri" data-duo="${esc(v.id)}">
-    <div class="row-flex between"><span class="label" style="color:#9a3412">Duo streak</span>
-      <span class="row-flex" style="gap:6px"><span class="chip">with ${esc(p.name)}</span><button class="btn btn-glass icon-btn duo-more" data-duomenu="${esc(v.id)}" title="More">${icon('dots-three')}</button></span></div>
-    <div class="flamerow">
-      ${petPic(me, duoMood(v.todayMe, both), 'duopet')}
-      <div class="flame ${v.days ? '' : 'cold'}">${FLAME}<b>${v.days}</b><small>${v.days === 1 ? 'DAY' : 'DAYS'}</small></div>
-      ${petPic(p, duoMood(v.todayThem, both), 'duopet flip')}
+    : v.todayThem ? `${esc(p.name)} practiced today. Your turn!` : `Practice today, you and ${esc(p.name)}.`;
+  const bar = (w, who) => w.saved ? '<i class="saved"></i>' : `<i class="${w[who] ? who : ''}"></i>`;
+  const action = !v.todayMe ? `<button class="btn btn-main btn-block" data-duoplay="1">${icon('play')} Practice now</button>`
+    : !v.todayThem ? `<button class="btn btn-main btn-block" data-duonudge="${esc(v.id)}" ${v.nudged ? 'disabled' : ''}>${icon('bell-ringing')} ${v.nudged ? 'Nudge sent' : 'Nudge ' + esc(p.name)}</button>` : '';
+  const chips = list.filter(o => o.id !== v.id).slice(0, 2).map(o => `<button class="chip" data-duofocus="${esc(o.id)}">${esc(o.partner.name)} ${icon('fire')} ${o.days}</button>`).join('');
+  return `<div class="duocard iri spot" data-card="du" data-duo="${esc(v.id)}">
+    <div class="row-flex between"><span class="label" style="color:#9a3412;white-space:nowrap">Duo streak</span>
+      <span class="row-flex" style="gap:6px;min-width:0">${chips}<button class="btn btn-glass icon-btn duo-more" data-duomenu="${esc(v.id)}" title="More">${icon('dots-three')}</button></span></div>
+    <div class="grow">
+      <div class="flamerow">
+        ${petPic(me, duoMood(v.todayMe, both), 'duopet')}
+        <div class="flame ${v.days ? '' : 'cold'}">${FLAME}<b>${v.days}</b><small>${v.days === 1 ? 'DAY' : 'DAYS'}</small></div>
+        ${petPic(p, duoMood(v.todayThem, both), 'duopet flip')}
+      </div>
+      <div class="wk" aria-label="This week: you on top, ${esc(p.name)} below">${v.week.map(w => `<div class="${w.date === dash.today ? 'now' : ''} ${w.future || w.before ? 'off' : ''}">
+        <span>${['S', 'M', 'T', 'W', 'T', 'F', 'S'][dateOf(w.date).getDay()]}</span>${bar(w, 'me')}${bar(w, 'them')}</div>`).join('')}</div>
+      <div class="dstat">${status}</div>
+      <div class="dbadge">${v.next ? `${icon('medal', 'duotone')} ${plural(v.next - v.days, 'day')} to the ${v.next}-day badge` : `${icon('crown-simple', 'duotone')} Every badge!`}</div>
     </div>
-    <div class="names"><span class="${v.todayMe ? 'ok' : 'wait'}">You · ${v.todayMe ? 'done today' : 'not yet'}</span><span class="${v.todayThem ? 'ok' : 'wait'}">${esc(p.name)} · ${v.todayThem ? 'done today' : 'not yet'}</span></div>
-    <div class="weeks">
-      <span></span>${v.week.map(w => `<span class="${w.date === dash.today ? 'now' : ''}">${['S', 'M', 'T', 'W', 'T', 'F', 'S'][dateOf(w.date).getDay()]}</span>`).join('')}
-      <span class="rl">You</span>${v.week.map(w => cell(w, 'me')).join('')}
-      <span class="rl">${esc(p.name)}</span>${v.week.map(w => cell(w, 'them')).join('')}
-    </div>
-    <div class="sub" style="color:#3b3f55;font-size:13px;margin:0;text-align:center">${status}</div>
     ${action}
-    ${v.next ? `<div class="mile"><div class="row-flex" style="gap:6px">${icon('medal', 'duotone')} ${plural(v.next - v.days, 'day')} to the ${v.next}-day badge
-        <span style="margin-left:auto">${v.milestones.map(m => `<span class="mbadge">${m}</span>`).join('')}</span></div>
-      <div class="mbar"><i style="width:${Math.round((v.days - prev) / (v.next - prev) * 100)}%"></i></div></div>`
-      : `<div class="mile"><div class="row-flex" style="gap:6px">${icon('crown-simple', 'duotone')} Every badge! ${v.milestones.map(m => `<span class="mbadge">${m}</span>`).join('')}</div></div>`}
   </div>`;
 }
 
+// The team quest card: a ring for the team's progress, the reward, and the quest's game.
 function questCard(v){
-  const q = v.quest, p = v.partner;
-  const pct = n => Math.min(100, Math.round(n / q.target * 100));
-  const tile = q.kind === 'game' ? `<span class="tile ${GAME_INFO[q.game].tile}">${icon(GAME_INFO[q.game].icon, 'duotone')}</span>` : `<span class="tile t-fire">${icon('calendar-check', 'duotone')}</span>`;
-  const bar = q.kind === 'game' ? `<i class="a" style="width:${pct(q.me)}%"></i><i class="b" style="width:${Math.max(0, Math.min(100 - pct(q.me), pct(q.them)))}%"></i>` : `<i class="ab" style="width:${pct(q.total)}%"></i>`;
-  return `<div class="glass panel quest iri ${q.claimed ? 'won' : ''}">
-    <div class="row-flex between"><span class="label">Team quest · this week</span><span class="chip ${q.claimed ? 'teal' : ''}">${q.claimed ? icon('check') + ' Done' : icon('clock') + ' ' + plural(q.daysLeft, 'day') + ' left'}</span></div>
-    <div class="row-flex mt-s" style="gap:12px">${tile}<div style="min-width:0"><h2>${esc(q.title)}</h2><div class="sub" style="margin-top:2px;font-size:13px">${esc(q.goal)}</div></div></div>
-    <div class="qnum mt-s">${Math.min(q.total, q.target)}<span>/ ${q.target}</span></div>
-    <div class="qbar mt-s">${bar}</div>
-    ${q.kind === 'game' ? `<div class="legend mt-s"><span>${faceOf(meAsPlayer())} You ${q.me}</span><span>${faceOf(p)} ${esc(p.name)} ${q.them}</span>${q.minEach ? `<small>Each of you: at least ${q.minEach}</small>` : ''}</div>`
-      : `<div class="legend mt-s"><span>${icon('calendar-check')} Days you both practiced this week</span></div>`}
-    <div class="soft qreward mt-s"><span class="tile t-star">${icon(q.claimed ? 'seal-check' : 'treasure-chest', 'duotone')}</span>
-      <div><b>${q.claimed ? 'Quest complete!' : '+' + q.xp + ' XP each'}</b><small>${q.claimed ? '+' + q.xp + ' XP for both of you. A new quest on Sunday.' : 'for both of you when the team finishes'}</small></div></div>
-    <div class="sub mt-s" style="font-size:12.5px">${esc(q.reason)}</div>
-    ${q.kind === 'game' && !q.claimed ? `<button class="btn btn-primary btn-block mt-s" data-duogame="${q.game}">${icon('play')} Play ${GAME_INFO[q.game].name}</button>` : ''}
+  const q = v.quest, p = v.partner, pct = Math.min(100, Math.round(q.total / q.target * 100));
+  return `<div class="glass spot quest iri ${q.claimed ? 'won' : ''}" data-card="qu">
+    <div class="row-flex between"><span class="label">Team quest</span><span class="chip ${q.claimed ? 'teal' : ''}">${q.claimed ? icon('check') + ' Done' : icon('clock') + ' ' + plural(q.daysLeft, 'day') + ' left'}</span></div>
+    <div class="grow" style="align-items:center;text-align:center">
+      <div class="qring" style="--p:${pct}%"><b>${Math.min(q.total, q.target)}<small>/ ${q.target}</small></b></div>
+      <h2>${esc(q.title)}</h2>
+      ${q.kind === 'game' ? `<div class="legend"><span>${faceOf(meAsPlayer())} You ${q.me}</span><span>${faceOf(p)} ${esc(p.name)} ${q.them}</span></div>`
+        : `<div class="sub">${esc(q.goal)}</div>`}
+      <div class="sub">${q.claimed ? 'Quest complete! A new quest on Sunday.' : `+${q.xp} XP each when the team finishes`}</div>
+    </div>
+    ${q.kind === 'game' && !q.claimed ? `<button class="btn btn-main btn-block" data-duogame="${q.game}">${icon('play')} Play ${GAME_INFO[q.game].name}</button>` : ''}
   </div>`;
 }
 
-function bindDuos(){
-  ['duos', 'duobanner'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.onclick = async e => {
-      const t = e.target.closest('button');
-      if (!t || t.disabled) return;
-      if (t.dataset.duogame) return startGame(t.dataset.duogame);
-      if (t.dataset.duoplay) return startGame(warmupGame(dash));
-      if (t.dataset.duofocus) { featuredDuo = t.dataset.duofocus; return refreshDuos(); }
-      if (t.dataset.duomenu) return duoMenu(t.dataset.duomenu);
-      const act = t.dataset.duonudge ? ['apiDuoNudge', t.dataset.duonudge] : t.dataset.duoyes ? ['apiDuoAnswer', t.dataset.duoyes, true]
-        : t.dataset.duono ? ['apiDuoAnswer', t.dataset.duono, false] : null;
-      if (!act) return;
-      t.disabled = true;
-      try {
-        const D = await call(act[0], session.name, session.pin, ...act.slice(1));
-        if (duelsHome) duelsHome.duos = D;
-        toast(t.dataset.duonudge ? 'Nudge sent' : t.dataset.duoyes ? 'Your duo streak starts today!' : 'OK, maybe later');
-        refreshDuos();
-      } catch(err){ toast(err.message, true); t.disabled = false; }
-    };
-  });
+// Duo streak buttons on the stage (bindTogether hands them over).
+async function duoTap(t){
+  if (t.dataset.duogame) return startGame(t.dataset.duogame);
+  if (t.dataset.duoplay) return startGame(warmupGame(dash));
+  if (t.dataset.duofocus) { featuredDuo = t.dataset.duofocus; playCard = 'du'; return refreshTogether(); }
+  if (t.dataset.duomenu) return duoMenu(t.dataset.duomenu);
+  const act = t.dataset.duonudge ? ['apiDuoNudge', t.dataset.duonudge] : t.dataset.duoyes ? ['apiDuoAnswer', t.dataset.duoyes, true]
+    : t.dataset.duono ? ['apiDuoAnswer', t.dataset.duono, false] : null;
+  if (!act) return;
+  t.disabled = true;
+  try {
+    const D = await call(act[0], session.name, session.pin, ...act.slice(1));
+    if (duelsHome) duelsHome.duos = D;
+    toast(t.dataset.duonudge ? 'Nudge sent' : t.dataset.duoyes ? 'Your duo streak starts today!' : 'OK, maybe later');
+    if (t.dataset.duoyes) playCard = 'du';
+    refreshDuos();
+  } catch(err){ toast(err.message, true); t.disabled = false; }
 }
 
 function refreshDuos(){
-  const a = document.getElementById('duobanner'), b = document.getElementById('duos');
-  if (a) a.outerHTML = duoBanner();
-  if (b) b.outerHTML = duoSection();
-  bindDuos();
-  checkDuoParty();
+  refreshTogether();
 }
 
 function duoMenu(id){
@@ -8298,7 +8431,7 @@ function renderDash(){
   if (d.levelTest) return renderOnboarding(d);
   if (d.nest) return renderNest(d);
   if (dashTab === 'journey' && d.journey) return renderMap();
-  app.innerHTML = `<div class="tabview tv-${dashTab}${dashTab === 'today' ? '' : ' stack'}">${dashBody(d)}</div>${tabBar(d)}`;
+  app.innerHTML = `<div class="tabview tv-${dashTab}${dashTab === 'today' || dashTab === 'play' ? '' : ' stack'}">${dashBody(d)}</div>${tabBar(d)}`;
   window.scrollTo(0, 0);
   const rf = document.getElementById('refresh'); if (rf) rf.onclick = () => refreshDash(true);
   const lo = document.getElementById('logout'); if (lo) lo.onclick = signOut;
@@ -8306,8 +8439,6 @@ function renderDash(){
   app.querySelectorAll('[data-log]').forEach(b => b.onclick = () => openSheet(d.week.find(w => w.date === b.dataset.log)));
   app.querySelectorAll('[data-mission]').forEach(b => b.onclick = () => startMission(b.dataset.mission));
   const rt = document.getElementById('retest'); if (rt) rt.onclick = () => placeIntro('B');
-  const mr = document.getElementById('msreview');
-  if (mr) mr.onclick = startMissionReview;
   bindPills();
   app.querySelectorAll('.tabview [data-game]').forEach(b => b.onclick = () => startGame(b.dataset.game));
   ['adopt', 'petedit'].forEach(id => { const b = document.getElementById(id); if (b) b.onclick = petPicker; });
@@ -8317,10 +8448,7 @@ function renderDash(){
   if (pw) pw.onclick = () => openShop('wardrobe');
   const pg = document.getElementById('polishgo');
   if (pg) pg.onclick = polishAll;
-  const mw = document.getElementById('mywords');
-  if (mw) mw.onclick = openMyWords;
   bindTogether();
-  bindDuos();
   bindTabs();
   startHomePoll();
   if (d.push && d.push.key) pushKey = d.push.key;
@@ -8355,7 +8483,7 @@ function goTab(t){
 }
 function dashBody(d){
   const s = d.stats, today = d.week.find(w => w.isToday);
-  if (dashTab === 'play') return `${duelBanner()}${duoBanner()}${togetherCard()}${gamesPanel(d)}${duoSection()}`;
+  if (dashTab === 'play') return playTab(d);
   if (dashTab === 'pet') return `${petCard(d)}${shopCard(d)}`;
   if (dashTab === 'journey') return `<div class="glass panel" style="text-align:center"><h2>Your journey starts soon</h2><div class="sub mt-s">Finish your first daily task to open the map.</div></div>`;
   if (dashTab === 'me') {

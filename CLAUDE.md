@@ -243,6 +243,8 @@ Audit card merges it with the practice tabs. New server calls that change someth
 
 Home in five tabs (owner's choice 2026-10-27 from the mockup canvas, spec `specs/home-tabs.md`): Today (pet, one Start, two
 pills, no scroll), Journey (the map), Play, Pet, Me. Live on Pages and @36 the same day.
+The Play tab in one screen (owner's pick A, 2026-10-29, spec `specs/play-tab.md`): friends row, a stage of cards swiped sideways
+(most urgent first, one primary button) and the four games in a row; checked in home-fit.html and tablet.html?screen=play.
 
 The living Nest home (built 2026-10-28, spec `specs/nest-home.md`, @54, NEST_V 10): `docs/nest/home.js` (the scene, `nkHome`),
 `echo.js` (Coco repeats you, `nkEchoStart`), `stickers.js` (sticker book `nkStickers`, parents' postcard `nkPostcard`).

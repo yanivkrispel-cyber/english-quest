@@ -9,7 +9,7 @@ iframe{border:0;transform-origin:0 0}
 b{display:block;margin:4px 0}
 pre{white-space:pre-wrap;margin:12px 0 0}
 </style>
-<!-- The app on tablets (served by test/dev-server.js: http://localhost:8787/test/tablet.html?screen=today|journey|game|mission|parent|picker|signin|nest|nest-meet|nest-phrase|nest-find|nest-move|nest-say|nest-done|nest-all|nest-living|nest-living-night|nest-living-many|nest-living-pet[&phones]).
+<!-- The app on tablets (served by test/dev-server.js: http://localhost:8787/test/tablet.html?screen=today|journey|play|game|mission|parent|picker|signin|nest|nest-meet|nest-phrase|nest-find|nest-move|nest-say|nest-done|nest-all|nest-living|nest-living-night|nest-living-many|nest-living-pet[&phones]).
      Each frame is the page size the tablet script picks, scaled to the real screen and drawn at 0.42. -->
 <div class="row" id="row"></div>
 <pre id="out">Loading…</pre>
@@ -70,6 +70,7 @@ async function show(f){
   else {
     await ev("(async () => { await login('Aviv', '2694', false, false); clearInterval(homeTimer); clearInterval(petLifeT); })()");
     if (screen === 'journey') ev("dashTab = 'journey'; renderDash()");
+    if (screen === 'play') ev("dashTab = 'play'; renderDash()");
     if (screen === 'game') await ev("startGame('match')");
     if (screen === 'mission') { await ev("loadMissions(MS_FILES['a2'])"); await ev("previewMission('a2g01', '')"); ev("MS.si = Math.min(4, MS.S.length - 1); MS.sub = {}; MS.guess = null; MS.drawn = -1; msRender()"); }
   }
