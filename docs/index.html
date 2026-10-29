@@ -288,6 +288,24 @@ html:has(.nkh),html:has(.nkh) body{height:100%;overflow:hidden;overscroll-behavi
 .nkh.painted .nkh-pond{background:none}
 .nkh.painted .nkh-duck{left:40%;bottom:10%;width:calc(var(--s) * 13)}
 .nkh.wide.painted .nkh-duck{left:62%}
+/* The arcade's door: a glowing tent beside the egg, with a "Games" tag for the grown-ups */
+.nkh-tent{left:calc(50% - var(--s) * 30);bottom:calc(15% + var(--s) * 37);width:calc(var(--s) * 36);min-width:112px;z-index:4}
+.nkh-tent .nkh-in{animation:nkh-tent 3.6s ease-in-out infinite}
+.nkh-halo{position:absolute;left:50%;top:55%;width:120%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,226,140,.75),rgba(255,200,120,.25) 45%,transparent 70%);animation:nkh-halo 2.4s ease-in-out infinite}
+.nkh-tag{position:absolute;left:50%;bottom:-6%;translate:-50% 0;display:flex;align-items:center;gap:4px;padding:3px 10px 3px 7px;border-radius:999px;white-space:nowrap;
+  background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--stroke);box-shadow:var(--inner),0 6px 14px rgba(40,30,70,.18);
+  font-size:13px;color:var(--ink);pointer-events:none}
+.nkh-tag i{font-size:17px;color:var(--primary)}
+.nkh-tent.call .nkh-halo{animation:nkh-halo .6s ease-in-out 4}
+.nkh-tent.call .nkh-in{animation:nkh-tentcall .7s ease-in-out 3}
+.nkh-tent.open .nkh-in{animation:nkh-tentopen .6s ease-in forwards}
+.nkh.wide .nkh-tent{left:31%;bottom:38%;width:calc(var(--s) * 26)}
+@keyframes nkh-tent{0%,100%{transform:none}50%{transform:translateY(-3%) scale(1.02)}}
+@keyframes nkh-halo{0%,100%{opacity:.55;transform:scale(.92)}50%{opacity:1;transform:scale(1.08)}}
+@keyframes nkh-tentcall{0%,100%{transform:none}30%{transform:scale(1.14) rotate(-4deg)}60%{transform:scale(1.1) rotate(4deg)}}
+@keyframes nkh-tentopen{40%{transform:scale(1.18)}100%{transform:scale(2.4);opacity:0}}
+@media (prefers-reduced-motion:reduce){.nkh-tent .nkh-in,.nkh-halo{animation:none}}
 @keyframes nkh-in{from{opacity:0}to{opacity:1}}
 .nkh-hills .h1{fill:var(--hl1)}.nkh-hills .h2{fill:var(--hl2)}
 .nkh-wild{width:calc(var(--s) * 8);filter:hue-rotate(var(--hue));opacity:.95}
@@ -7384,7 +7402,7 @@ function auditRender(pin){
 // Listening and pictures only, and only Coco's English (no Hebrew voice): he shows each game first. No reading, timers
 // or fail screens, and the pet is the only reward. Content: docs/nest/nest.js (EQ_NEST); the session engine and its
 // games: docs/nest/play.js; recordings: docs/nest/audio (tools/nest_audio.py).
-const NEST_V = 14, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
+const NEST_V = 15, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
 let NE = null, nestLoading = null, nestAudioEl = null, nestQueue = null, nestMic = null;
 function loadNest(){
   if (window.EQ_NEST && typeof NK === 'object' && typeof nkActorOn === 'function' && typeof nkHome === 'function' && typeof nkEchoStart === 'function' && typeof nkStickers === 'function' && typeof nkArcade === 'function') return Promise.resolve(window.EQ_NEST);

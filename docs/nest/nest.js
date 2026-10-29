@@ -486,7 +486,33 @@ window.EQ_NEST = {
     mygo: 'My turn!',
     draw: 'Take a card!',
     youwin: 'You win! Hooray!',
-    iwin: 'I win! Yay! Good game!'
+    iwin: 'I win! Yay! Good game!',
+    // Stage D: Coco's kitchen, Coco's house, Where's Coco?, Coco Ladders
+    kitchen: "Welcome to Coco's kitchen!",
+    nothanks: 'Hmm... no, thank you!',
+    house: 'Welcome to my house!',
+    wherecoco: 'Where is Coco? Find me!',
+    foundme: 'You found me! Hee hee!',
+    lost: 'Oh no! I lost my things! Help me!',
+    roll: 'Roll the dice!',
+    ladder: 'Up, up, up the ladder!',
+    slide: 'Wheee! Down the slide!',
+    count: "Let's count!"
+  },
+  // Coco's kitchen (stage D): what a customer orders, o-<word>-<n> (one, two, three of it; one line for what is not counted).
+  orders: {
+    apple: ['An apple, please!', 'Two apples, please!', 'Three apples, please!'],
+    banana: ['A banana, please!', 'Two bananas, please!', 'Three bananas, please!'],
+    pear: ['A pear, please!', 'Two pears, please!', 'Three pears, please!'],
+    strawberry: ['A strawberry, please!', 'Two strawberries, please!', 'Three strawberries, please!'],
+    watermelon: ['A watermelon, please!', 'Two watermelons, please!'],
+    egg: ['An egg, please!', 'Two eggs, please!', 'Three eggs, please!'],
+    'ice-cream': ['An ice cream, please!', 'Two ice creams, please!'],
+    grapes: ['Grapes, please!'],
+    bread: ['Some bread, please!'],
+    cheese: ['Some cheese, please!'],
+    milk: ['Some milk, please!'],
+    juice: ['Some juice, please!']
   },
   // What a grown-up reads on a long press on Coco during a game (Hebrew text only, never spoken to the kid).
   hints: {

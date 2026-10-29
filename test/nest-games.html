@@ -10,7 +10,7 @@ iframe{border:0;border-radius:24px;background:#fff}#out{width:100%;white-space:p
 <script>
 const q = new URLSearchParams(location.search), frames = [document.getElementById('a'), document.getElementById('b')], out = document.getElementById('out');
 const GAMES = ['meet', 'find', 'move', 'say', 'give', 'peek', 'sound', 'pop', 'sort', 'pairs', 'missing', 'odd', 'chant', 'story', 'scene', 'color', 'dress', 'teach'];
-const ARC = ['parrot', 'peep', 'nono', 'slice', 'cards'];
+const ARC = ['parrot', 'peep', 'nono', 'slice', 'cards', 'house', 'where', 'kitchen', 'ladders'];
 async function ready(f){
   for (let i = 0; i < 80; i++) {
     try { if (f.contentWindow.eval('typeof nestGalleryDash') === 'function' && f.contentDocument.getElementById('app')) return; } catch(e){}
@@ -48,7 +48,7 @@ async function play(f, unit, game, age, step, mute){
     const bad = [];
     let n = 0;
     for (const age of [3, 4, 5, 7]) for (const game of GAMES.concat(ARC)) for (const f of frames) {
-      const unit = game === 'cards' ? 'n02' : game === 'slice' || game === 'parrot' ? 'n07' : game === 'dress' ? 'n13' : game === 'sound' ? 'n04' : game === 'give' ? 'n07' : 'n05';
+      const unit = game === 'cards' ? 'n02' : game === 'slice' || game === 'parrot' || game === 'kitchen' ? 'n07' : game === 'dress' ? 'n13' : game === 'sound' ? 'n04' : game === 'give' ? 'n07' : 'n05';
       const r = await play(f, unit, game, age, 0, true);
       n++;
       if (r.page > 0 || r.over > 2 || r.errs) bad.push(`${f.id} age ${age} ${game}: page ${r.page}, stage ${r.over}${r.errs ? ', error on screen' : ''}`);

@@ -5,9 +5,12 @@
 // Loaded after play.js, in the app's global scope: every top-level name starts with nk/NK (test/nest-check.js).
 
 // [game, the youngest age, the icon while the cover is loading]
-const NK_ARCADE = [['parrot', 2, 'bird'], ['peep', 2, 'eye'], ['nono', 2, 'hand-palm'], ['slice', 4, 'knife'], ['cards', 4, 'cards']];
-const NK_ARC_NAME = { parrot: 'Talking Coco', peep: 'Pop-up Pals', nono: 'No, Coco!', slice: 'Coco Slice', cards: 'Color Cards' };
-Object.assign(NK_CUE, { parrot: ['microphone', 'mic'], peep: ['hand-pointing', ''], nono: ['hand-pointing', ''], slice: ['hand-swipe-right', ''], cards: ['cards', ''] });
+const NK_ARCADE = [['parrot', 2, 'bird'], ['peep', 2, 'eye'], ['nono', 2, 'hand-palm'], ['slice', 4, 'knife'], ['cards', 4, 'cards'],
+  ['house', 2, 'house'], ['where', 3, 'binoculars'], ['kitchen', 4, 'cooking-pot'], ['ladders', 4, 'ladder']];
+const NK_ARC_NAME = { parrot: 'Talking Coco', peep: 'Pop-up Pals', nono: 'No, Coco!', slice: 'Coco Slice', cards: 'Color Cards',
+  house: "Coco's House", where: "Where's Coco?", kitchen: "Coco's Kitchen", ladders: 'Coco Ladders' };
+Object.assign(NK_CUE, { parrot: ['microphone', 'mic'], peep: ['hand-pointing', ''], nono: ['hand-pointing', ''], slice: ['hand-swipe-right', ''], cards: ['cards', ''],
+  house: ['hand-pointing', ''], where: ['magnifying-glass', ''], kitchen: ['hand-grabbing', 'drag'], ladders: ['hand-pointing', ''] });
 const NKR = { tab: 'coco', tick: 0, loads: {} };
 const nkArcOn = () => !!(dash && dash.nest && dash.nest.arcade);
 const nkArcKey = () => 'eq_nest_arc_' + nkKid();
@@ -54,8 +57,37 @@ function nkArcWords(units, core){
   return out;
 }
 const NK_CARD_COLORS = ['red', 'blue', 'yellow', 'green', 'orange', 'purple'];
+// The places a kid's units open (Coco's House rooms; Where's Coco? plays in one of them): the living room always.
+function nkArcPlaces(words){
+  const out = ['home'];
+  words.forEach(w => { const p = NK_THEME_PLACE[w.theme]; if (p && !out.includes(p)) out.push(p); });
+  return out;
+}
 function nkArcStep(g, words, age){
   const pics = words.filter(w => w.pic), food = pics.filter(w => NK_FOOD.has(w.id));
+  if (g === 'house') {
+    const rooms = nkArcPlaces(pics).map(place => {
+      const own = pics.filter(w => (NK_THEME_PLACE[w.theme] || 'home') === place && !NK_FOOD.has(w.id) || place === 'kitchen' && NK_FOOD.has(w.id));
+      return { place, things: shuffle(own.length >= 2 ? own : pics).slice(0, 5) };
+    });
+    return pics.length >= 2 ? { rooms } : null;
+  }
+  if (g === 'where') {
+    if (pics.length < 5) return null;
+    const items = shuffle(pics).slice(0, age <= 4 ? 7 : 9);
+    return { place: nkPick(nkArcPlaces(pics)), items, lost: items.slice(0, age <= 4 ? 2 : 3) };
+  }
+  if (g === 'kitchen') {
+    const O = EQ_NEST.orders || {}, menu = food.filter(w => O[w.id]);
+    if (menu.length < 2) return null;
+    const who = pics.filter(w => ['animals', 'family', 'people'].includes(w.theme) && w.id !== 'parrot');
+    const orders = Array.from({ length: 5 }, (_, i) => {
+      const w = nkPick(menu), most = age >= 6 ? Math.min(3, O[w.id].length) : 1;
+      return { w, n: 1 + Math.floor(Math.random() * most), who: i === 2 && dash.pet ? null : nkPick(who.length ? who : [nkWord('baby') || menu[0]]) };
+    });
+    return { foods: shuffle(menu).slice(0, 5), orders: orders.map(o => o) };
+  }
+  if (g === 'ladders') return pics.length >= 4 ? { squares: nkRounds(pics, 12) } : null;
   if (g === 'parrot') return { says: shuffle(pics).slice(0, 8), foods: shuffle(food).slice(0, 4) };
   if (g === 'peep') return pics.length >= 2 ? { targets: nkRounds(pics, age <= 3 ? 4 : 6), pool: pics } : null;
   if (g === 'nono') return pics.length >= 2 ? { rounds: nkRounds(pics, age <= 3 ? 5 : 6).map((w, i) => ({ w, wrong: i === 0 || Math.random() < .6 ? nkPick(pics.filter(x => x.id !== w.id)) : null })) } : null;

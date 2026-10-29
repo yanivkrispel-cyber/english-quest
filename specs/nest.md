@@ -284,3 +284,28 @@ behind it, so no new art), wobbles it and says the word. Story and the big pictu
 New lines in `nest.en` (arcade, sleepy, nococo, isit, silly, slice, cards, mygo, draw, youwin, iwin); nest-check checks that every
 `en-*` the code says has its line and that every game in `NK_ARCADE` has its file. Test: `test/nest-games.html?unit=n02&game=cards`
 (and `parrot`, `peep`, `nono`, `slice`; `?all` includes them).
+
+The arcade's door (2026-10-29, the owner: "it is not clear at all that the games are behind the balloon"): for the arcade kids the
+living home has a glowing clay tent next to the egg (`docs/nest/arcade/tent.webp`, a "Games" tag for the grown-ups); the balloon
+stays as a thing that says its word. The egg is the lesson, the tent the games. The first three days, and every time the day's
+lesson is done, the tent glows, Coco says "Let's play my games!" and the hand taps it (`nkhTentCall`).
+
+## The arcade plan, stage D: games in the worlds (2026-10-29)
+
+Four more games in `docs/nest/games/`, on the painted worlds and the props sheet of stage D (`docs/nest/arcade/`: plate, pizza,
+dice, ladder, slide; covers kitchen, house, where, ladders, and beat and freeze for stage E):
+
+- **Coco's House** (`house`, 2+): the rooms are the places the kid's units opened (`nkArcPlaces`: the living room always, the
+  kitchen with food, the playroom with toys or colors, the farm with animals...), with up to five things of those units in
+  each. A tap: the thing bounces and says its name and Coco hops over to it; the painting's own things answer too. Arrows go
+  from room to room. No goal.
+- **Where's Coco?** (`where`, 3+): seven or nine things in a painted place; Coco lost two or three ("Where is the ball?"); each
+  one found flies away. Then Coco hides behind a thing, his head peeking, "Where is Coco? Find me!" ("You found me!").
+- **Coco's Kitchen** (`kitchen`, 4+): customers (animals and people met; once the kid's pet) order in English, `o-<food>-<n>`
+  (`EQ_NEST.orders`: "Two bananas, please!"; 6 and 7 get two and three); food onto the plate by a tap or a drag, then the bell.
+  A wrong plate: "Hmm... no, thank you!" and the order again. Five customers.
+- **Coco Ladders** (`ladders`, 4+): twelve pictures on the painted park, two ladders and a rainbow slide; the pet and Coco take
+  turns with the dice (1 to 3), Coco counts every hop ("One, two, three!") and says the picture landed on. The first one home
+  (the tent) wins; both endings are happy.
+
+New lines: kitchen, nothanks, house, wherecoco, foundme, lost, roll, ladder, slide, count, and the 34 orders.

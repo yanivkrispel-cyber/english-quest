@@ -2,7 +2,7 @@
 // (Kokoro, slow), 'find' (Kokoro, a little faster) or 'en' (Kokoro, Coco's lines). All of it is Coco: the kid hears no
 // Hebrew (owner, 2026-10-27). Names (specs/nest.md): w-<word id> (say), f-<word id> (find), p-<unit id> (the unit's
 // phrase), m-<move id> (Coco says), g-<word id> (give it to me), s-<word id> (its sound), d-<word id> (put it on),
-// k-<page id> (a coloring page), c-<unit id>-<n> (a chant line), t-<unit id>-<n> (a story page), en-<key>.
+// k-<page id> (a coloring page), o-<word id>-<n> (a kitchen order), c-<unit id>-<n> (a chant line), t-<unit id>-<n> (a story page), en-<key>.
 // test/nest-check.js uses the same list to check that every file exists.
 //   node tools/nest-audio-list.js
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -34,6 +34,7 @@ function clips(nest) {
   Object.keys(nest.sounds || {}).forEach(id => out.push({ name: 's-' + id, text: nest.sounds[id], voice: 'find' }));
   Object.keys(nest.dress || {}).forEach(id => { const w = words[id]; if (w) out.push({ name: 'd-' + id, text: 'Put on the ' + w.en + '!', voice: 'find' }); });
   (nest.color || []).forEach(c => out.push({ name: 'k-' + c.id, text: c.say, voice: 'find' }));
+  Object.keys(nest.orders || {}).forEach(id => nest.orders[id].forEach((s, i) => out.push({ name: 'o-' + id + '-' + (i + 1), text: s, voice: 'find' })));
   Object.keys(nest.chants || {}).forEach(u => nest.chants[u].forEach((l, i) => out.push({ name: 'c-' + u + '-' + i, text: l[0], voice: 'find' })));
   Object.keys(nest.stories || {}).forEach(u => nest.stories[u].pages.forEach((pg, i) => out.push({ name: 't-' + u + '-' + i, text: pg[0], voice: 'find' })));
   return out;
