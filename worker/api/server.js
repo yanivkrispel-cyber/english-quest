@@ -7,8 +7,9 @@ import { Buffer } from 'node:buffer';
 // into the Worker bundle; Node tests require() it.
 //
 // Sheets live in memory as arrays of rows (row 1 = headers), the way the sheet mock in test/sim.js keeps them, and every
-// change is written to the store by flush() at the end of a request: changed rows only, or the tail of a sheet after a
-// deleteRow. Values keep their types (Dates are stored as {"$d": ms}).
+// change is written to the store by flush() at the end of a request. Each row has a stable id in the database (its
+// order), so a change writes that row only and a deleted row is one delete, never a rewrite of the rows after it: the
+// free plan allows 100,000 rows written a day. Values keep their types (Dates are stored as {"$d": ms}).
 
 var GAS_CACHE_DEFAULT = 600, GAS_CACHE_MAX = 21600;
 // Cache keys that must survive a restart of the Durable Object: pending push messages, the audit queue, PIN lockouts,
@@ -24,10 +25,14 @@ function gasParse(s) {
 
 // sql(query, ...params) -> array of row objects. Node: node:sqlite; the Durable Object: ctx.storage.sql.exec().toArray().
 function sqliteStore(sql) {
-  sql('CREATE TABLE IF NOT EXISTS sheets (name TEXT PRIMARY KEY, ord INTEGER)');
-  sql('CREATE TABLE IF NOT EXISTS rows (sheet TEXT, i INTEGER, v TEXT, PRIMARY KEY (sheet, i))');
-  sql('CREATE TABLE IF NOT EXISTS kv (k TEXT PRIMARY KEY, v TEXT, exp INTEGER)');
-  sql('CREATE TABLE IF NOT EXISTS props (k TEXT PRIMARY KEY, v TEXT)');
+  // WITHOUT ROWID: the key is the table, so a row costs one write (a rowid table writes its key index too).
+  var create = function () {
+    sql('CREATE TABLE IF NOT EXISTS sheets (name TEXT PRIMARY KEY, ord INTEGER) WITHOUT ROWID');
+    sql('CREATE TABLE IF NOT EXISTS rows (sheet TEXT, i INTEGER, v TEXT, PRIMARY KEY (sheet, i)) WITHOUT ROWID');
+    sql('CREATE TABLE IF NOT EXISTS kv (k TEXT PRIMARY KEY, v TEXT, exp INTEGER) WITHOUT ROWID');
+    sql('CREATE TABLE IF NOT EXISTS props (k TEXT PRIMARY KEY, v TEXT) WITHOUT ROWID');
+  };
+  create();
   var stats = { rowsWritten: 0, rowsRead: 0 };
   return {
     stats: stats,
@@ -35,11 +40,13 @@ function sqliteStore(sql) {
     loadSheet: function (name) {
       var out = sql('SELECT i, v FROM rows WHERE sheet = ? ORDER BY i', name);
       stats.rowsRead += out.length;
-      return out.map(function (r) { return gasParse(r.v); });
+      return { rows: out.map(function (r) { return gasParse(r.v); }), ids: out.map(function (r) { return r.i; }) };
     },
+    // Empties the database (an import starts from nothing).
+    reset: function () { ['sheets', 'rows', 'kv', 'props'].forEach(function (t) { sql('DROP TABLE IF EXISTS ' + t); }); create(); },
     addSheet: function (name, ord) { sql('INSERT OR IGNORE INTO sheets (name, ord) VALUES (?, ?)', name, ord); stats.rowsWritten++; },
     putRow: function (name, i, row) { sql('INSERT OR REPLACE INTO rows (sheet, i, v) VALUES (?, ?, ?)', name, i, gasJson(row)); stats.rowsWritten++; },
-    cutFrom: function (name, i) { sql('DELETE FROM rows WHERE sheet = ? AND i >= ?', name, i); stats.rowsWritten++; },
+    delRow: function (name, i) { sql('DELETE FROM rows WHERE sheet = ? AND i = ?', name, i); stats.rowsWritten++; },
     kvGet: function (k) {
       var r = sql('SELECT v, exp FROM kv WHERE k = ?', k)[0];
       if (!r) return null;
@@ -61,10 +68,12 @@ function memoryStore() {
   return {
     stats: { rowsWritten: 0, rowsRead: 0 },
     sheetNames: function () { return names.slice(); },
-    loadSheet: function (n) { return (rows[n] || []).map(function (r) { return gasParse(r); }); },
+    loadSheet: function (n) { var o = rows[n] || {}, ids = Object.keys(o).map(Number).sort(function (a, b) { return a - b; });
+      return { rows: ids.map(function (i) { return gasParse(o[i]); }), ids: ids }; },
+    reset: function () { kv = {}; props = {}; rows = {}; names = []; },
     addSheet: function (n) { if (names.indexOf(n) < 0) names.push(n); },
-    putRow: function (n, i, r) { (rows[n] = rows[n] || [])[i - 1] = gasJson(r); },
-    cutFrom: function (n, i) { if (rows[n]) rows[n].length = Math.min(rows[n].length, i - 1); },
+    putRow: function (n, i, r) { (rows[n] = rows[n] || {})[i] = gasJson(r); },
+    delRow: function (n, i) { if (rows[n]) delete rows[n][i]; },
     kvGet: function (k) { var r = kv[k]; return r && (!r.exp || r.exp >= Date.now()) ? r : null; },
     kvPut: function (k, v, exp) { kv[k] = { v: v, exp: exp }; },
     kvDel: function (k) { delete kv[k]; },
@@ -82,35 +91,44 @@ function createGas(opts) {
   // ---------- Sheets ----------
   function names() { if (!order) order = store.sheetNames(); return order; }
 
-  function makeSheet(name, rows) {
+  // sh.rows (the values) and sh.ids (each row's id in the database) stay side by side. Tests may change sh.rows
+  // directly and then call markAll().
+  function makeSheet(name, loaded) {
     var sh = {
-      name: name, rows: rows,
+      name: name, rows: loaded.rows, ids: loaded.ids, top: loaded.ids.reduce(function (m, i) { return Math.max(m, i); }, 0),
       ver: 0,            // bumps on any change (the table memo in platform/overrides.js checks it)
       edits: 0,          // bumps on a change to an existing row (not an append)
-      dirty: {}, cut: Infinity,
+      dirty: {}, gone: [],
       getName: function () { return name; },
-      getLastRow: function () { return rows.length; },
-      getLastColumn: function () { var m = 0; for (var i = 0; i < rows.length; i++) if (rows[i].length > m) m = rows[i].length; return m; },
-      getMaxRows: function () { return Math.max(1000, rows.length); },
+      getLastRow: function () { return sh.rows.length; },
+      getLastColumn: function () { var m = 0, rows = sh.rows; for (var i = 0; i < rows.length; i++) if (rows[i].length > m) m = rows[i].length; return m; },
+      getMaxRows: function () { return Math.max(1000, sh.rows.length); },
       getMaxColumns: function () { return Math.max(26, sh.getLastColumn()); },
       getRange: function (a, b, nr, nc) {
         if (typeof a === 'string') return stubRange();
         return makeRange(sh, a, b == null ? 1 : b, nr == null ? 1 : nr, nc == null ? 1 : nc);
       },
-      getDataRange: function () { return makeRange(sh, 1, 1, rows.length, sh.getLastColumn()); },
-      appendRow: function (r) { rows.push(r.slice()); mark(sh, rows.length - 1, true); return sh; },
-      deleteRow: function (i) { rows.splice(i - 1, 1); sh.cut = Math.min(sh.cut, i - 1); sh.ver++; sh.edits++; touched[name] = 1; return sh; },
-      deleteRows: function (i, n) { rows.splice(i - 1, n); sh.cut = Math.min(sh.cut, i - 1); sh.ver++; sh.edits++; touched[name] = 1; return sh; },
+      getDataRange: function () { return makeRange(sh, 1, 1, sh.rows.length, sh.getLastColumn()); },
+      appendRow: function (r) { sh.rows.push(r.slice()); sh.ids.push(++sh.top); mark(sh, sh.rows.length - 1, true); return sh; },
+      deleteRow: function (i) { return sh.deleteRows(i, 1); },
+      deleteRows: function (i, n) {
+        sh.ids.splice(i - 1, n).forEach(function (id) { delete sh.dirty[id]; sh.gone.push(id); });
+        sh.rows.splice(i - 1, n);
+        sh.ver++; sh.edits++; touched[name] = 1;
+        return sh;
+      },
       setFrozenRows: function () { return sh; },
       autoResizeColumns: function () { return sh; },
       setColumnWidth: function () { return sh; },
       hideSheet: function () { return sh; },
-      clear: function () { rows.length = 0; sh.cut = 0; sh.ver++; sh.edits++; touched[name] = 1; return sh; }
+      clear: function () { return sh.deleteRows(1, sh.rows.length); }
     };
     return sh;
   }
   function mark(sh, idx, append) {
-    sh.dirty[idx] = 1; sh.ver++; if (!append) sh.edits++; touched[sh.name] = 1;
+    while (sh.ids.length < sh.rows.length) sh.ids.push(++sh.top);
+    sh.dirty[sh.ids[idx]] = sh.rows[idx];   // the row itself: later edits change it in place
+    sh.ver++; if (!append) sh.edits++; touched[sh.name] = 1;
   }
   function stubRange() {
     var r = {};
@@ -155,7 +173,7 @@ function createGas(opts) {
     insertSheet: function (name) {
       if (getSheet(name)) return sheets[name];
       names().push(name); store.addSheet(name, order.length);
-      return (sheets[name] = makeSheet(name, []));
+      return (sheets[name] = makeSheet(name, { rows: [], ids: [] }));
     },
     getSheets: function () { return names().map(getSheet); },
     deleteSheet: function () {},
@@ -171,15 +189,9 @@ function createGas(opts) {
     Object.keys(touched).forEach(function (name) {
       var sh = sheets[name];
       if (!sh) return;
-      if (sh.cut < Infinity) {
-        store.cutFrom(name, sh.cut + 1);
-        for (var i = sh.cut; i < sh.rows.length; i++) { store.putRow(name, i + 1, sh.rows[i]); n++; }
-      }
-      Object.keys(sh.dirty).forEach(function (k) {
-        var idx = Number(k);
-        if (idx < sh.cut && idx < sh.rows.length) { store.putRow(name, idx + 1, sh.rows[idx]); n++; }
-      });
-      sh.dirty = {}; sh.cut = Infinity;
+      sh.gone.forEach(function (id) { store.delRow(name, id); n++; });
+      Object.keys(sh.dirty).forEach(function (id) { store.putRow(name, Number(id), sh.dirty[id]); n++; });
+      sh.dirty = {}; sh.gone = [];
     });
     touched = {};
     Object.keys(cacheDirty).forEach(function (k) {
@@ -190,8 +202,15 @@ function createGas(opts) {
     return n;
   }
   // Tests that edit sheet rows directly (test/sim.js) call this so flush() writes them.
+  // The rows may have been replaced, added or removed: every old id goes and every row is written again.
   function markAll() {
-    Object.keys(sheets).forEach(function (name) { var sh = sheets[name]; sh.cut = 0; sh.ver++; sh.edits++; touched[name] = 1; });
+    Object.keys(sheets).forEach(function (name) {
+      var sh = sheets[name];
+      sh.gone = sh.gone.concat(sh.ids);
+      sh.ids = sh.rows.map(function () { return ++sh.top; });
+      sh.dirty = {}; sh.ids.forEach(function (id, j) { sh.dirty[id] = sh.rows[j]; });
+      sh.ver++; sh.edits++; touched[name] = 1;
+    });
   }
 
   // ---------- Cache ----------
@@ -5396,7 +5415,7 @@ apiCfMode = function () { throw new Error('Not on this server'); };
 cfMirror = function () { throw new Error('Not on this server'); };
 
   return {
-    doPost: doPost, tick: platformTick, removeSubscriptions: removeSubscriptions, ensureSetup: ensureSetup,
+    doPost: doPost, tick: platformTick, removeSubscriptions: removeSubscriptions, ensureSetup: ensureSetup, notifyAdmin: notifyAdmin,
     pushTtl: platformPushTtl, startRequest: function () { TABLES = {}; },
     eval: PLATFORM.allowEval ? function (s) { return eval(s); } : null
   };

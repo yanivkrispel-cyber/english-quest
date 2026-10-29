@@ -58,6 +58,21 @@ export class CocoServer extends DurableObject {
     if (this.ctx.waitUntil) this.ctx.waitUntil(p);
   }
 
+  // The free plan's daily limit (env.FREE_REQUESTS, 100,000): the admin hears at 70% and again at 90%, and gets a
+  // line each evening when the server had errors. Counted here are the server calls only (not pictures and sounds).
+  guard() {
+    const u = this.use, limit = Number(this.env.FREE_REQUESTS || 100000), h = new Date().toLocaleString('en-GB', { timeZone: 'Asia/Jerusalem', hour: 'numeric', hourCycle: 'h23' });
+    const say = (key, title, body) => {
+      if (u[key]) return;
+      u[key] = 1;
+      try { this.run(S => S.notifyAdmin({ title, body })); } catch (e) { console.error('notify: ' + ((e && e.message) || e)); }
+    };
+    if (u.api > limit * 0.9) say('warn90', "Coco server: 90% of today's free calls", u.api + ' of ' + limit + ' calls today.');
+    else if (u.api > limit * 0.7) say('warn70', "Coco server: 70% of today's free calls", u.api + ' of ' + limit + ' calls today.');
+    if (Number(h) === 21 && u.errors) say('evening', 'Coco server: ' + u.errors + ' failed calls today', u.api + ' calls today, ' + u.errors + ' failed. Details: /admin/stats');
+    try { this.G.store.propPut('use:' + u.day, JSON.stringify({ api: u.api, errors: u.errors, pushes: u.pushes })); } catch (e) {}
+  }
+
   admin(request) {
     const token = this.env.ADMIN_TOKEN;
     return !!token && request.headers.get('X-Admin-Token') === token;
@@ -79,9 +94,12 @@ export class CocoServer extends DurableObject {
     }
     if (path === '/tick' && request.method === 'POST') {
       const ran = this.run(S => S.tick());
+      this.guard();
       this.afterRequest();
       return json({ ok: true, ran });
     }
+    // The stores' notices about purchases (Plans, src/Privacy.js entitlement): not turned on before the store launch.
+    if (path === '/hooks/apple' || path === '/hooks/google') return json({ ok: false, error: 'Not enabled yet' }, 501);
     if (path.startsWith('/admin/')) {
       if (!this.admin(request)) return json({ ok: false, error: 'Not allowed' }, 403);
       if (path === '/admin/stats') {
@@ -112,7 +130,7 @@ export class CocoServer extends DurableObject {
   importAll(data) {
     let n = 0;
     this.ctx.storage.transactionSync(() => {
-      ['sheets', 'rows', 'kv', 'props'].forEach(t => this.sql('DELETE FROM ' + t));
+      this.G.store.reset();
       (data.names || Object.keys(data.sheets)).forEach((name, ord) => {
         this.sql('INSERT INTO sheets (name, ord) VALUES (?, ?)', name, ord);
         (data.sheets[name] || []).forEach((row, i) => { this.sql('INSERT INTO rows (sheet, i, v) VALUES (?, ?, ?)', name, i + 1, JSON.stringify(row)); n++; });

@@ -23,7 +23,7 @@ const out = [
   '// ---- platform/overrides.js ----',
   read('platform/overrides.js'),
   '  return {',
-  '    doPost: doPost, tick: platformTick, removeSubscriptions: removeSubscriptions, ensureSetup: ensureSetup,',
+  '    doPost: doPost, tick: platformTick, removeSubscriptions: removeSubscriptions, ensureSetup: ensureSetup, notifyAdmin: notifyAdmin,',
   '    pushTtl: platformPushTtl, startRequest: function () { TABLES = {}; },',
   '    eval: PLATFORM.allowEval ? function (s) { return eval(s); } : null',
   '  };',
