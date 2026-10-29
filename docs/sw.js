@@ -27,7 +27,7 @@ self.addEventListener('activate', e => {
 // Without a connection the app reads the episode aloud instead.
 const isAudio = url => /\.mp3$/.test(url.pathname);
 const isAsset = url => /\/(pets|pics|icons|items|coco|fonts)\//.test(url.pathname) || (/games\.js$/.test(url.pathname) && url.searchParams.has('v')) ||
-  (/\/(missions|talk|nest)\/[^/]+\.js$/.test(url.pathname) && url.searchParams.has('v'));
+  (/\/(missions|talk|nest|say)\/[^/]+\.js$/.test(url.pathname) && url.searchParams.has('v'));
 const isPage = (req, url) => req.mode === 'navigate' || /\/$|\.html$/.test(url.pathname);
 
 self.addEventListener('fetch', e => {

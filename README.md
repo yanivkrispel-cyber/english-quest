@@ -28,7 +28,7 @@ notifications, and reward points.
 - **Today's Mission** (spec: `specs/missions.md`; for every kid, `Girls.Missions = no` keeps the link): the daily
   task played in the app instead of the link. Five parts (Hook, Learn, Practice, Use it, Finish), 6 to 9 minutes, the
   score measured by the app (nothing typed), the same points and stations. Five types on the same catalog topics, all
-  content written from scratch for each level: Grammar Lab, Word Pack, Radio Show (episodes recorded with Kokoro, the
+  content written from scratch for each level: Grammar Lab, Word Pack, Radio Show (episodes recorded with Chatterbox, the
   phone's voice as a fallback), Story Cards, Newsroom. Hebrew tips on request, Teach your pet, a reminder card after two
   mistakes, a mission left halfway continues from the same question. Missed questions come back in a Mission review
   (home, game XP); "Something wrong here?" goes to the Flags tab; parents get the mission's dinner question in the 21:00
@@ -36,7 +36,7 @@ notifications, and reward points.
   for A1 to B2). Assignments prefer the next topic of her level that has a mission; without one left, the link as before.
 - **Talk with Coco** (spec: `specs/talk.md`): short spoken talks with Coco the parrot, scripted (no AI at run time).
   One after Use it in every mission, about what it taught, and one home scene a day (15 per level). Coco speaks
-  (recorded with Kokoro), the kid answers aloud (the phone's speech recognition, matched to the script's branches by
+  (recorded with Chatterbox, `specs/voice.md`), the kid answers aloud (the phone's speech recognition, matched to the script's branches by
   keywords) or with sentence tiles, with a Hebrew hint on request; every answer moves on. A bonus only (XP and coins),
   kept as text in the Chats tab; parents see how many talks were aloud and one sentence. Content: `docs/talk/<level>.js`.
 - Streak, weekly ring, average score, rewards ladder, word of the day.
@@ -212,7 +212,8 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | `test/games-check.js` | Validates `docs/games.js` (shapes, duplicates, pictures on disk, Talk & Tap words) |
 | `test/missions-check.js` | Validates `docs/missions/*.js` (shapes, answers, ids, catalog urls, lengths per level, time, recordings) |
 | `test/talk-check.js` | Validates `docs/talk/*.js` (shapes, lengths, privacy, every mission has a talk, every sample answer lands on its branch with the app's matcher) |
-| `tools/missions-index.js`, `tools/missions_audio.py` | Write `src/MissionIndex.js`; record the Radio Show episodes with Kokoro (kokoro-onnx, free and offline; model files in `../kokoro`) |
+| `tools/missions-index.js` | Write `src/MissionIndex.js` |
+| `tools/voice.py`, `tools/voice_kernel.py`, `tools/voice-list.js`, `tools/voice-refs/` | Coco's voice (`specs/voice.md`): every spoken line (Talk, the Nest, the Radio Show, words and sentences in `docs/say/`) recorded with Chatterbox on a free Kaggle GPU, checked with Whisper; only new or changed lines (`tools/voice-state.json`). The old Kokoro tools (`talk_audio.py`, `nest_audio.py`, `missions_audio.py`) run only with `--kokoro` |
 | `build-pages.js` | Builds `docs/index.html` from `src/Index.html` (adds head tags, manifest, icons) |
 | `make-icons.py` | Renders the app icons with Pillow |
 | `test/sim.js` | End-to-end simulation of the server with mocked Google services |

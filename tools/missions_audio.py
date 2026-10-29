@@ -32,6 +32,8 @@ def episodes():
 
 
 def main():
+    if '--kokoro' not in sys.argv:
+        raise SystemExit("Coco's voice moved to Chatterbox: run python tools/voice.py (2026-10-29). This old Kokoro tool runs only with --kokoro.")
     redo = '--all' in sys.argv
     os.makedirs(OUT, exist_ok=True)
     state = json.load(open(STATE, encoding='utf-8')) if os.path.exists(STATE) else {}

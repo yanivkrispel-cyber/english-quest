@@ -35,8 +35,10 @@ first. Tablets get the phone layout scaled (`tabletFit`); never add width breakp
 1. Edit `src/` (server: `Code.js`, `Push.js`; UI: `Index.html`). Game content: `docs/games.js`
    (check with `node test/games-check.js`); pet art: see `tools/PETS.md`. Mission content: `docs/missions/<level>.js`
    (`node test/missions-check.js`, then `node tools/missions-index.js` to rewrite `src/MissionIndex.js`, then record new
-   episodes with `python tools/missions_audio.py` and raise `MISSIONS_V` in Index.html). Talk with Coco scripts:
-   `docs/talk/<level>.js` (`node test/talk-check.js`, then `python tools/talk_audio.py` and raise `TALK_V`).
+   episodes with `python tools/voice.py` and raise `MISSIONS_V` in Index.html). Talk with Coco scripts:
+   `docs/talk/<level>.js` (`node test/talk-check.js`, then `python tools/voice.py` and raise `TALK_V`). **Every spoken
+   line is Coco in Chatterbox** (`specs/voice.md`): new words or sentences in games and missions also go through
+   `python tools/voice.py` (then raise `SAY_V`), or the phone's voice reads them.
 2. `node test/sim.js` (extend it for new server behaviour), `node test/ui-check.js` (Index.html traps) and, for
    crypto, `node test/push-crypto.js`.
 3. Visual check: `node test/preview.js`, serve `app/` (`python -m http.server 8765`), open
@@ -138,7 +140,10 @@ first. Tablets get the phone layout scaled (`tabletFit`); never add width breakp
 - Mission CSS classes start with `m`/`ms`, and two collided with older ones (`.mbar` of the duo streak, `.mstar` of the
   map): check `grep -n "\.<name>[{ :.,]"` before adding a class. The single-token `spot`/`teach` questions can only
   replace one word (`*word*` → `fix`): word-order mistakes need a `build` question instead.
-- Kokoro (the episode voices) lives outside the repo in `C:\Dev\EnglishLessons\kokoro` (`kokoro-v1.0.onnx`,
+- **Coco's voice is Chatterbox on Kaggle** (`tools/voice.py`, `specs/voice.md`, owner's pick 2026-10-29): the old Kokoro tools
+  refuse to run without `--kokoro`. The Bash tool's heredocs eat backslashes in regexes too (a `\1` became a control
+  character in voice_kernel.py): write Python with the Write tool.
+- Kokoro (the old voices, now only for `python tools/voice.py refs`) lives outside the repo in `C:\Dev\EnglishLessons\kokoro` (`kokoro-v1.0.onnx`,
   `voices-v1.0.bin`); `pip install kokoro-onnx soundfile` needed several tries on this network (`--retries 10`).
   `tools/missions-audio.json` remembers what was recorded; only changed parts are recorded again.
 - **Talk & Tap owns the names `talk*` / `TALK`** (Duels.js, Index.html). Talk with Coco is `chat*` / `CHAT` in code
@@ -221,7 +226,7 @@ Talk with Coco (built 2026-10-26 overnight, spec `specs/talk.md`, server `src/Ch
 one after Use it in every mission and one home scene a day; recorded Coco lines, the phone's speech recognition matched to
 the script by keywords, tiles and a Hebrew hint; a bonus only. Preview: `?talk` (and the button in `?missions`). Stage 0 gate on
 the admin's Pilot card. Writing rules for new scripts: `tools/TALK-WRITING.md`. Live @35 on 2026-10-27; all 4,502
-clips recorded the same day (`TALK_V` 2, @37). After changing a script, run `python tools/talk_audio.py` (it records only
+clips recorded the same day (`TALK_V` 2, @37). After changing a script, run `python tools/voice.py` (it records only
 changed lines and resumes where it stopped), then raise `TALK_V`, build Pages and push.
 
 Coco's Nest (built 2026-10-27, spec `specs/nest.md`, server `src/Nest.js`, content `docs/nest/`): ages 2 to 7, `Girls.Level = nest`
@@ -230,12 +235,12 @@ Coco's Nest (built 2026-10-27, spec `specs/nest.md`, server `src/Nest.js`, conte
 iPhones) are in Index.html; the session engine and its 18 games are `docs/nest/play.js` (loaded with nest.js; every
 top-level name starts with nk/NK, and nest-check fails on a name shared with Index.html). A unit is four days (`n04`,
 `n04.b`, `n04.c`, `n04.d`), a review one (`r02`). Content: edit `docs/nest/nest.js`, then `python tools/nest_pics.py`,
-`python tools/nest_audio.py`, `node tools/nest-index.js`, `node test/nest-check.js`, and raise `NEST_V`. Dev: Mia 5151 (age 4),
+`python tools/voice.py`, `node tools/nest-index.js`, `node test/nest-check.js`, and raise `NEST_V`. Dev: Mia 5151 (age 4),
 `test/tablet.html?screen=nest|nest-meet|nest-find|nest-say|nest-done&phones`; every game in phone frames:
 `test/nest-games.html?all` (lists screens that scroll) or `?unit=n07&game=give&age=4`. A new audio folder needs its path in
 `run_worker_first` (wrangler.jsonc), or Safari plays nothing.
 **Coco is a he** (Hebrew: קוקו אומר, שואל). Nest pictures are clay stickers made for the app (`tools/NEST-ART.md`), never emoji.
-**The Nest kid hears no Hebrew** (owner, 2026-10-27): Coco (Kokoro) shows each game; Hebrew is text for grown-ups only.
+**The Nest kid hears no Hebrew** (owner, 2026-10-27): Coco (Chatterbox, `specs/voice.md`) shows each game; Hebrew is text for grown-ups only.
 
 The audit trail (built 2026-10-27, spec `specs/audit.md`, server `src/Audit.js`, tab Audit, SETUP v19): opens, wrong PINs,
 grown-ups' changes and hand edits in the sheet, with a coarse device label the app sends (`dev` in every call); the admin's
