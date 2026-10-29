@@ -204,6 +204,8 @@ html.tablet .nk-games{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
 @keyframes nkbreathe{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.035) translateY(-1px)}}
 @keyframes nkfeather{to{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
 @media (prefers-reduced-motion:reduce){.nk.alive .nk-coach .nk-coco{animation:none}}
+/* Stage B: the places are clay paintings (docs/nest/places); the pictures stand on them with a soft shadow */
+.nk-scene.painted .nk-it img{filter:drop-shadow(0 8px 10px rgba(40,30,60,.28))}
 .nk-slot{min-height:100px;display:grid;place-items:center}
 .nk-next{width:96px;height:96px;border-radius:50%;border:0;background:linear-gradient(145deg,#a5b4fc,#6366f1);color:#fff;font-size:42px;display:grid;place-items:center;box-shadow:0 10px 24px rgba(99,102,241,.35);opacity:.55;cursor:pointer;transition:opacity .2s}
 .nk-next.ready{opacity:1;animation:nkpulse 1.6s ease-in-out infinite}
@@ -7369,7 +7371,7 @@ function auditRender(pin){
 // Listening and pictures only, and only Coco's English (no Hebrew voice): he shows each game first. No reading, timers
 // or fail screens, and the pet is the only reward. Content: docs/nest/nest.js (EQ_NEST); the session engine and its
 // games: docs/nest/play.js; recordings: docs/nest/audio (tools/nest_audio.py).
-const NEST_V = 12, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
+const NEST_V = 13, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
 let NE = null, nestLoading = null, nestAudioEl = null, nestQueue = null, nestMic = null;
 function loadNest(){
   if (window.EQ_NEST && typeof NK === 'object' && typeof nkActorOn === 'function' && typeof nkHome === 'function' && typeof nkEchoStart === 'function' && typeof nkStickers === 'function') return Promise.resolve(window.EQ_NEST);
