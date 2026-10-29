@@ -7382,7 +7382,7 @@ function auditRender(pin){
 // Listening and pictures only, and only Coco's English (no Hebrew voice): he shows each game first. No reading, timers
 // or fail screens, and the pet is the only reward. Content: docs/nest/nest.js (EQ_NEST); the session engine and its
 // games: docs/nest/play.js; recordings: docs/nest/audio (tools/nest_audio.py).
-const NEST_V = 15, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
+const NEST_V = 16, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
 let NE = null, nestLoading = null, nestAudioEl = null, nestQueue = null, nestMic = null;
 function loadNest(){
   if (window.EQ_NEST && typeof NK === 'object' && typeof nkActorOn === 'function' && typeof nkHome === 'function' && typeof nkEchoStart === 'function' && typeof nkStickers === 'function' && typeof nkArcade === 'function') return Promise.resolve(window.EQ_NEST);

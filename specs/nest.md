@@ -309,3 +309,20 @@ dice, ladder, slide; covers kitchen, house, where, ladders, and beat and freeze 
   (the tent) wins; both endings are happy.
 
 New lines: kitchen, nothanks, house, wherecoco, foundme, lost, roll, ladder, slide, count, and the 34 orders.
+
+## The arcade plan, stage E: music, body, and no screen (2026-10-29)
+
+`nkArcBand(seed, bpm, onBeat)` in arcade.js: the drums and Coco's band (actor.js) on the audio clock, for the music games; with
+audio still asleep (no tap yet) the beat goes on by the clock. With twelve Coco games the shelf has three columns.
+
+- **Beat Tiles** (`beat`, 4+): the band plays; every two bars Coco says a word on the beat and three pictures fall down three
+  lanes in time; a tap on the one he said bursts it with a drum hit. A miss never stops the song. Coco's drum solo halfway.
+  Eight words; 84 beats a minute up to 5, 96 after.
+- **Dance Freeze** (`freeze`, 2+): Coco calls a move (jump, spin, clap, wiggle, stomp, dance) and does it with the pet while the
+  band plays; the music stops, "Freeze!", Coco freezes (the freeze cover is his pose), wobbles, and every third time falls over.
+  Nothing is checked (no camera). Six rounds.
+- **Lights out, Coco!** (`lights`, 2+): the screen goes dark (the play sky too) and Coco leads by voice: find something of a
+  color met, soft or round ("Show it to Mommy or Daddy!"), a move of the units met (m-*), and a hug at the end. A big thumb for
+  the grown-up (done) or a small arrow (skip). "Lights on! Great job!". Its cover is Coco asleep.
+
+Not built yet from the plan's stage E: the audio episode for the car for every unit.

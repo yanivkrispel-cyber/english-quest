@@ -6,11 +6,14 @@
 
 // [game, the youngest age, the icon while the cover is loading]
 const NK_ARCADE = [['parrot', 2, 'bird'], ['peep', 2, 'eye'], ['nono', 2, 'hand-palm'], ['slice', 4, 'knife'], ['cards', 4, 'cards'],
-  ['house', 2, 'house'], ['where', 3, 'binoculars'], ['kitchen', 4, 'cooking-pot'], ['ladders', 4, 'ladder']];
+  ['house', 2, 'house'], ['where', 3, 'binoculars'], ['kitchen', 4, 'cooking-pot'], ['ladders', 4, 'ladder'],
+  ['freeze', 2, 'person-simple-run'], ['lights', 2, 'moon-stars'], ['beat', 4, 'drum']];
 const NK_ARC_NAME = { parrot: 'Talking Coco', peep: 'Pop-up Pals', nono: 'No, Coco!', slice: 'Coco Slice', cards: 'Color Cards',
-  house: "Coco's House", where: "Where's Coco?", kitchen: "Coco's Kitchen", ladders: 'Coco Ladders' };
+  house: "Coco's House", where: "Where's Coco?", kitchen: "Coco's Kitchen", ladders: 'Coco Ladders',
+  freeze: 'Dance Freeze', lights: 'Lights out, Coco!', beat: 'Beat Tiles' };
 Object.assign(NK_CUE, { parrot: ['microphone', 'mic'], peep: ['hand-pointing', ''], nono: ['hand-pointing', ''], slice: ['hand-swipe-right', ''], cards: ['cards', ''],
-  house: ['hand-pointing', ''], where: ['magnifying-glass', ''], kitchen: ['hand-grabbing', 'drag'], ladders: ['hand-pointing', ''] });
+  house: ['hand-pointing', ''], where: ['magnifying-glass', ''], kitchen: ['hand-grabbing', 'drag'], ladders: ['hand-pointing', ''],
+  freeze: ['person-simple-run', 'body'], lights: ['moon-stars', 'body'], beat: ['music-notes', ''] });
 const NKR = { tab: 'coco', tick: 0, loads: {} };
 const nkArcOn = () => !!(dash && dash.nest && dash.nest.arcade);
 const nkArcKey = () => 'eq_nest_arc_' + nkKid();
@@ -87,6 +90,16 @@ function nkArcStep(g, words, age){
     });
     return { foods: shuffle(menu).slice(0, 5), orders: orders.map(o => o) };
   }
+  if (g === 'beat') return pics.length >= 3 ? { words: nkRounds(pics, 8), pool: pics } : null;
+  if (g === 'freeze') return { moves: shuffle(['jump', 'spin', 'clap', 'wiggle', 'stomp', 'dance']) };
+  if (g === 'lights') {
+    // Four tasks in the house (colors met, soft and round things, the moves of the units met), then the hug.
+    const cols = NK_CARD_COLORS.filter(c => words.some(w => w.id === c)).map(c => ({ find: 'find' + c, pic: nkWord(c), w: c }));
+    const units = [...new Set(words.map(w => w.unit))].map(nestUnit).filter(Boolean);
+    const moves = [...new Set([].concat(...units.map(u => u.moves || [])))].filter(m => (EQ_NEST.moves || {})[m]).map(m => ({ move: m, pic: (EQ_NEST.moves || {})[m] }));
+    const pool = shuffle(cols.slice(0, 3).concat(moves.slice(0, 4), [{ find: 'findsoft' }, { find: 'findround' }]));
+    return { tasks: pool.slice(0, age <= 3 ? 3 : 4).concat([{ hug: true }]) };
+  }
   if (g === 'ladders') return pics.length >= 4 ? { squares: nkRounds(pics, 12) } : null;
   if (g === 'parrot') return { says: shuffle(pics).slice(0, 8), foods: shuffle(food).slice(0, 4) };
   if (g === 'peep') return pics.length >= 2 ? { targets: nkRounds(pics, age <= 3 ? 4 : 6), pool: pics } : null;
@@ -154,7 +167,7 @@ function nkArcade(){
         <button class="nka-tab${tab === 'learn' ? ' on' : ''}" data-nkatab="learn" aria-label="Learning games">${icon('puzzle-piece', 'duotone')}</button></div>` : '<span></span>'}
       <img class="nka-coco" id="nkacoco" src="${nkPoseSrc(asleep ? 'sleep' : 'wave')}" alt="Coco" draggable="false">
     </div>
-    <div class="nka-shelf ${tab}${asleep ? ' asleep' : ''}">${cards}</div>
+    <div class="nka-shelf ${tab}${asleep ? ' asleep' : ''}${tab === 'coco' && coco.length > 6 ? ' many' : ''}">${cards}</div>
   </div>`;
   document.getElementById('nkaback').onclick = () => { nestStopAudio(); renderDash(); };
   app.querySelectorAll('[data-nkatab]').forEach(b => b.onclick = () => { NKR.tab = b.dataset.nkatab; nkSfx('flip'); nkArcade(); });
@@ -182,6 +195,9 @@ function nkArcade(){
 .nka-tab img{width:46px;height:46px;object-fit:contain}
 .nka-coco{width:82px;height:82px;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(40,30,60,.25));cursor:pointer}
 .nka-shelf{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:center;min-height:0;width:min(100%,56cqh);margin:0 auto}
+.nka-shelf.coco.many{grid-template-columns:repeat(3,1fr);gap:10px;width:min(100%,60cqh)}
+.nka-shelf.coco.many .nka-card:last-child:nth-child(odd){grid-column:auto;width:auto}
+.nka-shelf.many .nka-name{font-size:12px}
 .nka-shelf.learn{grid-template-columns:repeat(3,1fr);gap:10px;width:min(100%,58cqh)}
 .nka-card{position:relative;aspect-ratio:1;border-radius:28px;border:1px solid var(--stroke);background:var(--glass);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
   box-shadow:var(--shadow),var(--inner);display:grid;grid-template-rows:1fr auto;place-items:center;padding:8px 6px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s}
@@ -198,3 +214,28 @@ function nkArcade(){
 `;
   document.head.appendChild(st);
 })();
+
+// ---------- Coco's band for the arcade's music games (stage E): drums and the band of actor.js on the audio clock ----------
+// nkArcBand(seed, bpm, onBeat(b, delayMs)) -> { stop(), pause(), play(), beat, ctx }. Scheduled a little ahead; onBeat is
+// called with each beat's number and how long until it sounds (so pictures can move on it). Without Web Audio it still beats.
+function nkArcBand(seed, bpm, onBeat){
+  const ctx = nkCtx(), beat = 60 / bpm, B = { beat, ctx, on: true, b: 0, t0: 0 };
+  const tick = () => {
+    if (!B.on) return;
+    // No sound yet (the browser keeps audio asleep until a tap): the beat goes on by the clock.
+    if (!ctx || ctx.state !== 'running') { onBeat(B.b++, 0); B.timer = setTimeout(tick, beat * 1000); if (ctx) B.t0 = ctx.currentTime - B.b * beat; return; }
+    while (B.t0 + B.b * beat < ctx.currentTime + .25) {
+      const at = B.t0 + B.b * beat, q = B.b % 4;
+      nkSfx(q === 0 || q === 2 ? 'kick' : 'snare', at); nkSfx('hat', at + beat / 2);
+      if (q === 0 && typeof nkBandBar === 'function') nkBandBar(ctx, at, beat, B.b >> 2, seed);
+      onBeat(B.b, Math.max(0, (at - ctx.currentTime) * 1000));
+      B.b++;
+    }
+    B.timer = setTimeout(tick, 60);
+  };
+  B.play = () => { B.on = true; B.b = 0; if (ctx) B.t0 = ctx.currentTime + .1; clearTimeout(B.timer); tick(); };
+  B.pause = () => { B.on = false; clearTimeout(B.timer); };
+  B.stop = B.pause;
+  B.play();
+  return B;
+}

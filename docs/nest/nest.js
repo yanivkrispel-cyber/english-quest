@@ -497,7 +497,29 @@ window.EQ_NEST = {
     roll: 'Roll the dice!',
     ladder: 'Up, up, up the ladder!',
     slide: 'Wheee! Down the slide!',
-    count: "Let's count!"
+    count: "Let's count!",
+    // Stage E: Beat Tiles, Dance Freeze, Lights out, Coco!
+    beat: 'Tap to the beat!',
+    dance: 'Dance, dance, dance!',
+    freeze: 'Freeze!',
+    jump: 'Jump, jump, jump!',
+    spin: 'Spin around!',
+    clap: 'Clap your hands!',
+    wiggle: 'Wiggle, wiggle, wiggle!',
+    stomp: 'Stomp your feet!',
+    fell: 'Whoa... oops! I fell down!',
+    lightsout: "Lights out! Let's play in the house!",
+    showme: 'Show it to Mommy or Daddy!',
+    hug: 'Now give Mommy or Daddy a big hug!',
+    lightson: 'Lights on! Great job!',
+    findred: 'Find something red!',
+    findblue: 'Find something blue!',
+    findyellow: 'Find something yellow!',
+    findgreen: 'Find something green!',
+    findorange: 'Find something orange!',
+    findpurple: 'Find something purple!',
+    findsoft: 'Find something soft!',
+    findround: 'Find something round!'
   },
   // Coco's kitchen (stage D): what a customer orders, o-<word>-<n> (one, two, three of it; one line for what is not counted).
   orders: {
