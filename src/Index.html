@@ -7686,9 +7686,11 @@ function dataCard(){
     <div class="sub mt-s" style="font-size:13px">Change a kid's PIN, level or redeemed points, a family's code or goal, or a setting. Every change is in the audit trail.</div></div>`;
 }
 const DATA = { table: 'Girls', open: '', q: '' };
+const DATA_LABEL = { ParentPIN: 'Parent code', GoalReward: 'Goal reward', PetName: 'Pet name', Redeemed: 'Redeemed points', Missions: 'Daily task',
+  Friends: 'Play with other families', NestPerDay: 'Nest sessions a day', NestArcadeMin: 'Arcade minutes a day', Group: 'Family' };
 const DATA_TABLES = { Girls: 'Kids', Groups: 'Families', Settings: 'Settings' };
 const DATA_HINT = { Missions: 'empty = Today\'s Mission, no = test-english.com', Friends: 'empty = plays with other families, no = only its own',
-  Redeemed: 'points spent on rewards', NestPerDay: 'Nest sessions a day', NestArcadeMin: 'arcade minutes a day', Group: 'family id' };
+  Redeemed: 'points spent on rewards' };
 async function dataLoad(pin){
   const card = document.getElementById('datacard');
   card.innerHTML = '<div class="spinner"></div>';
@@ -7708,7 +7710,7 @@ function dataRender(pin){
     const input = f === 'Level' ? `<select class="input" id="${id}">${d.levels.map(l => `<option value="${l}" ${l === v ? 'selected' : ''}>${l === 'nest' ? 'Coco\'s Nest' : l.toUpperCase()}</option>`).join('')}</select>`
       : f === 'Group' ? `<select class="input" id="${id}">${d.Groups.rows.map(g => `<option value="${esc(g.key)}" ${g.key === v ? 'selected' : ''}>${esc(g.values.Name)}</option>`).join('')}</select>`
       : `<input class="input" id="${id}" value="${esc(v)}" ${/PIN|Age|Redeemed|Goal|Nest/.test(f) ? 'inputmode="numeric"' : ''}>`;
-    return `<div class="label mt-s">${esc(DATA.table === 'Settings' ? r.key : f)}</div>${input}${DATA_HINT[f] ? `<div class="sub" style="font-size:11px">${esc(DATA_HINT[f])}</div>` : ''}`;
+    return `<div class="label mt-s">${esc(DATA.table === 'Settings' ? r.key : DATA_LABEL[f] || f)}</div>${input}${DATA_HINT[f] ? `<div class="sub" style="font-size:11px">${esc(DATA_HINT[f])}</div>` : ''}`;
   };
   const item = r => r.key === DATA.open
     ? `<div class="soft" style="padding:10px 12px;border-radius:12px">
