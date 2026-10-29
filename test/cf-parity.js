@@ -73,7 +73,7 @@ let uuid = 0;
   data.names.forEach((n, i) => { store.addSheet(n, i); data.sheets[n].forEach((r, j) => store.putRow(n, j + 1, r)); });
   Object.keys(props).forEach(k => store.propPut(k, props[k]));
   const G = S.createGas({ store, crypto: Object.assign(Object.create(crypto), { randomUUID: () => 'u-' + (++uuid) }) });
-  const P = S.createServer({ services: G.services, freeze: true, asyncPush: false, outbox: G.outbox, allowEval: true });
+  const P = S.createServer({ services: G.services, freeze: true, asyncPush: true, outbox: G.outbox, allowEval: true });   // as in production
 
   // One call on both sides with the same clock and random numbers.
   const callBase = (fn, args) => { seed = 7; uuid = 0; vm.runInContext('TABLES = {}', ctx);
@@ -129,6 +129,34 @@ let uuid = 0;
     both('apiDashboard after a game(kid ' + i + ')', 'apiDashboard', [String(k.Name), String(k.PIN)]);
   });
   both('a wrong PIN', 'apiDashboard', [String((kids[0] || {}).Name), '0000']);
+  // ---- more writes: a live duel from invite to both results, a duo, a talk, a Nest day, a pet, feedback ----
+  const players = kids.filter(k => String(k.Level) !== 'nest');
+  const A = players[0], B = players[1];
+  const P2 = k => [String(k.Name), String(k.PIN)];
+  if (A && B) {
+    const inv = JSON.parse(callBase('apiDuelInvite', [...P2(A), String(B.Name), 'live'])); callPlat('apiDuelInvite', [...P2(A), String(B.Name), 'live']);
+    const code = inv.ok ? inv.data.code || (inv.data.duel || {}).code : '';
+    both('apiDuelHome after an invite', 'apiDuelHome', P2(B));
+    if (code) {
+      both('apiDuelJoin', 'apiDuelJoin', [...P2(B), code]);
+      both('apiDuelPoll (host)', 'apiDuelPoll', [...P2(A), code, { i: 3, c: 2 }]);
+      both('apiDuelPoll (guest)', 'apiDuelPoll', [...P2(B), code, { i: 2, c: 1 }]);
+      const track = n => Array.from({ length: 7 }, (_, i) => (i < n ? 1 : 0) + ':' + (1000 * (i + 1))).join(',');
+      both('apiDuelFinish (host)', 'apiDuelFinish', [...P2(A), code, { correct: 5, total: 7, ms: 7000, track: track(5) }]);
+      both('apiDuelFinish (guest)', 'apiDuelFinish', [...P2(B), code, { correct: 4, total: 7, ms: 7000, track: track(4) }]);
+      both('apiDuelHome after the duel', 'apiDuelHome', P2(A));
+    } else console.log('note: no duel code (' + (inv.error || 'no code') + ')');
+    both('apiDuoInvite', 'apiDuoInvite', [...P2(A), String(B.Name)]);
+    both('apiChatResult', 'apiChatResult', [...P2(A), 'tc1g01', 4, 3, 1, 'yes', 'I like it', 120]);
+    both('apiSetPet', 'apiSetPet', [...P2(B), 'fawn', 'Pip']);
+    both('apiDashboard after all that (host)', 'apiDashboard', P2(A));
+    both('apiDashboard after all that (guest)', 'apiDashboard', P2(B));
+  }
+  const nestKid = kids.find(k => String(k.Level) === 'nest');
+  if (nestKid) both('apiNestResult', 'apiNestResult', [...P2(nestKid), '2026-10-29', 'n01', 5, 6, 200, 'cat:1,dog:0']);
+  const pg = groups.find(g => String(g.ParentPIN));
+  if (pg) both('apiFeedback', 'apiFeedback', [String(pg.ParentPIN), 'parity test', 5]);
+  if (admin) both('apiAudit after the writes', 'apiAudit', [admin, 7]);
 
   // ---- every sheet must be the same ----
   const names = Object.keys(sheets);
