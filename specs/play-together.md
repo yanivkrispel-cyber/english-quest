@@ -81,7 +81,7 @@ CacheService (script cache):
 
 ## Client
 
-- Home: an invite/challenge banner on top when something waits; a "Play together" card after
+- Home (now the Play tab, `specs/play-tab.md`): an invite or a challenge is the first card of the stage; before that, an invite/challenge banner on top when something waits; a "Play together" card after
   "Play & learn" (friends, Code, waiting challenges, recent results, Helper stars).
 - Invite sheet → lobby (host waits, can cancel, or send as a challenge) → join screen (guest:
   Join / Give me 5 minutes / Not now) → countdown → play → waiting for partner → result + Learn together.
