@@ -12,7 +12,7 @@ const fs = require('fs'), path = require('path');
 const WORK = path.join(__dirname, '..', '..', 'EnglishLessons-work', 'migration');
 const cfg = JSON.parse(fs.readFileSync(path.join(WORK, 'cutover.json'), 'utf8'));
 const GAS = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
-const base = cfg.api.replace(/\/api$/, '');
+const base = cfg.admin;
 
 async function gas(fn, args) {
   const r = await fetch(GAS, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args }) });
