@@ -236,7 +236,9 @@ function check(opts) {
       if (!(nest.sounds || {})[id]) err('real ' + id, 'no Coco line in sounds');
     });
     // play.js and the living home's files (specs/nest-home.md) share the app's scope and each other's.
-    ['play.js', 'actor.js', 'home.js', 'echo.js', 'stickers.js'].forEach(file => {
+    // Coco's arcade (stage C): arcade.js, and one file a game in docs/nest/games/ (loaded when played).
+    const arcGames = fs.readdirSync(path.join(ROOT, 'docs/nest/games')).filter(f => f.endsWith('.js'));
+    ['play.js', 'actor.js', 'home.js', 'echo.js', 'stickers.js', 'arcade.js'].concat(arcGames.map(f => 'games/' + f)).forEach(file => {
       const where = 'docs/nest/' + file, p = path.join(ROOT, where);
       if (!fs.existsSync(p)) return err(where, 'missing (loadNest in src/Index.html loads it)');
       const code = fs.readFileSync(p, 'utf8'), own = [...names(code)];
@@ -245,6 +247,17 @@ function check(opts) {
       own.filter(n => seen.has(n)).forEach(n => err(where, 'top-level name ' + n + ' is also in docs/nest/' + seen.get(n)));
       own.forEach(n => seen.set(n, file));
       try { new vm.Script(code, { filename: file }); } catch (e) { err(where, e.message); }
+    });
+    // Every arcade game in NK_ARCADE has its file, which defines NK.<game>; every Coco line (en-*) the code says is in nest.en.
+    const arc = fs.readFileSync(path.join(ROOT, 'docs/nest/arcade.js'), 'utf8'), list = (/NK_ARCADE = ([[^;]+]);/.exec(arc) || [])[1];
+    (list ? eval(list) : []).forEach(([g]) => {
+      const p = path.join(ROOT, 'docs/nest/games', g + '.js');
+      if (!fs.existsSync(p)) return err('arcade ' + g, 'no docs/nest/games/' + g + '.js');
+      if (!new RegExp('^NK\.' + g + ' = ', 'm').test(fs.readFileSync(p, 'utf8'))) err('arcade ' + g, 'its file does not define NK.' + g);
+    });
+    ['play.js', 'actor.js', 'home.js', 'arcade.js'].concat(arcGames.map(f => 'games/' + f)).forEach(file => {
+      const code = fs.readFileSync(path.join(ROOT, 'docs/nest', file), 'utf8');
+      for (const m of code.matchAll(/'en-([a-z]+)'/g)) if (!(nest.en || {})[m[1]]) err('docs/nest/' + file, 'Coco has no line en-' + m[1] + ' in nest.en');
     });
     // Every game the day plans has its activity in play.js.
     GAMES.forEach(g => { if (!new RegExp('^NK\\.' + g + ' = ', 'm').test(play)) err('docs/nest/play.js', 'no activity NK.' + g); });

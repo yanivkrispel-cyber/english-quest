@@ -1315,6 +1315,16 @@ check('one more lesson is logged, the program moves on, and the week still shows
   d.justEarned === 15 && sheets.Log.rows.filter(r => r[1] === TALI).length === 2 && d.nest.played.includes(units[1][0]) && d.nest.next === null
   && d.week.find(w => w.isToday).percent === Math.round(3 / 8 * 100), JSON.stringify([d.justEarned, d.nest.next, d.week.find(w => w.isToday).percent]));
 run(`apiParentNestPerDay('7788', '${TALI}', 1)`);
+// Coco's arcade (specs/nest.md, stage C): 15 minutes a day by default; the parent sets 0 (no limit) to 60, audited.
+check('the arcade has 15 minutes a day by default', d.nest.arcadeMin === 15, JSON.stringify(d.nest.arcadeMin));
+fails('arcade minutes from another family', () => run(`apiParentNestArcade('0000', '${TALI}', 30)`));
+fails('arcade minutes out of range', () => run(`apiParentNestArcade('7788', '${TALI}', 90)`));
+run(`apiParentNestArcade('7788', '${TALI}', 0)`);
+check('the parent turns the arcade limit off', run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.arcadeMin === 0);
+run(`apiParentNestArcade('7788', '${TALI}', 30)`);
+check('half an hour, and it is in the audit trail', run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.arcadeMin === 30
+  && sheets.Audit.rows.some(r => r.join('|').includes('nest arcade minutes') && r.join('|').includes(TALI + ': 30')));
+run(`apiParentNestArcade('7788', '${TALI}', 15)`);
 // The living home (specs/nest-home.md): off by default, on for Settings.NestHome names (or 'all') and NestAll's try-out kids.
 check('the living home is off by default, and the days played count distinct dates', d.nest.home === false && d.nest.days === 1, JSON.stringify([d.nest.home, d.nest.days]));
 run("setSetting('NestHome', 'nobody, " + TALI + "')");

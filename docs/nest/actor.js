@@ -69,7 +69,7 @@ function nkActorOn(s){
   else if (s.t === 'done') nkPose('wave');
   nkFidget();
 }
-function nkActorOff(){ clearTimeout(NKA.idle); clearTimeout(NKA.poseT); const f = document.getElementById('nkflyer'); if (f) f.remove(); }
+function nkActorOff(){ if (NE && NE.off) { try { NE.off(); } catch(e){} NE.off = null; } clearTimeout(NKA.idle); clearTimeout(NKA.poseT); const f = document.getElementById('nkflyer'); if (f) f.remove(); }
 
 // Every 5 to 9 seconds, when Coco is quiet: he looks around, tilts his head, flaps or hops; the pet bounces sometimes.
 function nkFidget(){
@@ -205,3 +205,45 @@ function nkBandBar(ctx, t, beat, bar, unit){
   } catch(e){}
 }
 const nkReal = id => nkAlive() && (EQ_NEST.real || []).includes(id) ? ['x-' + id] : [];
+
+// ---------- Stage B: things in the painted worlds that answer a tap ----------
+// [word, x %, y % of the painting (600x804), radius % of its width]. Only words Coco has a clip for (w-<word>). A tap lifts
+// that round piece of the painting out (a copy of the picture behind it, so nothing new is drawn), wobbles it and says it.
+const NK_HOTS = {
+  home: [['window', 70, 18, 14], ['teddy-bear', 21, 35, 6], ['flower', 66, 29, 5]],
+  playroom: [['window', 22, 24, 13], ['star', 55, 33, 5], ['cloud', 71, 32, 6], ['train', 37, 43, 9], ['boat', 57, 55, 5]],
+  kitchen: [['window', 80, 26, 15], ['cup', 43, 28, 5]],
+  farm: [['house', 27, 36, 13], ['cloud', 70, 13, 10], ['tree', 12, 27, 9]],
+  savanna: [['tree', 80, 32, 12], ['cloud', 70, 12, 10], ['tree', 22, 41, 7]],
+  park: [['tree', 13, 30, 12], ['tree', 89, 29, 10], ['cloud', 32, 12, 9]],
+  town: [['house', 12, 32, 12], ['house', 38, 36, 10], ['cloud', 37, 7, 9], ['tree', 8, 10, 8]],
+  beach: [['sea', 35, 47, 14], ['tree', 80, 30, 14], ['cloud', 20, 12, 10], ['rock', 64, 57, 5]],
+  sky: [['rainbow', 62, 25, 15], ['cloud', 15, 22, 12], ['cloud', 88, 19, 10]]
+};
+// Places the hot spots on a painted scene (the painting is drawn with background-size: cover, centered).
+function nkHots(scene, place){
+  if (!scene || !nkAlive()) return;
+  const hots = NK_HOTS[NK_PLACE[place] ? place : 'playroom'] || [];
+  const lay = () => {
+    const w = scene.clientWidth, h = scene.clientHeight;
+    if (!w || !h) return;
+    const k = Math.max(w / 600, h / 804), bw = 600 * k, bh = 804 * k, ox = (w - bw) / 2, oy = (h - bh) / 2;
+    scene.querySelectorAll('.nk-hot').forEach(b => {
+      const [, x, y, r] = hots[Number(b.dataset.hot)], R = r / 100 * bw, cx = ox + x / 100 * bw, cy = oy + y / 100 * bh;
+      b.style.cssText = `left:${cx - R}px;top:${cy - R}px;width:${2 * R}px;height:${2 * R}px;background-size:${bw}px ${bh}px;background-position:${ox - cx + R}px ${oy - cy + R}px`;
+    });
+  };
+  scene.insertAdjacentHTML('afterbegin', hots.map(([w], i) => `<button class="nk-hot" data-hot="${i}" aria-label="${esc(w)}"></button>`).join(''));
+  const img = (scene.style.backgroundImage || '').trim();
+  scene.querySelectorAll('.nk-hot').forEach(b => {
+    b.onclick = e => {
+      e.stopPropagation();
+      b.style.backgroundImage = img;
+      nkAgain(b, 'up');
+      nkSfx('pop');
+      if (!nestQueue) nestPlay(['w-' + hots[Number(b.dataset.hot)][0]]);
+    };
+  });
+  lay();
+  requestAnimationFrame(lay);
+}

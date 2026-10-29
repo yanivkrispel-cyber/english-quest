@@ -10,6 +10,7 @@ iframe{border:0;border-radius:24px;background:#fff}#out{width:100%;white-space:p
 <script>
 const q = new URLSearchParams(location.search), frames = [document.getElementById('a'), document.getElementById('b')], out = document.getElementById('out');
 const GAMES = ['meet', 'find', 'move', 'say', 'give', 'peek', 'sound', 'pop', 'sort', 'pairs', 'missing', 'odd', 'chant', 'story', 'scene', 'color', 'dress', 'teach'];
+const ARC = ['parrot', 'peep', 'nono', 'slice', 'cards'];
 async function ready(f){
   for (let i = 0; i < 80; i++) {
     try { if (f.contentWindow.eval('typeof nestGalleryDash') === 'function' && f.contentDocument.getElementById('app')) return; } catch(e){}
@@ -24,7 +25,9 @@ async function play(f, unit, game, age, step, mute){
   if (mute) ev("nestPlay = function(k, cb){ const t = {}; window.nkQ = t; if (cb) setTimeout(() => { if (window.nkQ === t) cb(); }, 30); }; nestStopAudio = function(){ window.nkQ = null; }");
   ev(`nestLeave(); NG_AGE = ${age}; nestGalleryDash()`);
   await ev('loadNest()');
-  ev(`nestStart(${JSON.stringify(unit)}, true, ${JSON.stringify(game)})`);
+  // Coco's arcade games (docs/nest/games/) load on demand and play on the unit's words.
+  if (ARC.includes(game)) { await ev(`nkArcLoad(${JSON.stringify(game)})`); ev(`nkArcSession(${JSON.stringify(game)}, ${JSON.stringify(unit)}, true); nestRender(true)`); }
+  else ev(`nestStart(${JSON.stringify(unit)}, true, ${JSON.stringify(game)})`);
   if (step) ev(`NE.si = ${step}; nestRender(false)`);
   await new Promise(r => setTimeout(r, 900));
   const d = f.contentDocument, st = d.getElementById('nkst');
@@ -44,8 +47,8 @@ async function play(f, unit, game, age, step, mute){
   if (q.has('all')) {
     const bad = [];
     let n = 0;
-    for (const age of [3, 4, 5, 7]) for (const game of GAMES) for (const f of frames) {
-      const unit = game === 'dress' ? 'n13' : game === 'sound' ? 'n04' : game === 'give' ? 'n07' : 'n05';
+    for (const age of [3, 4, 5, 7]) for (const game of GAMES.concat(ARC)) for (const f of frames) {
+      const unit = game === 'cards' ? 'n02' : game === 'slice' || game === 'parrot' ? 'n07' : game === 'dress' ? 'n13' : game === 'sound' ? 'n04' : game === 'give' ? 'n07' : 'n05';
       const r = await play(f, unit, game, age, 0, true);
       n++;
       if (r.page > 0 || r.over > 2 || r.errs) bad.push(`${f.id} age ${age} ${game}: page ${r.page}, stage ${r.over}${r.errs ? ', error on screen' : ''}`);

@@ -1207,6 +1207,7 @@ NK.story = {
     const spots = NK_STORY_SPOTS[Math.min(s.ws.length, 3) - 1] || NK_STORY_SPOTS[0];
     const pl = nkPlace(s.place, s.ws.map(w => w.pic || w.id));
     nkFill(`<div class="nk-scene${pl.painted ? ' painted' : ''}" style="${pl.style}">${pl.html}${s.ws.slice(0, 3).map((w, i) => nkItem(w, spots[i], i)).join('')}</div>${NE.words ? `<div class="nk-line">${esc(s.line)}</div>` : ''}`);
+    if (pl.painted && typeof nkHots === 'function') nkHots(app.querySelector('.nk-scene'), s.place);
     app.querySelectorAll('[data-nki]').forEach(b => b.onclick = () => {
       const w = s.ws[Number(b.dataset.nki)];
       b.classList.remove('wig'); void b.offsetWidth; b.classList.add('wig');
@@ -1224,6 +1225,7 @@ NK.scene = {
   render(s, opening){
     const pl = nkPlace(s.place, s.items.map(x => x.w.pic || x.w.id));
     nkFill(`<div class="nk-scene${pl.painted ? ' painted' : ''}" style="${pl.style}">${pl.html}${s.items.map((x, i) => nkItem(x.w, x.spot, i)).join('')}</div>`);
+    if (pl.painted && typeof nkHots === 'function') nkHots(app.querySelector('.nk-scene'), s.place);
     NE.tries = 0;
     const right = () => app.querySelector(`[data-nki="${s.items.findIndex(x => x.w.id === s.w.id)}"]`);
     const pick = (b, byCoco) => {

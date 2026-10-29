@@ -474,7 +474,19 @@ window.EQ_NEST = {
     hello: 'Hello!',
     morning: 'Good morning!',
     night: 'Good night!',
-    echo: 'Talk to me!'
+    echo: 'Talk to me!',
+    // Coco's arcade (specs/nest.md, stage C)
+    arcade: "Let's play my games!",
+    sleepy: "I'm sleepy now. Let's play more tomorrow!",
+    nococo: 'Am I right? Say no if I am silly!',
+    isit: 'Is that right?',
+    silly: 'Oops! Silly me!',
+    slice: 'Slice it!',
+    cards: "Let's play cards!",
+    mygo: 'My turn!',
+    draw: 'Take a card!',
+    youwin: 'You win! Hooray!',
+    iwin: 'I win! Yay! Good game!'
   },
   // What a grown-up reads on a long press on Coco during a game (Hebrew text only, never spoken to the kid).
   hints: {

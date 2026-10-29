@@ -242,3 +242,45 @@ For the arcade kids (`nkAlive()`), `nkPlace` returns a clay painting instead of 
 (`.nk-scene.painted`, a soft shadow under each). Not yet: things in the painting that move when tapped, the new coloring
 pages, and dressing the kid's pet (the pets wear only head, face and neck items today; shirts, pants and shoes need new fit
 slots for 10 pets in 5 stages).
+
+The tappable things (2026-10-29): `NK_HOTS` in actor.js holds, for each painting, the things in it Coco has a word for
+([word, x %, y % of the 600x804 painting, radius %]). `nkHots` lays round buttons over them (the painting is drawn with
+`cover`, so their places are computed from the scene's size); a tap lifts that piece of the painting out (a copy of the picture
+behind it, so no new art), wobbles it and says the word. Story and the big picture have them; a tap there is never a miss.
+
+## The arcade plan, stage C: Coco's arcade and five games (2026-10-29)
+
+`docs/nest/arcade.js` (loaded with the others; `nkArcOn()` = `dash.nest.arcade`): for the arcade kids the playground
+(`nestPlayground`, the balloon in the living home) is **Coco's arcade**, `nkArcade`: a painted fairground
+(`docs/nest/arcade/room.webp`), two shelves by two big buttons (Coco's games with their clay covers
+`docs/nest/arcade/<game>.webp`, and the learning games of `NK_PLAY`), Coco waving at the top.
+
+- **A game** is a one-step session (`nkArcSession`, then the end screen; nothing is saved, like the playground) on the words of
+  every unit met (ages 2 and 3: the core words). Each game is its own file, `docs/nest/games/<game>.js`, loaded when played
+  (`nkArcLoad`); `nkArcStep` builds what it plays on and hides a game with nothing to play on. `NE.off` stops what a game runs
+  (the echo, the animation frame) when the kid leaves.
+- **Minutes a day**: `Girls.NestArcadeMin` (SETUP v22), set by the parent in the kid card (`nestArcadeRow`, `apiParentNestArcade`:
+  ten minutes, a quarter of an hour, half an hour, no limit; empty = 15, 0 = no limit; audited), `dash.nest.arcadeMin`. The phone
+  counts every 5 s of a Coco game on a visible screen (`eq_nest_arc_<kid>`, today's date and seconds; nothing is sent). When the
+  minutes are used up, a game that is on goes on to its end and the shelf shows Coco asleep ("I'm sleepy now. Let's play more
+  tomorrow!"); the learning games stay open.
+- **Talking Coco** (`parrot`, 2+): Coco big in the painted living room, the pet beside him. The microphone button: the echo of
+  the living home (`nkEchoStart`: Coco says it back in his parrot voice; memory only). A tap on Coco: giggle, spin, dance or a
+  sneeze of feathers. A plate of the food the kid has met: a tap feeds him (the word, "Yummy!"). Every third thing he asks for a
+  word, its picture in his bubble ("Say it! Apple!"). No goal; the close button goes back to the arcade.
+- **Pop-up Pals** (`peep`, 2+): three holes (2 and 3) or six in the painted park; pals pop up and stay long; Coco asks
+  "Find the cat"; the one he wants comes up at least every third time. A wrong pal says its name, waves and goes down. Once a
+  game the kid's pet pops up (a giggle). Four rounds (2 and 3) or six.
+- **No, Coco!** (`nono`, 2+): a picture; Coco names it, often wrongly. No (red) or Yes (green); a loud voice counts as No
+  when the microphone is already on (`nestMicStart`, loudness only). After No: Coco hides in his wings ("Oops! Silly me!") and
+  says the right word. A wrong judgment: he asks again, then tells.
+- **Coco Slice** (`slice`, 4+): the food the kid has met is thrown up in arcs over the painted kitchen; a swipe (or a tap)
+  through the one Coco says cuts it in two with a splash, the pet eats. The wrong one bounces and the throws get slower. Three
+  of each, three fruits; a big watermelon needs three cuts once.
+- **Color Cards** (`cards`, 4+, needs three color words): a matching game against Coco on colors (and numbers 1 to 5 once
+  three number words are met; dots before). Same color or same number; every card is said ("Blue! Three!"); no card: take one.
+  Coco plays and often has to take one; the "Coco sneezes!" card blows the color to a new one. Both endings are happy.
+
+New lines in `nest.en` (arcade, sleepy, nococo, isit, silly, slice, cards, mygo, draw, youwin, iwin); nest-check checks that every
+`en-*` the code says has its line and that every game in `NK_ARCADE` has its file. Test: `test/nest-games.html?unit=n02&game=cards`
+(and `parrot`, `peep`, `nono`, `slice`; `?all` includes them).

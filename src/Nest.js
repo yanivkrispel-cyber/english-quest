@@ -57,6 +57,8 @@ function nestInfo(kid, t, assigned, logs) {
     // Days played (distinct dates with a Nest row): a flower each in the home's garden.
     days: logs.filter(function (l) { return l.Section === 'nest'; }).map(function (l) { return String(l.Date); }).filter(function (d, i, a) { return a.indexOf(d) === i; }).length,
     perDay: perDay,
+    // Minutes a day in Coco's arcade (the parent sets it; 0 = no limit). The phone counts the minutes.
+    arcadeMin: nestArcadeMin(kid),
     // One more lesson: once the day's own is done, the next day of the program while the parent's daily number allows.
     next: done && (!perDay || today < perDay) ? String(nestNext(kid, logs).url).slice(5) : null
   };
@@ -79,6 +81,26 @@ function apiParentNestPerDay(pin, name, n) {
   if (!(n >= 0 && n <= 9)) throw new Error('בחרו כמה שיעורים ביום');
   setGirlFields(kid.Name, { NestPerDay: n });
   audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest lessons a day', kid.Name + ': ' + (n || 'no limit'));
+  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
+}
+
+// Minutes a day in Coco's arcade (Girls.NestArcadeMin, set by the parent): 15 when empty, 0 = no limit.
+function nestArcadeMin(kid) {
+  var v = String(kid.NestArcadeMin == null ? '' : kid.NestArcadeMin).trim();
+  if (v === '') return 15;
+  var n = Math.round(Number(v));
+  return n >= 0 && n <= 60 ? n : 15;
+}
+
+function apiParentNestArcade(pin, name, n) {
+  ensureSetup();
+  var access = parentAccess(pin);
+  var kid = findGirl(name);
+  if (!kid || !isNest(kid) || (!access.isAdmin && groupOf(kid) !== String(access.group.Id))) throw new Error('Unknown kid');
+  n = Math.round(Number(n));
+  if (!(n >= 0 && n <= 60)) throw new Error('בחרו כמה דקות ביום');
+  setGirlFields(kid.Name, { NestArcadeMin: n });
+  audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest arcade minutes', kid.Name + ': ' + (n || 'no limit'));
   return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
 }
 
