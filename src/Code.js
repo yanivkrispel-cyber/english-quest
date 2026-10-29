@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v22';
+var SETUP_VERSION = 'v23';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 // The kids' front end (Cloudflare, docs/). Until 2026-10 it was https://yanivkrispel-cyber.github.io/english-quest/.
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
@@ -81,7 +81,9 @@ var HEADERS = {
   // Talk to Coco (Talk.js): one row per talk; Voice / Tiles = answers said aloud / tapped, Said = what the phone heard.
   Chats: ['Timestamp', 'Girl', 'Date', 'Talk', 'Where', 'Level', 'Turns', 'Voice', 'Tiles', 'Mic', 'XP', 'Seconds', 'Said'],
   // The audit trail (Audit.js): opens, wrong PINs, and what parents, the admin, the teacher and the owner changed.
-  Audit: ['Timestamp', 'Date', 'Role', 'Who', 'Group', 'Action', 'Detail', 'Ok', 'Device']
+  Audit: ['Timestamp', 'Date', 'Role', 'Who', 'Group', 'Action', 'Detail', 'Ok', 'Device'],
+  // A family's plan (src/Privacy.js, entitlement): empty = the pilot, full access. Source: apple, google or manual.
+  Plans: ['Group', 'Plan', 'Source', 'Until', 'Ref', 'Updated']
 };
 
 var WORDS = [
@@ -156,6 +158,11 @@ function doPost(e) {
     if (moved !== null) return ContentService.createTextOutput(moved).setMimeType(ContentService.MimeType.JSON);
     var API = api();
     if (!API.hasOwnProperty(req.fn)) throw new Error('Unknown call');
+    // An installed app too old for this server is asked to update (Settings.MinApp, the APP_V of Index.html).
+    var minApp = String(getSetting('MinApp') || '');
+    if (minApp && String(req.v || '') < minApp) {
+      return ContentService.createTextOutput(JSON.stringify({ ok: false, update: true, error: 'Please update the app' })).setMimeType(ContentService.MimeType.JSON);
+    }
     REQ_DEV = cleanDev(req.dev);
     REQ_OPEN = cleanOpen(req.open);
     PERF_PARTS = null;

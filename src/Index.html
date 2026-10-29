@@ -1702,6 +1702,8 @@ const store = {
 // (no Google cookies, so child accounts under 13 are not blocked).
 // The server is /api on this site (Cloudflare, specs/cloudflare.md). The old GitHub Pages address still calls Apps Script,
 // which passes the call on (src/Relay.js).
+// This copy of the app; the server can ask an older one to update (Settings.MinApp, src/Code.js doPost).
+const APP_V = '2026.10.30';
 const API_URL = /github.io$/.test(location.hostname) ? 'https:' + '/' + '/script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec' : '/api';
 // Every server call has a time limit (a stuck call never leaves a spinner turning), calls that only read
 // get one quiet second try, and errors from Google itself (not the app's own checks, like "Wrong PIN") read
@@ -1744,11 +1746,13 @@ function callOnce(fn, args, ms){
     });
   }
   const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), ms);
-  return fetch(API_URL, { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args, dev: DEVICE, open: OPEN_CALLS[fn] ? store.get('eq_open_m') || undefined : undefined }), signal: ctl.signal })
+  return fetch(API_URL, { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args, v: APP_V, dev: DEVICE, open: OPEN_CALLS[fn] ? store.get('eq_open_m') || undefined : undefined }), signal: ctl.signal })
     .then(r => r.text(), () => { throw netError(ctl.signal.aborted ? 'timeout' : 'offline'); })
     .then(text => {
       let r;
       try { r = JSON.parse(text); } catch(e){ throw netError('busy'); }
+      // The server wants a newer app: reload once (the service worker brings the new copy).
+      if (r.update) { try { if (!sessionStorage.getItem('eq_upd')) { sessionStorage.setItem('eq_upd', '1'); location.reload(); } } catch(e){} }
       if (!r.ok) throw serverError(r.error);
       return r.data;
     })

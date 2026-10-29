@@ -1487,6 +1487,36 @@ if (!PLATFORM_MODE) {
   check4('privacy: the audit trail says a family was deleted, without names', sheets.Audit.rows.some(r => r[5] === 'delete' && /a family/.test(r[6]) && !/Erase|Keep/.test(r.join('|'))));
 }
 
+// Store readiness on the server: the minimum app version, retention, plans.
+{
+  const check5 = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+  const post = (body) => JSON.parse(run('doPost(' + JSON.stringify({ postData: { contents: JSON.stringify(body) } }) + ').getContent()'));
+  run("setSetting('MinApp', '2026.10.30')");
+  const old = post({ fn: 'apiPublic', args: [''] }), cur = post({ fn: 'apiPublic', args: [''], v: '2026.10.30' });
+  check5('version: an app older than MinApp is asked to update, the current one works', old.ok === false && old.update === true && cur.ok === true);
+  run("setSetting('MinApp', '')");
+  check5('version: no MinApp, every app works', post({ fn: 'apiPublic', args: [''] }).ok === true);
+  // retention: audit rows older than 180 days go once there are a month of them; old talk text is blanked
+  const ah = sheets.Audit.rows[0], ch = sheets.Chats.rows[0];
+  const arow = (date) => ah.map(h => (h === 'Date' ? date : h === 'Timestamp' ? new SimDate(date + 'T10:00:00') : h === 'Action' ? 'open' : h === 'Role' ? 'kid' : h === 'Who' ? 'Ziv' : ''));
+  const n0 = sheets.Audit.rows.filter(r => r.join('') !== '').length;
+  sheets.Audit.rows.splice(1, 0, arow('2025-01-01'), arow('2025-02-01'));
+  const crow = (date, said) => ch.map(h => (h === 'Date' ? date : h === 'Girl' ? 'Ziv' : h === 'Said' ? said : h === 'Timestamp' ? new SimDate(date + 'T10:00:00') : ''));
+  sheets.Chats.rows.push(crow('2025-01-01', 'my old words'), crow(run('today()'), 'new words'));
+  const sw = run('JSON.stringify(retentionSweep())');
+  const live = () => sheets.Audit.rows.slice(1).filter(r => r.join('') !== '');
+  check5('retention: audit rows older than 180 days go, the newer ones stay', !live().some(r => String(r[1]) < '2025-06-01') && live().length === n0 - 1 + 2 - JSON.parse(sw).audit && live().length > 0, sw + ' n0 ' + n0 + ' live ' + live().length + ' old ' + live().filter(r => String(r[1]) < '2025-06-01').length);
+  const saidCol = ch.indexOf('Said');
+  check5('retention: an old talk keeps its counts but not its text', sheets.Chats.rows.some(r => r[1] === 'Ziv' && r[saidCol] === '' && r[2] === '2025-01-01') && sheets.Chats.rows.some(r => r[saidCol] === 'new words'));
+  sheets.Chats.rows = sheets.Chats.rows.filter(r => r[2] !== '2025-01-01' && r[saidCol] !== 'new words');
+  check5('plans: a family without a plan is in the pilot with everything open', JSON.stringify(run("JSON.stringify(entitlement('family'))")).indexOf('pilot') > 0);
+  sheets.Plans.rows.push(['family', 'family-yearly', 'apple', '2099-01-01', 'tx1', '']);
+  run("invalidate('Plans')");
+  const e2 = JSON.parse(run("JSON.stringify(entitlement('family'))"));
+  check5('plans: a plan row is read', e2.plan === 'family-yearly' && e2.source === 'apple');
+  sheets.Plans.rows.pop();
+}
+
 // Platform mode: the database holds exactly what the server has in memory.
 if (PLATFORM_MODE) {
   G.markAll(); G.flush();

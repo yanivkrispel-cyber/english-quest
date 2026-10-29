@@ -102,6 +102,7 @@ function platformTick() {
   job('dailyReminder', Number(getSetting('ReminderHour')) || 17, dailyReminder);
   job('lastCallReminder', Number(getSetting('LastCallHour')), lastCallReminder);
   job('parentSummary', Number(getSetting('ParentSummaryHour')), parentSummary);
+  job('retentionSweep', 3, retentionSweep);
   try { auditFlush(); } catch (e) { console.error('auditFlush: ' + ((e && e.message) || e)); }
   return ran;
 }

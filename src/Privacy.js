@@ -7,7 +7,7 @@
 var KID_COLS = { Girls: ['Name'], Games: ['Girl'], Review: ['Girl'], Gates: ['Girl'], Assignments: ['Girl'], Log: ['Girl'], Push: ['Girl'],
   Bonus: ['Girl'], Shop: ['Girl'], Wardrobe: ['Girl'], Words: ['Girl'], Flags: ['Girl'], Placements: ['Girl'], Chats: ['Girl'],
   Duos: ['A', 'B'], Duels: ['Host', 'Guest'], Audit: ['Who'] };
-var GROUP_COLS = { Groups: ['Id'], Rewards: ['Group'], ParentPush: ['Who'], Feedback: ['Group'], Audit: ['Group'] };
+var GROUP_COLS = { Groups: ['Id'], Rewards: ['Group'], ParentPush: ['Who'], Feedback: ['Group'], Audit: ['Group'], Plans: ['Group'] };
 
 function privacyTarget(access, groupId, kidName) {
   var g = access.isAdmin ? groups().filter(function (x) { return String(x.Id) === String(groupId); })[0] : access.group;
@@ -26,7 +26,10 @@ function eraseRows(table, match) {
   var sh = sheet(table);
   if (!sh || sh.getLastRow() < 2) return 0;
   var values = sh.getDataRange().getValues(), head = values[0], gone = 0;
-  var hit = function (r) { var o = {}; head.forEach(function (h, i) { o[h] = r[i]; }); return match(o); };
+  var hit = function (r) {
+    if (r.join('') === '') return false;   // a blank row left by an earlier clear
+    var o = {}; head.forEach(function (h, i) { o[h] = r[i]; }); return match(o);
+  };
   if (typeof PLATFORM !== 'undefined') {
     for (var i = values.length - 1; i >= 1; i--) {
       if (!hit(values[i])) continue;
@@ -103,4 +106,34 @@ function apiExportData(pin, groupId) {
   });
   audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : '', gid, 'export', 'the family data', true);
   return { app: 'English with Coco', exported: new Date().toISOString(), family: String(t.group.Name), kids: t.kids, tables: out };
+}
+
+// Least data (specs/store-readiness.md): the audit trail keeps 180 days, the text of what a kid said to Coco 90 days
+// (the counts stay). Runs at night on Cloudflare (platformTick). It removes the old audit rows only when there are a
+// month's worth of them, so the table is rewritten about once a month, not every night.
+var KEEP = { auditDays: 180, saidDays: 90, batchDays: 30 };
+function retentionSweep() {
+  var now = Date.now(), day = 86400000, out = { audit: 0, said: 0 };
+  var limit = fmt(new Date(now - KEEP.auditDays * day)), batch = fmt(new Date(now - (KEEP.auditDays + KEEP.batchDays) * day));
+  var audits = readTable('Audit');
+  if (audits.length && String(audits[0].Date) < batch) out.audit = eraseRows('Audit', function (o) { return String(o.Date instanceof Date ? fmt(o.Date) : o.Date) < limit; });
+  var sh = sheet('Chats');
+  if (sh && sh.getLastRow() > 1) {
+    var v = sh.getDataRange().getValues(), h = v[0], said = h.indexOf('Said'), dc = h.indexOf('Date');
+    var old = fmt(new Date(now - KEEP.saidDays * day));
+    for (var i = 1; i < v.length; i++) {
+      var d = v[i][dc] instanceof Date ? fmt(v[i][dc]) : String(v[i][dc]);
+      if (d < old && v[i][said] !== '') { sh.getRange(i + 1, said + 1).setValue(''); out.said++; }
+    }
+    if (out.said) invalidate('Chats');
+  }
+  return out;
+}
+
+// What a family may use. Today everyone is in the pilot with everything open; when the stores sell a plan, the store's
+// notice (worker/api: /hooks/apple, /hooks/google, off for now) writes a row in Plans and this reads it.
+function entitlement(groupId) {
+  var rows = readTable('Plans').filter(function (r) { return String(r.Group) === String(groupId); });
+  var now = fmt(new Date()), live = rows.filter(function (r) { return !r.Until || String(r.Until) >= now; }).pop();
+  return live ? { plan: String(live.Plan), source: String(live.Source), until: String(live.Until || ''), full: true } : { plan: 'pilot', source: '', until: '', full: true };
 }
