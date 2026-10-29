@@ -8,7 +8,7 @@ const RealDate = Date;
 let clockShift = 0;
 class SimDate extends RealDate { constructor(...a) { if (a.length) super(...a); else super(RealDate.now() + clockShift); } static now() { return RealDate.now() + clockShift; } }
 let pushStatus = () => 201;
-const sheets = {};
+let sheets = {};
 function mkSheet(name){ const rows = []; return sheets[name] = {
   name, rows,
   getLastRow: () => rows.length, getLastColumn: () => Math.max(0, ...rows.map(r => r.length)),
@@ -47,10 +47,33 @@ const ctx = {
   Session: { getEffectiveUser: () => ({ getEmail: () => 'dad@x' }) },
 };
 const props = ctx.PropertiesService.getScriptProperties(); ctx.PropertiesService.getScriptProperties = () => props;
+// SIM_PLATFORM=1: the same scenarios on the Cloudflare platform layer (platform/gas.js on node:sqlite, platform/overrides.js),
+// the sources in strict mode and the shared table rows frozen, then a reload from the database must give the same sheets.
+const PLATFORM_MODE = !!process.env.SIM_PLATFORM;
+let G = null, simDb = null;
+if (PLATFORM_MODE) {
+  const { createGas, sqliteStore } = require('../platform/gas.js');
+  const { DatabaseSync } = require('node:sqlite');
+  simDb = new DatabaseSync(':memory:');
+  const sql = (q, ...p) => { const st = simDb.prepare(q); return /^\s*select/i.test(q) ? st.all(...p) : (st.run(...p), []); };
+  G = createGas({ store: sqliteStore(sql), crypto, cacheObject: cacheStore, ownerEmail: 'dad@x' });
+  Object.assign(ctx, { SpreadsheetApp: G.services.SpreadsheetApp, CacheService: G.services.CacheService, LockService: G.services.LockService,
+    PropertiesService: G.services.PropertiesService, Utilities: G.services.Utilities,
+    PLATFORM: { freeze: true, asyncPush: false, outbox: G.outbox } });
+  sheets = G.sheets;
+  ctx.__sqlStore = sql;
+}
 vm.createContext(ctx);
-for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js']) if (f !== 'NestIndex.js' || fs.existsSync('src/' + f)) vm.runInContext(fs.readFileSync('src/' + f, 'utf8'), ctx);
+const strict = PLATFORM_MODE ? '"use strict";' : '';
+for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js']) if (f !== 'NestIndex.js' || fs.existsSync('src/' + f)) vm.runInContext(strict + fs.readFileSync('src/' + f, 'utf8'), ctx, { filename: f });
+if (PLATFORM_MODE) vm.runInContext(fs.readFileSync('platform/overrides.js', 'utf8'), ctx, { filename: 'overrides.js' });
 // Each call is a fresh request: per-request table memo resets, CacheService persists.
-const run = s => { if (typeof ctx.TABLES === 'object') vm.runInContext('TABLES = {}', ctx); return vm.runInContext(s, ctx); };
+const run = s => {
+  if (typeof ctx.TABLES === 'object') vm.runInContext('TABLES = {}', ctx);
+  if (!PLATFORM_MODE) return vm.runInContext(s, ctx);
+  G.markAll();   // the scenarios edit sheet rows directly between calls
+  try { return vm.runInContext(s, ctx); } finally { G.flush(); }
+};
 let day = '2026-10-08';
 run('today = function(){ return __day; }'); ctx.__day = day;
 const pins = { Ziv: '4821', Ron: '7356', Aviv: '2694' };
@@ -1376,4 +1399,14 @@ run(`apiParentSetAge('6611', ${JSON.stringify(LILO)}, { grade: 3 })`);
 d = run(`apiDashboard(${JSON.stringify(LILO)}, '${kid(LILO).PIN}')`);
 check('back from the Nest with no test: the class level and the level test', kid(LILO).Level === 'a1' && !d.nest && !!d.levelTest, JSON.stringify({ lv: kid(LILO).Level, lt: !!d.levelTest }));
 run("apiPilotInvite('1234', false, '')");
+}
+
+// Platform mode: the database holds exactly what the server has in memory.
+if (PLATFORM_MODE) {
+  G.markAll(); G.flush();
+  const { createGas, sqliteStore, gasJson } = require('../platform/gas.js');
+  const G2 = createGas({ store: sqliteStore(ctx.__sqlStore), crypto });
+  const names = G2.services.SpreadsheetApp.getActive().getSheets().map(s => s.getName());
+  const bad = names.filter(n => gasJson(G2.sheet(n).rows) !== gasJson(G.sheet(n).rows));
+  console.log((bad.length || names.length < 19 ? 'FAIL: ' : 'ok: ') + 'reloaded from the database: ' + names.length + ' sheets the same' + (bad.length ? ' | differ: ' + bad.join(', ') : ''));
 }
