@@ -1411,6 +1411,8 @@ if (!PLATFORM_MODE) {
   check2('relay: inert while CF_MODE is empty', post('apiPublic', ['']).data.group && relayLog.length === 0);
   check2('relay: only the admin may change the mode', post('apiCfMode', ['9999', 'freeze', '']).ok === false);
   Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
+  check2('relay: no export unless frozen (it holds every PIN and the push key)', /Freeze first/.test(post('apiCfExport', ['1234']).error));
+  Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
   check2('relay: freeze refuses other calls', post('apiCfMode', ['1234', 'freeze', '']).ok && /moving/.test(post('apiPublic', ['']).error));
   const ex = post('apiCfExport', ['1234']);
   check2('relay: the export has every sheet and the script properties, Dates as $d', ex.ok && ex.data.names.indexOf('Girls') >= 0 && ex.data.sheets.Girls.length > 1 &&

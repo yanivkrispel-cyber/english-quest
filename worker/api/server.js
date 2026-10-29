@@ -4988,6 +4988,8 @@ function cfIntercept(req, body) {
 // the new server. The admin's PIN only.
 function apiCfExport(pin) {
   if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can do this');
+  // Only while frozen (the cutover's few minutes): the export holds every PIN and the push signing key.
+  if (cfMode().mode !== 'freeze') throw new Error('Freeze first');
   var ss = SpreadsheetApp.getActive(), names = [], sheets = {};
   ss.getSheets().forEach(function (sh) {
     var n = sh.getName();
