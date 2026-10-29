@@ -1,0 +1,226 @@
+{
+  "ui-home": {
+    "items": [
+      [
+        "sun-horizon",
+        "a smiling yellow sun rising behind a small round green hill"
+      ],
+      [
+        "map-trifold",
+        "a folded paper treasure map with a dotted red path and a little red flag"
+      ],
+      [
+        "game-controller",
+        "a chunky rounded game controller in lilac with pink and teal buttons"
+      ],
+      [
+        "paw-print",
+        "one big chubby orange animal paw print"
+      ],
+      [
+        "user-circle",
+        "a round lilac badge with a simple happy smiling face"
+      ],
+      [
+        "users-three",
+        "three smiling friends' heads side by side, kids with different skin tones"
+      ]
+    ]
+  },
+  "ui-games": {
+    "items": [
+      [
+        "text-aa",
+        "two matching picture cards standing side by side, each with the same red apple"
+      ],
+      [
+        "headphones",
+        "a pair of chunky teal headphones"
+      ],
+      [
+        "puzzle-piece",
+        "one chunky indigo jigsaw puzzle piece"
+      ],
+      [
+        "magnifying-glass",
+        "a pink magnifying glass with a round glass lens and a tiny sparkle"
+      ],
+      [
+        "arrows-clockwise",
+        "two thick curved indigo arrows chasing each other in a circle"
+      ],
+      [
+        "user-plus",
+        "a smiling kid's head with a round green plus bubble beside it"
+      ]
+    ]
+  },
+  "ui-rewards": {
+    "items": [
+      [
+        "fire",
+        "a cheerful orange and yellow flame"
+      ],
+      [
+        "star",
+        "a plump golden star"
+      ],
+      [
+        "coins",
+        "a small stack of shiny gold coins"
+      ],
+      [
+        "trophy",
+        "a golden trophy cup with two handles"
+      ],
+      [
+        "medal",
+        "a gold medal on a short blue ribbon"
+      ],
+      [
+        "crown-simple",
+        "a small golden crown with three round points"
+      ]
+    ]
+  },
+  "ui-learn": {
+    "items": [
+      [
+        "target",
+        "a red and white archery target with one arrow in the middle"
+      ],
+      [
+        "chats-circle",
+        "two round speech bubbles overlapping, one lilac and one teal, empty inside"
+      ],
+      [
+        "microphone",
+        "a chunky retro microphone in silver and pink"
+      ],
+      [
+        "book-open-text",
+        "an open storybook with colorful pages"
+      ],
+      [
+        "lightbulb",
+        "a glowing yellow light bulb"
+      ],
+      [
+        "timer",
+        "a round red alarm clock with two bells on top"
+      ]
+    ]
+  },
+  "ui-world": {
+    "items": [
+      [
+        "storefront",
+        "a tiny toy shop with a striped pink and white awning"
+      ],
+      [
+        "coat-hanger",
+        "a wooden clothes hanger holding a small teal t-shirt"
+      ],
+      [
+        "treasure-chest",
+        "a small wooden treasure chest, open, with gold inside"
+      ],
+      [
+        "castle-turret",
+        "a small toy castle tower with a pointed purple roof and a flag"
+      ],
+      [
+        "gift",
+        "a gift box wrapped in pink with a big teal bow"
+      ],
+      [
+        "magic-wand",
+        "a magic wand with a golden star on top"
+      ]
+    ]
+  },
+  "ui-play": {
+    "items": [
+      [
+        "sword",
+        "two crossed soft toy foam swords, one blue and one orange"
+      ],
+      [
+        "ghost",
+        "a cute friendly little white ghost, smiling"
+      ],
+      [
+        "shield-check",
+        "a rounded blue shield with a golden star in the middle"
+      ],
+      [
+        "bell",
+        "a shiny golden bell with a small red bow"
+      ],
+      [
+        "lock-simple",
+        "a chunky golden padlock, closed"
+      ],
+      [
+        "music-notes",
+        "two joined purple music notes"
+      ]
+    ]
+  },
+  "ui-more": {
+    "items": [
+      [
+        "squares-four",
+        "four chunky rounded toy tiles in a 2x2 square, pink, yellow, teal and lilac"
+      ],
+      [
+        "sticker",
+        "a small open sticker book with a star sticker peeling off its page"
+      ],
+      [
+        "rope",
+        "a thick braided tug-of-war rope in a gentle S shape with a red ribbon tied in the middle"
+      ],
+      [
+        "lightning",
+        "a plump yellow lightning bolt"
+      ],
+      [
+        "palette",
+        "an artist paint palette with blobs of red, yellow, blue and green paint"
+      ],
+      [
+        "hourglass-medium",
+        "a small wooden hourglass with pink sand"
+      ]
+    ]
+  },
+  "ui-extra": {
+    "items": [
+      [
+        "article",
+        "a small rolled newspaper and a reading page with colorful picture blocks"
+      ],
+      [
+        "pen-nib",
+        "a chunky yellow pencil with a pink eraser"
+      ],
+      [
+        "bird",
+        "a small round red baby parrot chick, smiling"
+      ],
+      [
+        "house",
+        "a small cozy toy house with a red roof and a round window"
+      ],
+      [
+        "calendar-check",
+        "a small desk calendar with two rings on top and a green tick mark on its page"
+      ],
+      [
+        "heart",
+        "a plump glossy pink heart"
+      ]
+    ]
+  }
+}

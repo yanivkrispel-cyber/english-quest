@@ -13,11 +13,17 @@ screen is built from these pieces, not from new ones.
 2. **Surfaces:** cards are `.glass` (radius 30) or `.soft` (radius 22) with `.panel` padding; bottom sheets are `.sheet`.
    No flat white boxes, no hard borders, no dark cards on the light background (the game and result screens with a
    world's colors are the exception that already exists).
-3. **Buttons:** `.btn` pills only (52 px high, `.btn-sm` 38 px): `.btn-primary` for the one main action of a screen,
-   `.btn-teal` for a second positive action, `.btn-glass` for the rest, `.icon-btn` for a round icon button. One primary
-   button per screen. No square buttons, no new button colors.
-4. **Icons:** Phosphor through `icon(name, 'bold' | 'duotone')` (only those two weights load), inside a gradient
-   `.tile` (40 px, `.tile.sm` 32 px). **Never emoji in the UI** (founding rule; emoji only inside WhatsApp text).
+3. **Buttons are clay** (owner, 2026-10-29: the clay of the pets for everything you tap; the "Clay controls" block at the
+   end of the main style in Index.html): a soft matte puff lit from above and shaded below (`--clay-up`, `--clay-down`,
+   `--clay-drop`) that squishes on a tap and springs back (`--clay-spring`). `.btn` pills only (52 px high, `.btn-sm` 38 px):
+   `.btn-primary` for the one main action of a screen, `.btn-teal` for a second positive action, `.btn-glass` (now a light
+   clay puff) for the rest, `.icon-btn` for a round icon button. Answers are `.opt` clay keys (`.sel`, `.ok`, `.no`); a card
+   you tap is a `button.soft` / `button.glass` and gets the clay slab by itself. One primary button per screen. No square
+   buttons, no new button colors, no flat or outlined buttons; a new tappable thing uses these classes or the `--clay-*` tokens.
+4. **Icons:** Phosphor through `icon(name, 'bold' | 'duotone')` (only those two weights load), inside a clay
+   `.tile` (40 px, `.tile.sm` 32 px). Where a clay picture exists (`docs/icons/<phosphor name>.webp`, made in Gemini with
+   `tools/ui_icons.py`), `clayIcons()` swaps it in by itself in tiles, the tab bar and the Nest buttons: a new object icon in a
+   tile gets a clay picture (a new row in `tools/ui-icons.json`), small controls (close, back, check, caret) stay Phosphor. **Never emoji in the UI** (founding rule; emoji only inside WhatsApp text).
 5. **Pictures:** original clay art (pets, Coco, Nest stickers, items; `tools/PETS.md`, `tools/NEST-ART.md`). No clip art,
    no stock icons, no emoji standing in for a picture.
 6. **Type:** Plus Jakarta Sans (400 to 800). `h1` 30/800, `h2` 18/700, `.sub` 15 muted, `.label` 12/700 uppercase.

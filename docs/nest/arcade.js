@@ -191,7 +191,7 @@ function nkArcade(){
 .nka-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .nka-tabs{display:flex;gap:6px;padding:6px;border-radius:999px}
 .nka-tab{width:66px;height:54px;border-radius:999px;border:0;background:transparent;display:grid;place-items:center;font-size:30px;color:var(--primary);cursor:pointer;transition:background .2s;-webkit-tap-highlight-color:transparent}
-.nka-tab.on{background:linear-gradient(145deg,var(--primary-2),var(--primary));color:#fff;box-shadow:0 8px 18px rgba(99,102,241,.35)}
+.nka-tab.on{background:var(--clay-primary);color:#fff;box-shadow:0 10px 16px -8px rgba(76,70,200,.65),inset 0 -5px 9px rgba(40,30,160,.38),inset 0 5px 9px rgba(255,255,255,.42)}
 .nka-tab img{width:46px;height:46px;object-fit:contain}
 .nka-coco{width:82px;height:82px;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(40,30,60,.25));cursor:pointer}
 .nka-shelf{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:center;min-height:0;width:min(100%,56cqh);margin:0 auto}
@@ -199,9 +199,9 @@ function nkArcade(){
 .nka-shelf.coco.many .nka-card:last-child:nth-child(odd){grid-column:auto;width:auto}
 .nka-shelf.many .nka-name{font-size:12px}
 .nka-shelf.learn{grid-template-columns:repeat(3,1fr);gap:10px;width:min(100%,58cqh)}
-.nka-card{position:relative;aspect-ratio:1;border-radius:28px;border:1px solid var(--stroke);background:var(--glass);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
-  box-shadow:var(--shadow),var(--inner);display:grid;grid-template-rows:1fr auto;place-items:center;padding:8px 6px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s}
-.nka-card:active{transform:scale(.95)}
+.nka-card{position:relative;aspect-ratio:1;border-radius:28px;border:0;background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(244,242,250,.9));
+  box-shadow:0 18px 28px -16px rgba(60,58,105,.55),inset 0 -8px 14px rgba(118,108,165,.16),inset 0 8px 14px rgba(255,255,255,.95);display:grid;grid-template-rows:1fr auto;place-items:center;padding:8px 6px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .22s var(--clay-spring)}
+.nka-card:active{transform:scale(.95,.9)}
 .nka-shelf.coco .nka-card:last-child:nth-child(odd){grid-column:1 / -1;width:calc(50% - 7px);justify-self:center}
 .nka-pic{width:100%;height:100%;min-height:0;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(40,30,60,.2))}
 .nka-ic{font-size:52px;color:var(--primary)}

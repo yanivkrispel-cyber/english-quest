@@ -253,3 +253,10 @@ Screens: `test/tablet.html?screen=nest-living|nest-living-night|nest-living-many
 Performance, phase 2 (2026-10-28, spec `specs/perf-phase2.md`): the wait screen instead of a bare spinner, the Nest spinner race fixed,
 the parents' view kept on the phone, later opens skip the animation when the screen is on the phone, icon fonts from
 `docs/fonts/`, opens written by the warm-up trigger, and a Speed line on the admin's Audit card (opens and server times).
+
+Clay controls and clay icons (owner's pick "ג" from https://claude.ai/artifact/2ziucmgnFrYtvqUWNUSmtW, 2026-10-29): every button, answer,
+tappable card, tab and tile is clay (the "Clay controls" block at the end of the main style, `--clay-*` tokens, specs/design.md
+rules 3 and 4). 48 clay icons from Gemini (`tools/ui_icons.py`, `tools/ui-icons.json`, sheets in `art/ui/` outside the repo) live
+in `docs/icons/<phosphor name>.webp`; `clayIcons()` swaps them in for Phosphor icons in tiles, chips, the tab bar and the Nest
+buttons (a MutationObserver, so templates keep calling `icon()`). A new object icon: add a row to ui-icons.json, make the sheet,
+`python tools/ui_icons.py cut <sheet> <jpg>`, then `build` (writes `CLAY_ICONS`), and raise `ICONS_V` when a picture changes.

@@ -1450,6 +1450,99 @@ html:has(.tabbar) .netbar:not(.upd){bottom:calc(88px + env(safe-area-inset-botto
   .gplay .mword{padding:9px 12px}
   .gplay .mword img{width:38px;height:38px}
 }
+/* ---------- Clay controls (owner, 2026-10-29: "ג", the clay look of the pets for every button, card and tile; specs/design.md rule 3) ----------
+   One material for everything you tap: a soft matte puff lit from above (--clay-up), shaded below (--clay-down), with a soft drop
+   (--clay-drop). A tap squishes it (scale .96 by .9) and it springs back. Colors stay the tokens; only the material changes. */
+:root{
+  --clay-face:#f6f4fa; --clay-primary:#7a7ef6; --clay-teal:#6ad9ca; --clay-ok:#7fe2b9; --clay-no:#f9aab8; --clay-sel:#d4d5fd; --clay-green:#3fcf86;
+  --clay-up:inset 0 6px 10px rgba(255,255,255,.95);
+  --clay-down:inset 0 -6px 10px rgba(118,108,165,.2);
+  --clay-drop:0 14px 22px -12px rgba(60,58,105,.5);
+  --clay-press:inset 0 -2px 6px rgba(118,108,165,.16),inset 0 7px 12px rgba(118,108,165,.24);
+  --clay-spring:cubic-bezier(.3,1.7,.5,1);
+}
+.btn{transition:transform .22s var(--clay-spring),box-shadow .15s,filter .15s}
+.btn:active{transform:scale(.96,.9)}
+.btn-primary{background:var(--clay-primary);text-shadow:0 1px 1px rgba(40,30,150,.3);
+  box-shadow:0 14px 22px -12px rgba(76,70,200,.7),inset 0 -6px 11px rgba(40,30,160,.38),inset 0 6px 11px rgba(255,255,255,.42)}
+.btn-primary:active{box-shadow:0 6px 12px -8px rgba(76,70,200,.7),inset 0 -2px 6px rgba(40,30,160,.3),inset 0 8px 14px rgba(30,20,140,.32)}
+.btn-teal{color:#063c35;background:var(--clay-teal);
+  box-shadow:0 14px 22px -12px rgba(30,150,135,.65),inset 0 -6px 11px rgba(10,110,95,.3),inset 0 6px 11px rgba(255,255,255,.55)}
+.btn-teal:active{box-shadow:0 6px 12px -8px rgba(30,150,135,.6),inset 0 -2px 6px rgba(10,110,95,.24),inset 0 8px 14px rgba(10,110,95,.28)}
+.btn-glass{background:var(--clay-face);border:0;box-shadow:var(--clay-drop),var(--clay-down),var(--clay-up)}
+.btn-glass:active{box-shadow:0 6px 12px -8px rgba(60,58,105,.45),var(--clay-press)}
+.btn-sm.btn-primary,.btn-sm.btn-teal,.btn-sm.btn-glass{--clay-up:inset 0 4px 7px rgba(255,255,255,.95);--clay-down:inset 0 -4px 7px rgba(118,108,165,.2)}
+.btn-sm.btn-primary{box-shadow:0 10px 16px -10px rgba(76,70,200,.7),inset 0 -4px 8px rgba(40,30,160,.36),inset 0 4px 8px rgba(255,255,255,.42)}
+.btn-sm.btn-teal{box-shadow:0 10px 16px -10px rgba(30,150,135,.6),inset 0 -4px 8px rgba(10,110,95,.28),inset 0 4px 8px rgba(255,255,255,.55)}
+.btn[disabled]{opacity:1;filter:saturate(.35) opacity(.6)}
+.icon-btn i{filter:drop-shadow(0 1px 0 rgba(255,255,255,.9))}
+
+/* Answers in games, missions, duels and Tug of War: clay keys. Sizes stay as they were (the play frame must not move). */
+.opt{background:var(--clay-face);border-color:transparent;border-radius:22px;
+  box-shadow:0 12px 20px -13px rgba(60,58,105,.55),inset 0 -5px 9px rgba(118,108,165,.18),inset 0 5px 9px rgba(255,255,255,.95);
+  transition:transform .22s var(--clay-spring),background .2s,box-shadow .2s}
+.opt:active{transform:scale(.96,.92);box-shadow:0 5px 10px -8px rgba(60,58,105,.5),var(--clay-press)}
+.opt.sel{background:var(--clay-sel);border-color:transparent;color:#312e81;
+  box-shadow:0 12px 20px -12px rgba(76,70,200,.55),inset 0 -5px 9px rgba(76,70,200,.22),inset 0 5px 9px rgba(255,255,255,.8)}
+.opt.ok{background:var(--clay-ok);border-color:transparent;color:#04412a;animation:clayok .45s var(--clay-spring);
+  box-shadow:0 12px 20px -11px rgba(30,150,100,.6),inset 0 -5px 9px rgba(0,100,60,.25),inset 0 5px 9px rgba(255,255,255,.6)}
+.opt.no{background:var(--clay-no);border-color:transparent;color:#6b0f22;animation:clayno .32s ease;
+  box-shadow:0 12px 20px -11px rgba(200,70,95,.5),inset 0 -5px 9px rgba(160,30,60,.22),inset 0 5px 9px rgba(255,255,255,.6)}
+@keyframes clayok{0%{scale:1}40%{scale:1.06}100%{scale:1}}
+@keyframes clayno{0%,100%{translate:0}30%{translate:-4px}65%{translate:3px}}
+
+/* Cards you tap (the games, Tug of War, the rows with a caret, friends): clay slabs on the glass panel. */
+button.soft,button.glass:not(.tabbar),a.soft{background:linear-gradient(180deg,#fdfcff,#f2f0f8);border-color:transparent;
+  box-shadow:0 16px 26px -16px rgba(60,58,105,.5),inset 0 -6px 12px rgba(118,108,165,.14),inset 0 6px 12px rgba(255,255,255,.95);
+  transition:transform .22s var(--clay-spring),box-shadow .15s}
+button.soft:active,button.glass:not(.tabbar):active,a.soft:active{transform:scale(.97,.94);box-shadow:0 6px 12px -8px rgba(60,58,105,.45),var(--clay-press)}
+.game-tile.rec{box-shadow:0 0 0 3px rgba(122,126,246,.55),0 16px 26px -16px rgba(76,70,200,.55),inset 0 -6px 12px rgba(118,108,165,.14),inset 0 6px 12px rgba(255,255,255,.95)}
+button.soft[disabled],button.glass[disabled]{opacity:.6}
+
+/* Gradient tiles: lit clay, the icon pressed into it. */
+.tile{border-radius:15px;box-shadow:0 10px 16px -9px var(--tc),inset 0 -4px 7px rgba(0,0,0,.2),inset 0 4px 7px rgba(255,255,255,.5)}
+.tile.sm{border-radius:12px;box-shadow:0 8px 12px -8px var(--tc),inset 0 -3px 5px rgba(0,0,0,.18),inset 0 3px 5px rgba(255,255,255,.5)}
+.tile i{filter:drop-shadow(0 2px 1px rgba(0,0,0,.2))}
+.tile.ghost{background:var(--clay-face);box-shadow:inset 0 -3px 6px rgba(118,108,165,.18),inset 0 3px 6px rgba(255,255,255,.95)}
+
+/* The tab bar: a clay tray; the open tab is a raised puff. */
+.tabbar{background:rgba(246,244,250,.86);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);border:0;
+  box-shadow:0 18px 30px -16px rgba(60,58,105,.55),inset 0 -5px 10px rgba(118,108,165,.16),inset 0 5px 10px rgba(255,255,255,.9)}
+.tabb{transition:transform .22s var(--clay-spring),background .2s}
+.tabb:active{transform:scale(.94,.88)}
+.tabb i{font-size:25px}
+.tabb.on{color:#4338ca;background:var(--clay-sel);
+  box-shadow:0 10px 16px -10px rgba(76,70,200,.55),inset 0 -4px 8px rgba(76,70,200,.2),inset 0 4px 8px rgba(255,255,255,.85)}
+
+/* The Nest: the same clay, bigger. */
+.nk-card{background:#fbfaff;box-shadow:0 18px 28px -16px rgba(60,58,105,.5),inset 0 -8px 14px rgba(118,108,165,.16),inset 0 8px 14px rgba(255,255,255,.95);
+  transition:transform .22s var(--clay-spring),opacity .3s,filter .3s}
+.nk-card:active{transform:scale(.95,.9)}
+.nk-adoptb,.nk-unit{border:0;background:var(--clay-face);box-shadow:var(--clay-drop),var(--clay-down),var(--clay-up);transition:transform .22s var(--clay-spring)}
+.nk-adoptb:active,.nk-unit:active{transform:scale(.94,.88)}
+.nk-start,.nk-next{background:var(--clay-primary);box-shadow:0 22px 32px -14px rgba(76,70,200,.75),inset 0 -14px 20px rgba(40,30,160,.4),inset 0 12px 18px rgba(255,255,255,.45)}
+.nk-start.again{background:#f7b84f;box-shadow:0 22px 32px -14px rgba(217,119,6,.65),inset 0 -14px 20px rgba(160,80,0,.32),inset 0 12px 18px rgba(255,255,255,.5)}
+.nk-playb{background:var(--clay-teal);color:#fff;box-shadow:0 18px 28px -14px rgba(13,148,136,.7),inset 0 -10px 16px rgba(10,110,95,.4),inset 0 10px 16px rgba(255,255,255,.45)}
+.nk-start,.nk-next,.nk-playb{transition:transform .22s var(--clay-spring)}
+.nk-start:active,.nk-next:active,.nk-playb:active{transform:scale(.93,.86)}
+.nk-play,.nkh-again{background:var(--clay-green);box-shadow:0 6px 10px -4px rgba(22,120,70,.6),inset 0 -4px 7px rgba(0,90,40,.3),inset 0 4px 7px rgba(255,255,255,.5)}
+.nk-game,.nk-day{transition:transform .22s var(--clay-spring)}
+.nkh-friend .nkh-in{background:var(--clay-face);border:0;
+  box-shadow:0 0 0 4px rgba(255,255,255,.95),0 16px 24px -12px rgba(30,27,58,.45),inset 0 -8px 14px rgba(118,108,165,.2),inset 0 8px 14px rgba(255,255,255,.95)}
+.nkh-friend:active .nkh-in{transform:scale(.94,.88)}
+.nkh-friend .nkh-in{transition:transform .22s var(--clay-spring)}
+/* Clay icons (clayIcons): the picture is the tile, a little bigger than the old square. */
+.tile.clay{background:none;box-shadow:none}
+.tile.clay .cicon{width:128%;height:128%;object-fit:contain;flex:none;filter:drop-shadow(0 6px 6px rgba(40,30,80,.22));-webkit-user-drag:none}
+.tile.ghost.clay .cicon{filter:grayscale(.85) opacity(.55)}
+.tabb .cicon{width:34px;height:34px;object-fit:contain;opacity:.85;transition:transform .22s var(--clay-spring),filter .2s,opacity .2s}
+.tabb.on .cicon{opacity:1}
+.chip .cicon{width:20px;height:20px;object-fit:contain;margin:-2px 0}
+.tabb.on .cicon{filter:drop-shadow(0 4px 4px rgba(76,70,200,.3));transform:translateY(-1px) scale(1.12)}
+.icon-btn.clay .cicon{width:72%;height:72%;object-fit:contain}
+.nkh-tag .cicon{width:22px;height:22px;object-fit:contain}
+.nka-tab .cicon{width:40px;height:40px;object-fit:contain}
+@media (prefers-reduced-motion:reduce){.btn,.opt,.tabb,button.soft,button.glass,.nk-card{transition:none}.opt.ok,.opt.no{animation:none}}
 </style>
 </head>
 <body>
@@ -1469,6 +1562,27 @@ const SEC = { level: ['target', 't-level'], grammar: ['book-open-text', 't-gramm
   listening: ['headphones', 't-listen'], reading: ['article', 't-read'], writing: ['pen-nib', 't-write'], 'use-of-english': ['puzzle-piece', 't-uoe'], nest: ['bird', 't-nest'] };
 const REWARD_ICONS = ['cake', 'device-mobile', 'broom', 'ice-cream', 'popcorn', 'gift', 'ticket', 'trophy'];
 const icon = (n, w) => '<i class="ph-' + (w || 'bold') + ' ph-' + n + '"></i>';
+// Clay icons (specs/design.md rule 4, tools/ui_icons.py): a Phosphor icon in a tile, the tab bar or a Nest button is swapped for
+// its clay picture (docs/icons/<name>.webp) when one exists. The pages keep calling icon(); one observer does the swap.
+const CLAY_ICONS = 'arrows-clockwise article bell bird book-open-text calendar-check castle-turret chats-circle coat-hanger coins crown-simple fire game-controller ghost gift headphones heart hourglass-medium house lightbulb lightning lock-simple magic-wand magnifying-glass map-trifold medal microphone music-notes palette paw-print pen-nib puzzle-piece rope shield-check squares-four star sticker storefront sun-horizon sword target text-aa timer treasure-chest trophy user-circle user-plus users-three'.split(' ');
+const ICONS_V = 1;
+const CLAY_AS = { 'bell-ringing': 'bell' };
+const CLAY_AT = '.chip>i, .tile>i, .tabb>i, .nkh-top .icon-btn>i, .nkh-more>i, .nkh-tag>i, .nka-tab>i';
+function clayIcons(root){
+  if (!CLAY_ICONS[0] || !root || !root.querySelectorAll) return;
+  root.querySelectorAll(CLAY_AT).forEach(el => {
+    const m = /\bph-(?!bold\b|duotone\b)([a-z-]+)/.exec(el.className), n = m && (CLAY_AS[m[1]] || m[1]);
+    if (!n || !CLAY_ICONS.includes(n)) return;
+    const img = document.createElement('img');
+    img.className = 'cicon'; img.alt = ''; img.draggable = false;
+    img.src = ASSETS + 'icons/' + n + '.webp?v=' + ICONS_V;
+    el.parentNode.classList.add('clay');
+    el.replaceWith(img);
+  });
+}
+let clayIconsQ = 0;
+new MutationObserver(() => { if (!clayIconsQ) clayIconsQ = requestAnimationFrame(() => { clayIconsQ = 0; clayIcons(document.body); }); })
+  .observe(document.documentElement, { childList: true, subtree: true });
 const tile = (sec, sm) => { const x = SEC[sec] || SEC.grammar; return '<span class="tile ' + (sm ? 'sm ' : '') + x[1] + '">' + icon(x[0], 'duotone') + '</span>'; };
 const noEmoji = s => String(s ?? '').replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}]/gu, '').replace(/\s+/g, ' ').trim();
 const rtext = s => esc(noEmoji(s)).replace(/₪/g, '<span style="font-family:Arial,sans-serif">₪</span>');
@@ -4950,7 +5064,7 @@ function togetherCard(){
     ${others.length ? '<div class="label mt">Your group</div>' : ''}
     <div class="friends ${others.length ? 'mt-s' : 'mt'}">${friends}<button class="fr" id="duelcode"><span class="addc">${icon('user-plus')}</span><b>Code</b><small>Join or share</small></button></div>
     ${others.length ? `<div class="label mt">Other groups</div><div class="friends mt-s">${others.map(tile).join('')}</div>` : ''}
-    <button class="soft drow mt" id="tugopen"><span class="tile t-write">${icon('device-mobile', 'duotone')}</span>
+    <button class="soft drow mt" id="tugopen"><span class="tile t-write">${icon('rope', 'duotone')}</span>
       <span class="drow-main"><b>Tug of War</b><small>Two players, one phone, face to face</small></span>${icon('caret-right')}</button>
     ${rows.length ? `<div class="stack mt" style="gap:8px">${rows.join('')}</div>` : ''}
     ${h.helper ? `<div class="sub mt-s" style="font-size:12.5px">${icon('star', 'duotone')} ${plural(h.helper, 'Helper star')} for explaining to a friend</div>` : ''}
@@ -7382,7 +7496,7 @@ function auditRender(pin){
 // Listening and pictures only, and only Coco's English (no Hebrew voice): he shows each game first. No reading, timers
 // or fail screens, and the pet is the only reward. Content: docs/nest/nest.js (EQ_NEST); the session engine and its
 // games: docs/nest/play.js; recordings: docs/nest/audio (tools/nest_audio.py).
-const NEST_V = 16, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
+const NEST_V = 17, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
 let NE = null, nestLoading = null, nestAudioEl = null, nestQueue = null, nestMic = null;
 function loadNest(){
   if (window.EQ_NEST && typeof NK === 'object' && typeof nkActorOn === 'function' && typeof nkHome === 'function' && typeof nkEchoStart === 'function' && typeof nkStickers === 'function' && typeof nkArcade === 'function') return Promise.resolve(window.EQ_NEST);
