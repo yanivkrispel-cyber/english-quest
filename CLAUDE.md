@@ -166,6 +166,13 @@ first. Tablets get the phone layout scaled (`tabletFit`); never add width breakp
 - Default PINs are random; the real PINs live only in the private sheet. The repo is public:
   never commit real PINs, emails or the sheet's contents (tests use fake PINs 4821/7356/2694/1234).
 
+## The move to Cloudflare (branch cf-server, 2026-10-30, not switched on yet)
+The server can run on Cloudflare (owner's option B, zero cost, store-ready): read `specs/cloudflare.md` first. The same `src/*.js` runs on
+both: after a server change run `node platform/build.js`, `SIM_PLATFORM=1 node test/sim.js` and `node test/cf-units.mjs` too. On Cloudflare
+`readTable` rows are shared between requests: never change one (copy it, or use `readTableUncached`/`kidRowsFresh`); one kid's rows:
+`kidRows(table, name)`. **The free plan allows 100,000 rows written a day (account-wide):** never import big data into a Cloudflare server;
+load tests run locally or with small sets. New server files go into the lists in `test/sim.js`, `platform/build.js` and `test/cf-parity.js`.
+
 ## IDs
 - Script: `19RA_PsdH5_uSHfbX-_cKRv2QtYN4wUDIa4OeigovCqmW3Bl2GbKEdZEd` (editor: https://script.google.com/d/<id>/edit)
 - Sheet: `1G3ZBS6tSunXt-55qz1tjxh5N1x6BVB169mMWRk-zFKY`
