@@ -142,7 +142,8 @@ function api() {
   apiMissionResult: apiMissionResult, apiFlag: apiFlag,
   apiJoinCheck: apiJoinCheck, apiJoin: apiJoin, apiPlacement: apiPlacement, apiFeedback: apiFeedback,
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
-  apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade
+  apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade,
+  apiCfExport: apiCfExport, apiCfMode: apiCfMode
   };
 }
 
@@ -150,6 +151,8 @@ function doPost(e) {
   var out;
   try {
     var req = JSON.parse(e.postData.contents);
+    var moved = cfIntercept(req, e.postData.contents);   // the move to Cloudflare (Relay.js); null as long as CF_MODE is empty
+    if (moved !== null) return ContentService.createTextOutput(moved).setMimeType(ContentService.MimeType.JSON);
     var API = api();
     if (!API.hasOwnProperty(req.fn)) throw new Error('Unknown call');
     REQ_DEV = cleanDev(req.dev);

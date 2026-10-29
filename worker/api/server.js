@@ -474,7 +474,8 @@ function api() {
   apiMissionResult: apiMissionResult, apiFlag: apiFlag,
   apiJoinCheck: apiJoinCheck, apiJoin: apiJoin, apiPlacement: apiPlacement, apiFeedback: apiFeedback,
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
-  apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade
+  apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade,
+  apiCfExport: apiCfExport, apiCfMode: apiCfMode
   };
 }
 
@@ -482,6 +483,8 @@ function doPost(e) {
   var out;
   try {
     var req = JSON.parse(e.postData.contents);
+    var moved = cfIntercept(req, e.postData.contents);   // the move to Cloudflare (Relay.js); null as long as CF_MODE is empty
+    if (moved !== null) return ContentService.createTextOutput(moved).setMimeType(ContentService.MimeType.JSON);
     var API = api();
     if (!API.hasOwnProperty(req.fn)) throw new Error('Unknown call');
     REQ_DEV = cleanDev(req.dev);
@@ -4909,6 +4912,70 @@ var NEST_UNITS = [
   ['r12', 'Review', 1]
 ];
 
+// ---- src/Relay.js ----
+// The move to Cloudflare (specs/cloudflare.md). Nothing here does anything until the cutover night: the Script Property
+// CF_MODE is empty. The two admin calls work in every mode, so the move can be watched and undone from outside.
+//   ''        normal
+//   'freeze'  every other call is refused for a few minutes (the last copy of the data is being taken)
+//   'relay'   every other call is passed to CF_URL (the new server) and its answer comes back; nothing is written here.
+//             Phones that still run an old copy of the app (pointing at this address) keep working this way.
+
+var CF_ADMIN = { apiCfExport: 1, apiCfMode: 1 };
+
+function cfMode() {
+  var c = CacheService.getScriptCache(), hit = c.get('CFMODE');
+  if (hit !== null) return JSON.parse(hit);
+  var p = PropertiesService.getScriptProperties();
+  var m = { mode: p.getProperty('CF_MODE') || '', url: p.getProperty('CF_URL') || '' };
+  c.put('CFMODE', JSON.stringify(m), 60);
+  return m;
+}
+
+// Called by doPost before anything else: an answer when this call is frozen or relayed, null to go on as usual.
+function cfIntercept(req, body) {
+  if (CF_ADMIN[req.fn]) return null;
+  var m = cfMode();
+  if (m.mode === 'freeze') return JSON.stringify({ ok: false, error: 'Coco is moving to a faster home. Back in a few minutes!' });
+  if (m.mode === 'relay' && m.url) {
+    var r = UrlFetchApp.fetch(m.url, { method: 'post', contentType: 'text/plain;charset=utf-8', payload: body, muteHttpExceptions: true });
+    if (r.getResponseCode() === 200) return r.getContentText();
+    return JSON.stringify({ ok: false, error: 'The server is busy, try again' });
+  }
+  return null;
+}
+
+// Every sheet (values as getValues() gives them, Dates as {"$d": ms}) and every Script Property, for the import into
+// the new server. The admin's PIN only.
+function apiCfExport(pin) {
+  if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can do this');
+  var ss = SpreadsheetApp.getActive(), names = [], sheets = {};
+  ss.getSheets().forEach(function (sh) {
+    var n = sh.getName();
+    names.push(n);
+    var last = sh.getLastRow(), cols = sh.getLastColumn();
+    var values = last && cols ? sh.getRange(1, 1, last, cols).getValues() : [];
+    sheets[n] = values.map(function (r) {
+      var line = r.map(function (v) { return v instanceof Date ? { $d: v.getTime() } : v; });
+      while (line.length && line[line.length - 1] === '') line.pop();
+      return line;
+    });
+  });
+  return { names: names, sheets: sheets, props: PropertiesService.getScriptProperties().getProperties(), at: Date.now() };
+}
+
+// mode: '', 'freeze' or 'relay' (with the new server's /api address).
+function apiCfMode(pin, mode, url) {
+  if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can do this');
+  if (['', 'freeze', 'relay'].indexOf(mode) < 0) throw new Error('Unknown mode');
+  if (mode === 'relay' && !/^https:\/\/[^\s]+\/api$/.test(String(url || ''))) throw new Error('The relay needs the /api address');
+  var p = PropertiesService.getScriptProperties();
+  p.setProperty('CF_MODE', mode);
+  p.setProperty('CF_URL', mode === 'relay' ? String(url) : '');
+  CacheService.getScriptCache().remove('CFMODE');
+  audit('admin', 'admin', '', 'cloudflare', mode || 'normal', true);
+  return cfMode();
+}
+
 // ---- platform/overrides.js ----
 // Platform overrides: run after src/*.js, in the same scope (platform/build.js appends this file inside the server
 // closure; test/sim.js loads it after the sources when SIM_PLATFORM=1). PLATFORM is given by the host.
@@ -5002,6 +5069,11 @@ function platformTick() {
 }
 
 function platformPushTtl() { return PUSH_TTL; }
+
+// 4. The relay (src/Relay.js) belongs to Apps Script: here it never relays, and its admin calls refuse.
+cfIntercept = function () { return null; };
+apiCfExport = function () { throw new Error('Not on this server: use /admin/export'); };
+apiCfMode = function () { throw new Error('Not on this server'); };
 
   return {
     doPost: doPost, tick: platformTick, removeSubscriptions: removeSubscriptions, ensureSetup: ensureSetup,

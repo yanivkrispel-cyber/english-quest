@@ -10,7 +10,7 @@ class SimDate extends RealDate { constructor(...a) { if (a.length) super(...a); 
 let pushStatus = () => 201;
 let sheets = {};
 function mkSheet(name){ const rows = []; return sheets[name] = {
-  name, rows,
+  name, rows, getName: () => name,
   getLastRow: () => rows.length, getLastColumn: () => Math.max(0, ...rows.map(r => r.length)),
   getRange(a, b, nr, nc){ if (typeof a === 'string') return { setNumberFormat(){ return this; } };
     return { setValues(v){ v.forEach((r,i)=>{ rows[a-1+i] = rows[a-1+i]||[]; r.forEach((x,j)=> rows[a-1+i][b-1+j]=x); }); return this; },
@@ -65,7 +65,7 @@ if (PLATFORM_MODE) {
 }
 vm.createContext(ctx);
 const strict = PLATFORM_MODE ? '"use strict";' : '';
-for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js']) if (f !== 'NestIndex.js' || fs.existsSync('src/' + f)) vm.runInContext(strict + fs.readFileSync('src/' + f, 'utf8'), ctx, { filename: f });
+for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Relay.js']) if (f !== 'NestIndex.js' || fs.existsSync('src/' + f)) vm.runInContext(strict + fs.readFileSync('src/' + f, 'utf8'), ctx, { filename: f });
 if (PLATFORM_MODE) vm.runInContext(fs.readFileSync('platform/overrides.js', 'utf8'), ctx, { filename: 'overrides.js' });
 // Each call is a fresh request: per-request table memo resets, CacheService persists.
 const run = s => {
@@ -1399,6 +1399,26 @@ run(`apiParentSetAge('6611', ${JSON.stringify(LILO)}, { grade: 3 })`);
 d = run(`apiDashboard(${JSON.stringify(LILO)}, '${kid(LILO).PIN}')`);
 check('back from the Nest with no test: the class level and the level test', kid(LILO).Level === 'a1' && !d.nest && !!d.levelTest, JSON.stringify({ lv: kid(LILO).Level, lt: !!d.levelTest }));
 run("apiPilotInvite('1234', false, '')");
+}
+
+// The move to Cloudflare (src/Relay.js): inert by default, freeze, relay, export, and the admin's calls in every mode.
+if (!PLATFORM_MODE) {
+  const relayLog = [];
+  ctx.UrlFetchApp.fetch = (url, o) => { relayLog.push({ url, body: o.payload }); return { getResponseCode: () => 200, getContentText: () => JSON.stringify({ ok: true, data: 'from cloudflare' }) }; };
+  const post = (fn, args) => JSON.parse(run('doPost(' + JSON.stringify({ postData: { contents: JSON.stringify({ fn, args }) } }) + ').getContent()'));
+  const check2 = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+  check2('relay: inert while CF_MODE is empty', post('apiPublic', ['']).data.group && relayLog.length === 0);
+  check2('relay: only the admin may change the mode', post('apiCfMode', ['9999', 'freeze', '']).ok === false);
+  Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
+  check2('relay: freeze refuses other calls', post('apiCfMode', ['1234', 'freeze', '']).ok && /moving/.test(post('apiPublic', ['']).error));
+  const ex = post('apiCfExport', ['1234']);
+  check2('relay: the export has every sheet and the script properties, Dates as $d', ex.ok && ex.data.names.indexOf('Girls') >= 0 && ex.data.sheets.Girls.length > 1 &&
+    JSON.stringify(ex.data.sheets.Log).indexOf('$d') > 0 && typeof ex.data.props === 'object', ex.ok ? ex.data.names.length + ' sheets' : ex.error);
+  check2('relay: a relay needs the /api address', post('apiCfMode', ['1234', 'relay', 'https://x.example/']).ok === false);
+  post('apiCfMode', ['1234', 'relay', 'https://coco.example/api']);
+  const r = post('apiDashboard', ['Aviv', '2694']);
+  check2('relay: calls go to the new server and its answer comes back', r.data === 'from cloudflare' && relayLog.length === 1 && relayLog[0].url === 'https://coco.example/api' && JSON.parse(relayLog[0].body).fn === 'apiDashboard');
+  check2('relay: back to normal from outside', post('apiCfMode', ['1234', '', '']).ok && post('apiPublic', ['']).data.group && relayLog.length === 1);
 }
 
 // Platform mode: the database holds exactly what the server has in memory.
