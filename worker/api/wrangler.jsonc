@@ -1,0 +1,27 @@
+// The Coco server (specs/cloudflare.md): worker/api/index.js and its Durable Object CocoServer (SQLite, free plan).
+// Build first: node platform/build.js. Staging (a copy of the data, pushes off, no cron):
+//   npx wrangler deploy -c worker/api/wrangler.jsonc --env staging
+// Production (only on the cutover night): npx wrangler deploy -c worker/api/wrangler.jsonc
+// Secrets (both): npx wrangler secret put ADMIN_TOKEN -c worker/api/wrangler.jsonc [--env staging]
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "coco-api",
+  "main": "index.js",
+  "compatibility_date": "2026-10-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "durable_objects": { "bindings": [{ "name": "COCO", "class_name": "CocoServer" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["CocoServer"] }],
+  "triggers": { "crons": ["*/10 * * * *"] },
+  "vars": { "PUSH_MODE": "on", "LOCATION_HINT": "eeur", "APP_URL": "https://coco.coachkrispel.com/" },
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  "env": {
+    "staging": {
+      "name": "coco-api-staging",
+      "durable_objects": { "bindings": [{ "name": "COCO", "class_name": "CocoServer" }] },
+      "triggers": { "crons": [] },
+      "vars": { "PUSH_MODE": "off", "LOCATION_HINT": "eeur", "APP_URL": "https://coco.coachkrispel.com/" },
+      "workers_dev": true
+    }
+  }
+}

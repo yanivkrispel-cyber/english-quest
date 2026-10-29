@@ -69,3 +69,24 @@ if (PLATFORM.asyncPush) {
     return { sent: endpoints.length, devices: endpoints.length };
   };
 }
+
+// 3. Triggers. Apps Script ran a trigger per job at its hour; here a cron calls platformTick() every 10 minutes and the
+//    jobs run in the first tick of their hour (Israel time, so a clock change moves nothing), once a day each. The
+//    Friday email summary is not sent (no mail on this platform); warmCache() still flushes the audit queue.
+function platformTick() {
+  var now = new Date(), h = Number(Utilities.formatDate(now, TZ, 'H')), day = fmt(now);
+  var props = PropertiesService.getScriptProperties(), ran = [];
+  function job(name, hour, fn) {
+    if (!hour || h !== hour || props.getProperty('ran:' + name) === day) return;
+    props.setProperty('ran:' + name, day);
+    try { fn(); ran.push(name); } catch (e) { console.error(name + ': ' + ((e && e.message) || e)); }
+  }
+  ensureSetup();
+  job('dailyReminder', Number(getSetting('ReminderHour')) || 17, dailyReminder);
+  job('lastCallReminder', Number(getSetting('LastCallHour')), lastCallReminder);
+  job('parentSummary', Number(getSetting('ParentSummaryHour')), parentSummary);
+  try { auditFlush(); } catch (e) { console.error('auditFlush: ' + ((e && e.message) || e)); }
+  return ran;
+}
+
+function platformPushTtl() { return PUSH_TTL; }
