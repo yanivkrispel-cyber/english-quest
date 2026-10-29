@@ -1485,6 +1485,12 @@ if (!PLATFORM_MODE) {
   Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
   rej('privacy: the deleted family code no longer opens anything', () => run("apiParent('" + made.pin + "')"));
   check4('privacy: the audit trail says a family was deleted, without names', sheets.Audit.rows.some(r => r[5] === 'delete' && /a family/.test(r[6]) && !/Erase|Keep/.test(r.join('|'))));
+  // the admin deletes from the Data card: a family by its id
+  run("apiAdminAddGroup('1234', 'Admin erase', '')");
+  const gid2 = sheets.Groups.rows.find(r => r[1] === 'Admin erase')[0];
+  run("apiAdminAddKid('1234', 'Byadmin', 9, '" + gid2 + "', 'a2', '')");
+  const r3 = run("apiDeleteData('1234', '" + gid2 + "', '', 'DELETE')");
+  check4('privacy: the admin deletes a family from the Data card', r3.deleted === 'family' && has('Byadmin').length === 0 && has(String(gid2)).length === 0);
 }
 
 // Store readiness on the server: the minimum app version, retention, plans.
