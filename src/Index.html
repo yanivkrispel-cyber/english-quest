@@ -7598,6 +7598,52 @@ function familyPage(fam){
 }
 
 // ---------- Parents' feedback (Hebrew) ----------
+// The family's data (src/Privacy.js): a copy to download, and deleting a kid or the whole family, for good.
+function privacyCard(p){
+  const g = p.groups[0];
+  if (!g) return '';
+  return `<div class="glass panel he" dir="rtl" lang="he" id="pvcard" style="display:grid;gap:10px">
+    <h2>הנתונים שלכם</h2>
+    <div class="sub" style="font-size:13px">אפשר להוריד עותק של כל מה שנשמר על המשפחה, או למחוק ילד אחד או את כל המשפחה. מחיקה היא לתמיד ואי אפשר לבטל אותה.</div>
+    <button class="btn btn-glass btn-block" id="pvexport">${icon('download-simple')} הורדת הנתונים</button>
+    <div class="label">מחיקה</div>
+    <select class="input" id="pvwho"><option value="">כל המשפחה</option>${g.girls.map(d => `<option value="${esc(d.girl.name)}">${esc(d.girl.name)}</option>`).join('')}</select>
+    <input class="input" id="pvconfirm" placeholder="כדי למחוק, כתבו: מחיקה" autocomplete="off">
+    <button class="btn btn-glass btn-block" id="pvdelete">${icon('trash')} מחיקה לתמיד</button>
+  </div>`;
+}
+function bindPrivacy(pin){
+  const card = document.getElementById('pvcard');
+  if (!card) return;
+  document.getElementById('pvexport').onclick = async () => {
+    const b = document.getElementById('pvexport'); b.disabled = true;
+    try {
+      const data = await call('apiExportData', pin, '');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+      a.download = 'english-with-coco-data.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      toast('הקובץ ירד לטלפון');
+    } catch(e){ toast(e.message, true); }
+    b.disabled = false;
+  };
+  document.getElementById('pvdelete').onclick = async () => {
+    const who = document.getElementById('pvwho').value, word = document.getElementById('pvconfirm').value.trim();
+    if (word !== 'מחיקה') return toast('כדי למחוק, כתבו את המילה: מחיקה', true);
+    const b = document.getElementById('pvdelete'); b.disabled = true;
+    try {
+      const r = await call('apiDeleteData', pin, '', who, word);
+      if (r.deleted === 'family') {
+        try { Object.keys(localStorage).filter(k => k.startsWith('eq_')).forEach(k => localStorage.removeItem(k)); } catch(e){}
+        card.innerHTML = '<h2>המשפחה נמחקה</h2><div class="sub">כל הנתונים של המשפחה נמחקו מהשרת. תודה שהייתם איתנו.</div>';
+        setTimeout(() => loadHome(), 4000);
+      } else {
+        toast('נמחק');
+        parentFresh(pin, true);
+      }
+    } catch(e){ b.disabled = false; toast(e.message, true); }
+  };
+}
 function feedbackCard(){
   return `<div class="glass panel he" dir="rtl" lang="he" id="fbcard" style="display:grid;gap:10px">
     <h2>ספרו לנו</h2>
@@ -9178,11 +9224,12 @@ function renderParent(p, pin){
     ${createdCard(p.created)}
     ${p.groups.map((g, i) => groupBlock(g, p, i)).join('')}
     ${notifyCard(p)}
-    ${p.isAdmin ? pilotCard() + auditCard() + dataCard() + settingsCard(p) + manageCard(p) : feedbackCard()}
+    ${p.isAdmin ? pilotCard() + auditCard() + dataCard() + settingsCard(p) + manageCard(p) : feedbackCard() + privacyCard(p)}
   </div>`;
   app.querySelectorAll('details.acc').forEach(d => d.addEventListener('toggle', () => store.set('eq_acc_' + d.dataset.acc, d.open)));
   renderParentPush(p, pin);
   bindFeedback(pin);
+  bindPrivacy(pin);
   nestFillParent(p);
   bindAgeRows(p, pin);
   app.querySelectorAll('[data-kidhere]').forEach(b => b.onclick = () => kidHere(b.dataset.kidgroup, b.dataset.kidhere, b.dataset.kidpin));

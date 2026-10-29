@@ -66,7 +66,7 @@ if (PLATFORM_MODE) {
 }
 vm.createContext(ctx);
 const strict = PLATFORM_MODE ? '"use strict";' : '';
-for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Relay.js', 'Admin.js']) if (f !== 'NestIndex.js' || fs.existsSync('src/' + f)) vm.runInContext(strict + fs.readFileSync('src/' + f, 'utf8'), ctx, { filename: f });
+for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Relay.js', 'Admin.js', 'Privacy.js']) if (f !== 'NestIndex.js' || fs.existsSync('src/' + f)) vm.runInContext(strict + fs.readFileSync('src/' + f, 'utf8'), ctx, { filename: f });
 if (PLATFORM_MODE) vm.runInContext(fs.readFileSync('platform/overrides.js', 'utf8'), ctx, { filename: 'overrides.js' });
 // Each call is a fresh request: per-request table memo resets, CacheService persists.
 const run = s => {
@@ -1457,6 +1457,34 @@ if (!PLATFORM_MODE) {
   check3('data: edits are in the audit trail, PINs masked', aud.some(x => /Level = b2/.test(x)) && aud.some(x => /PIN \(changed\)/.test(x)) && !aud.some(x => /4822/.test(x)), aud.slice(-2).join(' / '));
   run("apiAdminEdit('1234', 'Girls', 'Ziv', { PIN: '4821', Level: '" + lv0 + "', Redeemed: '" + red0 + "' })");
   check3('data: and back', kid('Ziv').PIN == '4821' && kid('Ziv').Level === lv0);
+}
+
+// Deleting and downloading a family's data (src/Privacy.js).
+{
+  const check4 = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+  const rej = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + label); } catch (e) { console.log('ok: ' + label + ' is rejected: ' + e.message); } };
+  Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
+  const made = run("apiAdminAddGroup('1234', 'Erase family', '')").created;
+  const gid = sheets.Groups.rows.find(r => r[1] === 'Erase family')[0];
+  run("apiAdminAddKid('1234', 'Eraseme', 9, '" + gid + "', 'a2', '')");
+  run("apiAdminAddKid('1234', 'Keepme', 10, '" + gid + "', 'a2', '')");
+  const pinOf = n => String(sheets.Girls.rows.find(r => r[0] === n)[2]);
+  ['Eraseme', 'Keepme'].forEach(n => run("apiPlacement('" + n + "', '" + pinOf(n) + "', 'A', 'a2', 14, 20, JSON.stringify({ start: 'a2', blocks: [] }))"));
+  run("apiGameResult('Eraseme', '" + pinOf('Eraseme') + "', 'match', 'a2', 4, 5, [], [], 0)");
+  run("apiGameResult('Keepme', '" + pinOf('Keepme') + "', 'match', 'a2', 3, 5, [], [], 0)");
+  const ex = run("apiExportData('" + made.pin + "', '')");
+  check4('privacy: the parent downloads the family data', ex.family === 'Erase family' && ex.kids.length === 2 && ex.tables.Games.length >= 2 && ex.tables.Girls.length === 2);
+  rej('privacy: deleting without the word', () => run("apiDeleteData('" + made.pin + "', '', 'Eraseme', 'yes')"));
+  rej('privacy: a kid of another family', () => run("apiDeleteData('" + made.pin + "', '', 'Ziv', 'DELETE')"));
+  const has = n => Object.keys(sheets).filter(t => sheets[t].rows.slice(1).some(r => r.some(c => String(c).trim() === n)));
+  check4('privacy: the kid is in the tabs before', has('Eraseme').length >= 3, has('Eraseme').join(','));
+  const r1 = run("apiDeleteData('" + made.pin + "', '', 'Eraseme', 'מחיקה')");
+  check4('privacy: one kid deleted, nothing of her left, her sister kept', r1.deleted === 'kid' && has('Eraseme').length === 0 && has('Keepme').length >= 2, 'left in: ' + has('Eraseme').join(','));
+  const r2 = run("apiDeleteData('" + made.pin + "', '', '', 'DELETE')");
+  check4('privacy: the whole family deleted, the family id is nowhere', r2.deleted === 'family' && has('Keepme').length === 0 && has(String(gid)).length === 0, 'left in: ' + has('Keepme').concat(has(String(gid))).join(','));
+  Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
+  rej('privacy: the deleted family code no longer opens anything', () => run("apiParent('" + made.pin + "')"));
+  check4('privacy: the audit trail says a family was deleted, without names', sheets.Audit.rows.some(r => r[5] === 'delete' && /a family/.test(r[6]) && !/Erase|Keep/.test(r.join('|'))));
 }
 
 // Platform mode: the database holds exactly what the server has in memory.

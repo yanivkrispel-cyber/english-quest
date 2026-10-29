@@ -143,7 +143,8 @@ function api() {
   apiJoinCheck: apiJoinCheck, apiJoin: apiJoin, apiPlacement: apiPlacement, apiFeedback: apiFeedback,
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
   apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade,
-  apiCfExport: apiCfExport, apiCfMode: apiCfMode, apiAdminData: apiAdminData, apiAdminEdit: apiAdminEdit
+  apiCfExport: apiCfExport, apiCfMode: apiCfMode, apiAdminData: apiAdminData, apiAdminEdit: apiAdminEdit,
+  apiDeleteData: apiDeleteData, apiExportData: apiExportData
   };
 }
 
