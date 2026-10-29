@@ -218,8 +218,10 @@ Try-out first: `nestInfo.arcade` = the NestAll kids and `Settings.NestArcade` (n
   of him, `#nkflyer`, over the screen; nothing in the layout moves). **A wrong tap** (`nkActorMiss`): he shakes his head or
   jumps in surprise, the pet thinks, a soft boing.
 - **Poses** (`nkPose`): `docs/coco/<pose>.webp`; a pose with no picture yet borrows the closest of the six (`NK_POSE_NEAR`).
-  Stage A's art adds point, laugh, surprised, shy, dance, eat, fly, listen, whisper, shout, confused, cheer, wave, sneeze,
-  sad and sleep (`NK_POSES` lists what exists).
+  18 new poses (2026-10-29, Gemini with the shop sheet as reference; sheets in `EnglishLessons-work/arcade-art/`, cut with
+  `tools/cut_sheet.py`): point, laugh, surprised, shy, dance, eat, fly, listen, whisper, shout, confused, cheer, wave, sneeze,
+  sad, sleep, clap, thumbs. He lands on a right card cheering, clapping, dancing or with a thumbs up; after a miss he is
+  surprised or confused; he listens in Who says that?, dances to his band, waves on the end screen.
 - **Real sounds** (`nkSnd`, `nkReal`): `x-<word>` plays `docs/nest/sounds/<word>.mp3` (`nestClip`), before Coco's own
   "Moo!", in Who says that?, Peekaboo and the living home's visitor. 17 words (`EQ_NEST.real`); lion, monkey and baby keep
   Coco only. `python tools/nest_sounds.py` fetches them from BigSoundBank (CC0, the list and pages in
