@@ -232,3 +232,13 @@ Try-out first: `nestInfo.arcade` = the NestAll kids and `Settings.NestArcade` (n
   one of six tunes and four keys by unit, chords I V vi IV. Coco still says the lines (Kokoro cannot sing).
 
 Checks: nest-check covers actor.js's names and every real sound (clip, list entry, Coco's line).
+
+## The arcade plan, stage B: painted worlds (2026-10-29, started)
+
+For the arcade kids (`nkAlive()`), `nkPlace` returns a clay painting instead of the drawn place: `docs/nest/places/<place>.webp`
+(600x804, the nine places of `NK_PLACE`: home, playroom, kitchen, farm, savanna, park, town, beach, sky). Gemini, portrait
+3:4, the lower half left open for the pictures, no characters; prompts and the full-size sheets in
+`EnglishLessons-work/arcade-art/` (`world-*.txt`, `world-*.jpg`). Story and the big picture stand their pictures on it
+(`.nk-scene.painted`, a soft shadow under each). Not yet: things in the painting that move when tapped, the new coloring
+pages, and dressing the kid's pet (the pets wear only head, face and neck items today; shirts, pants and shoes need new fit
+slots for 10 pets in 5 stages).

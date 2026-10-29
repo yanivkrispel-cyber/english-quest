@@ -393,6 +393,8 @@ const NK_THEME_PLACE = { hello: 'home', colors: 'playroom', numbers: 'farm', ani
   toys: 'playroom', feelings: 'home', actions: 'park', clothes: 'home', nature: 'park', home: 'home', people: 'town' };
 // The place behind a story page or the big picture. skip: word ids in play, never shown as scenery.
 function nkPlace(place, skip){
+  // Stage B (arcade kids): the place is a clay painting (docs/nest/places/<place>.webp) instead of the drawn one.
+  if (typeof nkAlive === 'function' && nkAlive()) return { painted: true, style: `background:#e8eef7 url('${ASSETS}nest/places/${NK_PLACE[place] ? place : 'playroom'}.webp?v=${NEST_V}') center / cover no-repeat`, html: '' };
   const P = NK_PLACE[place] || NK_PLACE.playroom, no = new Set(skip || []);
   const props = P[4].filter(x => !no.has(x[0])).map(([pic, x, y, sz]) => `<span class="nk-prop" style="left:${x}%;top:${y}%;width:${sz}%;aspect-ratio:1"><img src="${esc(nestPicSrc(pic))}" alt="" draggable="false"></span>`).join('');
   return { style: `--sky1:${P[0]};--sky2:${P[1]};--ground1:${P[2]};--ground2:${P[3]}`,
@@ -1204,7 +1206,7 @@ NK.story = {
   render(s, opening){
     const spots = NK_STORY_SPOTS[Math.min(s.ws.length, 3) - 1] || NK_STORY_SPOTS[0];
     const pl = nkPlace(s.place, s.ws.map(w => w.pic || w.id));
-    nkFill(`<div class="nk-scene" style="${pl.style}">${pl.html}${s.ws.slice(0, 3).map((w, i) => nkItem(w, spots[i], i)).join('')}</div>${NE.words ? `<div class="nk-line">${esc(s.line)}</div>` : ''}`);
+    nkFill(`<div class="nk-scene${pl.painted ? ' painted' : ''}" style="${pl.style}">${pl.html}${s.ws.slice(0, 3).map((w, i) => nkItem(w, spots[i], i)).join('')}</div>${NE.words ? `<div class="nk-line">${esc(s.line)}</div>` : ''}`);
     app.querySelectorAll('[data-nki]').forEach(b => b.onclick = () => {
       const w = s.ws[Number(b.dataset.nki)];
       b.classList.remove('wig'); void b.offsetWidth; b.classList.add('wig');
@@ -1221,7 +1223,7 @@ NK.scene = {
   say: s => ['f-' + s.w.id], intro: ['en-look'], demo: true,
   render(s, opening){
     const pl = nkPlace(s.place, s.items.map(x => x.w.pic || x.w.id));
-    nkFill(`<div class="nk-scene" style="${pl.style}">${pl.html}${s.items.map((x, i) => nkItem(x.w, x.spot, i)).join('')}</div>`);
+    nkFill(`<div class="nk-scene${pl.painted ? ' painted' : ''}" style="${pl.style}">${pl.html}${s.items.map((x, i) => nkItem(x.w, x.spot, i)).join('')}</div>`);
     NE.tries = 0;
     const right = () => app.querySelector(`[data-nki="${s.items.findIndex(x => x.w.id === s.w.id)}"]`);
     const pick = (b, byCoco) => {
