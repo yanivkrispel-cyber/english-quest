@@ -79,7 +79,10 @@ choice, the kid's last 12 colored pictures (which colors went where; no drawing,
 (`docs/nest/stickers.js`): which stickers the kid has already seen pop (word ids, `eq_nest_stickers_<kid>`) and the
 free page (the place and up to 40 stickers with their spots, `eq_nest_board_<kid>`). The parents' weekly postcard is
 drawn on the phone from the parents' view data and leaves the phone only when a parent shares or saves it from the
-parents' area (behind the parents' code); nothing new is stored on the server.
+parents' area (behind the parents' code); nothing new is stored on the server. Coco's arcade (stage C) keeps today's date and the
+seconds played on the phone (`eq_nest_arc_<kid>`), and the server keeps one number the parent sets, the arcade minutes a day
+(`Girls.NestArcadeMin`). Talking Coco and No, Coco! use the microphone as the living home does: in memory for one replay, or
+loudness only; nothing is kept or sent.
 
 ## Known gaps before a store submission
 
