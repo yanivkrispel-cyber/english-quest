@@ -6,7 +6,11 @@
   "name": "english-with-coco",
   "compatibility_date": "2026-10-23",
   "main": "worker/range.js",
-  "assets": { "directory": "docs", "binding": "ASSETS", "run_worker_first": ["/missions/audio/*", "/talk/audio/*", "/nest/audio/*", "/nest/sounds/*", "/say/*"] },
+  "assets": { "directory": "docs", "binding": "ASSETS", "run_worker_first": ["/api", "/missions/audio/*", "/talk/audio/*", "/nest/audio/*", "/nest/sounds/*", "/say/*"] },
+  // /api: the server Durable Object of the coco-api Worker (worker/api, specs/cloudflare.md). A DO call here costs one
+  // Worker request, a service binding would cost two of the free plan's 100,000 a day.
+  "durable_objects": { "bindings": [{ "name": "COCO", "class_name": "CocoServer", "script_name": "coco-api" }] },
+  "vars": { "LOCATION_HINT": "eeur" },
   "routes": [{ "pattern": "coco.coachkrispel.com", "custom_domain": true }],
   "workers_dev": true
 }

@@ -1700,7 +1700,9 @@ const store = {
 };
 // Served by Apps Script: google.script.run. Served from GitHub Pages: anonymous JSON API
 // (no Google cookies, so child accounts under 13 are not blocked).
-const API_URL = 'https:' + '/' + '/script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
+// The server is /api on this site (Cloudflare, specs/cloudflare.md). The old GitHub Pages address still calls Apps Script,
+// which passes the call on (src/Relay.js).
+const API_URL = /github.io$/.test(location.hostname) ? 'https:' + '/' + '/script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec' : '/api';
 // Every server call has a time limit (a stuck call never leaves a spinner turning), calls that only read
 // get one quiet second try, and errors from Google itself (not the app's own checks, like "Wrong PIN") read
 // as a short "try again". e.app = the server said no; e.net = the call did not get through.

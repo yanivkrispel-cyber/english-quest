@@ -1,0 +1,13 @@
+// The staging front end (specs/cloudflare.md): the same docs/ and worker/range.js as coco.coachkrispel.com, with /api going to
+// the staging server (coco-api-staging, a copy of the data, pushes off). For tests before the cutover only.
+//   node build-pages.js && npx wrangler deploy -c worker/web-staging.jsonc
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "coco-web-staging",
+  "compatibility_date": "2026-10-23",
+  "main": "range.js",
+  "assets": { "directory": "../docs", "binding": "ASSETS", "run_worker_first": ["/api", "/missions/audio/*", "/talk/audio/*", "/nest/audio/*", "/nest/sounds/*", "/say/*"] },
+  "durable_objects": { "bindings": [{ "name": "COCO", "class_name": "CocoServer", "script_name": "coco-api-staging" }] },
+  "vars": { "LOCATION_HINT": "eeur" },
+  "workers_dev": true
+}

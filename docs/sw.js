@@ -7,8 +7,9 @@
 // - pictures, icons, the icon fonts (fonts/<name>-<version>/) and the versioned game bank (games.js?v=N): from the phone once they are there, since
 //   they never change under the same address;
 // - anything else of this site: network first, the phone's copy when offline.
-const SHELL = 'eq-shell-v6', ASSETS = 'eq-assets-v2';
-const API_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
+const SHELL = 'eq-shell-v7', ASSETS = 'eq-assets-v2';
+// The server: /api on this site (Cloudflare); the old GitHub Pages address still calls Apps Script, which relays.
+const API_URL = /github.io$/.test(location.hostname) ? 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec' : '/api';
 
 self.addEventListener('install', e => {
   self.skipWaiting();

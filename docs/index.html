@@ -1720,7 +1720,9 @@ const store = {
 };
 // Served by Apps Script: google.script.run. Served from GitHub Pages: anonymous JSON API
 // (no Google cookies, so child accounts under 13 are not blocked).
-const API_URL = 'https:' + '/' + '/script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
+// The server is /api on this site (Cloudflare, specs/cloudflare.md). The old GitHub Pages address still calls Apps Script,
+// which passes the call on (src/Relay.js).
+const API_URL = /github.io$/.test(location.hostname) ? 'https:' + '/' + '/script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec' : '/api';
 // Every server call has a time limit (a stuck call never leaves a spinner turning), calls that only read
 // get one quiet second try, and errors from Google itself (not the app's own checks, like "Wrong PIN") read
 // as a short "try again". e.app = the server said no; e.net = the call did not get through.
@@ -4004,12 +4006,56 @@ async function flushPending(){
   if (!G && document.getElementById('petimg')) renderDash();
 }
 
-// Read-aloud for Hear it: the phone's own English voice (no recordings, no cost).
+// Read-aloud (Hear it, word taps, Read to me): Coco's recordings in docs/say (tools/voice.py). The phone's own voice
+// only for a text without a recording, or when the recording cannot play (offline).
+const SAY_V = 1;
+let SAY = null, sayAudio = null, sayLoading = false;
+// FNV-1a of the lower-cased text with its spaces collapsed; the same function as sayKey in tools/voice-list.js.
+function sayKey(text){
+  const s = String(text).trim().replace(/\s+/g, ' ').toLowerCase();
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(36);
+}
+// The list of recorded texts (and the word times of the stories), loaded once in the background.
+function sayLoad(){
+  if (SAY || sayLoading) return;
+  sayLoading = true;
+  const s = document.createElement('script');
+  s.src = ASSETS + 'say/keys.js?v=' + SAY_V;
+  s.onload = () => { const d = window.EQ_SAY || {}; SAY = { keys: new Set(d.keys || []), times: d.times || {} }; };
+  s.onerror = () => { sayLoading = false; };
+  document.head.appendChild(s);
+}
+sayLoad();
+// Plays the recording of text and returns true, or returns false when there is none. o: rate (slower keeps the pitch),
+// onEnd, onTime (current time in seconds while it plays), phone (called instead when the file cannot play).
+function sayClip(text, o){
+  o = o || {};
+  const k = SAY && sayKey(String(text).replace(/\*/g, ''));
+  if (!k || !SAY.keys.has(k)) { sayLoad(); return false; }
+  speechStop();
+  const a = sayAudio || (sayAudio = new Audio());
+  let over = false;
+  const end = () => { if (over) return; over = true; a.ontimeupdate = null; if (o.onEnd) o.onEnd(); };
+  const fail = () => { if (over) return; over = true; a.ontimeupdate = null; if (o.phone) o.phone(); else if (o.onEnd) o.onEnd(); };
+  a.onended = end;
+  a.onerror = fail;
+  a.ontimeupdate = o.onTime ? () => { if (!over) o.onTime(a.currentTime); } : null;
+  a.src = ASSETS + 'say/' + k + '.mp3?v=' + SAY_V;
+  a.preservesPitch = a.webkitPreservesPitch = true;
+  a.defaultPlaybackRate = a.playbackRate = o.rate || 1;
+  a.play().catch(err => { if (err && err.name === 'NotAllowedError') return end(); fail(); });
+  return true;
+}
+// The phone's voice: the most natural English one it has (Natural, Enhanced, Google...), British first.
 let voice = null;
 function pickVoice(){
   try {
-    const vs = speechSynthesis.getVoices();
-    voice = vs.find(v => /^en-GB/i.test(v.lang)) || vs.find(v => /^en-US/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang)) || null;
+    const vs = speechSynthesis.getVoices().filter(v => /^en/i.test(v.lang));
+    const good = v => /natural|neural|enhanced|premium|google|siri/i.test(v.name);
+    voice = vs.find(v => good(v) && /^en-GB/i.test(v.lang)) || vs.find(v => good(v) && /^en-US/i.test(v.lang)) || vs.find(good)
+      || vs.find(v => /^en-GB/i.test(v.lang)) || vs.find(v => /^en-US/i.test(v.lang)) || vs[0] || null;
   } catch(e){}
 }
 if ('speechSynthesis' in window) { pickVoice(); try { speechSynthesis.addEventListener('voiceschanged', pickVoice); } catch(e){} }
@@ -4017,19 +4063,27 @@ function sayIt(slow){
   const it = G && G.items[G.i];
   if (!it || !it.say) return;
   const btn = document.getElementById('say'), tr = document.getElementById('transcript');
-  if (!('speechSynthesis' in window)) { if (tr) tr.innerHTML = `<div class="answer-box">No sound on this device, so read it: <b>${esc(it.say)}</b></div>`; return; }
-  try {
-    speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(it.say);
-    u.lang = voice ? voice.lang : 'en-GB';
-    if (voice) u.voice = voice;
-    u.rate = slow ? .7 : .95;
-    if (btn) btn.classList.add('talk');
-    u.onend = u.onerror = () => { if (btn) btn.classList.remove('talk'); };
-    speechSynthesis.speak(u);
-  } catch(e){}
+  const off = () => { if (btn) btn.classList.remove('talk'); };
+  const phone = () => {
+    if (!('speechSynthesis' in window)) { off(); if (tr) tr.innerHTML = `<div class="answer-box">No sound on this device, so read it: <b>${esc(it.say)}</b></div>`; return; }
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(it.say);
+      u.lang = voice ? voice.lang : 'en-GB';
+      if (voice) u.voice = voice;
+      u.rate = slow ? .7 : .95;
+      if (btn) btn.classList.add('talk');
+      u.onend = u.onerror = off;
+      speechSynthesis.speak(u);
+    } catch(e){}
+  };
+  if (sayClip(it.say, { rate: slow ? .75 : 1, onEnd: off, phone })) { if (btn) btn.classList.add('talk'); return; }
+  phone();
 }
-function speechStop(){ try { speechSynthesis.cancel(); } catch(e){} }
+function speechStop(){
+  try { speechSynthesis.cancel(); } catch(e){}
+  if (sayAudio) try { sayAudio.onended = sayAudio.onerror = sayAudio.ontimeupdate = null; sayAudio.pause(); } catch(e){}
+}
 
 // ---------- Today's Mission (specs/missions.md) ----------
 // The daily task played in the app, in five parts (Hook, Learn, Practice, Use it, Finish), with the score measured here.
@@ -4482,12 +4536,26 @@ function msRemind(){
   return `<div class="answer-box mremind"><b>Remember:</b> ${x}</div>`;
 }
 
-// Read to me: the phone reads the story card; the word it is saying lights up where the phone tells us.
+// Read to me: Coco's recording of the story card, the word he is saying lit up from the word times of the recording
+// (tools/voice.py); without a recording the phone reads it and tells us where it is.
 function msReadAloud(c){
-  if (!('speechSynthesis' in window)) return toast('No sound on this device');
   const box = document.getElementById('mstory');
   if (!box) return;
   const spans = [...box.querySelectorAll('.w')], text = spans.map(s => s.dataset.w).join(' ');
+  const light = k => { spans.forEach((s, i) => s.classList.toggle('on', i === k)); if (spans[k]) keepInView(box.querySelector('.mtext'), spans[k]); };
+  const clear = () => spans.forEach(s => s.classList.remove('on'));
+  const times = SAY && SAY.times[sayKey(text)];
+  let at = -1;
+  const onTime = times && times.length === spans.length ? t => {
+    let k = times.length - 1;
+    while (k > 0 && times[k] > t) k--;
+    if (k !== at) { at = k; light(k); }
+  } : null;
+  if (sayClip(text, { onTime, onEnd: clear, phone: () => msReadPhone(spans, text, light, clear) })) return;
+  msReadPhone(spans, text, light, clear);
+}
+function msReadPhone(spans, text, light, clear){
+  if (!('speechSynthesis' in window)) return toast('No sound on this device');
   const starts = [];
   let pos = 0;
   spans.forEach(s => { starts.push(pos); pos += s.dataset.w.length + 1; });
@@ -4499,10 +4567,9 @@ function msReadAloud(c){
     if (e.name && e.name !== 'word') return;
     let k = starts.length - 1;
     while (k > 0 && starts[k] > e.charIndex) k--;
-    spans.forEach((s, i) => s.classList.toggle('on', i === k));
-    keepInView(box.querySelector('.mtext'), spans[k]);
+    light(k);
   };
-  u.onend = () => spans.forEach(s => s.classList.remove('on'));
+  u.onend = clear;
   speechSynthesis.speak(u);
 }
 
@@ -6409,8 +6476,12 @@ function talkLearn(rows, me){
     ${missed ? '<div class="sub mt-s" style="font-size:12px">The words you missed come back in Match it.</div>' : ''}</div>`;
 }
 
-// One word read aloud by the phone's English voice.
+// A word or sentence read aloud: Coco's recording, or the phone's English voice.
 function sayWord(text){
+  if (sayClip(text, { phone: () => sayPhone(text) })) return;
+  sayPhone(text);
+}
+function sayPhone(text){
   if (!('speechSynthesis' in window)) return toast('No sound on this device');
   try {
     speechSynthesis.cancel();
