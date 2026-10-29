@@ -28,11 +28,14 @@ nest_art.CUT = os.path.join(ART, 'cut')
 def prompt(sheet):
     s = SHEETS[sheet]
     items = ' '.join('%d) %s,' % (i + 1, d) for i, (_, d) in enumerate(s['items']))[:-1] + '.'
-    return ("Create an image: a sticker sheet of 6 separate app icons for a kids' English-learning app, made in the same "
-            "world as its clay pets. ICONS, in this exact order, left to right, top row first: %s Each icon one simple "
+    # j-* sheets are the journey map's scenery (one per world, and the gates); the rest are app icons.
+    what, word = ('scenery stickers for the journey map', 'sticker') if sheet.startswith('j-') else ('app icons', 'icon')
+    return ("Create an image: a sticker sheet of 6 separate %s of a kids' English-learning app, made in the same "
+            "world as its clay pets. %sS, in this exact order, left to right, top row first: %s Each %s one simple "
             "object, whole and alone, seen from its most recognizable angle, instantly clear even when small, all about "
-            "the same size. LAYOUT: landscape 3:2 image with exactly 6 icons in a neat 3x2 grid (3 columns, 2 rows), each "
-            "centered in its own cell, with wide empty space between them and around the edges. %s" % (items, nest_art.STYLE))
+            "the same size. LAYOUT: landscape 3:2 image with exactly 6 %ss in a neat 3x2 grid (3 columns, 2 rows), each "
+            "centered in its own cell, with wide empty space between them and around the edges. %s"
+            % (what, word.upper(), items, word, word, nest_art.STYLE))
 
 
 def build():
@@ -43,11 +46,12 @@ def build():
             src = os.path.join(ART, 'cut', n + '.png')
             if not os.path.exists(src):
                 continue
-            Image.open(src).resize((192, 192), Image.LANCZOS).save(os.path.join(OUT, n + '.webp'), 'WEBP', quality=88, method=6)
+            px = 288 if n.startswith('j-') else 192  # journey scenery (j-*) is drawn bigger on the map
+            Image.open(src).resize((px, px), Image.LANCZOS).save(os.path.join(OUT, n + '.webp'), 'WEBP', quality=88, method=6)
             names.append(n)
     p = os.path.join(APP, 'src', 'Index.html')
     html = open(p, encoding='utf-8', newline='').read()
-    line = "const CLAY_ICONS = '%s'.split(' ');" % ' '.join(sorted(names))
+    line = "const CLAY_ICONS = '%s'.split(' ');" % ' '.join(sorted(n for n in names if not n.startswith('j-')))
     html, k = re.subn(r"const CLAY_ICONS = '[^']*'\.split\(' '\);", line, html)
     if not k:
         raise SystemExit('CLAY_ICONS not found in Index.html')

@@ -222,5 +222,201 @@
         "a plump glossy pink heart"
       ]
     ]
+  },
+  "j-a1": {
+    "items": [
+      [
+        "j-a1-sunflower",
+        "a tall smiling sunflower"
+      ],
+      [
+        "j-a1-tulips",
+        "a cluster of pink and red tulips"
+      ],
+      [
+        "j-a1-butterfly",
+        "a blue butterfly with open wings"
+      ],
+      [
+        "j-a1-mushroom",
+        "a red mushroom with white dots"
+      ],
+      [
+        "j-a1-bunny",
+        "a small fluffy white bunny sitting"
+      ],
+      [
+        "j-a1-bush",
+        "a round green bush with little pink flowers"
+      ]
+    ]
+  },
+  "j-a2": {
+    "items": [
+      [
+        "j-a2-pine",
+        "a tall green pine tree"
+      ],
+      [
+        "j-a2-oak",
+        "a round leafy oak tree"
+      ],
+      [
+        "j-a2-campfire",
+        "a small campfire with crossed logs and a warm flame"
+      ],
+      [
+        "j-a2-owl",
+        "a cute brown owl sitting on a short branch"
+      ],
+      [
+        "j-a2-acorn",
+        "a big acorn"
+      ],
+      [
+        "j-a2-log",
+        "a mossy log with two small mushrooms"
+      ]
+    ]
+  },
+  "j-b1": {
+    "items": [
+      [
+        "j-b1-crystal-p",
+        "a cluster of glowing purple crystals"
+      ],
+      [
+        "j-b1-crystal-t",
+        "a cluster of glowing teal crystals"
+      ],
+      [
+        "j-b1-gem",
+        "one big faceted pink gem"
+      ],
+      [
+        "j-b1-arch",
+        "a small rocky cave arch with crystals inside"
+      ],
+      [
+        "j-b1-cart",
+        "a little mine cart full of colorful gems"
+      ],
+      [
+        "j-b1-lantern",
+        "an old lantern with a warm glow"
+      ]
+    ]
+  },
+  "j-b1-b2": {
+    "items": [
+      [
+        "j-b1-b2-peak",
+        "a snowy mountain peak"
+      ],
+      [
+        "j-b1-b2-snowpine",
+        "a pine tree covered in snow"
+      ],
+      [
+        "j-b1-b2-snowman",
+        "a happy snowman with a red scarf"
+      ],
+      [
+        "j-b1-b2-cabin",
+        "a small wooden cabin with snow on the roof"
+      ],
+      [
+        "j-b1-b2-pennant",
+        "a small pennant flag on top of a rock"
+      ],
+      [
+        "j-b1-b2-goat",
+        "a cute white mountain goat"
+      ]
+    ]
+  },
+  "j-b2": {
+    "items": [
+      [
+        "j-b2-island",
+        "a small floating grass island with one round tree"
+      ],
+      [
+        "j-b2-balloon",
+        "a striped hot air balloon"
+      ],
+      [
+        "j-b2-rainbow",
+        "a rainbow arching over two clouds"
+      ],
+      [
+        "j-b2-cloud",
+        "a fluffy smiling cloud"
+      ],
+      [
+        "j-b2-plane",
+        "a colorful paper airplane"
+      ],
+      [
+        "j-b2-kite",
+        "a diamond kite with a ribbon tail"
+      ]
+    ]
+  },
+  "j-c1": {
+    "items": [
+      [
+        "j-c1-moon",
+        "a smiling crescent moon"
+      ],
+      [
+        "j-c1-planet",
+        "a ringed planet in purple and orange"
+      ],
+      [
+        "j-c1-shooting",
+        "a shooting star with a glowing tail"
+      ],
+      [
+        "j-c1-telescope",
+        "a small brass telescope on a stand"
+      ],
+      [
+        "j-c1-rocket",
+        "a cute red and white toy rocket"
+      ],
+      [
+        "j-c1-stars",
+        "a little cluster of three golden stars"
+      ]
+    ]
+  },
+  "j-gate": {
+    "items": [
+      [
+        "j-gate-gate-closed",
+        "a small stone castle with a purple pointed roof and a big closed wooden door"
+      ],
+      [
+        "j-gate-gate-open",
+        "the same small stone castle with its big door wide open and warm golden light inside"
+      ],
+      [
+        "j-gate-summit",
+        "a golden crown on a round velvet cushion"
+      ],
+      [
+        "j-gate-sign",
+        "a wooden signpost with one blank arrow sign"
+      ],
+      [
+        "j-gate-stone",
+        "a round flat stepping stone"
+      ],
+      [
+        "j-gate-flag",
+        "a red flag on a short pole"
+      ]
+    ]
   }
 }

@@ -260,3 +260,6 @@ rules 3 and 4). 48 clay icons from Gemini (`tools/ui_icons.py`, `tools/ui-icons.
 in `docs/icons/<phosphor name>.webp`; `clayIcons()` swaps them in for Phosphor icons in tiles, chips, the tab bar and the Nest
 buttons (a MutationObserver, so templates keep calling `icon()`). A new object icon: add a row to ui-icons.json, make the sheet,
 `python tools/ui_icons.py cut <sheet> <jpg>`, then `build` (writes `CLAY_ICONS`), and raise `ICONS_V` when a picture changes.
+The journey map (2026-10-29) is clay too: each world's six clay scenery pieces (`WORLD_ART`, `docs/icons/j-<level>-<name>.webp`,
+sheets `j-*` in ui-icons.json) fill the road's bays and bounce when tapped, the road is a clay path, stations are clay stones,
+and the gate is a clay castle (`j-gate-*`: shut, open with a glow, the summit's crown). The world strip shows each world's piece.
