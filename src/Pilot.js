@@ -194,7 +194,7 @@ function apiPilotInvite(pin, open, code) {
 // The kid's in-app level tests for the dashboard: the first level, the retest, and whether the retest is due
 // (about four weeks after the first test).
 function placementInfo(kid) {
-  var rows = readTable('Placements').filter(function (p) { return p.Girl === kid.Name; });
+  var rows = kidRows('Placements', kid.Name);
   if (!rows.length) return null;
   var a = rows.filter(function (p) { return p.Form === 'A'; })[0] || rows[0], b = rows.filter(function (p) { return p.Form !== 'A'; }).pop() || null;
   var view = function (p) { return p ? { date: p.Date, level: p.Level, label: LEVEL_LABEL[p.Level] || p.Level, correct: Number(p.Correct), total: Number(p.Total) } : null; };
@@ -217,7 +217,7 @@ function apiParentSetAge(pin, name, choice) {
     fields = { Level: 'nest', Age: age };
     label = "Coco's Nest, age " + age;
   } else if (GRADE_LEVEL[grade]) {
-    var tested = readTable('Placements').filter(function (p) { return p.Girl === kid.Name && p.Form === 'A'; })[0];
+    var tested = kidRows('Placements', kid.Name).filter(function (p) { return p.Form === 'A'; })[0];
     fields = { Age: grade + 6 };
     if (!tested) fields.Level = GRADE_LEVEL[grade];
     else if (isNest(kid)) fields.Level = LEVELS.indexOf(String(tested.Level)) >= 0 ? String(tested.Level) : GRADE_LEVEL[grade];

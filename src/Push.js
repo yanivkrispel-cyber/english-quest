@@ -188,7 +188,7 @@ function deliver(endpoints, message, sheetName) {
 }
 
 function pushToKid(name, message) {
-  return deliver(readTable('Push').filter(function (s) { return s.Girl === name; }).map(function (s) { return s.Endpoint; }), message, 'Push');
+  return deliver(kidRows('Push', name).map(function (s) { return s.Endpoint; }), message, 'Push');
 }
 
 function removeSubscriptions(endpoints, sheetName) {
@@ -353,7 +353,7 @@ function apiParentPushTest(pin, endpoint) {
 function reminderMessage(kid, lastCall) {
   var t = today();
   var a = todayTask(kid);
-  var logs = readTable('Log').filter(function (l) { return l.Girl === kid.Name; });
+  var logs = kidRows('Log', kid.Name);
   var label = SECTIONS[a.section].label;
   // A duo partner who already practiced today is the best reason to come (Duos.js).
   var duo = null;
@@ -410,7 +410,7 @@ function apiPushSubscribe(name, pin, endpoint, agent, welcome) {
   } finally {
     lock.releaseLock();
   }
-  var res = { devices: readTable('Push').filter(function (s) { return s.Girl === kid.Name; }).length };
+  var res = { devices: kidRows('Push', kid.Name).length };
   if (welcome) {
     res.sent = pushToKid(kid.Name, {
       title: 'Reminders are on',

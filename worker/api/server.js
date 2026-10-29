@@ -239,7 +239,15 @@ function createGas(opts) {
     return o;
   }
   // The patterns the server uses (yyyy MM dd HH H mm ss EEE); anything else in quotes or as is.
+  // Intl is slow and the server formats the same minute again and again (today(), fmt()): a memo per minute.
+  var fmtMemo = {}, fmtMemoN = 0;
   function formatDate(d, zone, pattern) {
+    var t = d.getTime(), key = Math.floor(t / 60000) + (zone || tz) + pattern;
+    if (!/s/.test(pattern) && key in fmtMemo) return fmtMemo[key];
+    if (++fmtMemoN > 5000) { fmtMemo = {}; fmtMemoN = 0; }
+    return (fmtMemo[key] = formatDateNow(d, zone, pattern));
+  }
+  function formatDateNow(d, zone, pattern) {
     var p = parts(d, zone || tz);
     return String(pattern).replace(/yyyy|MM|dd|HH|H|mm|ss|EEE/g, function (t) {
       return { yyyy: p.year, MM: p.month, dd: p.day, HH: p.hour, H: String(Number(p.hour)), mm: p.minute, ss: p.second, EEE: p.weekday }[t];
@@ -599,7 +607,7 @@ function apiSubmit(name, pin, date, correct, total, levelResult) {
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
-    var done = readTableUncached('Log').filter(function (l) { return l.Girl === kid.Name && l.Date === date; });
+    var done = kidRowsFresh('Log', kid.Name).filter(function (l) { return l.Date === date; });
     if (done.length) throw new Error('This task is already marked as done.');
 
     correct = Number(correct) || 0;
@@ -654,7 +662,7 @@ function apiGameResult(name, pin, game, level, correct, total, missed, right, se
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
-    var used = readTableUncached('Games').filter(function (g) { return g.Girl === kid.Name && g.Date === t; })
+    var used = kidRowsFresh('Games', kid.Name).filter(function (g) { return g.Date === t; })
       .reduce(function (a, g) { return a + (Number(g.XP) || 0); }, 0);
     xp = correct * GAME_XP.right + second * GAME_XP.right / 2 + (correct === total && total >= 5 ? GAME_XP.perfect : 0);
     xp = Math.max(0, Math.min(xp, GAME_XP.dayCap - used));
@@ -690,11 +698,11 @@ function petInfo(kid) {
   if (PETS.indexOf(kid.Pet) < 0) return null;
   var since = String(kid.PetSince || '');
   var xp = 0;
-  readTable('Log').forEach(function (l) { if (l.Girl === kid.Name && String(l.DoneOn) >= since) xp += Number(l.Points) || 0; });
-  readTable('Games').forEach(function (g) { if (g.Girl === kid.Name) xp += Number(g.XP) || 0; });
-  readTable('Gates').forEach(function (g) { if (g.Girl === kid.Name) xp += Number(g.XP) || 0; });
-  readTable('Bonus').forEach(function (b) { if (b.Girl === kid.Name) xp += Number(b.XP) || 0; });
-  readTable('Chats').forEach(function (r) { if (r.Girl === kid.Name) xp += Number(r.XP) || 0; });
+  kidRows('Log', kid.Name).forEach(function (l) { if (String(l.DoneOn) >= since) xp += Number(l.Points) || 0; });
+  kidRows('Games', kid.Name).forEach(function (g) { xp += Number(g.XP) || 0; });
+  kidRows('Gates', kid.Name).forEach(function (g) { xp += Number(g.XP) || 0; });
+  kidRows('Bonus', kid.Name).forEach(function (b) { xp += Number(b.XP) || 0; });
+  kidRows('Chats', kid.Name).forEach(function (r) { xp += Number(r.XP) || 0; });
   var stage = 1;
   PET_STAGES.forEach(function (min, i) { if (xp >= min) stage = i + 1; });
   var w = wardrobeOf(kid.Name);
@@ -703,7 +711,7 @@ function petInfo(kid) {
 }
 
 function gameStats(kid, t, saver) {
-  var rows = readTable('Games').filter(function (g) { return g.Girl === kid.Name; });
+  var rows = kidRows('Games', kid.Name);
   var todayRows = rows.filter(function (g) { return g.Date === t; });
   var week = weekDates(t);
   var weekRows = rows.filter(function (g) { return week.indexOf(g.Date) >= 0; });
@@ -735,7 +743,7 @@ function gameStats(kid, t, saver) {
 
 // Review state per kid, one cell: "id|box|due id|box|due ...". Only items missed at least once.
 function readReview(name) {
-  var row = readTable('Review').filter(function (r) { return r.Girl === name; })[0];
+  var row = kidRows('Review', name)[0];
   var map = {};
   String(row ? row.Items : '').split(' ').forEach(function (p) {
     var a = p.split('|');
@@ -783,8 +791,8 @@ function dueReview(name, t) {
 function journeyInfo(kid, t) {
   var lv = LEVELS.indexOf(kid.Level) >= 0 ? kid.Level : 'a2';
   var next = LEVELS[LEVELS.indexOf(lv) + 1] || null;
-  var tasks = readTable('Log').filter(function (l) { return l.Girl === kid.Name && l.Section !== 'level'; });
-  var gates = readTable('Gates').filter(function (g) { return g.Girl === kid.Name; });
+  var tasks = kidRows('Log', kid.Name).filter(function (l) { return l.Section !== 'level'; });
+  var gates = kidRows('Gates', kid.Name);
   var lastPass = -1;
   gates.forEach(function (g, i) { if (g.Passed === 'yes') lastPass = i; });
   var mine = tasks.slice(lastPass >= 0 ? Number(gates[lastPass].Tasks) || 0 : 0);
@@ -882,7 +890,7 @@ function parentData(list, isAdmin, who) {
           mission: l.Mission || '', seconds: Number(l.Seconds) || null };
       });
       d.email = k.Email;
-      d.bought = shopBought(readTable('Shop').filter(function (r) { return r.Girl === k.Name; }), 3);
+      d.bought = shopBought(kidRows('Shop', k.Name), 3);
       d.pin = String(k.PIN);
       return d;
     });
@@ -1010,14 +1018,14 @@ function uniqueParentPin() {
 
 // A kid's first day = her first assignment (the level test). New kids start today.
 function kidStart(kid) {
-  var dates = readTable('Assignments').filter(function (a) { return a.Girl === kid.Name; }).map(function (a) { return a.Date; }).sort();
+  var dates = kidRows('Assignments', kid.Name).map(function (a) { return a.Date; }).sort();
   return dates.length ? dates[0] : today();
 }
 
 // New kids (nothing logged yet) do the level test before anything else: no daily tasks and no
 // games until it is logged. Returns the pending test ({date, title, url}) or null.
 function pendingLevelTest(kid) {
-  if (readTable('Log').some(function (l) { return l.Girl === kid.Name; })) return null;
+  if ((kidRows('Log', kid.Name).length > 0)) return null;
   var start = kidStart(kid);
   var a = ensureAssignments(kid, [start])[start];
   return a && a.section === 'level' ? { date: start, title: a.title, url: a.url } : null;
@@ -1038,7 +1046,7 @@ function buildDashboard(kid) {
   var dates = weekDates(t);
   var active = pending ? [] : dates.filter(function (d) { return d >= start && d <= t; });
   var assigned = ensureAssignments(kid, active);
-  var logs = readTable('Log').filter(function (l) { return l.Girl === kid.Name; });
+  var logs = kidRows('Log', kid.Name);
   var byDate = {};
   // A Nest day can have more lessons (one more lesson): the day shows its own, the first one.
   logs.forEach(function (l) { if (!byDate[l.Date] || l.Section !== 'nest') byDate[l.Date] = l; });
@@ -1101,7 +1109,7 @@ function buildDashboard(kid) {
     upgrades: upgradesOf(owned),
     polish: polishInfo(kid),
     shop: { open: !nest && shopOpenFor(kid, t), opens: shopOpens(), season: shopSeason(t) },
-    push: { key: vapidPublicKey(), devices: readTable('Push').filter(function (s) { return s.Girl === kid.Name; }).length },
+    push: { key: vapidPublicKey(), devices: kidRows('Push', kid.Name).length },
     word: wordOfDay(t)
   };
 }
@@ -1454,6 +1462,10 @@ function onEdit(e) {
   auditSheetEdit(e);
 }
 
+// One kid's rows of a table (its Girl column). On Cloudflare they come from an index (platform/overrides.js); here a filter.
+function kidRows(table, name) { return readTable(table).filter(function (r) { return r.Girl === name; }); }
+function kidRowsFresh(table, name) { return readTableUncached(table).filter(function (r) { return r.Girl === name; }); }
+
 function readTableUncached(name) {
   var sh = sheet(name);
   if (!sh || sh.getLastRow() < 2) return [];
@@ -1773,7 +1785,7 @@ function deliver(endpoints, message, sheetName) {
 }
 
 function pushToKid(name, message) {
-  return deliver(readTable('Push').filter(function (s) { return s.Girl === name; }).map(function (s) { return s.Endpoint; }), message, 'Push');
+  return deliver(kidRows('Push', name).map(function (s) { return s.Endpoint; }), message, 'Push');
 }
 
 function removeSubscriptions(endpoints, sheetName) {
@@ -1938,7 +1950,7 @@ function apiParentPushTest(pin, endpoint) {
 function reminderMessage(kid, lastCall) {
   var t = today();
   var a = todayTask(kid);
-  var logs = readTable('Log').filter(function (l) { return l.Girl === kid.Name; });
+  var logs = kidRows('Log', kid.Name);
   var label = SECTIONS[a.section].label;
   // A duo partner who already practiced today is the best reason to come (Duos.js).
   var duo = null;
@@ -1995,7 +2007,7 @@ function apiPushSubscribe(name, pin, endpoint, agent, welcome) {
   } finally {
     lock.releaseLock();
   }
-  var res = { devices: readTable('Push').filter(function (s) { return s.Girl === kid.Name; }).length };
+  var res = { devices: kidRows('Push', kid.Name).length };
   if (welcome) {
     res.sent = pushToKid(kid.Name, {
       title: 'Reminders are on',
@@ -2363,7 +2375,7 @@ function duelBonus(d) {
 
 function duelXp(kid, d, role, r) {
   var t = today();
-  var together = !readTableUncached('Games').some(function (g) { return g.Girl === kid.Name && g.Date === t && DUEL_TOGETHER.indexOf(g.Game) >= 0 && Number(g.Total) > 0; });
+  var together = !kidRowsFresh('Games', kid.Name).some(function (g) { return g.Date === t && DUEL_TOGETHER.indexOf(g.Game) >= 0 && Number(g.Total) > 0; });
   var xp = r.correct * DUEL.rightXp + (together ? DUEL.togetherXp : 0);
   var got = duelAddXp(kid, xp, r.correct, r.total, r.missed.join(' '), role === 'host' ? d.HostLevel : d.GuestLevel, d.Mode === 'boss' ? 'boss' : 'duel');
   updateReview(kid.Name, r.missed, r.right, t);
@@ -2373,7 +2385,7 @@ function duelXp(kid, d, role, r) {
 // One Games row (Game = duel, boss or tug), capped like the mini-games. Returns the XP actually given.
 function duelAddXp(kid, xp, correct, total, missed, level, game) {
   var t = today();
-  var used = readTableUncached('Games').filter(function (g) { return g.Girl === kid.Name && g.Date === t; })
+  var used = kidRowsFresh('Games', kid.Name).filter(function (g) { return g.Date === t; })
     .reduce(function (a, g) { return a + (Number(g.XP) || 0); }, 0);
   xp = Math.max(0, Math.min(xp, GAME_XP.dayCap - used));
   if (!total && !xp) return 0;
@@ -2445,7 +2457,7 @@ function talkXp(kid, d, role, r) {
   var mate = duelHas(d, P) ? Number(d[P + 'Score']) || 0
     : talkList((duelProgress(d.Id, d[P]) || {}).p).filter(function (x) { return x[0] === '1'; }).length;
   var team = r.correct + mate;
-  var together = r.total > 0 && !readTableUncached('Games').some(function (g) { return g.Girl === kid.Name && g.Date === t && DUEL_TOGETHER.indexOf(g.Game) >= 0 && Number(g.Total) > 0; });
+  var together = r.total > 0 && !kidRowsFresh('Games', kid.Name).some(function (g) { return g.Date === t && DUEL_TOGETHER.indexOf(g.Game) >= 0 && Number(g.Total) > 0; });
   var xp = team * DUEL.rightXp + (together ? DUEL.togetherXp : 0) + (team >= TALK.winAt ? TALK.winXp : 0);
   var got = duelAddXp(kid, xp, r.correct, r.total, r.missed.join(' '), role === 'host' ? d.HostLevel : d.GuestLevel, 'talk');
   updateReview(kid.Name, r.missed, r.right, t);
@@ -2497,7 +2509,7 @@ function apiTugSave(name, pin, mateName, mateCred, mine, hers, saveId) {
     if (!seen) players.forEach(function (p) {
       var k = p[0], r = p[1];
       if (!r.total) return;
-      var together = mate && !readTableUncached('Games').some(function (g) { return g.Girl === k.Name && g.Date === t && DUEL_TOGETHER.indexOf(g.Game) >= 0 && Number(g.Total) > 0; });
+      var together = mate && !kidRowsFresh('Games', k.Name).some(function (g) { return g.Date === t && DUEL_TOGETHER.indexOf(g.Game) >= 0 && Number(g.Total) > 0; });
       xp[k.Name] = duelAddXp(k, r.correct * DUEL.rightXp + (together ? DUEL.togetherXp : 0), r.correct, r.total, r.missed.join(' '), k.Level, 'tug');
       updateReview(k.Name, r.missed, r.right, t);
     });
@@ -3260,7 +3272,7 @@ function apiWear(name, pin, wear, move) {
 // Every point (with the full-week bonus) and every XP is a coin; spent = what the Shop tab says she paid.
 function coinsOf(kid, shopRows) {
   var name = kid.Name;
-  var logs = readTable('Log').filter(function (l) { return l.Girl === name; });
+  var logs = kidRows('Log', name);
   var earned = totalPoints(logs, kidStart(kid)), spent = 0;
   ['Games', 'Gates', 'Bonus', 'Chats'].forEach(function (t) {
     readTable(t).forEach(function (r) { if (r.Girl === name) earned += Number(r.XP) || 0; });
@@ -3331,7 +3343,7 @@ function upgradesOf(owned) {
 
 function shopView(kid) {
   var t = today(), owned = ownedItems(kid.Name), w = wardrobeOf(kid.Name), season = shopSeason(t);
-  var mine = readTable('Shop').filter(function (r) { return r.Girl === kid.Name; });
+  var mine = kidRows('Shop', kid.Name);
   var words = recipeView(kid, mine, wordsOf(kid.Name).memory, t);
   var designs = mine.filter(function (r) { return String(r.Item).charAt(0) === '~'; }).map(function (r) {
     var d = designFromToken(r.Item);
@@ -3455,14 +3467,14 @@ function polishCount(view) {
 function wornShine(kid, wear) {
   var ids = (wear || []).map(function (e) { return String(e).split(':')[0]; }).filter(function (id) { return SHOP_RECIPES[id]; });
   if (!ids.length) return null;
-  var mine = readTable('Shop').filter(function (r) { return r.Girl === kid.Name; }), memory = wordsOf(kid.Name).memory, t = today(), out = {};
+  var mine = kidRows('Shop', kid.Name), memory = wordsOf(kid.Name).memory, t = today(), out = {};
   ids.forEach(function (id) { out[id] = shineOf(itemWordList(kid, id, mine), memory, t); });
   return out;
 }
 
 // For home: the words waiting in the items she owns.
 function polishInfo(kid) {
-  var t = today(), mine = readTable('Shop').filter(function (r) { return r.Girl === kid.Name; });
+  var t = today(), mine = kidRows('Shop', kid.Name);
   if (!mine.some(function (r) { return SHOP_RECIPES[r.Item]; })) return null;
   var view = recipeView(kid, mine, wordsOf(kid.Name).memory, t);
   var dull = Object.keys(view).filter(function (id) { return view[id].owned && view[id].shine < 100; })
@@ -3476,7 +3488,7 @@ function polishInfo(kid) {
 function apiWords(name, pin, itemId, right, missed) {
   var kid = auth(name, pin), t = today();
   if (pendingLevelTest(kid)) throw new Error('Take the level test first.');
-  var mine = readTable('Shop').filter(function (r) { return r.Girl === kid.Name; }), allowed = {};
+  var mine = kidRows('Shop', kid.Name), allowed = {};
   itemId = String(itemId || '');
   if (itemId && !SHOP_RECIPES[itemId]) throw new Error('That item is not made of words');
   Object.keys(SHOP_RECIPES).forEach(function (id) {
@@ -4040,7 +4052,7 @@ function apiMissionResult(name, pin, date, missionId, correct, total, missed, ri
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
-    var done = readTableUncached('Log').filter(function (l) { return l.Girl === kid.Name && l.Date === date; });
+    var done = kidRowsFresh('Log', kid.Name).filter(function (l) { return l.Date === date; });
     if (done.length) throw new Error('This task is already marked as done.');
     var pct = Math.round(correct / total * 100);
     var points = 10 + (pct >= 80 ? 5 : 0) + (date === t ? 3 : 0);
@@ -4068,7 +4080,7 @@ function apiFlag(name, pin, missionId, itemId, note) {
   itemId = cleanIds([itemId], 1)[0] || '';
   note = String(note || '').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 300);
   if (!missionId) throw new Error('Unknown mission');
-  var mine = readTable('Flags').filter(function (f) { return f.Girl === kid.Name && f.Date === t; });
+  var mine = kidRows('Flags', kid.Name).filter(function (f) { return f.Date === t; });
   if (mine.length >= MISSION.flagsPerDay) return { ok: true };
   appendRow('Flags', { Timestamp: new Date(), Girl: kid.Name, Date: t, Mission: missionId, Item: itemId, Note: note });
   return { ok: true };
@@ -4271,7 +4283,7 @@ function apiPilotInvite(pin, open, code) {
 // The kid's in-app level tests for the dashboard: the first level, the retest, and whether the retest is due
 // (about four weeks after the first test).
 function placementInfo(kid) {
-  var rows = readTable('Placements').filter(function (p) { return p.Girl === kid.Name; });
+  var rows = kidRows('Placements', kid.Name);
   if (!rows.length) return null;
   var a = rows.filter(function (p) { return p.Form === 'A'; })[0] || rows[0], b = rows.filter(function (p) { return p.Form !== 'A'; }).pop() || null;
   var view = function (p) { return p ? { date: p.Date, level: p.Level, label: LEVEL_LABEL[p.Level] || p.Level, correct: Number(p.Correct), total: Number(p.Total) } : null; };
@@ -4294,7 +4306,7 @@ function apiParentSetAge(pin, name, choice) {
     fields = { Level: 'nest', Age: age };
     label = "Coco's Nest, age " + age;
   } else if (GRADE_LEVEL[grade]) {
-    var tested = readTable('Placements').filter(function (p) { return p.Girl === kid.Name && p.Form === 'A'; })[0];
+    var tested = kidRows('Placements', kid.Name).filter(function (p) { return p.Form === 'A'; })[0];
     fields = { Age: grade + 6 };
     if (!tested) fields.Level = GRADE_LEVEL[grade];
     else if (isNest(kid)) fields.Level = LEVELS.indexOf(String(tested.Level)) >= 0 ? String(tested.Level) : GRADE_LEVEL[grade];
@@ -4358,7 +4370,7 @@ function apiChatResult(name, pin, id, turns, voice, tiles, mic, said, seconds) {
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
-    var mine = readTableUncached('Chats').filter(function (r) { return r.Girl === kid.Name && r.Date === t; });
+    var mine = kidRowsFresh('Chats', kid.Name).filter(function (r) { return r.Date === t; });
     // The bonus once per talk a day, and once a day for a home scene (a second home talk is practice).
     var again = mine.some(function (r) { return r.Talk === id || (where === 'home' && r.Where === 'home'); });
     var used = mine.reduce(function (a, r) { return a + (Number(r.XP) || 0); }, 0);
@@ -4377,7 +4389,7 @@ function apiChatResult(name, pin, id, turns, voice, tiles, mic, said, seconds) {
 // For the dashboard (and so for the parents): today's home scene, the scenes she has had, this week's talks and the
 // longest thing she said aloud this week.
 function chatInfo(kid, t) {
-  var rows = readTable('Chats').filter(function (r) { return r.Girl === kid.Name; });
+  var rows = kidRows('Chats', kid.Name);
   var week = weekDates(t), wk = rows.filter(function (r) { return week.indexOf(String(r.Date)) >= 0; });
   var days = {}, best = '';
   wk.forEach(function (r) {
@@ -4775,7 +4787,7 @@ function apiNestResult(name, pin, date, unitId, correct, total, seconds, detail)
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
-    var mine = readTableUncached('Log').filter(function (l) { return l.Girl === kid.Name; });
+    var mine = kidRowsFresh('Log', kid.Name);
     if (a.url !== 'nest:' + unitId) {
       // One more lesson today: the day's own is logged, this is the next day of the program, and the parent allows it.
       var perDay = nestPerDay(kid), todays = mine.filter(function (l) { return l.Date === t && l.Section === 'nest'; }).length;
@@ -5018,21 +5030,38 @@ function platformTable(name) {
   } else {
     out = []; from = 1;
   }
-  var head = rows[0];
+  var head = rows[0], idx = from > 1 && m.byGirl ? m.byGirl : null;   // appended rows join the index of the last version
   for (var i = from; i < rows.length; i++) {
     if (platformBlank(rows[i])) continue;
     var o = platformRow(head, rows[i]);
     if (PLATFORM.freeze) Object.freeze(o);
     out.push(o);
+    if (idx && o.Girl !== undefined) (idx[o.Girl] = idx[o.Girl] || []).push(o);
   }
   if (PLATFORM.freeze) Object.freeze(out);
-  TABLE_MEMO[name] = { sh: sh, edits: sh.edits, len: rows.length, out: out };
+  TABLE_MEMO[name] = { sh: sh, edits: sh.edits, len: rows.length, out: out, byGirl: idx };
   return out;
 }
 
 // readTable: the shared rows (read only). readTableUncached is what the server uses before it changes a row and saves
 // it again (a duel, a duo, a setting), so it gets its own copies, as every read on Apps Script did.
 readTable = function (name) { return platformTable(name); };
+
+// One kid's rows: an index by the Girl column, built once per version of the table. Copies of the array (callers sort
+// it); kidRowsFresh copies the rows too, as readTableUncached does.
+function platformIndex(name) {
+  platformTable(name);
+  var m = TABLE_MEMO[name];
+  if (!m) return {};
+  if (!m.byGirl) {
+    var idx = {};
+    m.out.forEach(function (r) { var g = r.Girl; if (g === undefined) return; (idx[g] = idx[g] || []).push(r); });
+    m.byGirl = idx;
+  }
+  return m.byGirl;
+}
+kidRows = function (table, name) { var a = platformIndex(table)[name]; return a ? a.slice() : []; };
+kidRowsFresh = function (table, name) { return kidRows(table, name).map(function (o) { var c = {}; for (var k in o) c[k] = o[k]; return c; }); };
 readTableUncached = function (name) {
   return platformTable(name).map(function (o) { var c = {}; for (var k in o) c[k] = o[k]; return c; });
 };

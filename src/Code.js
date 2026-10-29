@@ -267,7 +267,7 @@ function apiSubmit(name, pin, date, correct, total, levelResult) {
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
-    var done = readTableUncached('Log').filter(function (l) { return l.Girl === kid.Name && l.Date === date; });
+    var done = kidRowsFresh('Log', kid.Name).filter(function (l) { return l.Date === date; });
     if (done.length) throw new Error('This task is already marked as done.');
 
     correct = Number(correct) || 0;
@@ -322,7 +322,7 @@ function apiGameResult(name, pin, game, level, correct, total, missed, right, se
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
-    var used = readTableUncached('Games').filter(function (g) { return g.Girl === kid.Name && g.Date === t; })
+    var used = kidRowsFresh('Games', kid.Name).filter(function (g) { return g.Date === t; })
       .reduce(function (a, g) { return a + (Number(g.XP) || 0); }, 0);
     xp = correct * GAME_XP.right + second * GAME_XP.right / 2 + (correct === total && total >= 5 ? GAME_XP.perfect : 0);
     xp = Math.max(0, Math.min(xp, GAME_XP.dayCap - used));
@@ -358,11 +358,11 @@ function petInfo(kid) {
   if (PETS.indexOf(kid.Pet) < 0) return null;
   var since = String(kid.PetSince || '');
   var xp = 0;
-  readTable('Log').forEach(function (l) { if (l.Girl === kid.Name && String(l.DoneOn) >= since) xp += Number(l.Points) || 0; });
-  readTable('Games').forEach(function (g) { if (g.Girl === kid.Name) xp += Number(g.XP) || 0; });
-  readTable('Gates').forEach(function (g) { if (g.Girl === kid.Name) xp += Number(g.XP) || 0; });
-  readTable('Bonus').forEach(function (b) { if (b.Girl === kid.Name) xp += Number(b.XP) || 0; });
-  readTable('Chats').forEach(function (r) { if (r.Girl === kid.Name) xp += Number(r.XP) || 0; });
+  kidRows('Log', kid.Name).forEach(function (l) { if (String(l.DoneOn) >= since) xp += Number(l.Points) || 0; });
+  kidRows('Games', kid.Name).forEach(function (g) { xp += Number(g.XP) || 0; });
+  kidRows('Gates', kid.Name).forEach(function (g) { xp += Number(g.XP) || 0; });
+  kidRows('Bonus', kid.Name).forEach(function (b) { xp += Number(b.XP) || 0; });
+  kidRows('Chats', kid.Name).forEach(function (r) { xp += Number(r.XP) || 0; });
   var stage = 1;
   PET_STAGES.forEach(function (min, i) { if (xp >= min) stage = i + 1; });
   var w = wardrobeOf(kid.Name);
@@ -371,7 +371,7 @@ function petInfo(kid) {
 }
 
 function gameStats(kid, t, saver) {
-  var rows = readTable('Games').filter(function (g) { return g.Girl === kid.Name; });
+  var rows = kidRows('Games', kid.Name);
   var todayRows = rows.filter(function (g) { return g.Date === t; });
   var week = weekDates(t);
   var weekRows = rows.filter(function (g) { return week.indexOf(g.Date) >= 0; });
@@ -403,7 +403,7 @@ function gameStats(kid, t, saver) {
 
 // Review state per kid, one cell: "id|box|due id|box|due ...". Only items missed at least once.
 function readReview(name) {
-  var row = readTable('Review').filter(function (r) { return r.Girl === name; })[0];
+  var row = kidRows('Review', name)[0];
   var map = {};
   String(row ? row.Items : '').split(' ').forEach(function (p) {
     var a = p.split('|');
@@ -451,8 +451,8 @@ function dueReview(name, t) {
 function journeyInfo(kid, t) {
   var lv = LEVELS.indexOf(kid.Level) >= 0 ? kid.Level : 'a2';
   var next = LEVELS[LEVELS.indexOf(lv) + 1] || null;
-  var tasks = readTable('Log').filter(function (l) { return l.Girl === kid.Name && l.Section !== 'level'; });
-  var gates = readTable('Gates').filter(function (g) { return g.Girl === kid.Name; });
+  var tasks = kidRows('Log', kid.Name).filter(function (l) { return l.Section !== 'level'; });
+  var gates = kidRows('Gates', kid.Name);
   var lastPass = -1;
   gates.forEach(function (g, i) { if (g.Passed === 'yes') lastPass = i; });
   var mine = tasks.slice(lastPass >= 0 ? Number(gates[lastPass].Tasks) || 0 : 0);
@@ -550,7 +550,7 @@ function parentData(list, isAdmin, who) {
           mission: l.Mission || '', seconds: Number(l.Seconds) || null };
       });
       d.email = k.Email;
-      d.bought = shopBought(readTable('Shop').filter(function (r) { return r.Girl === k.Name; }), 3);
+      d.bought = shopBought(kidRows('Shop', k.Name), 3);
       d.pin = String(k.PIN);
       return d;
     });
@@ -678,14 +678,14 @@ function uniqueParentPin() {
 
 // A kid's first day = her first assignment (the level test). New kids start today.
 function kidStart(kid) {
-  var dates = readTable('Assignments').filter(function (a) { return a.Girl === kid.Name; }).map(function (a) { return a.Date; }).sort();
+  var dates = kidRows('Assignments', kid.Name).map(function (a) { return a.Date; }).sort();
   return dates.length ? dates[0] : today();
 }
 
 // New kids (nothing logged yet) do the level test before anything else: no daily tasks and no
 // games until it is logged. Returns the pending test ({date, title, url}) or null.
 function pendingLevelTest(kid) {
-  if (readTable('Log').some(function (l) { return l.Girl === kid.Name; })) return null;
+  if ((kidRows('Log', kid.Name).length > 0)) return null;
   var start = kidStart(kid);
   var a = ensureAssignments(kid, [start])[start];
   return a && a.section === 'level' ? { date: start, title: a.title, url: a.url } : null;
@@ -706,7 +706,7 @@ function buildDashboard(kid) {
   var dates = weekDates(t);
   var active = pending ? [] : dates.filter(function (d) { return d >= start && d <= t; });
   var assigned = ensureAssignments(kid, active);
-  var logs = readTable('Log').filter(function (l) { return l.Girl === kid.Name; });
+  var logs = kidRows('Log', kid.Name);
   var byDate = {};
   // A Nest day can have more lessons (one more lesson): the day shows its own, the first one.
   logs.forEach(function (l) { if (!byDate[l.Date] || l.Section !== 'nest') byDate[l.Date] = l; });
@@ -769,7 +769,7 @@ function buildDashboard(kid) {
     upgrades: upgradesOf(owned),
     polish: polishInfo(kid),
     shop: { open: !nest && shopOpenFor(kid, t), opens: shopOpens(), season: shopSeason(t) },
-    push: { key: vapidPublicKey(), devices: readTable('Push').filter(function (s) { return s.Girl === kid.Name; }).length },
+    push: { key: vapidPublicKey(), devices: kidRows('Push', kid.Name).length },
     word: wordOfDay(t)
   };
 }
@@ -1121,6 +1121,10 @@ function onEdit(e) {
   clearCache();
   auditSheetEdit(e);
 }
+
+// One kid's rows of a table (its Girl column). On Cloudflare they come from an index (platform/overrides.js); here a filter.
+function kidRows(table, name) { return readTable(table).filter(function (r) { return r.Girl === name; }); }
+function kidRowsFresh(table, name) { return readTableUncached(table).filter(function (r) { return r.Girl === name; }); }
 
 function readTableUncached(name) {
   var sh = sheet(name);

@@ -39,21 +39,38 @@ function platformTable(name) {
   } else {
     out = []; from = 1;
   }
-  var head = rows[0];
+  var head = rows[0], idx = from > 1 && m.byGirl ? m.byGirl : null;   // appended rows join the index of the last version
   for (var i = from; i < rows.length; i++) {
     if (platformBlank(rows[i])) continue;
     var o = platformRow(head, rows[i]);
     if (PLATFORM.freeze) Object.freeze(o);
     out.push(o);
+    if (idx && o.Girl !== undefined) (idx[o.Girl] = idx[o.Girl] || []).push(o);
   }
   if (PLATFORM.freeze) Object.freeze(out);
-  TABLE_MEMO[name] = { sh: sh, edits: sh.edits, len: rows.length, out: out };
+  TABLE_MEMO[name] = { sh: sh, edits: sh.edits, len: rows.length, out: out, byGirl: idx };
   return out;
 }
 
 // readTable: the shared rows (read only). readTableUncached is what the server uses before it changes a row and saves
 // it again (a duel, a duo, a setting), so it gets its own copies, as every read on Apps Script did.
 readTable = function (name) { return platformTable(name); };
+
+// One kid's rows: an index by the Girl column, built once per version of the table. Copies of the array (callers sort
+// it); kidRowsFresh copies the rows too, as readTableUncached does.
+function platformIndex(name) {
+  platformTable(name);
+  var m = TABLE_MEMO[name];
+  if (!m) return {};
+  if (!m.byGirl) {
+    var idx = {};
+    m.out.forEach(function (r) { var g = r.Girl; if (g === undefined) return; (idx[g] = idx[g] || []).push(r); });
+    m.byGirl = idx;
+  }
+  return m.byGirl;
+}
+kidRows = function (table, name) { var a = platformIndex(table)[name]; return a ? a.slice() : []; };
+kidRowsFresh = function (table, name) { return kidRows(table, name).map(function (o) { var c = {}; for (var k in o) c[k] = o[k]; return c; }); };
 readTableUncached = function (name) {
   return platformTable(name).map(function (o) { var c = {}; for (var k in o) c[k] = o[k]; return c; });
 };

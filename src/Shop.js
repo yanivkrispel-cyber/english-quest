@@ -256,7 +256,7 @@ function apiWear(name, pin, wear, move) {
 // Every point (with the full-week bonus) and every XP is a coin; spent = what the Shop tab says she paid.
 function coinsOf(kid, shopRows) {
   var name = kid.Name;
-  var logs = readTable('Log').filter(function (l) { return l.Girl === name; });
+  var logs = kidRows('Log', name);
   var earned = totalPoints(logs, kidStart(kid)), spent = 0;
   ['Games', 'Gates', 'Bonus', 'Chats'].forEach(function (t) {
     readTable(t).forEach(function (r) { if (r.Girl === name) earned += Number(r.XP) || 0; });
@@ -327,7 +327,7 @@ function upgradesOf(owned) {
 
 function shopView(kid) {
   var t = today(), owned = ownedItems(kid.Name), w = wardrobeOf(kid.Name), season = shopSeason(t);
-  var mine = readTable('Shop').filter(function (r) { return r.Girl === kid.Name; });
+  var mine = kidRows('Shop', kid.Name);
   var words = recipeView(kid, mine, wordsOf(kid.Name).memory, t);
   var designs = mine.filter(function (r) { return String(r.Item).charAt(0) === '~'; }).map(function (r) {
     var d = designFromToken(r.Item);
@@ -451,14 +451,14 @@ function polishCount(view) {
 function wornShine(kid, wear) {
   var ids = (wear || []).map(function (e) { return String(e).split(':')[0]; }).filter(function (id) { return SHOP_RECIPES[id]; });
   if (!ids.length) return null;
-  var mine = readTable('Shop').filter(function (r) { return r.Girl === kid.Name; }), memory = wordsOf(kid.Name).memory, t = today(), out = {};
+  var mine = kidRows('Shop', kid.Name), memory = wordsOf(kid.Name).memory, t = today(), out = {};
   ids.forEach(function (id) { out[id] = shineOf(itemWordList(kid, id, mine), memory, t); });
   return out;
 }
 
 // For home: the words waiting in the items she owns.
 function polishInfo(kid) {
-  var t = today(), mine = readTable('Shop').filter(function (r) { return r.Girl === kid.Name; });
+  var t = today(), mine = kidRows('Shop', kid.Name);
   if (!mine.some(function (r) { return SHOP_RECIPES[r.Item]; })) return null;
   var view = recipeView(kid, mine, wordsOf(kid.Name).memory, t);
   var dull = Object.keys(view).filter(function (id) { return view[id].owned && view[id].shine < 100; })
@@ -472,7 +472,7 @@ function polishInfo(kid) {
 function apiWords(name, pin, itemId, right, missed) {
   var kid = auth(name, pin), t = today();
   if (pendingLevelTest(kid)) throw new Error('Take the level test first.');
-  var mine = readTable('Shop').filter(function (r) { return r.Girl === kid.Name; }), allowed = {};
+  var mine = kidRows('Shop', kid.Name), allowed = {};
   itemId = String(itemId || '');
   if (itemId && !SHOP_RECIPES[itemId]) throw new Error('That item is not made of words');
   Object.keys(SHOP_RECIPES).forEach(function (id) {

@@ -144,7 +144,7 @@ function apiNestResult(name, pin, date, unitId, correct, total, seconds, detail)
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
-    var mine = readTableUncached('Log').filter(function (l) { return l.Girl === kid.Name; });
+    var mine = kidRowsFresh('Log', kid.Name);
     if (a.url !== 'nest:' + unitId) {
       // One more lesson today: the day's own is logged, this is the next day of the program, and the parent allows it.
       var perDay = nestPerDay(kid), todays = mine.filter(function (l) { return l.Date === t && l.Section === 'nest'; }).length;

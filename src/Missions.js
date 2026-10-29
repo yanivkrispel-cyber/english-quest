@@ -45,7 +45,7 @@ function apiMissionResult(name, pin, date, missionId, correct, total, missed, ri
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
-    var done = readTableUncached('Log').filter(function (l) { return l.Girl === kid.Name && l.Date === date; });
+    var done = kidRowsFresh('Log', kid.Name).filter(function (l) { return l.Date === date; });
     if (done.length) throw new Error('This task is already marked as done.');
     var pct = Math.round(correct / total * 100);
     var points = 10 + (pct >= 80 ? 5 : 0) + (date === t ? 3 : 0);
@@ -73,7 +73,7 @@ function apiFlag(name, pin, missionId, itemId, note) {
   itemId = cleanIds([itemId], 1)[0] || '';
   note = String(note || '').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 300);
   if (!missionId) throw new Error('Unknown mission');
-  var mine = readTable('Flags').filter(function (f) { return f.Girl === kid.Name && f.Date === t; });
+  var mine = kidRows('Flags', kid.Name).filter(function (f) { return f.Date === t; });
   if (mine.length >= MISSION.flagsPerDay) return { ok: true };
   appendRow('Flags', { Timestamp: new Date(), Girl: kid.Name, Date: t, Mission: missionId, Item: itemId, Note: note });
   return { ok: true };

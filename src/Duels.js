@@ -333,7 +333,7 @@ function duelBonus(d) {
 
 function duelXp(kid, d, role, r) {
   var t = today();
-  var together = !readTableUncached('Games').some(function (g) { return g.Girl === kid.Name && g.Date === t && DUEL_TOGETHER.indexOf(g.Game) >= 0 && Number(g.Total) > 0; });
+  var together = !kidRowsFresh('Games', kid.Name).some(function (g) { return g.Date === t && DUEL_TOGETHER.indexOf(g.Game) >= 0 && Number(g.Total) > 0; });
   var xp = r.correct * DUEL.rightXp + (together ? DUEL.togetherXp : 0);
   var got = duelAddXp(kid, xp, r.correct, r.total, r.missed.join(' '), role === 'host' ? d.HostLevel : d.GuestLevel, d.Mode === 'boss' ? 'boss' : 'duel');
   updateReview(kid.Name, r.missed, r.right, t);
@@ -343,7 +343,7 @@ function duelXp(kid, d, role, r) {
 // One Games row (Game = duel, boss or tug), capped like the mini-games. Returns the XP actually given.
 function duelAddXp(kid, xp, correct, total, missed, level, game) {
   var t = today();
-  var used = readTableUncached('Games').filter(function (g) { return g.Girl === kid.Name && g.Date === t; })
+  var used = kidRowsFresh('Games', kid.Name).filter(function (g) { return g.Date === t; })
     .reduce(function (a, g) { return a + (Number(g.XP) || 0); }, 0);
   xp = Math.max(0, Math.min(xp, GAME_XP.dayCap - used));
   if (!total && !xp) return 0;
@@ -415,7 +415,7 @@ function talkXp(kid, d, role, r) {
   var mate = duelHas(d, P) ? Number(d[P + 'Score']) || 0
     : talkList((duelProgress(d.Id, d[P]) || {}).p).filter(function (x) { return x[0] === '1'; }).length;
   var team = r.correct + mate;
-  var together = r.total > 0 && !readTableUncached('Games').some(function (g) { return g.Girl === kid.Name && g.Date === t && DUEL_TOGETHER.indexOf(g.Game) >= 0 && Number(g.Total) > 0; });
+  var together = r.total > 0 && !kidRowsFresh('Games', kid.Name).some(function (g) { return g.Date === t && DUEL_TOGETHER.indexOf(g.Game) >= 0 && Number(g.Total) > 0; });
   var xp = team * DUEL.rightXp + (together ? DUEL.togetherXp : 0) + (team >= TALK.winAt ? TALK.winXp : 0);
   var got = duelAddXp(kid, xp, r.correct, r.total, r.missed.join(' '), role === 'host' ? d.HostLevel : d.GuestLevel, 'talk');
   updateReview(kid.Name, r.missed, r.right, t);
@@ -467,7 +467,7 @@ function apiTugSave(name, pin, mateName, mateCred, mine, hers, saveId) {
     if (!seen) players.forEach(function (p) {
       var k = p[0], r = p[1];
       if (!r.total) return;
-      var together = mate && !readTableUncached('Games').some(function (g) { return g.Girl === k.Name && g.Date === t && DUEL_TOGETHER.indexOf(g.Game) >= 0 && Number(g.Total) > 0; });
+      var together = mate && !kidRowsFresh('Games', k.Name).some(function (g) { return g.Date === t && DUEL_TOGETHER.indexOf(g.Game) >= 0 && Number(g.Total) > 0; });
       xp[k.Name] = duelAddXp(k, r.correct * DUEL.rightXp + (together ? DUEL.togetherXp : 0), r.correct, r.total, r.missed.join(' '), k.Level, 'tug');
       updateReview(k.Name, r.missed, r.right, t);
     });

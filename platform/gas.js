@@ -236,7 +236,15 @@ function createGas(opts) {
     return o;
   }
   // The patterns the server uses (yyyy MM dd HH H mm ss EEE); anything else in quotes or as is.
+  // Intl is slow and the server formats the same minute again and again (today(), fmt()): a memo per minute.
+  var fmtMemo = {}, fmtMemoN = 0;
   function formatDate(d, zone, pattern) {
+    var t = d.getTime(), key = Math.floor(t / 60000) + (zone || tz) + pattern;
+    if (!/s/.test(pattern) && key in fmtMemo) return fmtMemo[key];
+    if (++fmtMemoN > 5000) { fmtMemo = {}; fmtMemoN = 0; }
+    return (fmtMemo[key] = formatDateNow(d, zone, pattern));
+  }
+  function formatDateNow(d, zone, pattern) {
     var p = parts(d, zone || tz);
     return String(pattern).replace(/yyyy|MM|dd|HH|H|mm|ss|EEE/g, function (t) {
       return { yyyy: p.year, MM: p.month, dd: p.day, HH: p.hour, H: String(Number(p.hour)), mm: p.minute, ss: p.second, EEE: p.weekday }[t];

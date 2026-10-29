@@ -27,7 +27,7 @@ function apiChatResult(name, pin, id, turns, voice, tiles, mic, said, seconds) {
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
-    var mine = readTableUncached('Chats').filter(function (r) { return r.Girl === kid.Name && r.Date === t; });
+    var mine = kidRowsFresh('Chats', kid.Name).filter(function (r) { return r.Date === t; });
     // The bonus once per talk a day, and once a day for a home scene (a second home talk is practice).
     var again = mine.some(function (r) { return r.Talk === id || (where === 'home' && r.Where === 'home'); });
     var used = mine.reduce(function (a, r) { return a + (Number(r.XP) || 0); }, 0);
@@ -46,7 +46,7 @@ function apiChatResult(name, pin, id, turns, voice, tiles, mic, said, seconds) {
 // For the dashboard (and so for the parents): today's home scene, the scenes she has had, this week's talks and the
 // longest thing she said aloud this week.
 function chatInfo(kid, t) {
-  var rows = readTable('Chats').filter(function (r) { return r.Girl === kid.Name; });
+  var rows = kidRows('Chats', kid.Name);
   var week = weekDates(t), wk = rows.filter(function (r) { return week.indexOf(String(r.Date)) >= 0; });
   var days = {}, best = '';
   wk.forEach(function (r) {
