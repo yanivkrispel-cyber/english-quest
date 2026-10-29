@@ -43,8 +43,9 @@
   if (screen.orientation && screen.orientation.addEventListener) screen.orientation.addEventListener('change', tabletFit);
 })();
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/plus-jakarta-sans/latin.woff2">
+<link rel="stylesheet" href="fonts/plus-jakarta-sans/style.css">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/phosphor-2.1.1/duotone/Phosphor-Duotone.woff2">
 <link rel="stylesheet" href="fonts/phosphor-2.1.1/duotone/style.css">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/phosphor-2.1.1/bold/Phosphor-Bold.woff2">
@@ -1722,6 +1723,8 @@ const store = {
 // (no Google cookies, so child accounts under 13 are not blocked).
 // The server is /api on this site (Cloudflare, specs/cloudflare.md). The old GitHub Pages address still calls Apps Script,
 // which passes the call on (src/Relay.js).
+// This copy of the app; the server can ask an older one to update (Settings.MinApp, src/Code.js doPost).
+const APP_V = '2026.10.30';
 const API_URL = /github.io$/.test(location.hostname) ? 'https:' + '/' + '/script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec' : '/api';
 // Every server call has a time limit (a stuck call never leaves a spinner turning), calls that only read
 // get one quiet second try, and errors from Google itself (not the app's own checks, like "Wrong PIN") read
@@ -1764,11 +1767,13 @@ function callOnce(fn, args, ms){
     });
   }
   const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), ms);
-  return fetch(API_URL, { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args, dev: DEVICE, open: OPEN_CALLS[fn] ? store.get('eq_open_m') || undefined : undefined }), signal: ctl.signal })
+  return fetch(API_URL, { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args, v: APP_V, dev: DEVICE, open: OPEN_CALLS[fn] ? store.get('eq_open_m') || undefined : undefined }), signal: ctl.signal })
     .then(r => r.text(), () => { throw netError(ctl.signal.aborted ? 'timeout' : 'offline'); })
     .then(text => {
       let r;
       try { r = JSON.parse(text); } catch(e){ throw netError('busy'); }
+      // The server wants a newer app: reload once (the service worker brings the new copy).
+      if (r.update) { try { if (!sessionStorage.getItem('eq_upd')) { sessionStorage.setItem('eq_upd', '1'); location.reload(); } } catch(e){} }
       if (!r.ok) throw serverError(r.error);
       return r.data;
     })
@@ -7618,6 +7623,52 @@ function familyPage(fam){
 }
 
 // ---------- Parents' feedback (Hebrew) ----------
+// The family's data (src/Privacy.js): a copy to download, and deleting a kid or the whole family, for good.
+function privacyCard(p){
+  const g = p.groups[0];
+  if (!g) return '';
+  return `<div class="glass panel he" dir="rtl" lang="he" id="pvcard" style="display:grid;gap:10px">
+    <h2>הנתונים שלכם</h2>
+    <div class="sub" style="font-size:13px">אפשר להוריד עותק של כל מה שנשמר על המשפחה, או למחוק ילד אחד או את כל המשפחה. מחיקה היא לתמיד ואי אפשר לבטל אותה.</div>
+    <button class="btn btn-glass btn-block" id="pvexport">${icon('download-simple')} הורדת הנתונים</button>
+    <div class="label">מחיקה</div>
+    <select class="input" id="pvwho"><option value="">כל המשפחה</option>${g.girls.map(d => `<option value="${esc(d.girl.name)}">${esc(d.girl.name)}</option>`).join('')}</select>
+    <input class="input" id="pvconfirm" placeholder="כדי למחוק, כתבו: מחיקה" autocomplete="off">
+    <button class="btn btn-glass btn-block" id="pvdelete">${icon('trash')} מחיקה לתמיד</button>
+  </div>`;
+}
+function bindPrivacy(pin){
+  const card = document.getElementById('pvcard');
+  if (!card) return;
+  document.getElementById('pvexport').onclick = async () => {
+    const b = document.getElementById('pvexport'); b.disabled = true;
+    try {
+      const data = await call('apiExportData', pin, '');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+      a.download = 'english-with-coco-data.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      toast('הקובץ ירד לטלפון');
+    } catch(e){ toast(e.message, true); }
+    b.disabled = false;
+  };
+  document.getElementById('pvdelete').onclick = async () => {
+    const who = document.getElementById('pvwho').value, word = document.getElementById('pvconfirm').value.trim();
+    if (word !== 'מחיקה') return toast('כדי למחוק, כתבו את המילה: מחיקה', true);
+    const b = document.getElementById('pvdelete'); b.disabled = true;
+    try {
+      const r = await call('apiDeleteData', pin, '', who, word);
+      if (r.deleted === 'family') {
+        try { Object.keys(localStorage).filter(k => k.startsWith('eq_')).forEach(k => localStorage.removeItem(k)); } catch(e){}
+        card.innerHTML = '<h2>המשפחה נמחקה</h2><div class="sub">כל הנתונים של המשפחה נמחקו מהשרת. תודה שהייתם איתנו.</div>';
+        setTimeout(() => loadHome(), 4000);
+      } else {
+        toast('נמחק');
+        parentFresh(pin, true);
+      }
+    } catch(e){ b.disabled = false; toast(e.message, true); }
+  };
+}
 function feedbackCard(){
   return `<div class="glass panel he" dir="rtl" lang="he" id="fbcard" style="display:grid;gap:10px">
     <h2>ספרו לנו</h2>
@@ -7699,6 +7750,67 @@ async function pilotLoad(pin, open, code){
 function auditCard(){
   return `<div class="glass panel" id="auditcard"><div class="row-flex between"><h2>Audit</h2><button class="btn btn-glass btn-sm" id="auditload">${icon('clipboard-text')} Show</button></div>
     <div class="sub mt-s" style="font-size:13px">Who came in and when, on which kind of device, wrong PINs, what parents and the admin changed, hand edits in the sheet, and every task, game and talk.</div></div>`;
+}
+// The admin's Data card (src/Admin.js): what used to be edited by hand in the sheet, kids, families and settings.
+function dataCard(){
+  return `<div class="glass panel" id="datacard"><div class="row-flex between"><h2>Data</h2><button class="btn btn-glass btn-sm" id="dataload">${icon('pencil-simple')} Edit</button></div>
+    <div class="sub mt-s" style="font-size:13px">Change a kid's PIN, level or redeemed points, a family's code or goal, or a setting. Every change is in the audit trail.</div></div>`;
+}
+const DATA = { table: 'Girls', open: '', q: '' };
+const DATA_LABEL = { ParentPIN: 'Parent code', GoalReward: 'Goal reward', PetName: 'Pet name', Redeemed: 'Redeemed points', Missions: 'Daily task',
+  Friends: 'Play with other families', NestPerDay: 'Nest sessions a day', NestArcadeMin: 'Arcade minutes a day', Group: 'Family' };
+const DATA_TABLES = { Girls: 'Kids', Groups: 'Families', Settings: 'Settings' };
+const DATA_HINT = { Missions: 'empty = Today\'s Mission, no = test-english.com', Friends: 'empty = plays with other families, no = only its own',
+  Redeemed: 'points spent on rewards' };
+async function dataLoad(pin){
+  const card = document.getElementById('datacard');
+  card.innerHTML = '<div class="spinner"></div>';
+  try { DATA.data = await call('apiAdminData', pin); }
+  catch(e){ card.innerHTML = '<div class="sub">' + esc(e.message) + '</div>'; return; }
+  dataRender(pin);
+}
+function dataRender(pin){
+  const d = DATA.data, t = d[DATA.table], card = document.getElementById('datacard');
+  const fam = id => ((d.Groups.rows.find(g => g.key === id) || {}).values || {}).Name || id;
+  const q = DATA.q.trim().toLowerCase();
+  const rows = t.rows.filter(r => !q || (r.key + ' ' + Object.values(r.values).join(' ')).toLowerCase().includes(q));
+  const line = r => DATA.table === 'Girls' ? esc(fam(r.values.Group)) + ' · ' + esc((r.values.Level || '').toUpperCase())
+    : DATA.table === 'Groups' ? esc(r.values.Name) : esc(r.values.Value);
+  const field = (r, f) => {
+    const v = r.values[f], id = 'df-' + f;
+    const input = f === 'Level' ? `<select class="input" id="${id}">${d.levels.map(l => `<option value="${l}" ${l === v ? 'selected' : ''}>${l === 'nest' ? 'Coco\'s Nest' : l.toUpperCase()}</option>`).join('')}</select>`
+      : f === 'Group' ? `<select class="input" id="${id}">${d.Groups.rows.map(g => `<option value="${esc(g.key)}" ${g.key === v ? 'selected' : ''}>${esc(g.values.Name)}</option>`).join('')}</select>`
+      : `<input class="input" id="${id}" value="${esc(v)}" ${/PIN|Age|Redeemed|Goal|Nest/.test(f) ? 'inputmode="numeric"' : ''}>`;
+    return `<div class="label mt-s">${esc(DATA.table === 'Settings' ? r.key : DATA_LABEL[f] || f)}</div>${input}${DATA_HINT[f] ? `<div class="sub" style="font-size:11px">${esc(DATA_HINT[f])}</div>` : ''}`;
+  };
+  const item = r => r.key === DATA.open
+    ? `<div class="soft" style="padding:10px 12px;border-radius:12px">
+        <div class="row-flex between"><b>${esc(r.key)}</b><button class="btn btn-glass btn-sm" data-dclose="1">Close</button></div>
+        ${t.fields.map(f => field(r, f)).join('')}
+        <div class="sub mt-s" id="df-msg" style="font-size:12px"></div>
+        <button class="btn btn-primary btn-block mt-s" id="df-save">${icon('check')} Save</button></div>`
+    : `<button class="soft row-flex between" data-dopen="${esc(r.key)}" style="width:100%;padding:8px 12px;border-radius:12px;font-size:13px;text-align:left;border:0;cursor:pointer">
+        <b>${esc(r.key)}</b><span class="sub" style="font-size:12px">${line(r)}</span></button>`;
+  card.innerHTML = `<div class="row-flex between"><h2>Data</h2><button class="btn btn-glass icon-btn" id="dataref">${icon('arrows-clockwise')}</button></div>
+    <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">${Object.keys(DATA_TABLES).map(k => `<button class="btn ${k === DATA.table ? 'btn-primary' : 'btn-glass'} btn-sm" data-dtable="${k}" aria-pressed="${k === DATA.table}">${DATA_TABLES[k]} · ${d[k].rows.length}</button>`).join('')}</div>
+    <input class="input mt-s" id="df-q" placeholder="Search" value="${esc(DATA.q)}">
+    <div class="stack mt-s" style="gap:6px">${rows.map(item).join('') || '<div class="sub">Nothing here.</div>'}</div>`;
+  document.getElementById('dataref').onclick = () => dataLoad(pin);
+  card.querySelectorAll('[data-dtable]').forEach(b => b.onclick = () => { DATA.table = b.dataset.dtable; DATA.open = ''; dataRender(pin); });
+  card.querySelectorAll('[data-dopen]').forEach(b => b.onclick = () => { DATA.open = b.dataset.dopen; dataRender(pin); });
+  card.querySelectorAll('[data-dclose]').forEach(b => b.onclick = () => { DATA.open = ''; dataRender(pin); });
+  const qi = document.getElementById('df-q');
+  qi.oninput = () => { DATA.q = qi.value; const at = qi.selectionStart; dataRender(pin); const n = document.getElementById('df-q'); n.focus(); n.setSelectionRange(at, at); };
+  const save = document.getElementById('df-save');
+  if (save) save.onclick = async () => {
+    const r = t.rows.find(x => x.key === DATA.open), changes = {};
+    t.fields.forEach(f => { const el = document.getElementById('df-' + f); if (el && el.value.trim() !== r.values[f]) changes[f] = el.value.trim(); });
+    const msg = document.getElementById('df-msg');
+    if (!Object.keys(changes).length) { msg.textContent = 'Nothing changed.'; return; }
+    save.disabled = true;
+    try { DATA.data = await call('apiAdminEdit', pin, DATA.table, DATA.open, changes); toast('Saved'); dataRender(pin); }
+    catch(e){ msg.textContent = e.message; save.disabled = false; }
+  };
 }
 const AUD = { days: 7, show: 'all', fam: '', limit: 150 };
 const AUD_SHOW = { all: 'All', visit: 'Visits', adult: 'Grown-ups', practice: 'Practice', problem: 'Problems' };
@@ -9114,7 +9226,7 @@ function manageBody(p){
     <button class="btn btn-primary btn-block mt-s" id="nk-btn">${icon('user-plus')} Add kid</button>
     <div class="sub mt-s" style="font-size:12px">A PIN is created automatically. New kids take the level test first; their daily tasks and the games open after it.</div>
     <a class="btn btn-glass btn-block mt" href="${esc(p.sheetUrl)}" target="_blank" rel="noopener">Open Google Sheet ${icon('arrow-up-right')}</a>
-    <div class="sub mt-s" style="font-size:12px">Edit PINs, levels, reminder emails, redeemed points, goals and rewards in the sheet. Missions = no on a kid's row keeps their daily task on test-english.com.</div>
+    <div class="sub mt-s" style="font-size:12px">${p.sheetCopy ? 'Edit PINs, levels, redeemed points, family codes and settings in the Data card. The sheet is a copy made every night: changes made there are not read back.' : 'Edit PINs, levels, redeemed points, family codes and settings in the Data card, or reminder emails and rewards in the sheet. Missions = no on a kid row keeps their daily task on test-english.com.'}</div>
   </div>`;
 }
 
@@ -9137,16 +9249,18 @@ function renderParent(p, pin){
     ${createdCard(p.created)}
     ${p.groups.map((g, i) => groupBlock(g, p, i)).join('')}
     ${notifyCard(p)}
-    ${p.isAdmin ? pilotCard() + auditCard() + settingsCard(p) + manageCard(p) : feedbackCard()}
+    ${p.isAdmin ? pilotCard() + auditCard() + dataCard() + settingsCard(p) + manageCard(p) : feedbackCard() + privacyCard(p)}
   </div>`;
   app.querySelectorAll('details.acc').forEach(d => d.addEventListener('toggle', () => store.set('eq_acc_' + d.dataset.acc, d.open)));
   renderParentPush(p, pin);
   bindFeedback(pin);
+  bindPrivacy(pin);
   nestFillParent(p);
   bindAgeRows(p, pin);
   app.querySelectorAll('[data-kidhere]').forEach(b => b.onclick = () => kidHere(b.dataset.kidgroup, b.dataset.kidhere, b.dataset.kidpin));
   const pl = document.getElementById('pilotload'); if (pl) pl.onclick = () => pilotLoad(pin);
   const al = document.getElementById('auditload'); if (al) al.onclick = () => auditLoad(pin);
+  const dl = document.getElementById('dataload'); if (dl) dl.onclick = () => dataLoad(pin);
   document.getElementById('refresh').onclick = () => parentFresh(pin, true);
   document.getElementById('logout').onclick = () => { store.del('eq_admin'); store.del('eq_par'); loadHome(); };
   app.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(b.dataset.copy));

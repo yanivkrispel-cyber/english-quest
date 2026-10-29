@@ -35,6 +35,11 @@ if (out === src) throw new Error('head marker not found');
   out = out.replace(cdn, '<link rel="preload" as="font" type="font/woff2" crossorigin href="' + font + '">\n' +
     '<link rel="stylesheet" href="fonts/phosphor-2.1.1/' + w + '/style.css">');
 });
+// The text font from our own site too (docs/fonts/plus-jakarta-sans/, tools/fonts_local.js): no Google server sees the kids.
+const gf = ['<link rel="preconnect" href="https://fonts.googleapis.com">', '<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">'];
+gf.forEach(l => { if (!out.includes(l)) throw new Error('font link not found: ' + l); });
+out = out.replace(gf[0], '').replace(gf[1], '<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/plus-jakarta-sans/latin.woff2">\n' +
+  '<link rel="stylesheet" href="fonts/plus-jakarta-sans/style.css">');
 fs.mkdirSync(path.join(__dirname, 'docs'), { recursive: true });
 fs.writeFileSync(path.join(__dirname, 'docs', 'index.html'), out);
 console.log('docs/index.html written');

@@ -51,7 +51,10 @@ commit.
 
 ## Data we keep (update with every change)
 
-Kept in the private Google Sheet, written only by the app's own server (Apps Script, owner's Google account):
+Kept by the app's own server: today the private Google Sheet (Apps Script, owner's Google account); after the move to
+Cloudflare (`specs/cloudflare.md`) a SQLite database inside the server's Durable Object (the owner's Cloudflare account),
+with the sheet as a nightly copy. Retention on Cloudflare: the audit trail 180 days, the text of what a kid said to Coco 90 days
+(`retentionSweep`). A family's plan (tab `Plans`, empty in the pilot).
 
 - Kid: first name (English), age or grade (a Coco's Nest kid: the real age, 2 to 7), level, PIN, color, pet and its name,
   group. Optional email (older setups). The Nest's Say it step uses the microphone for loudness only, on the phone:
@@ -86,16 +89,19 @@ loudness only; nothing is kept or sent.
 
 ## Known gaps before a store submission
 
-- No in-app deletion of a kid or a family (today the owner deletes rows in the sheet). The deletion must cover the
-  Audit tab too (rows by Who and Group).
+- In-app deletion is built (`src/Privacy.js`, the parents' area card "הנתונים שלכם", 2026-10-30): a kid or the whole family,
+  every tab and the audit trail; also a download of the family's data. Left: the admin cannot delete from the Data card yet
+  (the admin can delete from a family's parents' code), and a deleted kid's name can stay inside another kid's Bonus `Ref`
+  text (duo rewards).
 - Kids can share to WhatsApp (certificate, duel invite links) and a kid with `Girls.Missions = no` is sent to
   test-english.com: both need a parental gate or must move to the parents' area.
 - Play together reaches kids in other groups by default (a group opts out with `Groups.Friends = no`); for the stores it
   should be off by default and switched on by a parent, with report and block.
-- Fonts load from Google Fonts (a third party sees the kid's IP address): self-host it in `docs/`. The icon fonts are
-  served from `docs/fonts/` since 2026-10-28 (the Apps Script copy for adults still uses unpkg).
+- Fonts: Plus Jakarta Sans and the icon fonts are served from `docs/fonts/` (2026-10-30, `tools/fonts_local.js`); only the Apps
+  Script copy for adults still loads Google Fonts and unpkg.
 - No public privacy policy page and no terms page (the stores need a URL): write them, in Hebrew and English.
-- The data lives in the owner's personal Google account: a business account (or a proper database) and a data
+- The data lives in the owner's personal Google account; the move to a proper database on Cloudflare is built
+  (`specs/cloudflare.md`, not switched on yet). Still personal accounts (Cloudflare too): a business account and a data
   processing note are needed before selling.
 - No `assetlinks.json` / native shell yet; no store listing, age rating questionnaire or data safety form yet.
 - The app name and Coco: trademark check in Israel not done.
