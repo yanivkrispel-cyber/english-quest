@@ -7799,7 +7799,8 @@ function placeToday(){
 async function start(){
   const qs = new URLSearchParams(location.search);
   if (qs.has('missions')) { const t = qs.get('t') || store.get('eq_teacher'); if (t) await teacherStart(t); return missionGallery(); }
-  if (qs.has('nest')) { const t = qs.get('t') || store.get('eq_teacher'); if (t) await teacherStart(t); return nestGallery(); }
+  // ?nest&unit=n04&game=scene opens one unit's game straight away (a link to show a change); &unit alone opens the unit.
+  if (qs.has('nest')) { const t = qs.get('t') || store.get('eq_teacher'); if (t) await teacherStart(t); await nestGallery(); const gu = qs.get('unit'), gg = qs.get('game'); if (gu && window.EQ_NEST && nestUnit(gu)) { if (gg) nestStart(gu, true, gg); else nestGalleryUnit(gu); } return; }
   if (qs.has('talk')) { const t = qs.get('t') || store.get('eq_teacher'); if (t) await teacherStart(t); await missionGallery(); return chatGallery(); }
   if (qs.get('join')) return renderJoin(qs.get('join'));
   if (history.state && history.state.join === 'done' && store.get('eq_family')) return familyPage(store.get('eq_family'));
