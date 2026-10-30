@@ -7788,7 +7788,9 @@ function dataRender(pin){
         <div class="row-flex between"><b>${esc(r.key)}</b><button class="btn btn-glass btn-sm" data-dclose="1">Close</button></div>
         ${t.fields.map(f => field(r, f)).join('')}
         <div class="sub mt-s" id="df-msg" style="font-size:12px"></div>
-        <button class="btn btn-primary btn-block mt-s" id="df-save">${icon('check')} Save</button></div>`
+        <button class="btn btn-primary btn-block mt-s" id="df-save">${icon('check')} Save</button>
+        ${DATA.table !== 'Settings' ? `<div class="label mt">Delete for good</div><div class="sub" style="font-size:11px">${DATA.table === 'Groups' ? 'The family, its kids and all their data' : 'This kid and all her data'}, from every tab and the audit trail.</div>
+        <div class="row-flex mt-s" style="gap:8px"><input class="input" id="df-del-word" placeholder="Type DELETE" autocomplete="off"><button class="btn btn-glass" id="df-del">${icon('trash')} Delete</button></div>` : ''}</div>`
     : `<button class="soft row-flex between" data-dopen="${esc(r.key)}" style="width:100%;padding:8px 12px;border-radius:12px;font-size:13px;text-align:left;border:0;cursor:pointer">
         <b>${esc(r.key)}</b><span class="sub" style="font-size:12px">${line(r)}</span></button>`;
   card.innerHTML = `<div class="row-flex between"><h2>Data</h2><button class="btn btn-glass icon-btn" id="dataref">${icon('arrows-clockwise')}</button></div>
@@ -7801,6 +7803,17 @@ function dataRender(pin){
   card.querySelectorAll('[data-dclose]').forEach(b => b.onclick = () => { DATA.open = ''; dataRender(pin); });
   const qi = document.getElementById('df-q');
   qi.oninput = () => { DATA.q = qi.value; const at = qi.selectionStart; dataRender(pin); const n = document.getElementById('df-q'); n.focus(); n.setSelectionRange(at, at); };
+  const del = document.getElementById('df-del');
+  if (del) del.onclick = async () => {
+    const word = document.getElementById('df-del-word').value.trim(), msg = document.getElementById('df-msg');
+    if (word !== 'DELETE') { msg.textContent = 'Type DELETE to confirm.'; return; }
+    const r = t.rows.find(x => x.key === DATA.open);
+    del.disabled = true;
+    try {
+      const out = DATA.table === 'Groups' ? await call('apiDeleteData', pin, r.key, '', word) : await call('apiDeleteData', pin, r.values.Group, r.key, word);
+      toast('Deleted: ' + out.rows + ' rows'); DATA.open = ''; dataLoad(pin);
+    } catch(e){ msg.textContent = e.message; del.disabled = false; }
+  };
   const save = document.getElementById('df-save');
   if (save) save.onclick = async () => {
     const r = t.rows.find(x => x.key === DATA.open), changes = {};
