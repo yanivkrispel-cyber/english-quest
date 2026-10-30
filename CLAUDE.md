@@ -166,8 +166,10 @@ first. Tablets get the phone layout scaled (`tabletFit`); never add width breakp
 - Default PINs are random; the real PINs live only in the private sheet. The repo is public:
   never commit real PINs, emails or the sheet's contents (tests use fake PINs 4821/7356/2694/1234).
 
-## The move to Cloudflare (branch cf-server, 2026-10-30, not switched on yet)
-The server can run on Cloudflare (owner's option B, zero cost, store-ready): read `specs/cloudflare.md` first. The same `src/*.js` runs on
+## The server is on Cloudflare (live since 2026-10-30, branch cf-server)
+The live server is the `coco-api` Worker (owner's option B, zero cost, store-ready): read `specs/cloudflare.md` first. Apps Script only
+relays old copies of the app (CF_MODE relay) and copies the data back into the sheet every night at 03:00 (the sheet is read-only).
+Deploy a server change with `node platform/build.js && npx wrangler deploy -c worker/api/wrangler.jsonc`, and `clasp push` too. The same `src/*.js` runs on
 both: after a server change run `node platform/build.js`, `SIM_PLATFORM=1 node test/sim.js` and `node test/cf-units.mjs` too. On Cloudflare
 `readTable` rows are shared between requests: never change one (copy it, or use `readTableUncached`/`kidRowsFresh`); one kid's rows:
 `kidRows(table, name)`. **The free plan allows 100,000 rows written a day (account-wide):** never import big data into a Cloudflare server;

@@ -2,8 +2,8 @@
 
 The owner chose option B, a move from Apps Script to Cloudflare (2026-10-29; plan, accepted with "מאשר":
 https://claude.ai/artifact/MPusPwCa5gZGQ2nuqkDZsv). Conditions: zero cost until there are paying customers, ready for the
-stores, and the business logic not rewritten. Built on branch `cf-server` (worktree `app-cf`); **not switched on**: the live
-app still calls Apps Script until the cutover night.
+stores, and the business logic not rewritten. Built on branch `cf-server` (worktree `app-cf`); **live since 2026-10-30** (cutover at 09:32 Israel time, a freeze of
+about three minutes, the copy identical tab by tab, parity 143 of 143 answers): the app calls `/api`, Apps Script relays.
 
 ## How it works
 
