@@ -1,5 +1,5 @@
-// The living home of Coco's Nest (specs/nest-home.md, "The scene"): one full-screen picture that never scrolls. The sky
-// follows the clock and the season, Coco lives in his nest on the clay tree, the lesson egg is today's lesson, the garden
+// The living home of Chacho's Nest (specs/nest-home.md, "The scene"): one full-screen picture that never scrolls. The sky
+// follows the clock and the season, Chacho lives in his nest on the clay tree, the lesson egg is today's lesson, the garden
 // grows a flower a day played, the pet corner, and everything answers a touch. Runs in the app's global scope: every
 // top-level name starts with nk (node test/nest-check.js). The CSS is the .nkh-* block in src/Index.html.
 
@@ -134,7 +134,7 @@ function nkHome(d){
   const painted = !!n.arcade;
   // The arcade's door (stage C): a glowing clay tent next to the egg, for the arcade kids, instead of the balloon.
   const tent = painted && games;
-  app.innerHTML = `<div class="nkh ${c.phase} ${c.season}${painted ? ' painted' : ''}" id="nkh" role="application" aria-label="Coco's Nest">
+  app.innerHTML = `<div class="nkh ${c.phase} ${c.season}${painted ? ' painted' : ''}" id="nkh" role="application" aria-label="Chacho's Nest">
     <div class="nkh-sky"></div>${painted ? '<div class="nkh-paint" id="nkh-paint"></div><div class="nkh-light"></div>' : ''}
     ${c.night ? `<div class="nkh-stars">${stars.map(([x, y], i) => `<button class="nkh-hot nkh-star" data-nkhw="star" data-hz="${900 + i * 60}" style="left:${x}%;top:${y}%;animation-delay:${(i * .37).toFixed(2)}s" aria-label="Star"><span class="nkh-in"><img src="${nkhPic('star')}" alt="" draggable="false"></span></button>`).join('')}</div>` : ''}
     <button class="nkh-hot nkh-sun" data-nkhw="${c.night ? 'moon' : 'sun'}" data-hz="${c.night ? 520 : 660}" aria-label="${c.night ? 'Moon' : 'Sun'}"><span class="nkh-in"><img src="${nkhPic(c.night ? 'moon' : 'sun')}" alt="" draggable="false"></span></button>
@@ -150,7 +150,7 @@ function nkHome(d){
     <div class="nkh-treebox">
       <button class="nkh-hot nkh-tree" data-nkhw="tree" data-hz="330" aria-label="Tree"><span class="nkh-in"><img src="${nkhPic('tree')}" alt="" draggable="false"></span></button>
       ${nkhNestSvg('back')}
-      <button class="nkh-hot nkh-coco" data-nkh="coco" aria-label="Coco"><i class="nkh-ring"></i><span class="nkh-in"><img id="nkcoco" src="${cocoSrc(base)}" alt="" draggable="false"></span>
+      <button class="nkh-hot nkh-coco" data-nkh="coco" aria-label="Chacho"><i class="nkh-ring"></i><span class="nkh-in"><img id="nkcoco" src="${cocoSrc(base)}" alt="" draggable="false"></span>
         <span class="nkh-mic">${icon('microphone', 'duotone')}</span></button>
       ${nkhNestSvg('front')}
     </div>
@@ -160,7 +160,7 @@ function nkHome(d){
     ${u ? `<button class="nkh-hot nkh-egg${again ? ' gold' : ''}" data-nkh="egg" aria-label="${esc(u.title)}"><span class="nkh-in"><i class="nkh-glow"></i><img src="${nkhPic('egg')}" alt="" draggable="false">
         ${again ? `<img class="nkh-eggstar" src="${nkhPic('star')}" alt="" draggable="false">` : ''}
         <svg class="nkh-crack" viewBox="0 0 100 100" aria-hidden="true"><path d="M22 52l12-8 9 10 10-12 10 9 10-8 8 6" pathLength="1"/></svg></span></button>` : ''}
-    ${tent ? `<button class="nkh-hot nkh-tent" data-nkh="tent" aria-label="Coco's games"><i class="nkh-halo"></i><span class="nkh-in"><img src="${ASSETS}nest/arcade/tent.webp?v=${NEST_V}" alt="" draggable="false"></span>
+    ${tent ? `<button class="nkh-hot nkh-tent" data-nkh="tent" aria-label="Chacho's games"><i class="nkh-halo"></i><span class="nkh-in"><img src="${ASSETS}nest/arcade/tent.webp?v=${NEST_V}" alt="" draggable="false"></span>
         <span class="nkh-tag">${icon('game-controller', 'duotone')}<b>Games</b></span></button>` : ''}
     ${vis ? `<button class="nkh-hot nkh-visitor" data-nkh="visitor" data-id="${esc(vis.id)}" aria-label="${esc(vis.en)}"><span class="nkh-in"><img src="${nkhPic(vis.pic)}" alt="" draggable="false"></span></button>` : ''}
     <div class="nkh-garden" id="nkh-garden"></div>
@@ -202,7 +202,7 @@ function nkHome(d){
   nkhTentCall();
 }
 
-// The nest, drawn in code: the dark inside behind Coco, the woven bowl in front of his feet.
+// The nest, drawn in code: the dark inside behind Chacho, the woven bowl in front of his feet.
 function nkhNestSvg(part){
   if (part === 'back') return `<svg class="nkh-nest back" viewBox="0 0 200 80" aria-hidden="true"><ellipse cx="100" cy="34" rx="82" ry="22" fill="#5b3418"/><ellipse cx="100" cy="38" rx="70" ry="15" fill="#3f2310"/></svg>`;
   const twigs = [[14, 38, 186, 34, '#a86b3c'], [10, 48, 190, 44, '#8a5530'], [18, 58, 182, 56, '#b97a46'], [30, 66, 170, 66, '#7a4a26'], [20, 44, 120, 30, '#c98b52'], [80, 32, 188, 50, '#c98b52'], [12, 54, 104, 70, '#9a6136'], [96, 70, 186, 52, '#9a6136']];
@@ -285,7 +285,7 @@ function nkhTap(e){
   const el = e.target.closest('[data-nkh],[data-nkhw]');
   if (!el || !NKH.root || NKH.busy) return;
   NKH.idleAt = Date.now() + 9000;
-  // While Coco listens or repeats, the scene stays quiet (a sound would be recorded and played back).
+  // While Chacho listens or repeats, the scene stays quiet (a sound would be recorded and played back).
   // The ways out (the egg, the balloon, a friend) still work: they end the echo first.
   if (NKH.echo) { if (!['egg', 'balloon', 'tent', 'unit', 'more'].includes(el.dataset.nkh)) return; nkhPause(); nkhEchoState('idle'); }
   const w = el.dataset.nkhw;
@@ -350,12 +350,12 @@ function nkhAllUnits(){
   ov.querySelectorAll('[data-unit]').forEach(b => b.onclick = () => { close(); nkhReplay(b.dataset.unit); });
 }
 
-// ---------- Coco ----------
+// ---------- Chacho ----------
 function nkhCoco(mood){
   const img = document.getElementById('nkcoco');
   if (img) img.src = cocoSrc(mood || NKH.mood);
 }
-// Coco repeats you (docs/nest/echo.js): the states drive his look; without a microphone he hops and says hello.
+// Chacho repeats you (docs/nest/echo.js): the states drive his look; without a microphone he hops and says hello.
 function nkhEchoState(s){
   const b = NKH.root && NKH.root.querySelector('.nkh-coco'), img = document.getElementById('nkcoco');
   if (!b || !img) return;
@@ -471,7 +471,7 @@ function nkhAdopt(){
 }
 
 // ---------- Arrival, and back from a lesson ----------
-// The tent calls the kid: the first days it has been there, and after the day's lesson, it glows, Coco says "Let's play my
+// The tent calls the kid: the first days it has been there, and after the day's lesson, it glows, Chacho says "Let's play my
 // games!" and the hand taps it twice. Once a kid has opened it, only after a finished lesson.
 const nkhTentKey = () => 'eq_nkh_tent_' + nkhKid();
 function nkhTentCall(){
@@ -520,7 +520,7 @@ function nkhArrive(c){
 
 // ---------- Timers and leaving ----------
 function nkhLater(f, ms){ const t = setTimeout(() => { NKH.timers = NKH.timers.filter(x => x !== t); if (NKH.root && NKH.root.isConnected) f(); }, ms); NKH.timers.push(t); }
-// One heartbeat for the whole scene: the music, Coco's little moves, and the check that the home is still on screen.
+// One heartbeat for the whole scene: the music, Chacho's little moves, and the check that the home is still on screen.
 function nkhBeat(){
   if (!NKH.root || !NKH.root.isConnected) return nkHomeStop();
   if (document.hidden) return;

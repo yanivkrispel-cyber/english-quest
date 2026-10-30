@@ -1,5 +1,5 @@
 <!doctype html><meta charset="utf-8"><title>Nest games</title>
-<!-- Coco's Nest games in phone frames (served by test/dev-server.js):
+<!-- Chacho's Nest games in phone frames (served by test/dev-server.js):
      http://localhost:8787/test/nest-games.html?unit=n07&game=give&age=4[&step=1]  one game, two phones (390x800 and 360x640)
      http://localhost:8787/test/nest-games.html?all                                 every game at every age: stage or page scroll = a bug
      Nothing is saved (the teacher's preview). Sound is off: nestPlay ends at once, so demos and rounds run fast. -->
@@ -25,7 +25,7 @@ async function play(f, unit, game, age, step, mute){
   if (mute) ev("nestPlay = function(k, cb){ const t = {}; window.nkQ = t; if (cb) setTimeout(() => { if (window.nkQ === t) cb(); }, 30); }; nestStopAudio = function(){ window.nkQ = null; }");
   ev(`nestLeave(); NG_AGE = ${age}; nestGalleryDash()`);
   await ev('loadNest()');
-  // Coco's arcade games (docs/nest/games/) load on demand and play on the unit's words.
+  // Chacho's arcade games (docs/nest/games/) load on demand and play on the unit's words.
   if (ARC.includes(game)) { await ev(`nkArcLoad(${JSON.stringify(game)})`); ev(`nkArcSession(${JSON.stringify(game)}, ${JSON.stringify(unit)}, true); nestRender(true)`); }
   else ev(`nestStart(${JSON.stringify(unit)}, true, ${JSON.stringify(game)})`);
   if (step) ev(`NE.si = ${step}; nestRender(false)`);

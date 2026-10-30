@@ -2,23 +2,23 @@
 <html lang="en">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-<title>English with Coco</title>
+<title>English with Chacho</title>
 <meta name="theme-color" content="#ece6e0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Coco">
+<meta name="apple-mobile-web-app-title" content="Chacho">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<meta name="description" content="10 דקות אנגלית ביום, בכיף ובמשחק: משימות, משחקים ושיחות בקול עם קוקו התוכי.">
+<meta name="description" content="10 דקות אנגלית ביום, בכיף ובמשחק: משימות, משחקים ושיחות בקול עם צ׳אצ׳ו התוכי.">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="English with Coco">
-<meta property="og:title" content="English with Coco">
-<meta property="og:description" content="10 דקות אנגלית ביום, בכיף ובמשחק: משימות, משחקים ושיחות בקול עם קוקו התוכי.">
+<meta property="og:site_name" content="English with Chacho">
+<meta property="og:title" content="English with Chacho">
+<meta property="og:description" content="10 דקות אנגלית ביום, בכיף ובמשחק: משימות, משחקים ושיחות בקול עם צ׳אצ׳ו התוכי.">
 <meta property="og:url" content="https://coco.coachkrispel.com/">
 <meta property="og:image" content="https://coco.coachkrispel.com/icons/share.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Coco the parrot, English with Coco">
+<meta property="og:image:alt" content="Chacho the parrot, English with Chacho">
 <meta name="twitter:card" content="summary_large_image">
 <meta charset="utf-8">
 <script>
@@ -81,7 +81,7 @@ body{
 #app{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:20px 16px 48px}
 /* Tablets in landscape (the tablet script in the head): a wider column, so the cards use the screen. */
 @media (orientation:landscape){html.tablet #app{max-width:760px}html.tablet .tabbar{max-width:736px}html.tablet .sheet{max-width:640px}}
-/* ---------- Coco's Nest (ages 2 to 7): big pictures, big round buttons, no text the kid must read ---------- */
+/* ---------- Chacho's Nest (ages 2 to 7): big pictures, big round buttons, no text the kid must read ---------- */
 .t-nest{background:linear-gradient(145deg,#fde68a,#f59e0b);--tc:#d97706}
 .nk-home{display:flex;flex-direction:column;gap:14px}
 .nk-hero{flex:1;min-height:0;display:grid;place-items:center;align-content:center;gap:4px;border-radius:28px;padding:12px}
@@ -193,7 +193,7 @@ html.tablet .nk-games{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
 .nk-ring.heard::before{box-shadow:0 0 0 10px #22c55e}
 .nk-coach{gap:10px;align-items:center}
 .nk-coach .nk-coco{width:72px;height:72px}
-/* Stage A, a live Coco (docs/nest/actor.js, arcade kids): bigger, breathing, tappable; the pet on the other side of the dock */
+/* Stage A, a live Chacho (docs/nest/actor.js, arcade kids): bigger, breathing, tappable; the pet on the other side of the dock */
 .nk.alive .nk-coach{padding-inline-start:16px}
 .nk.alive .nk-coach .nk-coco{scale:1.45;transform-origin:50% 90%;cursor:pointer;animation:nkbreathe 3.2s ease-in-out infinite}
 .nk.alive .nk-coach .nk-coco.talk{animation:nkbob .45s ease-in-out infinite alternate}
@@ -1125,7 +1125,7 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
 @media (prefers-reduced-motion:reduce){.flame svg{animation:none}}
 @media (prefers-reduced-motion:reduce){.count::before{animation:none}.runner{transition:none}}
 @media (prefers-reduced-motion:reduce){.pet-img.bounce,.speak.talk,.xp-pop,.evolve .flash.go,.mnode.cur::after,.mpet,.mgate.open::before,.mgate.top::before,.mprop.fly{animation:none}}
-/* The Wordrobe: the dressed pet (an inline SVG), victory moves, Coco's shop */
+/* The Wordrobe: the dressed pet (an inline SVG), victory moves, Chacho's shop */
 svg.pa{display:block;overflow:visible}
 .pa .pa-tw{animation:paTw 2.6s ease-in-out infinite}
 .pa .pa-bob{animation:paBob 2.8s ease-in-out infinite}
@@ -1296,7 +1296,7 @@ svg.pa{display:block;overflow:visible}
 .mywordsrow b{flex:1}
 .mywordsrow .sub{margin:0;font-size:12.5px}
 @media (prefers-reduced-motion:reduce){.pa .pa-tw,.pa .pa-bob,.pa .pa-pulse{animation:none}}
-/* Talk with Coco (specs/talk.md): the talk in the play frame; the stage scrolls to the newest line. */
+/* Talk with Chacho (specs/talk.md): the talk in the play frame; the stage scrolls to the newest line. */
 .t-chat{background:linear-gradient(145deg,#5eead4,#0d9488);--tc:#0d9488}
 .ctlog{max-height:none;overflow:visible;margin-top:0;gap:8px}
 .ctlog .cb span{font-size:15px}
@@ -1861,12 +1861,12 @@ function movedScreen(){
   app.innerHTML = `<div class="gscreen">
     <div class="result">
       <img src="${cocoSrc('celebrate')}" alt="" style="width:120px;height:120px;object-fit:contain">
-      <h1 style="font-size:28px">Coco has a new home</h1>
+      <h1 style="font-size:28px">Chacho has a new home</h1>
       <div class="sub" style="max-width:330px;margin:0">The app moved to <b>coco.coachkrispel.com</b>. Your points, your pet and your journey are all there.</div>
       <ol class="sub" style="text-align:left;max-width:330px;margin:0;padding-left:20px">
         <li>Tap <b>Open the new app</b>.</li>
         <li>${isIos() ? 'Tap Share, then <b>Add to Home Screen</b>.' : 'Open the browser menu, then <b>Install app</b>.'}</li>
-        <li>Delete the old Coco icon.</li>
+        <li>Delete the old Chacho icon.</li>
       </ol>
       <div class="sub" dir="rtl" lang="he" style="max-width:330px;margin:0;font-size:13px">האפליקציה עברה לכתובת חדשה, וכל ההתקדמות נשמרה. פותחים, מתקינים שוב ומוחקים את האייקון הישן.</div>
     </div>
@@ -2544,8 +2544,8 @@ async function drawPet(c, p, mood, x, y, size){
   }
 }
 
-// ---------- The Wordrobe: Coco's shop ----------
-// Coins: every point and every XP (the server counts them). A purchase is a request to Coco built from word tiles
+// ---------- The Wordrobe: Chacho's shop ----------
+// Coins: every point and every XP (the server counts them). A purchase is a request to Chacho built from word tiles
 // (or said aloud); nicer English costs less. The server grades the request again (cocoGrade in Shop.js) and
 // decides the price. Before the opening day the shop can be visited, not used.
 const PLACES = [['all', 'All', 'squares-four'], ['head', 'Head', 'crown-simple'], ['face', 'Face', 'eyeglasses'], ['neck', 'Neck', 'diamond'],
@@ -2585,7 +2585,7 @@ const shopKey = () => 'eq_shop_' + (session ? session.name : '');
 const dayLong = d => new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
 const daysTo = d => Math.max(0, Math.round((new Date(d + 'T12:00:00') - new Date((dash ? dash.today : new Date().toLocaleDateString('en-CA')) + 'T12:00:00')) / 86400000));
 
-// ---- Home: Coco's card ----
+// ---- Home: Chacho's card ----
 function shopCard(d){
   if (!d.shop || !d.pet) return '';
   const s = d.shop, coins = coinsTxt(d.coins);
@@ -2593,7 +2593,7 @@ function shopCard(d){
     const n = daysTo(s.opens);
     return `<button class="glass shopcard" id="shopgo">
       <img class="coco-face" src="${cocoSrc('sleepy')}" alt="">
-      <span class="shopcard-main"><span class="label">Coming soon</span><b>Coco's Wordrobe</b>
+      <span class="shopcard-main"><span class="label">Coming soon</span><b>Chacho's Wordrobe</b>
         <span class="sub">Opens ${n <= 1 ? (n ? 'tomorrow' : 'today') : 'in ' + n + ' days'} · ${coin}<b>${coins}</b> coins waiting</span></span>
       <span class="chip purple">${icon('eye')} Peek</span></button>`;
   }
@@ -2601,7 +2601,7 @@ function shopCard(d){
   return `${pol ? `<button class="glass polishbar" id="polishgo"><span class="tile sm t-star">${icon('sparkle', 'duotone')}</span>
       <span style="min-width:0"><b>${dull ? esc(dull.name) + ' · ' + dull.shine + '%' : 'Polish your words'}</b><span class="sub">${pol.n} word${pol.n > 1 ? 's' : ''} to polish · 20 seconds</span></span>${icon('caret-right')}</button>` : ''}<button class="glass shopcard open" id="shopgo">
     <img class="coco-face" src="${cocoSrc('happy')}" alt="">
-    <span class="shopcard-main"><span class="label">${s.season === 'halloween' ? 'Halloween Drop is here' : 'Coco\'s Wordrobe'}</span><b>Shop for ${esc(d.pet.name)}</b>
+    <span class="shopcard-main"><span class="label">${s.season === 'halloween' ? 'Halloween Drop is here' : 'Chacho\'s Wordrobe'}</span><b>Shop for ${esc(d.pet.name)}</b>
       <span class="sub">${coin}<b>${coins}</b> coins · ask nicely, pay less</span></span>
     <span class="tile t-uoe">${icon('coat-hanger', 'duotone')}</span></button>`;
 }
@@ -2655,10 +2655,10 @@ function renderShop(){
   const v = SHOP, d = dash;
   app.innerHTML = `<div class="stack shopscreen" id="shopscreen">
     <div class="gtop"><button class="btn btn-glass icon-btn" id="shopback" title="Back">${icon('arrow-left')}</button>
-      <div style="flex:1;min-width:0"><h2>Coco's Wordrobe</h2><div class="sub" style="font-size:12px;margin:0">Pay in coins, and in English</div></div>
+      <div style="flex:1;min-width:0"><h2>Chacho's Wordrobe</h2><div class="sub" style="font-size:12px;margin:0">Pay in coins, and in English</div></div>
       <span class="coinpill" title="Every point and every XP is a coin">${coin}<b id="coinnum">${coinsTxt(v.coins.balance)}</b></span></div>
     <div class="glass cocobar">
-      <img class="coco" id="cocoimg" src="${cocoSrc(v.open ? 'happy' : 'sleepy')}" alt="Coco">
+      <img class="coco" id="cocoimg" src="${cocoSrc(v.open ? 'happy' : 'sleepy')}" alt="Chacho">
       <div class="bubble" id="cocoline">${esc(v.open ? pick(COCO.hello) : fill(COCO.closed, { day: dayLong(v.opens) }))}</div>
     </div>
     ${v.season ? `<button class="glass seasonbar" id="culture"><img src="${itemSrc('jack-o-lantern')}" alt=""><span><b>${esc(v.season.name)}</b>
@@ -2703,7 +2703,7 @@ function shopGridHtml(){
       ${it.season ? `<span class="iseason">${icon('ghost', 'duotone')}</span>` : ''}${it.words ? `<span class="iwords" title="Made of words">${icon('book-open-text', 'duotone')}</span>` : ''}</button>`;
   };
   return `<div class="places">${PLACES.map(([k, label, ic]) => `<button class="chip ${shopPlace === k ? 'purple' : ''}" data-place="${k}">${icon(ic)} ${label}</button>`).join('')}</div>
-    ${season.length ? `<div class="label mt">${icon('ghost')} Halloween Drop · back next year</div><div class="igrid mt-s">${season.map(card).join('')}</div><div class="label mt">Coco's collection</div>` : ''}
+    ${season.length ? `<div class="label mt">${icon('ghost')} Halloween Drop · back next year</div><div class="igrid mt-s">${season.map(card).join('')}</div><div class="label mt">Chacho's collection</div>` : ''}
     <div class="igrid mt-s">${rest.map(card).join('') || '<div class="sub">Nothing here yet.</div>'}</div>
     ${v.bought && v.bought.length ? `<div class="glass panel mt"><h2 style="font-size:16px">Your receipts</h2>${v.bought.map(b => `<div class="receipt"><span>"${esc(b.sentence)}"</span><b>${coin}${coinsTxt(b.paid)}</b></div>`).join('')}</div>` : ''}
     <div class="sub mt" style="font-size:12px;text-align:center">Every point and every XP is also a coin. Coins never touch your points for rewards.</div>`;
@@ -2718,7 +2718,7 @@ function cocoSay(text, mood){
   if (img && mood) img.src = cocoSrc(mood);
 }
 
-// ---- Ask Coco: one item ----
+// ---- Ask Chacho: one item ----
 // Grades a request: the same rules as cocoGrade() in src/Shop.js (test/sim.js checks they agree).
 function cocoGrade(words, name, color){
   const MAP = { 'give me': 'giveme', "i'd like": 'idlike', 'thank you!': 'thanks', 'thank you': 'thanks' };
@@ -2783,7 +2783,7 @@ function itemSheet(it){
   const phrases = () => [['price', 'How much is it?'], it.place === 'upgrade' ? ['what', 'What does it do?'] : ['try', it.place === 'move' ? 'Can I try it?' : 'Can I try it on?']]
     .concat(colors.filter(c => c !== color).map(c => ['color:' + c, 'Do you have it in ' + c + '?']));
   ov.innerHTML = `<div class="sheet glass asksheet">
-    <div class="row-flex between"><span class="label">${it.owned ? 'Yours' : 'Ask Coco'}</span>
+    <div class="row-flex between"><span class="label">${it.owned ? 'Yours' : 'Ask Chacho'}</span>
       <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x" title="Close">${icon('x')}</button></div>
     <div class="askhead">
       <div class="mirror" id="mirrorbox">${mirror()}</div>
@@ -2801,7 +2801,7 @@ function itemSheet(it){
     <div class="manners mt-s" id="manners"></div>
     <div class="row-flex mt-s" style="gap:10px">
       ${voiceOn() ? `<button class="btn btn-glass icon-btn micbtn" id="cmic" title="Say it">${icon('microphone')}</button>` : ''}
-      <button class="btn btn-primary" style="flex:1" id="cask">${icon('chat-circle-dots')} Ask Coco</button></div>
+      <button class="btn btn-primary" style="flex:1" id="cask">${icon('chat-circle-dots')} Ask Chacho</button></div>
     <div class="row-flex between mt-s"><button class="linkbtn" id="chow">${icon('lightbulb')} Show me how</button>
       <button class="linkbtn" id="cvoice">${icon(voiceOn() ? 'microphone-slash' : 'microphone')} ${voiceOn() ? 'Voice off' : 'Say it aloud'}</button></div></div>`}
   </div>`;
@@ -2837,7 +2837,7 @@ function itemSheet(it){
     const btn = ov.querySelector('#cask');
     btn.disabled = busy || !v.open;
     btn.innerHTML = !v.open ? icon('lock-simple') + ' Opens ' + esc(dayLong(v.opens)) : short ? icon('coins') + ' Need ' + coinsTxt(paid - v.coins.balance) + ' more coins'
-      : icon('chat-circle-dots') + (g.ok ? ' Buy for ' + coinsTxt(paid) : ' Ask Coco');
+      : icon('chat-circle-dots') + (g.ok ? ' Buy for ' + coinsTxt(paid) : ' Ask Chacho');
     if (short && v.open) btn.disabled = true;
   };
   ov.querySelector('#phrases').onclick = e => {
@@ -2876,7 +2876,7 @@ function itemSheet(it){
     if (!g.ok) { say('coco', g.hint, 'oops'); return; }
     busy = true; paint();
     const btn = ov.querySelector('#cask');
-    btn.innerHTML = '<span class="mini-spin"></span>Coco is wrapping it…';
+    btn.innerHTML = '<span class="mini-spin"></span>Chacho is wrapping it…';
     say('me', shopSentenceLocal(built));
     try {
       const r = await call('apiShopBuy', session.name, session.pin, it.id, color, built);
@@ -3007,7 +3007,7 @@ function wardrobeHtml(){
   return `<div class="glass panel wardrobe">
       <div class="mirror big" id="wmirror">${petArt(dash.pet, 'happy', 'mirrorpet', { id: 'wpet' })}</div>
       ${dash.pet.move ? `<button class="btn btn-glass btn-sm" id="wmove" style="margin:0 auto">${icon('sneaker-move')} ${esc((shopItem(dash.pet.move) || {}).name || 'Move')}</button>` : ''}
-      ${!mine.length ? `<div class="sub" style="text-align:center">Nothing here yet. Visit the shop and ask Coco nicely!</div>` : ''}
+      ${!mine.length ? `<div class="sub" style="text-align:center">Nothing here yet. Visit the shop and ask Chacho nicely!</div>` : ''}
     </div>
     ${groups.map(([k, label, list]) => `<div class="label mt">${label}</div><div class="wrow mt-s">
       ${list.map(it => `<button class="soft wcell${isWorn(it.id) ? ' on' : ''}${it.design ? ' wdesign' : ''}" data-wear="${esc(it.id)}">${itemPic(it)}<span>${esc(it.name)}</span>${wshine(it.id)}</button>`).join('')}</div>`).join('')}
@@ -3118,7 +3118,7 @@ function studioGrade(text, base) {
   };
   var kinds = words.map(kindOf);
   if (!words.length) { out.hint = 'Describe your ' + thing + ' in English, darling. For example: "' + eg + '".'; return out; }
-  // A word Coco does not know: the closest one he knows (a typo), or the list.
+  // A word Chacho does not know: the closest one he knows (a typo), or the list.
   for (i = 0; i < words.length; i++) {
     if (kinds[i]) continue;
     var w0 = words[i], best = '', bd = 3, all = [];
@@ -3227,13 +3227,13 @@ function studioGrade(text, base) {
 
 // ---- The Studio (Say it, Wear it): she describes a base in English, and good English makes it ----
 // The grade is studioGrade (the same as in Shop.js; the server grades again). While she types, the mirror shows what
-// Coco understood so far, in any order (studioLoose); "Make it" needs good English. Perfect Fit = right the first
+// Chacho understood so far, in any order (studioLoose); "Make it" needs good English. Perfect Fit = right the first
 // time, with 3 or more describing words (no hint shown, no "Show me how").
 const STUDIO_BANK = [['Opinion', 'opinion'], ['Size', 'size'], ['Sparkle', 'quality'], ['Color', 'color'], ['Material', 'material'], ['Pattern', 'pattern']];
 const STUDIO_PLURAL = { star: 'stars', heart: 'hearts', dot: 'dots', stripe: 'stripes', flower: 'flowers', snowflake: 'snowflakes', moon: 'moons' };
 const PLACE_NAME = p => (PLACES.find(x => x[0] === p) || [0, p])[1];
 
-// What Coco understood so far, order aside: the words she knows, by kind; after "with" (or a pattern) for the pattern.
+// What Chacho understood so far, order aside: the words she knows, by kind; after "with" (or a pattern) for the pattern.
 function studioLoose(text, base){
   const g = studioGrade(text, base);
   if (g.ok) return g.spec;
@@ -3274,7 +3274,7 @@ function studioKinds(text){
 function studioHtml(){
   const v = SHOP, mine = v.items.filter(it => it.design);
   return `<div class="glass panel studiointro"><img class="coco-face" src="${cocoSrc('thinking')}" alt="">
-      <div><b>Say it, wear it</b><div class="sub" style="margin:0">Describe it in English and Coco makes it, just for you. The right order makes it a <b>Perfect Fit</b>.</div></div></div>
+      <div><b>Say it, wear it</b><div class="sub" style="margin:0">Describe it in English and Chacho makes it, just for you. The right order makes it a <b>Perfect Fit</b>.</div></div></div>
     <div class="label mt">Choose a base</div>
     <div class="igrid mt-s">${(v.bases || []).map(b => `<button class="soft icard" data-base="${b.id}"><span class="ipic"><img src="${itemSrc('base-' + b.id)}" alt="" loading="lazy"></span>
       <b class="iname">${esc(b.name)}</b><span class="irow"><span class="iprice">${coin}${coinsTxt(b.price)}</span><span class="irar">${esc(PLACE_NAME(b.place))}</span></span></button>`).join('')}</div>
@@ -3310,7 +3310,7 @@ function designSheet(b){
         placeholder="a pink ${esc(thing)} with white stars" aria-label="Describe your ${esc(thing)}">
       ${voiceOn() ? `<button class="btn btn-glass icon-btn micbtn" id="dmic" title="Say it">${icon('microphone')}</button>` : ''}</div>
     <div class="dchips" id="dchips"></div>
-    <details class="dbank mt-s" id="dbank" open><summary>${icon('text-aa')} Words Coco knows <span class="sub">(tap to add)</span></summary>
+    <details class="dbank mt-s" id="dbank" open><summary>${icon('text-aa')} Words Chacho knows <span class="sub">(tap to add)</span></summary>
       ${STUDIO_BANK.map(([label, k]) => `<div class="dgroup"><span class="dlabel">${label}</span>${words(k).map(w => `<button class="tok sm k-${k}" data-w="${esc(w)}">${esc(w)}</button>`).join('')}</div>`).join('')}
       <div class="dgroup"><span class="dlabel">Little words</span>${['a', 'an', 'with', 'light', 'dark'].map(w => `<button class="tok sm" data-w="${w}">${w}</button>`).join('')}
         <button class="tok sm k-base" data-w="${esc(thing)}">${esc(thing)}</button><button class="tok sm" data-back="1" title="Delete the last word">${icon('backspace')}</button></div>
@@ -3363,7 +3363,7 @@ function designSheet(b){
     if (!g.ok) { fresh = false; say('me', text); say('coco', g.hint, 'oops'); return; }
     busy = true; paint();
     const btn = ov.querySelector('#dmake');
-    btn.innerHTML = '<span class="mini-spin"></span>Coco is sewing…';
+    btn.innerHTML = '<span class="mini-spin"></span>Chacho is sewing…';
     say('me', g.text.charAt(0).toUpperCase() + g.text.slice(1) + '.');
     try {
       const r = await call('apiDesign', session.name, session.pin, b.id, text, fresh && g.n >= 3);
@@ -3452,8 +3452,8 @@ function wordQuiz(o){
       homeStale = true;
       body.innerHTML = `<div class="result" style="padding:10px 0"><img src="${cocoSrc('celebrate')}" alt="" style="width:110px;height:110px;object-fit:contain">
         <h2>${o.polish ? 'Shiny again!' : 'All ' + total + ' words collected!'}</h2>
-        <div class="sub">${o.polish ? 'Your words are fresh, so your things shine.' : 'Now ask Coco for it, nicely.'}${missed.length ? ' The ones you missed come back tomorrow.' : ''}</div></div>
-        <button class="btn btn-teal btn-block mt" id="wqdone">${icon('check')} ${o.polish ? 'Done' : 'Ask Coco'}</button>`;
+        <div class="sub">${o.polish ? 'Your words are fresh, so your things shine.' : 'Now ask Chacho for it, nicely.'}${missed.length ? ' The ones you missed come back tomorrow.' : ''}</div></div>
+        <button class="btn btn-teal btn-block mt" id="wqdone">${icon('check')} ${o.polish ? 'Done' : 'Ask Chacho'}</button>`;
       confetti();
       body.querySelector('#wqdone').onclick = () => { ov.remove(); if (o.done) o.done(v); };
     } catch(e){
@@ -3527,7 +3527,7 @@ function cultureSheet(){
     <div class="label mt">Words to hear</div>
     <div class="stack mt-s" style="gap:8px">${words.map(([w, m]) => `<div class="lrow"><button class="btn btn-glass icon-btn tsay" data-word="${esc(w)}">${icon('speaker-high')}</button>
       <span class="lt"><b>${esc(w)}</b> · ${esc(m)}</span></div>`).join('')}</div>
-    <div class="sub mt" style="font-size:12px">Coco's Halloween Drop is in the shop until November 7. It comes back next year.</div>
+    <div class="sub mt" style="font-size:12px">Chacho's Halloween Drop is in the shop until November 7. It comes back next year.</div>
   </div>`;
   document.body.appendChild(ov);
   ov.onclick = e => { if (e.target === ov) ov.remove(); };
@@ -4011,9 +4011,9 @@ async function flushPending(){
   if (!G && document.getElementById('petimg')) renderDash();
 }
 
-// Read-aloud (Hear it, word taps, Read to me): Coco's recordings in docs/say (tools/voice.py). The phone's own voice
+// Read-aloud (Hear it, word taps, Read to me): Chacho's recordings in docs/say (tools/voice.py). The phone's own voice
 // only for a text without a recording, or when the recording cannot play (offline).
-const SAY_V = 1;
+const SAY_V = 2;
 let SAY = null, sayAudio = null, sayLoading = false;
 // FNV-1a of the lower-cased text with its spaces collapsed; the same function as sayKey in tools/voice-list.js.
 function sayKey(text){
@@ -4093,7 +4093,7 @@ function speechStop(){
 // ---------- Today's Mission (specs/missions.md) ----------
 // The daily task played in the app, in five parts (Hook, Learn, Practice, Use it, Finish), with the score measured here.
 // Content: docs/missions/<a1|a2|b1|bp|b2|c1>.js sets window.EQ_MISSIONS[file] = [missions]; recordings in docs/missions/audio.
-// ---- Talk to Coco (specs/talk.md): short scripted voice talks with Coco, after Use it in a mission and once a day on home ----
+// ---- Talk to Chacho (specs/talk.md): short scripted voice talks with Chacho, after Use it in a mission and once a day on home ----
 // What she said, in the words the scripts use: lower case, no punctuation, numbers up to twenty as words, short forms opened.
 const CHAT_NUM = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve',
   'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'];
@@ -4119,7 +4119,7 @@ function chatHit(said, kw){
     || (e && w.indexOf(e) === 0 && ['ing', 'ed', 'er', 'ers', 'est'].indexOf(w.slice(e.length)) >= 0)
     || (y && w.indexOf(y) === 0 && ['es', 'ed', 'er', 'est'].indexOf(w.slice(y.length)) >= 0)));
 }
-// Fewer words than this, and nothing in the script fits: Coco asks for a little more (once), then takes it.
+// Fewer words than this, and nothing in the script fits: Chacho asks for a little more (once), then takes it.
 const CHAT_MIN = { a1: 1, a2: 2, b1: 3, bp: 3, b2: 4, c1: 5 };
 // A branch fits when every group of its keywords has a word in what she said, and none of its "not" words (n) is there.
 function chatFits(said, b){
@@ -4161,7 +4161,7 @@ function msQuestions(m){
   return out;
 }
 function msCount(m){ return msQuestions(m).length; }
-// The talk with Coco (when the mission has one) comes right before the finish.
+// The talk with Chacho (when the mission has one) comes right before the finish.
 function msAddChat(S, chat){
   if (chat) S.splice(S.length - 1, 0, { t: 'chat', part: 3, chat });
   return S;
@@ -4541,7 +4541,7 @@ function msRemind(){
   return `<div class="answer-box mremind"><b>Remember:</b> ${x}</div>`;
 }
 
-// Read to me: Coco's recording of the story card, the word he is saying lit up from the word times of the recording
+// Read to me: Chacho's recording of the story card, the word he is saying lit up from the word times of the recording
 // (tools/voice.py); without a recording the phone reads it and tells us where it is.
 function msReadAloud(c){
   const box = document.getElementById('mstory');
@@ -4817,7 +4817,7 @@ async function missionGallery(){
     <div class="glass panel"><div class="row-flex between"><h2>Mission preview</h2><span class="chip purple">${list.length} missions</span></div>
       ${TEACHER ? '<div class="sub mt-s" style="font-size:13px"><b>Teacher review.</b> Play any mission. Under each answer, tap <b>Something wrong here?</b> and write a short note: it goes straight to the owner.</div>' : '<div class="sub mt-s" style="font-size:13px">Play any mission as practice. Nothing is saved.</div>'}
       <div class="row-flex mt" style="gap:6px;flex-wrap:wrap">${LEVELS.map(([k, l]) => `<button class="btn ${k === msGalleryLevel ? 'btn-primary' : 'btn-glass'} btn-sm" data-glv="${k}">${l}</button>`).join('')}</div>
-      <button class="btn btn-glass btn-block mt" id="tochats">${icon('chats-circle')} Talk with Coco: the home talks</button></div>
+      <button class="btn btn-glass btn-block mt" id="tochats">${icon('chats-circle')} Talk with Chacho: the home talks</button></div>
     <div class="stack" style="gap:10px">${list.map(m => `<button class="soft task clickable" data-prev="${m.id}" style="text-align:left;width:100%;font:inherit;border:0">
       ${tile(m.type, true)}<div class="task-main"><div class="task-top">${esc((MS_TYPES[m.type] || MS_TYPES.grammar)[0])} · ${msCount(m)} questions · ${m.id}</div>
       <div class="task-title">${esc(m.title)}</div></div>${icon('caret-right')}</button>`).join('') || '<div class="glass panel sub">No missions for this level yet.</div>'}</div>
@@ -4836,18 +4836,18 @@ async function previewMission(id, label){
   msRender();
 }
 
-// ---- Talk to Coco: the talk screen (specs/talk.md) ----
-// Coco says each line (a recording, or the phone's voice without one), the kid answers aloud with the mic button
+// ---- Talk to Chacho: the talk screen (specs/talk.md) ----
+// Chacho says each line (a recording, or the phone's voice without one), the kid answers aloud with the mic button
 // (the phone's own speech recognition; nothing is recorded or sent but the words it heard), or with a tile. Every answer
 // moves the talk on; there is no wrong answer. A mission talk comes after Use it; a home scene once a day from home.
-const TALK_V = 5;
+const TALK_V = 6;
 const CHAT_PET = {
-  start: ['Your turn soon! Tap the mic and talk.', 'Talk to Coco! I am right here.', 'Speak English with Coco. You can do it!'],
-  voice: ['You said it!', 'Wow, great English!', 'Coco understood you!', 'So cool! Keep going!', 'Yes! Out loud!'],
+  start: ['Your turn soon! Tap the mic and talk.', 'Talk to Chacho! I am right here.', 'Speak English with Chacho. You can do it!'],
+  voice: ['You said it!', 'Wow, great English!', 'Chacho understood you!', 'So cool! Keep going!', 'Yes! Out loud!'],
   tile: ['Nice pick! Next time, say it out loud.', 'Good one! Try the mic next time.', 'Nice! You can say it too.'],
-  listen: ['I am listening too…', 'Shh… Coco is listening.'],
+  listen: ['I am listening too…', 'Shh… Chacho is listening.'],
   again: ['Try again, a little louder.', 'Speak close to the phone.'],
-  end: ['You talked in English!', 'What a talk!', 'Coco loved talking with you!']
+  end: ['You talked in English!', 'What a talk!', 'Chacho loved talking with you!']
 };
 const CHAT_BANK = {
   again: "Sorry, I didn't catch that. Can you say it again?",
@@ -4900,7 +4900,7 @@ function chatRender(){
   if (!CT) return;
   const s = CT.s, u = chatTurn(), lv = (LEVELS.find(l => MS_FILES[l[0]] === CT.level) || [0, ''])[1];
   const end = CT.phase === 'end', listening = CT.phase === 'listen', busy = CT.phase === 'coco' || CT.phase === 'wait';
-  const sub = 'Talk with Coco · ' + esc(lv) + (end ? ' · done' : ' · ' + (CT.i + 1) + ' of ' + s.turns.length);
+  const sub = 'Talk with Chacho · ' + esc(lv) + (end ? ' · done' : ' · ' + (CT.i + 1) + ' of ' + s.turns.length);
   const bub = (b, k) => b.who === 'coco'
     ? `<div class="cb coco"><img src="${cocoSrc(b.mood || 'happy')}" alt=""><span>${esc(b.text)}${b.clip ? ` <button class="ctsay" data-ctsay="${k}" title="Hear it again">${icon('speaker-high')}</button>` : ''}</span></div>
        ${CT.preview && TEACHER && b.flag ? `<div class="row-flex ctflag" style="gap:6px"><button class="mflag" data-ctflag="${esc(b.flag)}">Something wrong here?</button></div>` : ''}`
@@ -4935,7 +4935,7 @@ function chatRender(){
 }
 function chatSummary(){
   const n = CT.s.turns.length;
-  return `<div class="glass panel ctsum"><div class="label">You talked with Coco</div>
+  return `<div class="glass panel ctsum"><div class="label">You talked with Chacho</div>
     <div class="row-flex mt-s" style="gap:14px;flex-wrap:wrap"><span><b>${CT.voice}</b> out loud</span><span><b>${CT.tiles}</b> with a tile</span><span><b>${n}</b> questions</span></div>
     <div class="sub mt-s" id="ctsave" style="font-size:13px">${CT.practice ? (CT.preview ? 'Preview · nothing is saved' : 'Practice talk · no bonus today') : '<span class="mini-spin"></span> Saving…'}</div></div>`;
 }
@@ -4970,7 +4970,7 @@ function chatClick(e){
   }
 }
 
-// Coco says a line: it goes into the talk, then plays; then = what comes next.
+// Chacho says a line: it goes into the talk, then plays; then = what comes next.
 function chatCoco(text, clip, then, mood){
   CT.log.push({ who: 'coco', text, clip, mood, flag: clip && !/^bank/.test(clip) ? 'c:' + clip.replace(/-/g, ':') : '' });
   CT.phase = 'coco';
@@ -5048,10 +5048,10 @@ function chatListen(){
   };
   r.onend = () => { if (!got && CT && CT.phase === 'listen') { ctRec = null; chatMissed(); } };
   try { r.start(); } catch(e){ ctRec = null; CT.phase = 'ask'; chatRender(); }
-  // A phone that never answers (a permission prompt left open, a lost connection): after 12 s Coco asks again.
+  // A phone that never answers (a permission prompt left open, a lost connection): after 12 s Chacho asks again.
   setTimeout(() => { if (ctRec === r) { try { r.abort(); } catch(e){} setTimeout(() => { if (ctRec === r) { ctRec = null; if (CT && CT.phase === 'listen') chatMissed(); } }, 600); } }, 12000);
 }
-// Nothing heard: Coco asks again; after the second time the ideas open.
+// Nothing heard: Chacho asks again; after the second time the ideas open.
 function chatMissed(){
   CT.tries++;
   CT.pet = chatPick(CHAT_PET.again);
@@ -5059,7 +5059,7 @@ function chatMissed(){
   chatCoco(CHAT_BANK.again, 'bank-again', chatAsk, 'thinking');
 }
 
-// An answer (what the phone heard, or a tile): Coco's reply for the branch that fits, then the next question.
+// An answer (what the phone heard, or a tile): Chacho's reply for the branch that fits, then the next question.
 function chatAnswer(text, via){
   const u = chatTurn(), r = chatMatch(u, text);
   CT.log.push({ who: 'me', text, tile: via === 'tile' });
@@ -5124,8 +5124,8 @@ async function chatGallery(){
   try { list = await loadChat(file); } catch(e){ list = []; }
   const scenes = list.filter(s => /^s/.test(s.id)), talks = list.length - scenes.length;
   app.innerHTML = `<div class="stack">
-    <div class="glass panel"><div class="row-flex between"><h2>Talk with Coco</h2><span class="chip purple">${scenes.length} home talks</span></div>
-      <div class="sub mt-s" style="font-size:13px">The daily talks from the home screen. ${talks} more talks come at the end of the missions (play a mission to hear its talk).${TEACHER ? ' Under each line of Coco, <b>Something wrong here?</b> sends a note to the owner.' : ''}</div>
+    <div class="glass panel"><div class="row-flex between"><h2>Talk with Chacho</h2><span class="chip purple">${scenes.length} home talks</span></div>
+      <div class="sub mt-s" style="font-size:13px">The daily talks from the home screen. ${talks} more talks come at the end of the missions (play a mission to hear its talk).${TEACHER ? ' Under each line of Chacho, <b>Something wrong here?</b> sends a note to the owner.' : ''}</div>
       <div class="row-flex mt" style="gap:6px;flex-wrap:wrap">${LEVELS.map(([k, l]) => `<button class="btn ${k === msGalleryLevel ? 'btn-primary' : 'btn-glass'} btn-sm" data-clv="${k}">${l}</button>`).join('')}</div>
       <button class="btn btn-glass btn-block mt" id="tomissions">${icon('arrow-left')} Missions</button></div>
     <div class="stack" style="gap:10px">${scenes.map(s => `<button class="soft task clickable" data-cprev="${s.id}" style="text-align:left;width:100%;font:inherit;border:0">
@@ -5477,7 +5477,7 @@ function codeSheet(){
       <button class="mrow" data-open="live"><span class="tile t-grammar">${icon('sword', 'duotone')}</span><span class="drow-main"><b>Word Duel code</b><small>Play together now</small></span>${icon('caret-right')}</button>
       <button class="mrow" data-open="challenge"><span class="tile t-read">${icon('ghost', 'duotone')}</span><span class="drow-main"><b>Challenge code</b><small>You play now, your friend within 24 hours</small></span>${icon('caret-right')}</button>
     </div>
-    <div class="sub mt-s" style="font-size:12px">You get a 4-letter code to send on WhatsApp. The first friend who enters it in English with Coco plays with you.</div>
+    <div class="sub mt-s" style="font-size:12px">You get a 4-letter code to send on WhatsApp. The first friend who enters it in English with Chacho plays with you.</div>
   </div>`;
   document.body.appendChild(ov);
   const close = () => ov.remove();
@@ -5699,7 +5699,7 @@ function lobbyUpdate(v){
 
 function codeShare(v){
   const link = appBase() + '?duel=' + v.code;
-  const text = dash.girl.name + ' invites you to ' + modeInvite(v) + ' on English with Coco! 🎮\nOpen the app, tap Play together, then Code, and enter ' + v.code + '.\nOr tap: ' + link;
+  const text = dash.girl.name + ' invites you to ' + modeInvite(v) + ' on English with Chacho! 🎮\nOpen the app, tap Play together, then Code, and enter ' + v.code + '.\nOr tap: ' + link;
   return `<div class="glass panel" style="text-align:center;padding:16px">
     <div class="label">Send this code to your friend</div>
     <div class="codebig">${esc(v.code)}</div>
@@ -6106,7 +6106,7 @@ function prefetch(){
     // Today's mission (or a catch-up one), so it opens at once on a weak connection. (Recordings stay with the browser.)
     const mw = dash && dash.week.find(w => w.mission && !w.done && !w.isFuture);
     if (mw) urls.push(abs(ASSETS + 'missions/' + msFile(mw.mission.id) + '.js?v=' + MISSIONS_V));
-    // Her level's talks with Coco (the mission's talk and today's home scene); Coco's face for the talk screen.
+    // Her level's talks with Chacho (the mission's talk and today's home scene); Chacho's face for the talk screen.
     if (dash && dash.chat) { urls.push(abs(ASSETS + 'talk/' + (MS_FILES[dash.girl.level] || 'a2') + '.js?v=' + TALK_V)); ['happy', 'thinking', 'celebrate'].forEach(m => urls.push(abs(cocoSrc(m)))); }
     sw.postMessage({ type: 'precache', urls });
   });
@@ -6481,7 +6481,7 @@ function talkLearn(rows, me){
     ${missed ? '<div class="sub mt-s" style="font-size:12px">The words you missed come back in Match it.</div>' : ''}</div>`;
 }
 
-// A word or sentence read aloud: Coco's recording, or the phone's English voice.
+// A word or sentence read aloud: Chacho's recording, or the phone's English voice.
 function sayWord(text){
   if (sayClip(text, { phone: () => sayPhone(text) })) return;
   sayPhone(text);
@@ -6992,7 +6992,7 @@ function renderMap(){
         <path d="${road(pts)}" fill="none" stroke="${L.c[1]}" stroke-opacity=".32" stroke-width="4" stroke-dasharray="1 13" stroke-linecap="round" transform="translate(0 3)"/>
       </svg>
       ${deco}
-      <span class="chip mtag" style="${at(180, 28)}">${icon(g.next ? 'lock-simple' : 'sparkle')} ${g.next ? 'Next: ' + esc(g.nextName) + ' · ' + esc(g.nextLabel) : 'The top of English with Coco'}</span>
+      <span class="chip mtag" style="${at(180, 28)}">${icon(g.next ? 'lock-simple' : 'sparkle')} ${g.next ? 'Next: ' + esc(g.nextName) + ' · ' + esc(g.nextLabel) : 'The top of English with Chacho'}</span>
       <button class="mgate ${g.state}" id="mgate" style="${at(180, TOP - 50)};--na:${nl.c[0]};--nb:${nl.c[1]}" aria-label="Gate"><img src="${gatePic}" alt="" draggable="false">${gateBadge ? `<span class="tile sm mgbadge">${icon(gateBadge, 'duotone')}</span>` : ''}</button>
       <span class="chip mtag ${g.state === 'open' ? 'purple' : ''}" style="${at(180, 66)}">${esc(gateTag)}</span>
       ${nodes}
@@ -7004,7 +7004,7 @@ function renderMap(){
   const gate = () => {
     if (g.state === 'open') return gateIntro();
     toast(g.state === 'wait' ? 'The gate opens again on ' + dayLabel(g.until)
-      : g.state === 'top' ? (j.stations >= N ? 'You reached the summit of English with Coco!' : 'The summit of English with Coco. Keep going!') : gateNote(j));
+      : g.state === 'top' ? (j.stations >= N ? 'You reached the summit of English with Chacho!' : 'The summit of English with Chacho. Keep going!') : gateNote(j));
   };
   document.getElementById('mgate').onclick = gate;
   const go = document.getElementById('gatego');
@@ -7147,7 +7147,7 @@ function levelUp(r){
 // Share the certificate picture (phones), or download it and open WhatsApp with the text.
 async function shareLevel(){
   const j = dash.journey, name = dash.girl.name;
-  const text = `🎉 ${name} reached level ${j.label} in English with Coco! World ${j.world}, ${j.name}, is now open 🌟`;
+  const text = `🎉 ${name} reached level ${j.label} in English with Chacho! World ${j.world}, ${j.name}, is now open 🌟`;
   let file = null;
   try { file = new File([await certBlob()], 'English-Quest-' + j.label.replace('+', '-plus') + '.jpg', { type: 'image/jpeg' }); } catch(e){}
   try {
@@ -7226,7 +7226,7 @@ function splashScreen(quick){
         <div class="up"><div class="pop" style="--d:${quick ? 60 + i * 32 : 150 + i * 75}ms"><img src="${petSrc(id, 1, 'happy')}" data-id="${id}" alt="" onload="this.classList.add('ok')"></div></div></div>`).join('')}</div>
       <div class="portal"><div class="portal-in">
         ${me ? petArt(me, 'celebrate', 'me') : ''}
-        <div class="ptitle">English with Coco</div><div class="psub">10 minutes a day</div></div></div>
+        <div class="ptitle">English with Chacho</div><div class="psub">10 minutes a day</div></div></div>
       ${Array.from({ length: quick ? 8 : 14 }, () => `<i class="spark" style="--x:${Math.round(Math.random() * 100)}%;--y:${Math.round(Math.random() * 100)}%;--t:${(Math.random() * (quick ? .8 : 1.7)).toFixed(2)}s"></i>`).join('')}
     </div>`;
   document.body.appendChild(el);
@@ -7438,7 +7438,7 @@ function retestCard(d){
 // (eq_family), so the link opened again, or the back button, lands on the family page and never on a fresh form
 // (the first pilot family pressed back on the done screen, signed up again and was left with two families).
 // The draft is kept as it is typed (eq_join), and each step is a browser history entry, so back moves one step.
-// Ages 2 to 7 join Coco's Nest (specs/nest.md): the value carries the age, a school grade stays a number.
+// Ages 2 to 7 join Chacho's Nest (specs/nest.md): the value carries the age, a school grade stays a number.
 const NEST_AGES = [['a2', 'גיל 2'], ['a3', 'גיל 3'], ['a4', 'גיל 4'], ['a5', 'גיל 5'], ['a6', 'כיתה א'], ['a7', 'כיתה ב']];
 const GRADES = [[3, 'ג'], [4, 'ד'], [5, 'ה'], [6, 'ו'], [7, 'ז'], [8, 'ח'], [9, 'ט'], [10, 'י'], [11, 'יא'], [12, 'יב']];
 let JOIN = null;
@@ -7490,7 +7490,7 @@ function joinWelcome(){
         <ul class="helist">
           <li>שומרים רק את השם הפרטי של הילד, הכיתה, התשובות וההתקדמות. מכם: שם, וכתובת מייל אם תבחרו.</li>
           <li>נרשם גם מתי נכנסו לאפליקציה ומאיזה סוג מכשיר (למשל אייפון או אנדרואיד), כדי שנדע איך הפיילוט עובד.</li>
-          <li>אין פרסומות. לא שומרים הקלטות ולא מעבירים מידע לאף אחד. בקן של קוקו, כשקוקו חוזר על מה שהילד אומר, הקול נשאר בזיכרון של הטלפון לכמה שניות, מושמע פעם אחת ונמחק.</li>
+          <li>אין פרסומות. לא שומרים הקלטות ולא מעבירים מידע לאף אחד. בקן של צ׳אצ׳ו, כשצ׳אצ׳ו חוזר על מה שהילד אומר, הקול נשאר בזיכרון של הטלפון לכמה שניות, מושמע פעם אחת ונמחק.</li>
           <li>אפשר לבקש מחיקה מלאה של כל המידע בכל רגע, בהודעה למי ששלח לכם את הקישור.</li>
           <li>הילדים יכולים לשחק עם ילדים ממשפחות אחרות בפיילוט. רואים רק שם פרטי, ואין צ'אט חופשי.</li>
           <li>התוכן נכתב בעזרת בינה מלאכותית ונבדק על ידי מורה לאנגלית.</li>
@@ -7512,12 +7512,12 @@ function joinWelcome(){
 function joinForm(){
   const kidRow = (k, i) => `<div class="row-flex" style="gap:8px">
       <input class="input" data-kname="${i}" placeholder="שם פרטי באנגלית, למשל Noa" value="${esc(k.name)}" autocomplete="off" style="flex:1;min-width:0" dir="auto">
-      <select class="input" data-kgrade="${i}" style="width:128px"><option value="">גיל או כיתה</option><optgroup label="הקן של קוקו">${NEST_AGES.map(([v, l]) => `<option value="${v}" ${String(k.grade) === v ? 'selected' : ''}>${l}</option>`).join('')}</optgroup><optgroup label="בית ספר">${GRADES.map(([g, l]) => `<option value="${g}" ${String(k.grade) === String(g) ? 'selected' : ''}>כיתה ${l}</option>`).join('')}</optgroup></select>
+      <select class="input" data-kgrade="${i}" style="width:128px"><option value="">גיל או כיתה</option><optgroup label="הקן של צ׳אצ׳ו">${NEST_AGES.map(([v, l]) => `<option value="${v}" ${String(k.grade) === v ? 'selected' : ''}>${l}</option>`).join('')}</optgroup><optgroup label="בית ספר">${GRADES.map(([g, l]) => `<option value="${g}" ${String(k.grade) === String(g) ? 'selected' : ''}>כיתה ${l}</option>`).join('')}</optgroup></select>
       ${JOIN.kids.length > 1 ? `<button class="btn btn-glass icon-btn" data-kdel="${i}" title="הסרה">${icon('x')}</button>` : ''}</div>`;
   app.innerHTML = `<div class="stack he" dir="rtl" lang="he">
     <div class="glass panel" style="display:grid;gap:10px">
       <h2>הילדים</h2>
-      <div class="sub" style="font-size:12px">השם מופיע באפליקציה, ולכן באנגלית. מכיתה ג ומעלה, לפי הכיתה נקבעת נקודת ההתחלה של מבחן הרמה. ילדים מגיל 2 עד כיתה ב נכנסים לקן של קוקו: משחק בשמיעה ובתמונות, בלי מבחן ובלי קריאה.</div>
+      <div class="sub" style="font-size:12px">השם מופיע באפליקציה, ולכן באנגלית. מכיתה ג ומעלה, לפי הכיתה נקבעת נקודת ההתחלה של מבחן הרמה. ילדים מגיל 2 עד כיתה ב נכנסים לקן של צ׳אצ׳ו: משחק בשמיעה ובתמונות, בלי מבחן ובלי קריאה.</div>
       ${JOIN.kids.map(kidRow).join('')}
       ${JOIN.kids.length < 5 ? `<button class="btn btn-glass btn-block" id="jaddkid">${icon('user-plus')} עוד ילד</button>` : ''}
     </div>
@@ -7564,7 +7564,7 @@ function joinForm(){
 }
 // The kid's own link: it opens the app signed in (takeHi). The name and PIN ride in the #part, which never reaches a server.
 const kidLink = (base, name, pin) => base + '#hi=' + btoa(encodeURIComponent(name) + '.' + pin).replace(/=+$/, '');
-const nestInvite = (base, k) => `הקישור של ${k.name} לקן של קוקו, אנגלית לקטנטנים בשמיעה ובתמונות 🦜\n${kidLink(base, k.name, k.pin)}\n\nפותחים את הקישור בטאבלט או בטלפון שהילד משחק בו, ונכנסים בלחיצה. אפשר גם להתקין שם כאפליקציה. 5 דקות ביום, ועם הקטנים כדאי לשבת ליד.\nאם פעם יבקשו קוד: ${k.pin}`;
+const nestInvite = (base, k) => `הקישור של ${k.name} לקן של צ׳אצ׳ו, אנגלית לקטנטנים בשמיעה ובתמונות 🦜\n${kidLink(base, k.name, k.pin)}\n\nפותחים את הקישור בטאבלט או בטלפון שהילד משחק בו, ונכנסים בלחיצה. אפשר גם להתקין שם כאפליקציה. 5 דקות ביום, ועם הקטנים כדאי לשבת ליד.\nאם פעם יבקשו קוד: ${k.pin}`;
 const kidInvite = (base, k) => k.nest ? nestInvite(base, k) : `היי ${k.name}! 👋\nזה הקישור האישי שלך לאפליקציית האנגלית:\n${kidLink(base, k.name, k.pin)}\n\nלוחצים ונכנסים, בלי סיסמה. מתחילים במבחן רמה קצר (בערך 8 דקות), ואז נפתחות המשימות, המשחקים והחיה שלך.\nאם פעם יבקשו ממך קוד: ${k.pin}\n10 דקות ביום, בהצלחה! 💪`;
 // A kid plays on this phone: sign her in here (the parent's phone, or a shared tablet).
 function kidHere(groupId, name, pin){
@@ -7587,7 +7587,7 @@ function familyPage(fam){
       <h2>לחבר את הילדים</h2>
       ${fam.kids.map((k, i) => `<div class="soft" style="padding:12px;border-radius:14px;display:grid;gap:8px">
         <div class="row-flex between"><b dir="ltr">${esc(k.name)}</b><span class="chip" title="קוד גיבוי">${icon('key')} <span dir="ltr">${esc(k.pin)}</span></span></div>
-        ${k.nest ? `<div class="sub" style="font-size:12px;margin:0">${icon('bird')} הקן של קוקו, גיל <bdi>${esc(k.age)}</bdi>: משחק בשמיעה ובתמונות, בלי מבחן ובלי קריאה.</div>
+        ${k.nest ? `<div class="sub" style="font-size:12px;margin:0">${icon('bird')} הקן של צ׳אצ׳ו, גיל <bdi>${esc(k.age)}</bdi>: משחק בשמיעה ובתמונות, בלי מבחן ובלי קריאה.</div>
         <button class="btn btn-primary btn-block" data-here="${i}">${icon('device-tablet')} משחק במכשיר הזה</button>`
         : `<a class="btn btn-teal btn-block" href="${esc(waLink(kidInvite(fam.link, k)))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} שליחת הקישור בוואטסאפ</a>`}
         <div class="row-flex" style="gap:8px">
@@ -7706,7 +7706,7 @@ function pilotCard(){
   return `<div class="glass panel" id="pilotcard"><div class="row-flex between"><h2>Pilot</h2><button class="btn btn-glass btn-sm" id="pilotload">${icon('chart-bar')} Show</button></div>
     <div class="sub mt-s" style="font-size:13px">Families in the app (the ones from before the link count from Settings.PilotFrom): the funnel, activity per week, feedback and the teacher's notes.</div></div>`;
 }
-const pilotInviteText = link => `🦜 הכירו את קוקו!\nאפליקציה חדשה ללמוד אנגלית בכיף: 10 דקות ביום של משימות, משחקים ושיחות בקול עם תוכי אחד מצחיק, וחיית מחמד שגדלה ככל שמתאמנים 🚀\nאנחנו מזמינים כמה משפחות לנסות 4 שבועות בחינם ולספר לנו מה דעתכם.\nההרשמה לוקחת 3 דקות 👇\n${link}`;
+const pilotInviteText = link => `🦜 הכירו את צ׳אצ׳ו!\nאפליקציה חדשה ללמוד אנגלית בכיף: 10 דקות ביום של משימות, משחקים ושיחות בקול עם תוכי אחד מצחיק, וחיית מחמד שגדלה ככל שמתאמנים 🚀\nאנחנו מזמינים כמה משפחות לנסות 4 שבועות בחינם ולספר לנו מה דעתכם.\nההרשמה לוקחת 3 דקות 👇\n${link}`;
 async function pilotLoad(pin, open, code){
   const card = document.getElementById('pilotcard');
   card.innerHTML = '<div class="spinner"></div>';
@@ -7727,14 +7727,14 @@ async function pilotLoad(pin, open, code){
       <button class="btn ${s.invite.open ? 'btn-glass' : 'btn-primary'} btn-sm" id="pilotopen">${s.invite.open ? icon('lock-simple') + ' Close' : icon('lock-simple-open') + ' Open'}</button>
       <button class="btn btn-glass btn-sm" data-copy="${esc(pilotInviteText(link))}">${icon('copy')} Copy invite</button>
       <a class="btn btn-teal btn-sm" href="${esc(waLink(pilotInviteText(link)))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} WhatsApp</a></div>
-    ${s.chat && s.chat.length ? `<div class="label mt">Talk with Coco · ${s.chat.filter(k => k.week >= 3).length} of ${s.chat.length} talk aloud 3+ days this week</div>
+    ${s.chat && s.chat.length ? `<div class="label mt">Talk with Chacho · ${s.chat.filter(k => k.week >= 3).length} of ${s.chat.length} talk aloud 3+ days this week</div>
     <div class="stack mt-s" style="gap:6px">${s.chat.map(k => `<div class="soft" style="padding:8px 12px;border-radius:12px;font-size:13px"><div class="row-flex between"><b>${esc(k.name)}</b>
       <span>${k.talks} talks · ${k.voicePct}% aloud · mic ${k.micPct}% · days ${k.week} (last week ${k.lastWeek})</span></div>${k.said ? `<div class="sub" style="font-size:12px">"${esc(k.said)}"</div>` : ''}</div>`).join('')}</div>` : ''}
     <div class="label mt">Teacher review · ${s.teacherFlags} notes</div>
     <div class="sub" style="font-size:12px;word-break:break-all" dir="ltr">${esc(tlink)}</div>
     <button class="btn btn-glass btn-sm mt-s" data-copy="${esc(tlink)}">${icon('copy')} Copy teacher link</button>
     <div class="sub mt-s" style="font-size:12px;word-break:break-all" dir="ltr">${esc(nlink)}</div>
-    <button class="btn btn-glass btn-sm mt-s" data-copy="${esc(nlink)}">${icon('copy')} Copy Coco's Nest teacher link</button>
+    <button class="btn btn-glass btn-sm mt-s" data-copy="${esc(nlink)}">${icon('copy')} Copy Chacho's Nest teacher link</button>
     <div class="label mt">Families (days active in weeks 1 to 4)</div>
     <div class="stack mt-s" style="gap:8px">${s.families.length ? s.families.map(f => `<div class="soft" style="padding:10px 12px;border-radius:12px">
       <div class="row-flex between"><b>${esc(f.name)}</b><span class="sub" style="font-size:12px">${f.before ? "before the link · " : ""}day ${f.day}${f.parent ? " · " + esc(f.parent) : ""}${f.feedback ? ' · ' + f.feedback + ' notes' : ''}</span></div>
@@ -7778,7 +7778,7 @@ function dataRender(pin){
     : DATA.table === 'Groups' ? esc(r.values.Name) : esc(r.values.Value);
   const field = (r, f) => {
     const v = r.values[f], id = 'df-' + f;
-    const input = f === 'Level' ? `<select class="input" id="${id}">${d.levels.map(l => `<option value="${l}" ${l === v ? 'selected' : ''}>${l === 'nest' ? 'Coco\'s Nest' : l.toUpperCase()}</option>`).join('')}</select>`
+    const input = f === 'Level' ? `<select class="input" id="${id}">${d.levels.map(l => `<option value="${l}" ${l === v ? 'selected' : ''}>${l === 'nest' ? 'Chacho\'s Nest' : l.toUpperCase()}</option>`).join('')}</select>`
       : f === 'Group' ? `<select class="input" id="${id}">${d.Groups.rows.map(g => `<option value="${esc(g.key)}" ${g.key === v ? 'selected' : ''}>${esc(g.values.Name)}</option>`).join('')}</select>`
       : `<input class="input" id="${id}" value="${esc(v)}" ${/PIN|Age|Redeemed|Goal|Nest/.test(f) ? 'inputmode="numeric"' : ''}>`;
     return `<div class="label mt-s">${esc(DATA.table === 'Settings' ? r.key : DATA_LABEL[f] || f)}</div>${input}${DATA_HINT[f] ? `<div class="sub" style="font-size:11px">${esc(DATA_HINT[f])}</div>` : ''}`;
@@ -7896,11 +7896,11 @@ function auditRender(pin){
   const more = document.getElementById('audmore'); if (more) more.onclick = () => { AUD.limit += 150; auditRender(pin); };
 }
 
-// ---------- Coco's Nest: ages 2 to 7 (specs/nest.md) ----------
-// Listening and pictures only, and only Coco's English (no Hebrew voice): he shows each game first. No reading, timers
+// ---------- Chacho's Nest: ages 2 to 7 (specs/nest.md) ----------
+// Listening and pictures only, and only Chacho's English (no Hebrew voice): he shows each game first. No reading, timers
 // or fail screens, and the pet is the only reward. Content: docs/nest/nest.js (EQ_NEST); the session engine and its
 // games: docs/nest/play.js; recordings: docs/nest/audio (tools/nest_audio.py).
-const NEST_V = 18, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
+const NEST_V = 19, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
 let NE = null, nestLoading = null, nestAudioEl = null, nestQueue = null, nestMic = null;
 function loadNest(){
   if (window.EQ_NEST && typeof NK === 'object' && typeof nkActorOn === 'function' && typeof nkHome === 'function' && typeof nkEchoStart === 'function' && typeof nkStickers === 'function' && typeof nkArcade === 'function') return Promise.resolve(window.EQ_NEST);
@@ -7911,11 +7911,11 @@ function loadNest(){
     const t = setTimeout(() => fail('Could not load. Check the connection and try again.'), 15000);
     s.async = false;
     s.src = ASSETS + 'nest/' + file + '?v=' + NEST_V;
-    s.onload = () => { clearTimeout(t); ready() ? res() : rej(new Error("Coco's Nest is not ready yet.")); };
+    s.onload = () => { clearTimeout(t); ready() ? res() : rej(new Error("Chacho's Nest is not ready yet.")); };
     s.onerror = () => fail('Could not load. Check the connection and try again.');
     document.head.appendChild(s);
   });
-  // The living home (specs/nest-home.md): the scene, Coco repeats you, the sticker book and the parents' postcard.
+  // The living home (specs/nest-home.md): the scene, Chacho repeats you, the sticker book and the parents' postcard.
   return nestLoading = nestLoading || Promise.all([one('nest.js', () => !!window.EQ_NEST), one('play.js', () => typeof NK === 'object'), one('actor.js', () => typeof nkActorOn === 'function'),
     one('home.js', () => typeof nkHome === 'function'), one('echo.js', () => typeof nkEchoStart === 'function'), one('stickers.js', () => typeof nkStickers === 'function'),
     one('arcade.js', () => typeof nkArcade === 'function')])
@@ -7934,14 +7934,14 @@ function nestPic(w){
   return `<img src="${esc(nestPicSrc(w.pic))}" alt="" draggable="false">`;
 }
 
-// The picture of a unit's phrase: its word, or Coco.
+// The picture of a unit's phrase: its word, or Chacho.
 function nestPhrasePic(u){
   const w = u.phrase && u.phrase.word && (u.words || []).find(x => x.id === u.phrase.word);
   return w ? nestPic(w) : `<img src="${cocoSrc('happy')}" alt="" draggable="false">`;
 }
 
 // ---- Sound: one audio element for the whole session, unlocked by the first tap, so iPhones keep playing ----
-// x-<word>: a real animal or thing sound (docs/nest/sounds, tools/nest_sounds.py); everything else is Coco.
+// x-<word>: a real animal or thing sound (docs/nest/sounds, tools/nest_sounds.py); everything else is Chacho.
 const nestClip = key => ASSETS + (key.startsWith('x-') ? 'nest/sounds/' + key.slice(2) : 'nest/audio/' + key) + '.mp3?v=' + NEST_V;
 // The text behind a clip, for the phone's own voice when a recording does not play (English only).
 function nestText(key){
@@ -8059,14 +8059,14 @@ function nestDays(u){
 
 // The playground (specs/nest.md): every game on the words the kid has met, as often as she likes; nothing is saved.
 function nestPlayground(){
-  // Coco's arcade (docs/nest/arcade.js): the playground with two shelves, for the arcade kids.
+  // Chacho's arcade (docs/nest/arcade.js): the playground with two shelves, for the arcade kids.
   if (window.EQ_NEST && typeof nkArcade === 'function' && nkArcOn()) return nkArcade();
   const games = dash && dash.nest && window.EQ_NEST ? nkPlayGames() : [];
   if (!games.length) return renderDash();
   const L = Object.fromEntries(NG_GAMES);
   app.innerHTML = `<div class="nk-home">
     <div class="row-flex between"><button class="btn btn-glass icon-btn" id="nkback" aria-label="Home">${icon('house')}</button>
-      <img class="nk-coco" src="${cocoSrc('happy')}" alt="Coco" style="width:64px;height:64px"></div>
+      <img class="nk-coco" src="${cocoSrc('happy')}" alt="Chacho" style="width:64px;height:64px"></div>
     <div class="nk-games">${games.map(([g, , ic, t]) => `<button class="nk-game soft" data-nkgame="${g}" aria-label="${esc(L[g])}">
       <span class="tile ${t}">${icon(ic, 'duotone')}</span><span>${esc(L[g])}</span></button>`).join('')}</div>
   </div>`;
@@ -8107,7 +8107,7 @@ function renderNest(d){
       : `<div class="nk-adopt">${PETS.filter(p => PET_ART[p[0]]).slice(0, 6).map(([id]) => `<button class="nk-adoptb" data-nkpet="${id}" aria-label="${esc(petName(id))}"><img src="${petSrc(id, 1, 'happy')}" alt=""></button>`).join('')}</div>`}
     </div>
     <div class="nk-today${games.length ? ' three' : ''}">
-      <img class="nk-coco" id="nkcoco" src="${cocoSrc(n.done ? 'celebrate' : 'happy')}" alt="Coco">
+      <img class="nk-coco" id="nkcoco" src="${cocoSrc(n.done ? 'celebrate' : 'happy')}" alt="Chacho">
       ${u ? `<button class="nk-start${again ? ' again' : ''}" id="nkgo" aria-label="${esc(u.title)}">
         <img src="${esc(nestPicSrc(u.icon))}" alt=""><span class="nk-play">${icon(again ? 'arrow-counter-clockwise' : 'play', 'bold')}</span></button>` : ''}
       ${games.length ? `<button class="nk-playb" id="nkplay" aria-label="Play">${icon('puzzle-piece', 'duotone')}</button>` : ''}
@@ -8179,19 +8179,19 @@ async function nestFinish(){
   catch(e){ if (!e.app) queueResult(R); }
 }
 
-// The kid's age or class in the parents' view, and the change (apiParentSetAge): ages 2 to 7 are Coco's Nest.
+// The kid's age or class in the parents' view, and the change (apiParentSetAge): ages 2 to 7 are Chacho's Nest.
 const ageValue = g => g.nest ? 'a' + g.nest.age : (g.girl.age >= 9 && g.girl.age <= 18 ? String(g.girl.age - 6) : '');
 function ageLabel(v){
   const n = NEST_AGES.find(x => x[0] === v), c = GRADES.find(x => String(x[0]) === v);
-  return n ? 'הקן של קוקו, ' + n[1] : c ? 'כיתה ' + c[1] : 'גיל או כיתה';
+  return n ? 'הקן של צ׳אצ׳ו, ' + n[1] : c ? 'כיתה ' + c[1] : 'גיל או כיתה';
 }
-const ageOptions = v => `<option value="">גיל או כיתה</option><optgroup label="הקן של קוקו">${NEST_AGES.map(([a, l]) => `<option value="${a}" ${v === a ? 'selected' : ''}>${l}</option>`).join('')}</optgroup><optgroup label="בית ספר">${GRADES.map(([c, l]) => `<option value="${c}" ${v === String(c) ? 'selected' : ''}>כיתה ${l}</option>`).join('')}</optgroup>`;
+const ageOptions = v => `<option value="">גיל או כיתה</option><optgroup label="הקן של צ׳אצ׳ו">${NEST_AGES.map(([a, l]) => `<option value="${a}" ${v === a ? 'selected' : ''}>${l}</option>`).join('')}</optgroup><optgroup label="בית ספר">${GRADES.map(([c, l]) => `<option value="${c}" ${v === String(c) ? 'selected' : ''}>כיתה ${l}</option>`).join('')}</optgroup>`;
 function ageRow(g){
   return `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:8px;flex-wrap:wrap;align-items:center" data-agebox="${esc(g.girl.name)}">
     <span class="chip">${icon(g.nest ? 'bird' : 'graduation-cap')} ${esc(ageLabel(ageValue(g)))}</span>
     <button class="btn btn-glass btn-sm" data-ageopen="${esc(g.girl.name)}">${icon('pencil-simple')} שינוי גיל או כיתה</button></div>`;
 }
-// Coco's Nest: how many lessons a day (Girls.NestPerDay; 0 = no limit). The playground is open either way.
+// Chacho's Nest: how many lessons a day (Girls.NestPerDay; 0 = no limit). The playground is open either way.
 function nestPerDayRow(g){
   if (!g.nest) return '';
   const v = g.nest.perDay == null ? 1 : g.nest.perDay;
@@ -8199,12 +8199,12 @@ function nestPerDayRow(g){
     <span class="sub" style="margin:0;font-size:13px">שיעורים ביום:</span>
     ${[[1, 'אחד'], [2, 'שניים'], [3, 'שלושה'], [0, 'בלי הגבלה']].map(([n, l]) => `<button class="btn btn-sm ${v === n ? 'btn-primary' : 'btn-glass'}" data-perday="${n}" data-perkid="${esc(g.girl.name)}">${l}</button>`).join('')}</div>`;
 }
-// Coco's arcade: minutes a day (Girls.NestArcadeMin; 15 when empty, 0 = no limit), for the kids who have the arcade.
+// Chacho's arcade: minutes a day (Girls.NestArcadeMin; 15 when empty, 0 = no limit), for the kids who have the arcade.
 function nestArcadeRow(g){
   if (!g.nest || !g.nest.arcade) return '';
   const v = g.nest.arcadeMin == null ? 15 : g.nest.arcadeMin;
   return `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:6px;flex-wrap:wrap;align-items:center">
-    <span class="sub" style="margin:0;font-size:13px">משחקי קוקו ביום:</span>
+    <span class="sub" style="margin:0;font-size:13px">משחקי צ׳אצ׳ו ביום:</span>
     ${[[10, 'עשר דקות'], [15, 'רבע שעה'], [30, 'חצי שעה'], [0, 'בלי הגבלה']].map(([n, l]) => `<button class="btn btn-sm ${v === n ? 'btn-primary' : 'btn-glass'}" data-arcmin="${n}" data-arckid="${esc(g.girl.name)}">${l}</button>`).join('')}</div>`;
 }
 function bindAgeRows(p, pin){
@@ -8223,7 +8223,7 @@ function bindAgeRows(p, pin){
     const g = [].concat(...p.groups.map(x => x.girls)).find(x => x.girl.name === name);
     box.innerHTML = `<select class="input" style="width:150px">${ageOptions(ageValue(g))}</select>
       <button class="btn btn-primary btn-sm" data-agesave>${icon('check')} שמירה</button><button class="btn btn-glass btn-sm" data-agecancel>ביטול</button>
-      <div class="sub" style="font-size:12px;width:100%;margin:0">עד כיתה ב: הקן של קוקו, בשמיעה ובתמונות. מכיתה ג: משימות ומשחקים, ומבחן רמה אם עוד לא היה.</div>`;
+      <div class="sub" style="font-size:12px;width:100%;margin:0">עד כיתה ב: הקן של צ׳אצ׳ו, בשמיעה ובתמונות. מכיתה ג: משימות ומשחקים, ומבחן רמה אם עוד לא היה.</div>`;
     box.querySelector('[data-agecancel]').onclick = () => renderParent(p, pin);
     box.querySelector('[data-agesave]').onclick = async e => {
       const v = box.querySelector('select').value;
@@ -8238,7 +8238,7 @@ function bindAgeRows(p, pin){
   });
 }
 
-// The parents' card for a Nest kid: today's words with their pictures, each one plays Coco's word.
+// The parents' card for a Nest kid: today's words with their pictures, each one plays Chacho's word.
 function nestParentCard(g){
   if (!g.nest || !g.nest.today) return '';
   return `<div class="nk-learn mt-s" data-nkfill="${esc(g.nest.today)}" data-nkkid="${esc(g.girl.name)}"></div>`;
@@ -8256,7 +8256,7 @@ function nestFillParent(p){
   loadNest().then(() => els.forEach(el => {
     const u = nestUnit(el.dataset.nkfill);
     if (!u) return;
-    el.innerHTML = `<div class="he sub" dir="rtl" lang="he" style="font-size:13px;margin:0">${icon('bird')} היום בקן של קוקו: <b>${esc(u.he)}</b></div>
+    el.innerHTML = `<div class="he sub" dir="rtl" lang="he" style="font-size:13px;margin:0">${icon('bird')} היום בקן של צ׳אצ׳ו: <b>${esc(u.he)}</b></div>
       <div class="nk-learnrow">${nestWordsOf(u).map(w => `<button class="nk-lw" data-nkw="${esc(w.id)}" title="${esc(w.he)}">${nestPic(w)}<span dir="ltr">${esc(w.en)}</span></button>`).join('')}</div>
       ${nestCardMore(u)}`;
     el.querySelectorAll('[data-nkw]').forEach(b => b.onclick = () => nestPlay(['w-' + b.dataset.nkw]));
@@ -8269,7 +8269,7 @@ function nestFillParent(p){
 // ---- The preview for the early-years teacher and the owner: every unit, its parts, and a session at each age ----
 let NG_AGE = 5;
 const NG_AGES = [[3, 'Age 2 to 3'], [4, 'Age 4'], [5, 'Age 5'], [7, 'Age 6 to 7']];
-const NG_GAMES = [['meet', 'Meet'], ['find', 'Find it'], ['move', 'Coco says'], ['say', 'Say it'], ['give', 'Give it to me'], ['peek', 'Peekaboo'],
+const NG_GAMES = [['meet', 'Meet'], ['find', 'Find it'], ['move', 'Chacho says'], ['say', 'Say it'], ['give', 'Give it to me'], ['peek', 'Peekaboo'],
   ['sound', 'Who says that?'], ['pop', 'Pop it'], ['sort', 'Sort it'], ['pairs', 'Pairs'], ['missing', "What's missing?"], ['odd', 'Odd one out'],
   ['chant', 'Chant'], ['story', 'Story'], ['scene', 'Big picture'], ['color', 'Color it'], ['dress', 'Get dressed'], ['teach', 'Teach Mom']];
 function nestGalleryDash(){
@@ -8284,9 +8284,9 @@ async function nestGallery(){
   try { await loadNest(); } catch(e){ app.innerHTML = `<div class="glass panel">${esc(e.message)}</div>`; return; }
   const units = EQ_NEST.units;
   app.innerHTML = `<div class="stack">
-    <div class="glass panel"><div class="row-flex between"><h2>Coco's Nest preview</h2><span class="chip purple">${units.length} units</span></div>
-      <div class="sub mt-s" style="font-size:13px">${TEACHER ? "<b>Teacher review.</b> Open a unit to see its words, phrase, Coco says moves and the parents' card, and play it at each age. A note on a unit goes straight to the owner." : 'Play any unit as practice. Nothing is saved.'}</div>
-      <div class="sub mt-s" style="font-size:13px">Every unit is four days: new words, move, song and story, games (a review is one day). Ages 2 and 3 play the 4 core words with 2 pictures. Age 4: all the words, 2 pictures. Age 5: 3 pictures. Ages 6 and 7 also see the written word. Coco shows each game himself the first times; a long press on Coco shows the grown-up's note.</div>
+    <div class="glass panel"><div class="row-flex between"><h2>Chacho's Nest preview</h2><span class="chip purple">${units.length} units</span></div>
+      <div class="sub mt-s" style="font-size:13px">${TEACHER ? "<b>Teacher review.</b> Open a unit to see its words, phrase, Chacho says moves and the parents' card, and play it at each age. A note on a unit goes straight to the owner." : 'Play any unit as practice. Nothing is saved.'}</div>
+      <div class="sub mt-s" style="font-size:13px">Every unit is four days: new words, move, song and story, games (a review is one day). Ages 2 and 3 play the 4 core words with 2 pictures. Age 4: all the words, 2 pictures. Age 5: 3 pictures. Ages 6 and 7 also see the written word. Chacho shows each game himself the first times; a long press on Chacho shows the grown-up's note.</div>
       <div class="row-flex mt" style="gap:6px;flex-wrap:wrap">${nestAgeBtns()}</div></div>
     <div class="stack" style="gap:10px">${units.map(u => `<button class="soft task clickable" data-nkg="${u.id}" style="text-align:left;width:100%;font:inherit;border:0">
       <img class="nk-gicon" src="${esc(nestPicSrc(u.icon))}" alt=""><div class="task-main"><div class="task-top">${u.id} · ${u.review ? 'review of ' + u.review.join(' and ') : u.words.length + ' words'}</div>
@@ -8318,11 +8318,11 @@ function nestGalleryUnit(id){
       <div class="sub mt-s" style="font-size:12px">Gold ring: a core word (ages 2 and 3 play only these).</div></div>
     ${u.phrase ? `<div class="glass panel"><div class="label">Phrase · after Meet; from age 4 also in Say it</div>
       <button class="nk-phr" data-nkp="${esc(u.id)}">${icon('speaker-high')}<span><bdi dir="ltr">${esc(u.phrase.en)}</bdi><div class="sub" dir="rtl" lang="he">${esc(u.phrase.he)}</div></span></button></div>` : ''}
-    <div class="glass panel"><div class="label">Coco says · the kid does it, then taps the green button</div>
+    <div class="glass panel"><div class="label">Chacho says · the kid does it, then taps the green button</div>
       <div class="stack mt-s" style="gap:6px">${moves.filter(m => M[m]).map(m => `<button class="nk-gmove" data-nkm="${esc(m)}">${nestPic(M[m])}<span>${esc(M[m].en)}</span></button>`).join('')}</div></div>
     <div class="glass panel"><div class="label">The parents' card</div>${nestCardMore(u)}</div>
     ${TEACHER ? `<div class="glass panel"><div class="label">A note on this unit</div>
-      <textarea class="input mt-s" id="ngnote" rows="3" placeholder="Order, age fit, a picture, a word, Coco's voice..." style="width:100%;resize:vertical"></textarea>
+      <textarea class="input mt-s" id="ngnote" rows="3" placeholder="Order, age fit, a picture, a word, Chacho's voice..." style="width:100%;resize:vertical"></textarea>
       <button class="btn btn-primary btn-sm mt-s" id="ngsend">${icon('paper-plane-tilt')} Send to the owner</button></div>` : ''}
   </div>`;
   document.getElementById('ngback').onclick = nestGallery;
@@ -8422,7 +8422,7 @@ function signIn(){
   pub = null;
   app.innerHTML = `<div class="glass panel">
     <div class="row-flex between">
-      <div><h1>English with Coco</h1><div class="sub">10 minutes a day</div></div>
+      <div><h1>English with Chacho</h1><div class="sub">10 minutes a day</div></div>
       <button class="btn btn-glass icon-btn" id="pbtn" title="Parent">${icon('lock-simple')}</button>
     </div>
     ${deviceKids().length ? `<div class="label mt" style="margin-left:6px">On this device</div>
@@ -8434,7 +8434,7 @@ function signIn(){
   </div>`;
   const go = () => { const n = document.getElementById('siname').value.trim(); if (!n) return toast('Type your name', true); call('apiWarm').catch(() => {}); pinPad(n); };
   document.getElementById('sigo').onclick = go;
-  // Kids set up on this device: a Coco's Nest kid opens with a tap (a toddler cannot type), the others type their PIN.
+  // Kids set up on this device: a Chacho's Nest kid opens with a tap (a toddler cannot type), the others type their PIN.
   app.querySelectorAll('[data-dkid]').forEach(b => b.onclick = () => {
     const k = deviceKids().find(x => x.name === b.dataset.dkid);
     call('apiWarm').catch(() => {});
@@ -8450,7 +8450,7 @@ function home(){
   app.innerHTML = `
   <div class="glass panel">
     <div class="row-flex between">
-      <div><h1>English with Coco</h1><div class="sub">${esc(pub.group.name)} · 10 minutes a day</div></div>
+      <div><h1>English with Chacho</h1><div class="sub">${esc(pub.group.name)} · 10 minutes a day</div></div>
       <button class="btn btn-glass icon-btn" id="pbtn" title="Parent">${icon('lock-simple')}</button>
     </div>
     <div class="label mt" style="margin-left:6px">Who's learning today?</div>
@@ -8540,7 +8540,7 @@ let dashFresh = 0, dashSync = null, syncNow = '';
 function setDash(d){
   if (!d) return;
   dash = d;
-  // A parent may move the kid into Coco's Nest or out of it: the tap-to-open list on this device follows.
+  // A parent may move the kid into Chacho's Nest or out of it: the tap-to-open list on this device follows.
   if (session && session.keep) { const k = deviceKids().find(x => x.name === session.name); if (k && k.nest !== !!d.nest) deviceKidAdd(session.name, session.pin, !!d.nest); }
   dashFresh = Date.now();
   if (session && session.keep) store.set(dashKey(session.name), d);
@@ -8777,7 +8777,7 @@ function todayMain(d, t){
   const missed = d.week.filter(w => !w.done && !w.isToday && !w.isFuture && !w.beforeStart).length;
   const catchUp = missed ? `<button class="btn btn-glass btn-sm" data-tab="me">Catch up · ${missed}</button>` : '';
   if (!t) return `<div class="glass tmain done"><span class="tcheck rest">${icon('sun', 'duotone')}</span>
-    <div class="tm-main"><b>No mission today</b><span class="sub">Play a game or talk with Coco for bonus points.</span></div>${catchUp}</div>`;
+    <div class="tm-main"><b>No mission today</b><span class="sub">Play a game or talk with Chacho for bonus points.</span></div>${catchUp}</div>`;
   if (!t.mission) return todayCard(t);
   if (t.done) return `<div class="glass tmain done"><span class="tcheck">${icon('check', 'bold')}</span>
     <div class="tm-main"><b>Mission done!</b><span class="sub">${esc(scoreText(t))} · +${esc(t.points)} points · next one tomorrow</span></div>${catchUp}</div>`;
@@ -8791,11 +8791,11 @@ function todayMain(d, t){
   </div>`;
 }
 
-// The two small extras under the mission: Talk with Coco, and an invite (or a warm-up game).
+// The two small extras under the mission: Talk with Chacho, and an invite (or a warm-up game).
 function homePills(d){
   const c = d.chat, rec = warmupGame(d);
   const talk = c ? `<button class="glass hpill" id="chatgo"><img src="${cocoSrc(c.homeToday ? 'celebrate' : 'happy')}" alt="">
-    <span><b>Talk with Coco</b><small class="${c.homeToday ? '' : 'ok'}">${c.homeToday ? 'Done · talk again' : 'Bonus · 3 min'}</small></span></button>` : '';
+    <span><b>Talk to Chacho</b><small class="${c.homeToday ? '' : 'ok'}">${c.homeToday ? 'Done · talk again' : 'Bonus · 3 min'}</small></span></button>` : '';
   const game = invitePill() || `<button class="glass hpill" data-game="${rec}"><span class="tile sm ${GAME_INFO[rec].tile}">${icon(GAME_INFO[rec].icon, 'duotone')}</span>
     <span><b>${GAME_INFO[rec].name}</b><small>Game · 2 min</small></span></button>`;
   return `<div class="hpills" id="hpills">${talk}${game}</div>`;
@@ -9065,15 +9065,15 @@ const waLink = text => 'https:' + '/' + '/api.whatsapp.com/send?text=' + encodeU
 function groupMessage(g, word){
   if (PHE) return `בוקר טוב! ☀️ המשימה של היום מחכה 💜\n10 דקות ביום: פותחים את הקישור, בוחרים שם, ועושים את המשימה של היום.\n\n🔗 ${g.link}\n\n📝 המילה של היום: ${word.word} (${word.meaning})\n` +
     g.girls.map(k => `🔥 ${k.girl.name}: ${k.stats.weekDone}/${k.stats.weekTotal} השבוע, ${k.stats.balance} נקודות`).join('\n');
-  return `Good morning! ☀️ English with Coco is waiting for you 💜\n10 minutes a day — open the link, pick your name, do today's task and log your score.\n\n🔗 ${g.link}\n\n📝 Word of the day: ${word.word} — ${word.meaning}\n` +
+  return `Good morning! ☀️ English with Chacho is waiting for you 💜\n10 minutes a day — open the link, pick your name, do today's task and log your score.\n\n🔗 ${g.link}\n\n📝 Word of the day: ${word.word} — ${word.meaning}\n` +
     g.girls.map(k => `🔥 ${k.girl.name}: ${k.stats.weekDone}/${k.stats.weekTotal} this week, ${k.stats.balance} pts`).join('\n');
 }
 
 function createdCard(c){
   if (!c) return '';
   const text = c.type === 'group'
-    ? `English with Coco — ${c.name}\nLink for the kids: ${c.link}\nParent PIN (tap the lock on the home screen): ${c.pin}`
-    : `Hi ${c.name}! 👋 Your English with Coco link: ${c.link}\nTap your name and enter your PIN: ${c.pin}\nStart with the level test (about 20 minutes), then your daily tasks and the games open.`;
+    ? `English with Chacho — ${c.name}\nLink for the kids: ${c.link}\nParent PIN (tap the lock on the home screen): ${c.pin}`
+    : `Hi ${c.name}! 👋 Your English with Chacho link: ${c.link}\nTap your name and enter your PIN: ${c.pin}\nStart with the level test (about 20 minutes), then your daily tasks and the games open.`;
   return `<div class="today iri" id="created">
     <div class="label" style="color:#3b3f55">${c.type === 'group' ? 'Group created' : 'Kid added to ' + esc(c.group)}</div>
     <h2>${esc(c.name)}</h2>
@@ -9157,7 +9157,7 @@ async function renderParentPush(p, pin){
   const note = text => el.innerHTML = `<div class="sub" style="margin:0;font-size:13px">${text}</div>`;
   if (st.state === 'install') return note(T(`On iPhone, notifications work from the installed app: tap Share, then <b>Add to Home Screen</b>, and open it from there.`, `באייפון התראות עובדות רק מהאפליקציה המותקנת: לוחצים על שיתוף, בוחרים <b>הוספה למסך הבית</b>, ופותחים משם.`));
   if (st.state === 'unsupported') return note(T('This browser can’t receive notifications. Open the installed app on your phone.', 'הדפדפן הזה לא מקבל התראות. פתחו את האפליקציה המותקנת בטלפון.'));
-  if (st.state === 'denied') return note(T('Notifications are blocked for this app. Allow them in the phone’s settings for English with Coco, then come back.', 'ההתראות חסומות. אפשרו אותן בהגדרות הטלפון לאפליקציה הזאת, וחזרו לכאן.'));
+  if (st.state === 'denied') return note(T('Notifications are blocked for this app. Allow them in the phone’s settings for English with Chacho, then come back.', 'ההתראות חסומות. אפשרו אותן בהגדרות הטלפון לאפליקציה הזאת, וחזרו לכאן.'));
   const device = st.state === 'on' ? p.push.devices.find(d => d.e === st.sub.endpoint) : null;
 
   if (!device) {
@@ -9253,7 +9253,7 @@ function renderParent(p, pin){
   app.innerHTML = `
   <div class="stack" id="parentview"${PHE ? ' dir="rtl" lang="he"' : ''}>
     <div class="row-flex between">
-      <div><h1>${p.isAdmin ? 'Admin view' : 'אזור ההורים'}</h1><div class="sub">${p.isAdmin ? p.groups.length + ' groups · ' + fmtDate(p.today) : 'English with Coco'}</div></div>
+      <div><h1>${p.isAdmin ? 'Admin view' : 'אזור ההורים'}</h1><div class="sub">${p.isAdmin ? p.groups.length + ' groups · ' + fmtDate(p.today) : 'English with Chacho'}</div></div>
       <div class="row-flex" style="gap:8px">
         <button class="btn btn-glass icon-btn" id="refresh">${icon('arrows-clockwise')}</button>
         <button class="btn btn-glass icon-btn" id="logout" title="${T('Exit', 'יציאה')}">${icon('sign-out')}</button>
@@ -9336,12 +9336,12 @@ function girlCard(g, isAdmin, grp){
       ${isAdmin && g.pin ? `<span class="chip">${icon('key')} ${esc(g.pin)}</span>` : ''}
       <span class="chip">${icon('target')} ${s.avg == null ? '–' : s.avg + '%'}</span>
       <span class="chip">${icon('fire')} ${s.streak}</span>
-      ${g.coins != null ? `<span class="chip" title="Coins for Coco's shop">${coin}${coinsTxt(g.coins)}</span>` : ''}
+      ${g.coins != null ? `<span class="chip" title="Coins for Chacho's shop">${coin}${coinsTxt(g.coins)}</span>` : ''}
       ${g.games ? `<span class="chip" title="Mini-games this week">${icon('game-controller')} ${g.games.weekRounds}${g.games.weekAvg != null ? ' · ' + g.games.weekAvg + '%' : ''}</span>` : ''}
       ${isAdmin && g.push ? `<span class="chip ${g.push.devices ? 'teal' : ''}">${icon('bell')} ${g.push.devices}</span>` : ''}
       ${isAdmin && g.push && g.push.devices ? `<button class="chip" style="cursor:pointer" data-testpush="${esc(g.girl.name)}">${icon('paper-plane-tilt')} Test</button>` : ''}
       <span class="chip">${s.total} ${T('tasks total', 'משימות בסך הכול')}</span>
-      ${g.chat && g.chat.week ? `<span class="chip teal" title="Talk with Coco this week">${icon('microphone')} ${g.chat.weekVoice}/${g.chat.week} ${T('talks out loud', 'שיחות בקול')}</span>` : ''}
+      ${g.chat && g.chat.week ? `<span class="chip teal" title="Talk with Chacho this week">${icon('microphone')} ${g.chat.weekVoice}/${g.chat.week} ${T('talks out loud', 'שיחות בקול')}</span>` : ''}
     </div>
     ${placementLine(g)}
     ${nestParentCard(g)}
@@ -9351,7 +9351,7 @@ function girlCard(g, isAdmin, grp){
       <a class="btn btn-teal btn-sm" href="${esc(waLink(kidInvite(grp.link, { name: g.girl.name, pin: g.pin, nest: !!g.nest })))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} שליחת הקישור האישי</a>
       <button class="btn btn-glass btn-sm" data-kidhere="${esc(g.girl.name)}" data-kidpin="${esc(g.pin)}" data-kidgroup="${esc(grp.id)}">${icon('device-mobile')} משחק בטלפון הזה</button>
       <span class="chip" title="קוד גיבוי">${icon('key')} <bdi>${esc(g.pin)}</bdi></span></div>` : ''}
-    ${g.chat && g.chat.best ? `<div class="sub mt-s" style="font-size:13px">${icon('chats-circle')} ${T('Said to Coco this week:', 'משפט מהשיחה עם קוקו השבוע:')} <bdi dir="ltr">"${esc(g.chat.best)}"</bdi></div>` : ''}
+    ${g.chat && g.chat.best ? `<div class="sub mt-s" style="font-size:13px">${icon('chats-circle')} ${T('Said to Chacho this week:', 'משפט מהשיחה עם צ׳אצ׳ו השבוע:')} <bdi dir="ltr">"${esc(g.chat.best)}"</bdi></div>` : ''}
     <div class="strip">${g.week.map(w => {
       const st = w.beforeStart ? 'future' : w.done ? 'done' : w.isFuture ? 'future' : w.isToday ? 'pending' : 'missed';
       const v = w.done ? (w.section === 'level' ? (w.levelResult || '✓') : (w.percent !== '' ? w.percent + '%' : '✓')) : st === 'missed' ? '✕' : '';
@@ -9365,7 +9365,7 @@ function girlCard(g, isAdmin, grp){
         <span><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title)}</a></span>
         <b>${r.section === 'level' ? 'Level' : esc(r.correct) + '/' + esc(r.total)}</b>${r.mission && r.seconds ? `<span title="Played in the app">${Math.max(1, Math.round(r.seconds / 60))} min</span>` : ''}<span>+${esc(r.points)}</span></div>`).join('') : `<div>${T('No activity yet', 'עדיין אין פעילות')}</div>`}</div>
     </details>
-    ${g.bought && g.bought.length ? `<details><summary>Coco's shop ▾</summary><div class="recent">${g.bought.map(b => `<div><span>${fmtDate(b.date)}</span>
+    ${g.bought && g.bought.length ? `<details><summary>Chacho's shop ▾</summary><div class="recent">${g.bought.map(b => `<div><span>${fmtDate(b.date)}</span>
       <span>"${esc(b.sentence)}"</span><b>${esc(b.design ? (b.perfect ? 'Studio design · Perfect Fit' : 'Studio design') : b.name)}</b><span>${coinsTxt(b.paid)}</span></div>`).join('')}</div></details>` : ''}
   </div>`;
 }

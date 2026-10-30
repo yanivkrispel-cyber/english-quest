@@ -1,14 +1,14 @@
-# The Wordrobe, phase 1: Coco's shop opens
+# The Wordrobe, phase 1: Chacho's shop opens
 
 A shop where the points and XP the kids earn buy clothes, accessories, victory moves and an upgrade for
-their pet, and where **every purchase is made in English**: Coco the parrot, a fashion designer who only
+their pet, and where **every purchase is made in English**: Chacho the parrot, a fashion designer who only
 speaks English, sells only to kids who ask nicely. Proposal and the owner's picks:
-https://claude.ai/artifact/6GkZRhCvB23frmsM37GXvx (picks: Ask Coco + moves and upgrades, coins next to
-the points, Coco, voice optional, Halloween Drop launch).
+https://claude.ai/artifact/6GkZRhCvB23frmsM37GXvx (picks: Ask Chacho + moves and upgrades, coins next to
+the points, Chacho, voice optional, Halloween Drop launch).
 
 Phase 2, the Studio (Say it Wear it, Shine = Memory, Second Chance, Word Saver): `specs/wordrobe-studio.md`.
 
-Phase 1 (this spec): coins and the opening gift, Coco's shop with Ask Coco, 30 items in six places on the
+Phase 1 (this spec): coins and the opening gift, Chacho's shop with Ask Chacho, 30 items in six places on the
 pet, four victory moves, the Streak Shield, items on the pet everywhere it appears, the Halloween Drop,
 coins and purchases in the parent view. Later phases (not here): Say it Wear it, Shine = Memory, Second
 Chance and Word Saver (phase 2); Talking Charms, Living Legends, Runway & Gifts (phase 3).
@@ -25,13 +25,13 @@ Chance and Word Saver (phase 2); Talking Charms, Living Legends, Runway & Gifts 
 
 ## The shop opens on a date
 
-- `Settings.ShopOpens` (default `2026-10-24`). Before it, home shows a teaser: Coco asleep, "Coco's
+- `Settings.ShopOpens` (default `2026-10-24`). Before it, home shows a teaser: Chacho asleep, "Chacho's
   Wordrobe opens in N days", and the coins already waiting. The shop can be visited (and asking can be
   practiced), but nothing can be bought. `Settings.ShopEarly` = kid names (comma separated) who may shop
   before the date (the owner's own player, for a try-out).
-- From the date on, home has the shop card (Coco, coins, "Halloween Drop is here" while it runs), and a hanger
+- From the date on, home has the shop card (Chacho, coins, "Halloween Drop is here" while it runs), and a hanger
   button on the pet card opens My wardrobe. The first visit plays the opening gift (once per phone): a gift box
-  opens into Coco and the coins count up.
+  opens into Chacho and the coins count up.
 
 ## Catalog
 
@@ -67,12 +67,12 @@ Wings (blue, pink, orange). The first is the drawn one; the others are a hue tur
 filter on the pet, a CSS filter on the thumbnails). A color is asked for in English ("Do you have it in pink?"),
 and an owned item can be worn in any of its colors (My wardrobe).
 
-## Ask Coco
+## Ask Chacho
 
-A purchase is a short conversation with Coco (the item's sheet):
+A purchase is a short conversation with Chacho (the item's sheet):
 
-1. Coco greets the kid and the item: "Ooh, the Star Beanie! Excellent taste."
-2. Phrase tiles the kid can tap (each one shows as her own chat bubble, Coco answers):
+1. Chacho greets the kid and the item: "Ooh, the Star Beanie! Excellent taste."
+2. Phrase tiles the kid can tap (each one shows as her own chat bubble, Chacho answers):
    **How much is it?** (the price, and "ask me nicely and I might give you a discount"),
    **Can I try it on?** (her pet wears it in the mirror), **Do you have it in ...?** (one tile per color).
 3. **Ask for it**: she builds her request from word tiles:
@@ -90,7 +90,7 @@ A purchase is a short conversation with Coco (the item's sheet):
 4. **Buy**: the sentence must be good English. Accepted shapes (X = `the [color] item`):
    `[Please] give me X.` · `I want X[, please].` · `I'd like X[, please].` ·
    `Can/Could/May I [please] have X[, please]?`, each with an optional `Thank you!` at the end, and one
-   "please" at most. Otherwise Coco gives one friendly hint and the kid fixes it, for example:
+   "please" at most. Otherwise Chacho gives one friendly hint and the kid fixes it, for example:
    a question without "?", "?" after a statement, the color after the item ("In English the color comes
    first: the pink star beanie"), a missing "the", two "please"s. "Show me how" fills
    `Can I have the X, please?` (10%); the best price needs "Could" or "May" and "Thank you!".
@@ -150,7 +150,7 @@ Thank you!").
 
 ## Art
 
-Free, in the Gemini web app like the pets (recipe and prompts: `tools/PETS.md`): Coco as a 6-pose sticker sheet
+Free, in the Gemini web app like the pets (recipe and prompts: `tools/PETS.md`): Chacho as a 6-pose sticker sheet
 (`docs/coco/<mood>.webp`, the same mood names as the pets), and the items as front-view sticker sheets of six,
 cut by `tools/cut_items.py` into `docs/items/<id>.webp` (lens openings become transparent; `--no-holes` for sheets
 without openings). Two props: `jack-o-lantern` (Halloween) and `gift-box` (the opening gift). Source sheets are

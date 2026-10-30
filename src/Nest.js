@@ -1,4 +1,4 @@
-// Coco's Nest (specs/nest.md): the track for ages 2 to 7. A Nest kid has Level 'nest' (outside LEVELS, so the level chain,
+// Chacho's Nest (specs/nest.md): the track for ages 2 to 7. A Nest kid has Level 'nest' (outside LEVELS, so the level chain,
 // journeys, gates and the catalog never see her) and her real age. One day a day in the order of NEST_UNITS
 // (src/NestIndex.js, written by tools/nest-index.js from docs/nest/nest.js): a unit is four days (n04 new words,
 // n04.b move, n04.c song and story, n04.d games) and a review is one (r02). No level test, no link out.
@@ -8,7 +8,7 @@ var NEST_DAY = /^[nr]\d\d(\.[bcd])?$/, NEST_DETAIL = /^[a-z0-9-]+:[01](,[a-z0-9-
 
 function isNest(kid) { return !!kid && String(kid.Level || '').trim().toLowerCase() === 'nest'; }
 
-function nestUnits() { return typeof NEST_UNITS === 'object' && NEST_UNITS.length ? NEST_UNITS : [['n01', 'Hello, Coco!', 0]]; }
+function nestUnits() { return typeof NEST_UNITS === 'object' && NEST_UNITS.length ? NEST_UNITS : [['n01', 'Hello, Chacho!', 0]]; }
 
 // The day for a date: the first one she has not played yet, then around again. It follows what she played, not the
 // calendar, so a missed day (or a move into the Nest in the middle of a week) never skips a unit.
@@ -50,14 +50,14 @@ function nestInfo(kid, t, assigned, logs) {
     played: played,
     known: words,
     all: nestAllOpen(kid),
-    // The living home (specs/nest-home.md) and the arcade (a live Coco, real sounds, the band, Coco's games): every Nest kid
+    // The living home (specs/nest-home.md) and the arcade (a live Chacho, real sounds, the band, Chacho's games): every Nest kid
     // since 2026-10-29 (the owner). Settings.NestHome / NestArcade = 'off' closes one again for everyone.
     home: !nestOff('NestHome'),
     arcade: !nestOff('NestArcade'),
     // Days played (distinct dates with a Nest row): a flower each in the home's garden.
     days: logs.filter(function (l) { return l.Section === 'nest'; }).map(function (l) { return String(l.Date); }).filter(function (d, i, a) { return a.indexOf(d) === i; }).length,
     perDay: perDay,
-    // Minutes a day in Coco's arcade (the parent sets it; 0 = no limit). The phone counts the minutes.
+    // Minutes a day in Chacho's arcade (the parent sets it; 0 = no limit). The phone counts the minutes.
     arcadeMin: nestArcadeMin(kid),
     // One more lesson: once the day's own is done, the next day of the program while the parent's daily number allows.
     next: done && (!perDay || today < perDay) ? String(nestNext(kid, logs).url).slice(5) : null
@@ -84,7 +84,7 @@ function apiParentNestPerDay(pin, name, n) {
   return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
 }
 
-// Minutes a day in Coco's arcade (Girls.NestArcadeMin, set by the parent): 15 when empty, 0 = no limit.
+// Minutes a day in Chacho's arcade (Girls.NestArcadeMin, set by the parent): 15 when empty, 0 = no limit.
 function nestArcadeMin(kid) {
   var v = String(kid.NestArcadeMin == null ? '' : kid.NestArcadeMin).trim();
   if (v === '') return 15;

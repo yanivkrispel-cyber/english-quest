@@ -2,7 +2,7 @@
 
 The daily task moves from a link to test-english.com into the app. The plan, the competitor check and the owner's
 picks: https://claude.ai/artifact/9ajUGftfHuLqXCPPaZGqJx (picks in its db at `picks/owner`: Hebrew help on demand,
-writing checked by Coco and sent to the parents, speaking as an optional bonus, a story for the journey, a family week
+writing checked by Chacho and sent to the parents, speaking as an optional bonus, a story for the journey, a family week
 and a dinner question). Phase 1 is the engine, five mission types and a first week of content for all six levels.
 
 ## What stays the same

@@ -2,7 +2,7 @@
 // Serve the app folder (not test/) so the page can load ../docs/games.js and the pet art:
 //   python -m http.server 8765   ->   http://localhost:8765/test/preview.html
 // Aviv has a pet, some games and 30 stations (the gate is open: under 12/15 fails, 12+ passes);
-// Ziv has no pet yet (adoption flow) and a few stations; Ron is new (level test first). Aviv may shop at Coco's
+// Ziv has no pet yet (adoption flow) and a few stations; Ron is new (level test first). Aviv may shop at Chacho's
 // (ShopEarly) with 900 extra coins; the mock grades a request roughly (the real rules: test/dev-server.js). The Studio uses the
 // app's own studioGrade; collecting words and the Word Saver are kept in the mock data only.
 const fs = require('fs');

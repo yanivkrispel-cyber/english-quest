@@ -159,7 +159,7 @@ function apiAudit(pin, days) {
   });
   readTable('Games').filter(inRange).forEach(function (r) { kid(r, 'game', [r.Game, r.Level, score(r)].filter(String).join(' · ')); });
   readTable('Gates').filter(inRange).forEach(function (r) { kid(r, 'gate', r.From + ' to ' + r.To + ' · ' + score(r) + (r.Passed === 'yes' || r.Passed === true ? ' · passed' : '')); });
-  readTable('Chats').filter(inRange).forEach(function (r) { kid(r, 'talk with Coco', r.Talk + ' · ' + r.Voice + ' aloud, ' + r.Tiles + ' tapped'); });
+  readTable('Chats').filter(inRange).forEach(function (r) { kid(r, 'talk with Chacho', r.Talk + ' · ' + r.Voice + ' aloud, ' + r.Tiles + ' tapped'); });
   readTable('Shop').filter(inRange).forEach(function (r) { kid(r, 'bought', r.Item + (r.Paid ? ' · ' + r.Paid + ' coins' : '')); });
   readTable('Placements').filter(inRange).forEach(function (r) { kid(r, 'level test', 'form ' + r.Form + ' · ' + r.Level + ' · ' + score(r)); });
   readTable('Flags').filter(inRange).forEach(function (r) {

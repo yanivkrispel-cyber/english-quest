@@ -1,12 +1,12 @@
-// Coco's Nest, the arcade plan stage A (specs/nest.md, "A live Coco"): Coco and the kid's pet act in every game, real
-// animal and thing sounds, and Coco's band under the chants. Loaded after play.js, in the app's global scope: every
+// Chacho's Nest, the arcade plan stage A (specs/nest.md, "A live Chacho"): Chacho and the kid's pet act in every game, real
+// animal and thing sounds, and Chacho's band under the chants. Loaded after play.js, in the app's global scope: every
 // top-level name starts with nk/NK (test/nest-check.js fails on a name shared with src/Index.html or play.js).
 // Only for the try-out kids (nestInfo.arcade: Settings.NestAll and Settings.NestArcade) and the teacher's preview.
 
 const nkAlive = () => !!(NE && (NE.preview || (dash && dash.nest && dash.nest.arcade)));
 const NKA = { idle: 0, flying: false };
 
-// ---------- Coco's poses ----------
+// ---------- Chacho's poses ----------
 // docs/coco/<pose>.webp. A pose without its own picture yet borrows the closest one (stage A's art adds them).
 const NK_POSES = new Set(['happy', 'celebrate', 'cool', 'oops', 'sleepy', 'thinking', 'point', 'laugh', 'surprised', 'shy', 'dance', 'eat',
   'fly', 'listen', 'whisper', 'shout', 'confused', 'cheer', 'wave', 'sneeze', 'sad', 'sleep', 'clap', 'thumbs']);
@@ -20,7 +20,7 @@ function nkPose(p, ms){
   if (ms) NKA.poseT = setTimeout(() => { const x = document.getElementById('nkcoco'); if (x) x.src = cocoSrc('happy'); }, ms);
 }
 
-// ---------- Moves: short Web Animations on Coco or the pet (nothing moves with reduced motion) ----------
+// ---------- Moves: short Web Animations on Chacho or the pet (nothing moves with reduced motion) ----------
 const NK_MOVES = {
   hop: [[{ transform: 'translateY(0)' }, { transform: 'translateY(-22%) scaleY(1.06)' }, { transform: 'translateY(0) scaleY(.92)' }, { transform: 'none' }], 520],
   giggle: [[{ transform: 'rotate(0)' }, { transform: 'rotate(-9deg)' }, { transform: 'rotate(9deg)' }, { transform: 'rotate(-7deg)' }, { transform: 'rotate(7deg)' }, { transform: 'none' }], 620],
@@ -42,7 +42,7 @@ const nkCocoEl = () => document.getElementById('nkcoco');
 const nkPetEl = () => document.getElementById('nkdpet');
 
 // ---------- On every screen of a session ----------
-// Called at the end of nestRender: Coco gets bigger and breathes, fidgets now and then, answers a tap; the pet sits on
+// Called at the end of nestRender: Chacho gets bigger and breathes, fidgets now and then, answers a tap; the pet sits on
 // the other side of the dock (not in games where the pet is already on the stage).
 function nkActorOn(s){
   if (!NKA.pre && nkAlive()) { NKA.pre = 1; ['fly', 'cheer', 'clap', 'thumbs', 'dance', 'confused', 'surprised', 'laugh', 'sneeze', 'wave'].forEach(p => { new Image().src = nkPoseSrc(p); }); }
@@ -71,7 +71,7 @@ function nkActorOn(s){
 }
 function nkActorOff(){ if (NE && NE.off) { try { NE.off(); } catch(e){} NE.off = null; } clearTimeout(NKA.idle); clearTimeout(NKA.poseT); const f = document.getElementById('nkflyer'); if (f) f.remove(); }
 
-// Every 5 to 9 seconds, when Coco is quiet: he looks around, tilts his head, flaps or hops; the pet bounces sometimes.
+// Every 5 to 9 seconds, when Chacho is quiet: he looks around, tilts his head, flaps or hops; the pet bounces sometimes.
 function nkFidget(){
   clearTimeout(NKA.idle);
   NKA.idle = setTimeout(() => {
@@ -85,7 +85,7 @@ function nkFidget(){
   }, 5000 + Math.random() * 4000);
 }
 
-// A tap on Coco: he giggles, spins or sneezes (with a line, when he is not in the middle of saying something).
+// A tap on Chacho: he giggles, spins or sneezes (with a line, when he is not in the middle of saying something).
 function nkCocoTap(){
   if (!NE || NKA.flying) return;
   const r = [['giggle', 'laugh', 'en-tickle'], ['spin', 'celebrate', 'en-whee'], ['sneeze', 'sneeze', 'en-achoo']][Math.floor(Math.random() * 3)];
@@ -103,7 +103,7 @@ function nkPetTap(){
   nkSfx('boing');
 }
 
-// A few feathers puff out of Coco (the sneeze).
+// A few feathers puff out of Chacho (the sneeze).
 function nkFeathers(){
   const c = nkCocoEl();
   if (!c || nkCalm()) return;
@@ -120,7 +120,7 @@ function nkFeathers(){
   }
 }
 
-// ---------- A right answer: Coco flies to the card, hops on it and flies back; the pet cheers ----------
+// ---------- A right answer: Chacho flies to the card, hops on it and flies back; the pet cheers ----------
 function nkActorWin(s){
   if (!nkAlive()) return;
   const p = nkPetEl();
@@ -156,7 +156,7 @@ function nkActorWin(s){
   } catch(e){ done(); }
   setTimeout(() => { if (NKA.flying) done(); }, 1900);
 }
-// A wrong tap: Coco shakes his head (or looks surprised), the pet thinks, a soft boing.
+// A wrong tap: Chacho shakes his head (or looks surprised), the pet thinks, a soft boing.
 function nkActorMiss(){
   if (!nkAlive()) return;
   const surprised = Math.random() < .5;
@@ -168,10 +168,10 @@ function nkActorMiss(){
 }
 
 // ---------- Real sounds (docs/nest/sounds, tools/nest_sounds.py) ----------
-// The real sound first, then Coco says it ("Moo!"): the kid hears the cow and the English word for what it says.
+// The real sound first, then Chacho says it ("Moo!"): the kid hears the cow and the English word for what it says.
 const nkSnd = id => nkReal(id).concat(['s-' + id]);
 
-// ---------- Coco's band: soft marimba, bass and bells under a chant (Web Audio, no files) ----------
+// ---------- Chacho's band: soft marimba, bass and bells under a chant (Web Audio, no files) ----------
 // One of six tunes and one of four keys by unit, a bar at a time on the drums' clock. Four chords, I V vi IV.
 const NK_KEYS = [261.63, 293.66, 349.23, 392.0];
 const NK_CHORDS = [[0, 4, 7], [7, 11, 14], [9, 12, 16], [5, 9, 12]];
@@ -194,7 +194,7 @@ function nkNote(ctx, t, f, len, vol, kind){
 }
 function nkBandBar(ctx, t, beat, bar, unit){
   if (!ctx || !nkAlive()) return;
-  if (bar === 0) nkPose('dance');  // Coco dances to his band
+  if (bar === 0) nkPose('dance');  // Chacho dances to his band
   const h = nkHash(unit), root = NK_KEYS[h % 4], tune = NK_TUNES[(h >> 3) % NK_TUNES.length], ch = NK_CHORDS[bar % 4];
   const hz = semi => root * Math.pow(2, semi / 12);
   try {
@@ -207,7 +207,7 @@ function nkBandBar(ctx, t, beat, bar, unit){
 const nkReal = id => nkAlive() && (EQ_NEST.real || []).includes(id) ? ['x-' + id] : [];
 
 // ---------- Stage B: things in the painted worlds that answer a tap ----------
-// [word, x %, y % of the painting (600x804), radius % of its width]. Only words Coco has a clip for (w-<word>). A tap lifts
+// [word, x %, y % of the painting (600x804), radius % of its width]. Only words Chacho has a clip for (w-<word>). A tap lifts
 // that round piece of the painting out (a copy of the picture behind it, so nothing new is drawn), wobbles it and says it.
 const NK_HOTS = {
   home: [['window', 70, 18, 14], ['teddy-bear', 21, 35, 6], ['flower', 66, 29, 5]],

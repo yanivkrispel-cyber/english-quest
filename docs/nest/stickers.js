@@ -351,7 +351,7 @@ async function nksCard(el, name, g0){
 
 // The WhatsApp text (emoji are fine inside WhatsApp text; never in the UI).
 function nksText(m){
-  return [`🦜 הגלויה של השבוע מהקן של קוקו`,
+  return [`🦜 הגלויה של השבוע מהקן של צ׳אצ׳ו`,
     m.words.length ? (m.met ? `המילים של ${m.name} השבוע: ` : `המילים שמחכות ל${m.name}: `) + m.words.map(w => w.en).join(', ') : '',
     m.days ? `🌸 ימי משחק השבוע: ${m.days}` : '',
     m.tip ? `🏠 רעיון לבית: ${m.tip.replace(/[{}]/g, '')}` : '',
@@ -460,7 +460,7 @@ async function nksDraw(m){
   x.save(); x.shadowColor = 'rgba(38,40,80,.22)'; x.shadowBlur = 50; x.shadowOffsetY = 20;
   nksRound(x, PAD, PAD, W - PAD * 2, H - PAD * 2, 56); x.fillStyle = 'rgba(255,255,255,.8)'; x.fill(); x.restore();
   nksRound(x, PAD, PAD, W - PAD * 2, H - PAD * 2, 56); x.lineWidth = 3; x.strokeStyle = 'rgba(255,255,255,.95)'; x.stroke();
-  // The stamp with Coco (top left), slightly turned.
+  // The stamp with Chacho (top left), slightly turned.
   x.save(); x.translate(LEFT + 100, 230); x.rotate(-.06);
   x.shadowColor = 'rgba(38,40,80,.2)'; x.shadowBlur = 18; x.shadowOffsetY = 8;
   nksRound(x, -100, -120, 200, 240, 18); x.fillStyle = '#fff'; x.fill(); x.shadowColor = 'transparent';
@@ -473,7 +473,7 @@ async function nksDraw(m){
   const nameLines = nksWrap(x, nksTokens('השבוע של {' + m.name + '}'), 66, 800, RIGHT - LEFT - 260);
   nameLines.slice(0, 2).forEach((l, i) => nksLine(x, l, RIGHT, 256 + i * 74, 66, 800, ink));
   const yDates = 256 + Math.min(2, nameLines.length) * 74 - 14;
-  nksLine(x, [{ t: 'בקן של קוקו, ' + nksDm(m.from) + ' עד ' + nksDm(m.today), en: false }], RIGHT, yDates, 34, 600, muted);
+  nksLine(x, [{ t: 'בקן של צ׳אצ׳ו, ' + nksDm(m.from) + ' עד ' + nksDm(m.today), en: false }], RIGHT, yDates, 34, 600, muted);
   // The words: a clay picture and the English word under it, from the right.
   nksLine(x, [{ t: m.met ? 'מילים שפגשנו השבוע' : 'המילים שמחכות לנו', en: false }], RIGHT, yWords, 40, 800, ink);
   m.words.forEach((w, i) => {
@@ -485,7 +485,7 @@ async function nksDraw(m){
     x.fillText(w.en, l + tw / 2, t + th - 30, tw - 16);
   });
   // The days played this week: a flower each (no empty places, nothing missed).
-  nksLine(x, [{ t: m.days ? 'ימי משחק השבוע: ' + m.days : 'השבוע עוד לא שיחקנו. קוקו מחכה בקן', en: false }], RIGHT, yDays, 38, 800, ink);
+  nksLine(x, [{ t: m.days ? 'ימי משחק השבוע: ' + m.days : 'השבוע עוד לא שיחקנו. צ׳אצ׳ו מחכה בקן', en: false }], RIGHT, yDays, 38, 800, ink);
   for (let i = 0; i < m.days; i++) if (imgs.flower) x.drawImage(imgs.flower, RIGHT - (i + 1) * (fl + 14) + 14, yFlowers, fl, fl);
   // One idea for home.
   if (tipLines.length) {
@@ -495,6 +495,6 @@ async function nksDraw(m){
   }
   // The address, left to right.
   nksFont(x, true, 30, 700); x.direction = 'ltr'; x.textAlign = 'center'; x.fillStyle = muted;
-  x.fillText('English with Coco  ·  coco.coachkrispel.com', W / 2, H - PAD - 44);
+  x.fillText('English with Chacho  ·  coco.coachkrispel.com', W / 2, H - PAD - 44);
   return new Promise((res, rej) => { try { cv.toBlob(b => b ? res(b) : rej(new Error('no picture')), 'image/png'); } catch(e){ rej(e); } });
 }

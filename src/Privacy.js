@@ -105,10 +105,10 @@ function apiExportData(pin, groupId) {
     });
   });
   audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : '', gid, 'export', 'the family data', true);
-  return { app: 'English with Coco', exported: new Date().toISOString(), family: String(t.group.Name), kids: t.kids, tables: out };
+  return { app: 'English with Chacho', exported: new Date().toISOString(), family: String(t.group.Name), kids: t.kids, tables: out };
 }
 
-// Least data (specs/store-readiness.md): the audit trail keeps 180 days, the text of what a kid said to Coco 90 days
+// Least data (specs/store-readiness.md): the audit trail keeps 180 days, the text of what a kid said to Chacho 90 days
 // (the counts stay). Runs at night on Cloudflare (platformTick). It removes the old audit rows only when there are a
 // month's worth of them, so the table is rewritten about once a month, not every night.
 var KEEP = { auditDays: 180, saidDays: 90, batchDays: 30 };

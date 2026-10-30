@@ -1,11 +1,11 @@
-// Talk with Coco, level a2 (specs/talk.md; format and writing rules: tools/TALK-WRITING.md).
+// Talk with Chacho, level a2 (specs/talk.md; format and writing rules: tools/TALK-WRITING.md).
 // Mission talks (t<mission id>) first, then the home scenes (s<level><nn>). Check: node test/talk-check.js
 window.EQ_TALK = window.EQ_TALK || {};
-// Talk to Coco: A2 mission talks (staging, writer M). Format: app/specs/talk.md, rules: app/tools/TALK-WRITING.md.
+// Talk to Chacho: A2 mission talks (staging, writer M). Format: app/specs/talk.md, rules: app/tools/TALK-WRITING.md.
 window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   {
     id: 'ta2g01', title: 'Guess my animal!',
-    he: 'משחק ניחושים עם קוקו: שואלים שאלות כן/לא עם Do, Is, Can',
+    he: 'משחק ניחושים עם צ׳אצ׳ו: שואלים שאלות כן/לא עם Do, Is, Can',
     turns: [
       {
         c: "Let's play a game! I am thinking of an animal. Can you ask me a yes or no question?",
@@ -18,7 +18,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
         ],
         o: "Ooh! Here is a clue: it is black and white.",
         t: ["Can it fly?", "Is it big?", "Does it eat fish?"],
-        x: [["can it fly", 0], ["it can fly", 0], ["does it swim", 1], ["is it big", 2], ["is it small", 2], ["it eat fish", 3], ["does it eat meat", 3], ["is it a dog", -1], ["hello coco", -1]]
+        x: [["can it fly", 0], ["it can fly", 0], ["does it swim", 1], ["is it big", 2], ["is it small", 2], ["it eat fish", 3], ["does it eat meat", 3], ["is it a dog", -1], ["hello chacho", -1]]
       },
       {
         c: "Here is another clue: it lives in a very cold place. What else do you want to ask me?",
@@ -60,7 +60,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2g02', title: 'Who ate my crackers?',
-    he: 'קוקו מחפש מי אכל לו את הקרקרים: שאלות עם who ומילות יחס בסוף',
+    he: 'צ׳אצ׳ו מחפש מי אכל לו את הקרקרים: שאלות עם who ומילות יחס בסוף',
     turns: [
       {
         c: "Oh no! Somebody ate my crackers! Who ate them, do you think: the cat, the dog or the mouse?",
@@ -92,7 +92,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
         a: [
           { k: ['who'], r: "Who helped you? The mouse says: Nobody! I did it alone." },
           { k: ['why'], r: "Why did you eat them? The mouse says: I was so hungry!" },
-          { k: ['how where when what'], r: "Good question! The mouse says: Sorry, Coco! I can't tell you." }
+          { k: ['how where when what'], r: "Good question! The mouse says: Sorry, Chacho! I can't tell you." }
         ],
         o: "The mouse is too shy to answer. She just says: Sorry!",
         t: ["Why did you eat my crackers?", "Who helped you?", "How did you open the box?"],
@@ -116,19 +116,19 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2g03', title: 'Right now or every day?',
-    he: 'מדברים עם קוקו על מה עושים עכשיו ומה עושים בדרך כלל',
+    he: 'מדברים עם צ׳אצ׳ו על מה עושים עכשיו ומה עושים בדרך כלל',
     turns: [
       {
         c: "Right now I am sitting in my shop and eating a cracker. What are you doing right now?",
         he: 'מה אתם עושים עכשיו? עם am + ing: I am talking to you. או I am sitting on my bed.',
         a: [
           { k: ['eat eating ate drink snack'], r: "You are eating? Ooh, save a crumb for me!" },
-          { k: ['talk speak learn english coco chat chatting'], r: "You are talking to me! And I am listening to you." },
+          { k: ['talk speak learn english chacho chaco chacha chocho chatcho chat chatting'], r: "You are talking to me! And I am listening to you." },
           { k: ['sit sitting sat lie lying bed sofa chair couch relax'], r: "You are sitting and relaxing. Very nice!" }
         ],
         o: "Ooh, nice! I am listening to you right now.",
         t: ["I am talking to you.", "I am sitting on the sofa.", "I am eating a snack."],
-        x: [["i am talking to you", 1], ["i talk with coco", 1], ["i am sitting on my bed", 2], ["i lying on the sofa", 2], ["eating breakfast", 0], ["nothing", -1], ["playing", -1]]
+        x: [["i am talking to you", 1], ["i talk with chacho", 1], ["i am sitting on my bed", 2], ["i lying on the sofa", 2], ["eating breakfast", 0], ["nothing", -1], ["playing", -1]]
       },
       {
         c: "Every afternoon I make hats. What do you usually do after school?",
@@ -172,7 +172,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2v01', title: 'Interested in, afraid of',
-    he: 'מדברים עם קוקו על מה מעניין אתכם, למה מקשיבים, ממה אנשים מפחדים ובמה אתם גאים',
+    he: 'מדברים עם צ׳אצ׳ו על מה מעניין אתכם, למה מקשיבים, ממה אנשים מפחדים ובמה אתם גאים',
     turns: [
       {
         c: "I am very interested in fashion and words. What are you interested in?",
@@ -230,7 +230,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2v02', title: 'Design a superhero',
-    he: 'מעצבים עם קוקו גיבורת-על: שיער, פנים, ולמי היא דומה',
+    he: 'מעצבים עם צ׳אצ׳ו גיבורת-על: שיער, פנים, ולמי היא דומה',
     turns: [
       {
         c: "I am drawing a new superhero for my shop! Should she have curly hair or straight hair?",
@@ -278,7 +278,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
         ],
         o: "Ha! Yes, I can see it. She is perfect now.",
         t: ["She looks like a film star.", "She looks like a singer.", "She looks like a footballer."],
-        x: [["she look like a singer", 1], ["a film star", 0], ["footballer", 2], ["like you coco", -1], ["my mom", -1]]
+        x: [["she look like a singer", 1], ["a film star", 0], ["footballer", 2], ["like you chacho", -1], ["my mom", -1]]
       },
       {
         c: "Now she needs a superhero name! What should we call her?",
@@ -286,14 +286,14 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
         a: [],
         o: "What a fantastic name! She is ready for my poster.",
         t: ["Let's call her Star Girl.", "Her name is Captain Curly.", "Call her Super Freckles!"],
-        x: [["star girl", -1], ["lets call her super coco", -1]]
+        x: [["star girl", -1], ["lets call her super chacho", -1]]
       }
     ],
     end: "Thank you, designer! You describe people really well. Bye for now!"
   },
   {
     id: 'ta2l01', title: "Ben's camp roommates",
-    he: 'מדברים עם קוקו על השותפים של בן לחדר במחנה, ליאו וסאם',
+    he: 'מדברים עם צ׳אצ׳ו על השותפים של בן לחדר במחנה, ליאו וסאם',
     turns: [
       {
         c: "Leo is friendly but he snores. Sam is funny but messy. Which roommate do you like more?",
@@ -345,7 +345,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2l02', title: 'The Treetop Hotel',
-    he: "קוקו בקבלה של מלון: עושים צ'ק-אין ושואלים שאלות",
+    he: "צ׳אצ׳ו בקבלה של מלון: עושים צ'ק-אין ושואלים שאלות",
     turns: [
       {
         c: "Welcome to the Treetop Hotel! I am the receptionist today. Do you have a booking?",
@@ -356,7 +356,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
         ],
         o: "No problem! We have a lovely room for you.",
         t: ["Yes, I have a booking.", "No, I don't."],
-        x: [["yes i have a booking", 1], ["yes", 1], ["no i don't", 0], ["no", 0], ["hello coco", -1], ["what", -1]]
+        x: [["yes i have a booking", 1], ["yes", 1], ["no i don't", 0], ["no", 0], ["hello chacho", -1], ["what", -1]]
       },
       {
         c: "How many nights do you want to stay with us?",
@@ -411,12 +411,12 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
     end: "Enjoy your stay at the Treetop Hotel! Call me if you need anything. Bye!"
   },
   {
-    id: 'ta2l03', title: 'Help Coco find the way!',
-    he: 'קוקו הלך לאיבוד בעיר: נותנים לו הוראות דרך',
+    id: 'ta2l03', title: 'Help Chacho find the way!',
+    he: 'צ׳אצ׳ו הלך לאיבוד בעיר: נותנים לו הוראות דרך',
     turns: [
       {
         c: "Help, I am lost! I want to find the ice cream shop. Should I go straight on or turn left?",
-        he: 'תנו לקוקו הוראה: Go straight on. או Turn left. או Turn right.',
+        he: 'תנו לצ׳אצ׳ו הוראה: Go straight on. או Turn left. או Turn right.',
         a: [
           { k: ['straight strait'], r: "Straight on! Okay, I am walking. I can see a bank now." },
           { k: ['left'], r: "Turn left! Okay, I am walking. I can see a bank now." },
@@ -468,7 +468,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2r01', title: 'Help for Tired Tamar',
-    he: 'מה דעתכם על הבעיה של תמר והכלבה סנואי? מייעצים יחד עם קוקו',
+    he: 'מה דעתכם על הבעיה של תמר והכלבה סנואי? מייעצים יחד עם צ׳אצ׳ו',
     turns: [
       {
         c: "Poor Tamar can't sleep because Snowy barks every night. Should she talk to Mrs Hill, do you think?",
@@ -521,7 +521,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2u02', title: 'Max takes the bus',
-    he: 'מדברים עם קוקו על מקס, הכלב שנסע לבד באוטובוס לים',
+    he: 'מדברים עם צ׳אצ׳ו על מקס, הכלב שנסע לבד באוטובוס לים',
     turns: [
       {
         c: "Max the dog got on the bus all alone! Do you think he was brave or a bit silly?",
@@ -554,11 +554,11 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
         he: 'מי שקט יותר? A dog is quieter. או A parrot is quieter. (quieter, לא more quiet)',
         a: [
           { k: ['dog'], r: "The dog is quieter! True, parrots are much noisier." },
-          { k: ['parrot parot bird coco'], r: "Ha! Not this parrot. I am much noisier than a dog!" }
+          { k: ['parrot parot bird chacho chaco chacha chocho chatcho'], r: "Ha! Not this parrot. I am much noisier than a dog!" }
         ],
         o: "Ha! I am a parrot, so I am very, very noisy.",
         t: ["A dog is quieter.", "A parrot is quieter."],
-        x: [["a dog", 0], ["the dog is more quiet", 0], ["parrot", 1], ["you coco", 1], ["the same", -1], ["i don't know", -1]]
+        x: [["a dog", 0], ["the dog is more quiet", 0], ["parrot", 1], ["you chacho", 1], ["the same", -1], ["i don't know", -1]]
       },
       {
         c: "Imagine a magic bus can take you anywhere. Where do you want to go?",
@@ -573,7 +573,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2g04', title: 'What happened yesterday?',
-    he: 'מספרים לקוקו מה קרה אתמול, בעבר פשוט',
+    he: 'מספרים לצ׳אצ׳ו מה קרה אתמול, בעבר פשוט',
     turns: [
       {
         c: "Yesterday a funny thing happened. My new hat fell into my soup! What did you do yesterday?",
@@ -628,7 +628,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2g05', title: 'When the lights went out',
-    he: 'קוקו מספר מה קרה כשהאור כבה: was/were + ing ועבר פשוט',
+    he: 'צ׳אצ׳ו מספר מה קרה כשהאור כבה: was/were + ing ועבר פשוט',
     turns: [
       {
         c: "Last night I was making a hat when the lights went out! What were you doing at eight last night?",
@@ -645,7 +645,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
       },
       {
         c: "Back to my story. While I was sitting in the dark, what do you think happened?",
-        he: 'מה לדעתכם קרה כשקוקו ישב בחושך? Somebody knocked on the door. או The lights came on.',
+        he: 'מה לדעתכם קרה כשצ׳אצ׳ו ישב בחושך? Somebody knocked on the door. או The lights came on.',
         a: [
           { k: ['light lights candle torch flashlight phone came'], r: "Good guess! The lights came on, and then my friend Polly knocked." },
           { k: ['knock door friend someone somebody bell visitor'], r: "Yes! Somebody knocked on the door. It was my friend Polly!" }
@@ -656,7 +656,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
       },
       {
         c: "Polly came in with a candle. What were we doing when the lights came on, do you think?",
-        he: 'מה קוקו ופולי עשו כשהאור חזר? You were dancing. או You were eating crackers.',
+        he: 'מה צ׳אצ׳ו ופולי עשו כשהאור חזר? You were dancing. או You were eating crackers.',
         a: [
           { k: ['dance dancing danced'], r: "Yes! We were dancing in the dark. So silly!" },
           { k: ['eat eating cracker food snack'], r: "We were eating crackers, of course!" },
@@ -684,7 +684,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2g06', title: 'Why? To... and for...',
-    he: 'מדברים עם קוקו על "למה": to + פועל, או for + שם עצם',
+    he: 'מדברים עם צ׳אצ׳ו על "למה": to + פועל, או for + שם עצם',
     turns: [
       {
         c: "I went to the shop this morning to buy crackers. Why do people go to the beach?",
@@ -742,7 +742,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2g07', title: 'Because, so, then...',
-    he: 'מספרים סיפור עם קוקו עם because, so, then ו-although',
+    he: 'מספרים סיפור עם צ׳אצ׳ו עם because, so, then ו-although',
     turns: [
       {
         c: "I love rainy days because I can stay in my shop. Do you like sunny days or rainy days more?",
@@ -780,22 +780,22 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
       },
       {
         c: "After that, she wanted to take off the hat, but she couldn't! So what did she do?",
-        he: 'מה היא עשתה? עם so או then: So she asked Coco for help. או Then she pulled very hard.',
+        he: 'מה היא עשתה? עם so או then: So she asked Chacho for help. או Then she pulled very hard.',
         a: [
-          { k: ['help ask asked coco'], r: "So she asked me for help! Of course I helped her." },
+          { k: ['help ask asked chacho chaco chacha chocho chatcho'], r: "So she asked me for help! Of course I helped her." },
           { k: ['pull pulled cut scissors water shake'], r: "She pulled and pulled! Finally, the hat came off." },
           { k: ['keep kept wear sleep slept'], r: "She kept it on! And she loved her magic hat." }
         ],
         o: "Good idea! And finally, the hat came off. The end!",
-        t: ["So she asked Coco for help.", "Then she pulled very hard.", "So she kept it on!"],
-        x: [["so she asked coco for help", 0], ["she ask for help", 0], ["she pull it", 1], ["she cut it", 1], ["she kept it", 2], ["she cried", -1], ["i don't know", -1]]
+        t: ["So she asked Chacho for help.", "Then she pulled very hard.", "So she kept it on!"],
+        x: [["so she asked chacho for help", 0], ["she ask for help", 0], ["she pull it", 1], ["she cut it", 1], ["she kept it", 2], ["she cried", -1], ["i don't know", -1]]
       }
     ],
     end: "Although our story was short, it was fabulous! Bye for now!"
   },
   {
     id: 'ta2g08', title: 'Will or going to?',
-    he: 'מדברים עם קוקו על תוכניות ותחזיות: will ו-going to',
+    he: 'מדברים עם צ׳אצ׳ו על תוכניות ותחזיות: will ו-going to',
     turns: [
       {
         c: "I'm going to open a second shop next month! What are you going to do this weekend?",
@@ -850,8 +850,8 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
     end: "I will remember our chat! And you are going to be great at English. Bye!"
   },
   {
-    id: 'ta2g09', title: "Coco's pretend party",
-    he: 'מתכננים עם קוקו מסיבה בכאילו: am/is/are + ing לתוכניות',
+    id: 'ta2g09', title: "Chacho's pretend party",
+    he: 'מתכננים עם צ׳אצ׳ו מסיבה בכאילו: am/is/are + ing לתוכניות',
     turns: [
       {
         c: "Tomorrow I'm meeting my friend Polly at five. What are you doing tomorrow after school?",
@@ -907,7 +907,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2u01', title: 'Bella the pony',
-    he: 'מדברים עם קוקו על בלה, הפוני שהגיעה לבית הספר',
+    he: 'מדברים עם צ׳אצ׳ו על בלה, הפוני שהגיעה לבית הספר',
     turns: [
       {
         c: "A pony came to school! How do you think the children felt when they saw her?",
@@ -936,7 +936,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
         c: "Which animal would you like to see at your school for a day?",
         he: 'איזו חיה הייתם רוצים לראות בבית הספר ליום אחד? I would like to see a dog. או An elephant!',
         a: [
-          { k: ['parrot bird coco'], r: "A parrot! Ooh, I can come any day!" },
+          { k: ['parrot bird chacho chaco chacha chocho chatcho'], r: "A parrot! Ooh, I can come any day!" },
           { k: ['dog puppy cat kitten rabbit bunny hamster'], r: "A cute pet! Everybody wants to play with it." },
           { k: ['horse pony cow goat sheep donkey chicken'], r: "A farm animal! Just like Bella." },
           { k: ['elephant lion tiger giraffe monkey panda zebra bear penguin dolphin koala'], r: "Wow, a wild animal! What a crazy day." }
@@ -963,7 +963,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2u03', title: 'Football in socks',
-    he: 'מדברים עם קוקו על משחק הכדורגל בגשם ועל הרעיון של דנה',
+    he: 'מדברים עם צ׳אצ׳ו על משחק הכדורגל בגשם ועל הרעיון של דנה',
     turns: [
       {
         c: "Dana's idea was to play in socks! Was it a good idea or a crazy idea?",
@@ -1019,7 +1019,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2u04', title: 'Eli and his bees',
-    he: 'מדברים עם קוקו על אלי, שמגדל דבורים על הגג',
+    he: 'מדברים עם צ׳אצ׳ו על אלי, שמגדל דבורים על הגג',
     turns: [
       {
         c: "Eli keeps bees on the roof! Would you like to have bees as a hobby?",
@@ -1071,7 +1071,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2v03', title: 'What are you like?',
-    he: 'מדברים עם קוקו על אופי: kind, funny, shy, patient',
+    he: 'מדברים עם צ׳אצ׳ו על אופי: kind, funny, shy, patient',
     turns: [
       {
         c: "My friends say I am funny and a bit lazy. Which words describe you best?",
@@ -1123,8 +1123,8 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
     end: "Thank you for being so patient with me! See you next time."
   },
   {
-    id: 'ta2v04', title: "In Coco's clothes shop",
-    he: 'קונים בחנות של קוקו: מודדים, משלמים ומקבלים קבלה',
+    id: 'ta2v04', title: "In Chacho's clothes shop",
+    he: 'קונים בחנות של צ׳אצ׳ו: מודדים, משלמים ומקבלים קבלה',
     turns: [
       {
         c: "Welcome to my shop! Would you like to try on this green jacket?",
@@ -1174,11 +1174,11 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
         x: [["the bookshop", 0], ["i like books", 0], ["bakery", 1], ["the baker's", 1], ["toy shop", 2], ["shoe shop", 3], ["i don't like shops", -1]]
       }
     ],
-    end: "Thank you for shopping at Coco's! Enjoy your new jacket. Bye!"
+    end: "Thank you for shopping at Chacho's! Enjoy your new jacket. Bye!"
   },
   {
     id: 'ta2v05', title: 'Hoodies and sandals',
-    he: 'מדברים עם קוקו על בגדים לחורף ולקיץ, ומה לובשים קודם',
+    he: 'מדברים עם צ׳אצ׳ו על בגדים לחורף ולקיץ, ומה לובשים קודם',
     turns: [
       {
         c: "Winter is coming! What do you wear on a cold winter day?",
@@ -1229,7 +1229,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2l04', title: 'Who does the chores?',
-    he: 'מדברים עם קוקו על מטלות בבית, כמו אצל איתי ושירה',
+    he: 'מדברים עם צ׳אצ׳ו על מטלות בבית, כמו אצל איתי ושירה',
     turns: [
       {
         c: "Shira thinks washing the car is fun, but the dishwasher is boring. Which chore is the most boring?",
@@ -1287,7 +1287,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2l05', title: 'House rules',
-    he: "מדברים עם קוקו על חוקים בבית ובבית הספר: have to ו-don't have to",
+    he: "מדברים עם צ׳אצ׳ו על חוקים בבית ובבית הספר: have to ו-don't have to",
     turns: [
       {
         c: "At Roni's house, everyone has to put their phones in a box at dinner. Is that a good rule?",
@@ -1342,7 +1342,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2l06', title: 'Bikes in Amsterdam',
-    he: 'מדברים עם קוקו על השכרת אופניים באמסטרדם, כמו ליה ואבא שלה',
+    he: 'מדברים עם צ׳אצ׳ו על השכרת אופניים באמסטרדם, כמו ליה ואבא שלה',
     turns: [
       {
         c: "Lia and her dad rented bikes in Amsterdam. Do you like riding a bike?",
@@ -1396,7 +1396,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2l07', title: 'The surprise party',
-    he: 'מדברים עם קוקו על מסיבת ההפתעה של אחותו של דניאל',
+    he: 'מדברים עם צ׳אצ׳ו על מסיבת ההפתעה של אחותו של דניאל',
     turns: [
       {
         c: "Everyone jumped up and shouted Surprise at the pizza man! What do you think he did?",
@@ -1452,7 +1452,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2l08', title: 'Hobbies on the radio',
-    he: 'מדברים עם קוקו על תחביבים, כמו של יונתן ואמילי',
+    he: 'מדברים עם צ׳אצ׳ו על תחביבים, כמו של יונתן ואמילי',
     turns: [
       {
         c: "Yonatan skateboards and Emily bakes. Which hobby do you like more, skateboarding or baking?",
@@ -1509,7 +1509,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2l09', title: 'Have you ever...?',
-    he: 'משחקים עם קוקו ב-Have you ever, כמו תמר ואריאל באוטובוס',
+    he: 'משחקים עם צ׳אצ׳ו ב-Have you ever, כמו תמר ואריאל באוטובוס',
     turns: [
       {
         c: "Ariel has been on a plane twice. Have you ever been on a plane?",
@@ -1547,7 +1547,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
       },
       {
         c: "Now you ask me! Start with 'Have you ever'. What do you want to know?",
-        he: 'עכשיו אתם שואלים את קוקו: Have you ever eaten sushi? או Have you ever been to Paris?',
+        he: 'עכשיו אתם שואלים את צ׳אצ׳ו: Have you ever eaten sushi? או Have you ever been to Paris?',
         a: [
           { k: ['eat eaten ate food sushi pizza'], r: "Have I ever eaten that? No, never! Only crackers." },
           { k: ['swim swum swam swimming sea'], r: "Have I ever swum? Once! My feathers got so wet." },
@@ -1563,7 +1563,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2r02', title: 'Tilly the hero',
-    he: 'מדברים עם קוקו על טילי, שזכרה שיעור גיאוגרפיה ועזרה לאנשים',
+    he: 'מדברים עם צ׳אצ׳ו על טילי, שזכרה שיעור גיאוגרפיה ועזרה לאנשים',
     turns: [
       {
         c: "Tilly remembered her geography lesson and helped many people. How do you think she felt after that?",
@@ -1618,7 +1618,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2r03', title: 'Small town or big city?',
-    he: "מדברים עם קוקו על עיירה קטנה מול עיר גדולה, כמו גילי וג'וש",
+    he: "מדברים עם צ׳אצ׳ו על עיירה קטנה מול עיר גדולה, כמו גילי וג'וש",
     turns: [
       {
         c: "Gili lives in a small, quiet town. Josh lives in a big, busy city. Which one do you like more?",
@@ -1675,7 +1675,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'ta2r04', title: 'Rainbow talk',
-    he: 'מדברים עם קוקו על הקשת בענן: צבעים, סיפורים ועובדות',
+    he: 'מדברים עם צ׳אצ׳ו על הקשת בענן: צבעים, סיפורים ועובדות',
     turns: [
       {
         c: "A rainbow has seven colours. Which colour of the rainbow do you like best?",
@@ -1726,14 +1726,14 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   }
 ]);
 
-// Talk to Coco: A2 home scenes sa201 to sa215 (tools/TALK-WRITING.md).
+// Talk to Chacho: A2 home scenes sa201 to sa215 (tools/TALK-WRITING.md).
 window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   {
     id: 'sa201', title: 'The café mix-up',
-    he: "מזמינים בבית הקפה של קוקו, והוא מתבלבל בהזמנה",
+    he: "מזמינים בבית הקפה של צ׳אצ׳ו, והוא מתבלבל בהזמנה",
     turns: [
       {
-        c: "Hello, and welcome to Café Coco! We have sandwiches, soup and salad. What would you like to eat?",
+        c: "Hello, and welcome to Café Chacho! We have sandwiches, soup and salad. What would you like to eat?",
         he: "מה תאכלו? I would like a sandwich, please. או Soup, please.",
         a: [
           { k: ['sandwich toast'], r: "A sandwich. Good choice!" },
@@ -1754,7 +1754,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
       },
       {
         c: "Here you are: a bowl of popcorn and a glass of milk! Is this what you ordered?",
-        he: "קוקו הביא פופקורן וחלב! זה מה שהזמנתם? No, it isn't. או No, I ordered a sandwich.",
+        he: "צ׳אצ׳ו הביא פופקורן וחלב! זה מה שהזמנתם? No, it isn't. או No, I ordered a sandwich.",
         a: [
           { k: ['no not'], r: "Oh no, I'm so sorry! I mixed up the orders." },
           { k: ['yes'], r: "Ha ha, you are very kind! But I think I made a mistake." }
@@ -1788,11 +1788,11 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
         x: [["the cookie", 1], ["the food is better", 2], ["both", 0], ["the sandwich", 2], ["i dont know", -1]]
       }
     ],
-    end: "Thank you for coming to Café Coco. Next time I will write on paper!"
+    end: "Thank you for coming to Café Chacho. Next time I will write on paper!"
   },
   {
     id: 'sa202', title: 'Help! Where is the beach?',
-    he: "קוקו תייר שהלך לאיבוד: נותנים לו הוראות הגעה לים",
+    he: "צ׳אצ׳ו תייר שהלך לאיבוד: נותנים לו הוראות הגעה לים",
     turns: [
       {
         c: "Excuse me! I am a tourist and I am lost. Is the beach near here or far?",
@@ -1830,7 +1830,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
       },
       {
         c: "I can see the sea! Thank you so much. What should I do first at the beach?",
-        he: "מה קוקו צריך לעשות קודם בים? Swim in the sea. או Eat an ice cream.",
+        he: "מה צ׳אצ׳ו צריך לעשות קודם בים? Swim in the sea. או Eat an ice cream.",
         a: [],
         o: "Great idea! I will do that first.",
         t: ["Swim in the sea.", "Eat an ice cream.", "Build a sandcastle."],
@@ -1840,11 +1840,11 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
     end: "You are a great guide! Here is a feather for you. Goodbye!"
   },
   {
-    id: 'sa203', title: 'Hotel Coco',
-    he: "נרשמים במלון של קוקו: איזו כרית, איזה חדר, מתי ארוחת בוקר, וברווזים באמבטיה",
+    id: 'sa203', title: 'Hotel Chacho',
+    he: "נרשמים במלון של צ׳אצ׳ו: איזו כרית, איזה חדר, מתי ארוחת בוקר, וברווזים באמבטיה",
     turns: [
       {
-        c: "Good evening, and welcome to Hotel Coco! Do you want a soft pillow or a hard pillow?",
+        c: "Good evening, and welcome to Hotel Chacho! Do you want a soft pillow or a hard pillow?",
         he: "כרית רכה או קשה? A soft pillow, please. או A hard pillow, please.",
         a: [
           { k: ['feather'], r: "Feathers? Ha! Not my feathers, I hope." },
@@ -1886,11 +1886,11 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
         x: [["move the ducks", -1], ["i don't know", -1], ["call the manager", -1]]
       }
     ],
-    end: "Enjoy your stay at Hotel Coco! Sleep well, and no more ducks, I promise."
+    end: "Enjoy your stay at Hotel Chacho! Sleep well, and no more ducks, I promise."
   },
   {
     id: 'sa204', title: 'Plans for the weekend',
-    he: "מתכננים עם קוקו יום כיף בסוף השבוע: לאן, מתי, מה לוקחים, מה אם יורד גשם ומה אוכלים",
+    he: "מתכננים עם צ׳אצ׳ו יום כיף בסוף השבוע: לאן, מתי, מה לוקחים, מה אם יורד גשם ומה אוכלים",
     turns: [
       {
         c: "Let's do something fun this weekend! Would you rather go to the cinema or the park?",
@@ -1948,7 +1948,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'sa205', title: 'The lost dog',
-    he: "הכלב של השכן של קוקו ברח: עוזרים למצוא אותו, עם זמן עבר",
+    he: "הכלב של השכן של צ׳אצ׳ו ברח: עוזרים למצוא אותו, עם זמן עבר",
     turns: [
       {
         c: "Help! My neighbour's dog ran away this morning. Did you see a little brown dog?",
@@ -2065,11 +2065,11 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
     end: "What a party! Penny is the happiest penguin in the world. Thank you!"
   },
   {
-    id: 'sa207', title: 'Radio Coco',
-    he: "קוקו מראיין אתכם ברדיו על סוף השבוע שעבר ועל תוכנית רדיו משלכם",
+    id: 'sa207', title: 'Radio Chacho',
+    he: "צ׳אצ׳ו מראיין אתכם ברדיו על סוף השבוע שעבר ועל תוכנית רדיו משלכם",
     turns: [
       {
-        c: "Hello, and welcome to Radio Coco! Today's question: what did you do last weekend?",
+        c: "Hello, and welcome to Radio Chacho! Today's question: what did you do last weekend?",
         he: "מה עשיתם בסוף השבוע? I went to the beach. או I played football with friends.",
         a: [
           { k: ['go goes going'], n: 'went', r: "Oh, you went out? How exciting!" },
@@ -2109,14 +2109,14 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
         x: [["about games", -1], ["funny stories", -1], ["i don't know", -1]]
       }
     ],
-    end: "Thank you for talking to Radio Coco! That's all for today. Bye bye, listeners!"
+    end: "Thank you for talking to Radio Chacho! That's all for today. Bye bye, listeners!"
   },
   {
-    id: 'sa208', title: "Coco's bikes",
-    he: "שוכרים אופניים בחנות של קוקו ליד הים: לכמה זמן, איזה אופניים, קסדה וסל",
+    id: 'sa208', title: "Chacho's bikes",
+    he: "שוכרים אופניים בחנות של צ׳אצ׳ו ליד הים: לכמה זמן, איזה אופניים, קסדה וסל",
     turns: [
       {
-        c: "Hi! Welcome to Coco's Bikes. Do you want a bike for one hour or for the whole day?",
+        c: "Hi! Welcome to Chacho's Bikes. Do you want a bike for one hour or for the whole day?",
         he: "לשעה או ליום שלם? For one hour, please. או For the whole day!",
         a: [
           { k: ['day'], r: "The whole day! You are going to have so much fun." },
@@ -2171,7 +2171,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'sa209', title: 'At the bookshop',
-    he: "בוחרים ספר בחנות ספרים שקוקו עוזר בה: סוג, אורך, איפה קוראים וחתול ישן",
+    he: "בוחרים ספר בחנות ספרים שצ׳אצ׳ו עוזר בה: סוג, אורך, איפה קוראים וחתול ישן",
     turns: [
       {
         c: "Today I am helping at the bookshop! What kind of books do you like: funny, adventure or mystery?",
@@ -2222,7 +2222,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'sa210', title: 'Camping in the north',
-    he: "אורזים עם קוקו לקמפינג בצפון: בגדים, ציוד, ארוחה ליד המדורה ושמיים מלאי כוכבים",
+    he: "אורזים עם צ׳אצ׳ו לקמפינג בצפון: בגדים, ציוד, ארוחה ליד המדורה ושמיים מלאי כוכבים",
     turns: [
       {
         c: "We are going camping in the north! It is colder there at night. What clothes should we take?",
@@ -2281,11 +2281,11 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
     end: "Good night, camper! Tomorrow we are going to walk to the waterfall. Sleep well!"
   },
   {
-    id: 'sa211', title: 'Cooking with Coco',
-    he: "מבשלים פנקייקים עם השף קוקו בתוכנית טלוויזיה",
+    id: 'sa211', title: 'Cooking with Chacho',
+    he: "מבשלים פנקייקים עם השף צ׳אצ׳ו בתוכנית טלוויזיה",
     turns: [
       {
-        c: "Welcome to Cooking with Coco! Today we are making pancakes. Did you wash your hands?",
+        c: "Welcome to Cooking with Chacho! Today we are making pancakes. Did you wash your hands?",
         he: "שטפתם ידיים? Yes, I did. או Not yet!",
         a: [
           { k: ['no not'], r: "Quick, wash them now! I will wait. La la la." },
@@ -2338,11 +2338,11 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
         x: [["chocolate", -1], ["honey please", -1]]
       }
     ],
-    end: "That's all for today on Cooking with Coco! Wash your hands, and see you next time!"
+    end: "That's all for today on Cooking with Chacho! Wash your hands, and see you next time!"
   },
   {
     id: 'sa212', title: 'After the big match',
-    he: "קוקו הכתב מראיין אתכם, קפטן הקבוצה, אחרי משחק כדורגל גדול",
+    he: "צ׳אצ׳ו הכתב מראיין אתכם, קפטן הקבוצה, אחרי משחק כדורגל גדול",
     turns: [
       {
         c: "I'm here with the team captain after the big match! Did your team win or lose today?",
@@ -2394,11 +2394,11 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
         x: [["eat pizza", -1], ["sleep", -1]]
       }
     ],
-    end: "Thank you, captain! This is Coco, from Sports News. Back to the studio!"
+    end: "Thank you, captain! This is Chacho, from Sports News. Back to the studio!"
   },
   {
     id: 'sa213', title: 'Change my jumper, please',
-    he: "מחזירים סוודר בחנות הבגדים של קוקו ובוחרים משהו אחר",
+    he: "מחזירים סוודר בחנות הבגדים של צ׳אצ׳ו ובוחרים משהו אחר",
     turns: [
       {
         c: "Hello again! You bought this jumper here yesterday. Is there a problem with it?",
@@ -2437,7 +2437,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
       },
       {
         c: "Try it on! Look in the mirror. A feather is stuck on it! Do you want to keep the feather?",
-        he: "נוצה של קוקו נתקעה על הקפוצ׳ון! רוצים לשמור אותה? Yes, I want to keep it! או No, thank you.",
+        he: "נוצה של צ׳אצ׳ו נתקעה על הקפוצ׳ון! רוצים לשמור אותה? Yes, I want to keep it! או No, thank you.",
         a: [
           { k: ['no not off'], r: "No feather? Okay, I will take it off. It is mine anyway!" },
           { k: ['yes keep'], r: "Ha ha! A parrot feather for luck. Very fashionable." }
@@ -2451,7 +2451,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'sa214', title: 'The Great Pet Show',
-    he: "תחרות חיות מחמד: מספרים לשופט קוקו על חיה דמיונית שהבאתם",
+    he: "תחרות חיות מחמד: מספרים לשופט צ׳אצ׳ו על חיה דמיונית שהבאתם",
     turns: [
       {
         c: "Welcome to the Great Pet Show! I'm the judge, and any animal can come. What pet did you bring?",
@@ -2475,7 +2475,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
       },
       {
         c: "Is your pet bigger or smaller than me?",
-        he: "החיה שלכם גדולה או קטנה מקוקו? It's bigger than you! או It's smaller than you.",
+        he: "החיה שלכם גדולה או קטנה מצ׳אצ׳ו? It's bigger than you! או It's smaller than you.",
         a: [
           { k: ['small little tiny'], r: "Smaller than me? It's tiny! So cute." },
           { k: ['big bigger large huge tall'], r: "Bigger than me? Wow, I need to stand back!" }
@@ -2501,10 +2501,10 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
   },
   {
     id: 'sa215', title: 'The weather show',
-    he: "מגישים את התחזית בטלוויזיה של קוקו: אילת, ההרים בצפון, עצות לצופים ושחף על הראש",
+    he: "מגישים את התחזית בטלוויזיה של צ׳אצ׳ו: אילת, ההרים בצפון, עצות לצופים ושחף על הראש",
     turns: [
       {
-        c: "We're live on Coco TV, and you are our weather reporter! What is the weather like in Eilat today?",
+        c: "We're live on Chacho TV, and you are our weather reporter! What is the weather like in Eilat today?",
         he: "מה מזג האוויר באילת היום? It's sunny and hot. או It's cold and windy.",
         a: [
           { k: ['sun sunny hot warm clear'], n: 'not', r: "Sunny! Don't forget your sunglasses, viewers." },
@@ -2536,13 +2536,13 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
       },
       {
         c: "Oh no! A seagull is sitting on my head, live on TV! What should I do?",
-        he: "שחף נחת לקוקו על הראש בשידור חי! מה לעשות? Stand very still. או Give it a cracker!",
+        he: "שחף נחת לצ׳אצ׳ו על הראש בשידור חי! מה לעשות? Stand very still. או Give it a cracker!",
         a: [],
         o: "Ha ha! It flew away. Our viewers loved that!",
         t: ["Stand very still.", "Give it a cracker!", "Say hello to it!"],
         x: [["fly away", -1], ["take a photo", -1]]
       }
     ],
-    end: "That's the weather for today! Thank you, weather reporter. Back to you, Coco... wait, that's me!"
+    end: "That's the weather for today! Thank you, weather reporter. Back to you, Chacho... wait, that's me!"
   }
 ]);

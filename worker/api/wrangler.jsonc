@@ -1,4 +1,4 @@
-// The Coco server (specs/cloudflare.md): worker/api/index.js and its Durable Object CocoServer (SQLite, free plan).
+// The Chacho server (specs/cloudflare.md): worker/api/index.js and its Durable Object CocoServer (SQLite, free plan).
 // Build first: node platform/build.js. Staging (a copy of the data, pushes off, no cron):
 //   npx wrangler deploy -c worker/api/wrangler.jsonc --env staging
 // Production (only on the cutover night): npx wrangler deploy -c worker/api/wrangler.jsonc

@@ -9,8 +9,8 @@ var SETUP_VERSION = 'v23';
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
 var APP_URL = 'https://script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec';
 var LEVELS = ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1'];
-// nest: Coco's Nest, the track for ages 2 to 7 (Nest.js). Not in LEVELS: the chain, journeys and gates never see it.
-var LEVEL_LABEL = { a1: 'A1', a2: 'A2', b1: 'B1', 'b1-b2': 'B1+', b2: 'B2', c1: 'C1', nest: "Coco's Nest" };
+// nest: Chacho's Nest, the track for ages 2 to 7 (Nest.js). Not in LEVELS: the chain, journeys and gates never see it.
+var LEVEL_LABEL = { a1: 'A1', a2: 'A2', b1: 'B1', 'b1-b2': 'B1+', b2: 'B2', c1: 'C1', nest: "Chacho's Nest" };
 var LEVEL_TEST = { section: 'level', level: '', title: 'English Level Test', url: 'https://test-english.com/level-test/' };
 var SECTIONS = {
   level: { label: 'Level Test' },
@@ -20,7 +20,7 @@ var SECTIONS = {
   reading: { label: 'Reading' },
   writing: { label: 'Writing' },
   'use-of-english': { label: 'Use of English' },
-  nest: { label: "Coco's Nest" }
+  nest: { label: "Chacho's Nest" }
 };
 // Sunday..Saturday. Friday alternates between Use of English and Writing.
 var ROTATION = ['grammar', 'vocabulary', 'listening', 'grammar', 'reading', 'FRIDAY', 'listening'];
@@ -78,7 +78,7 @@ var HEADERS = {
   // The friends' pilot (Pilot.js): in-app level tests (form A first, B the retest) and parents' feedback.
   Placements: ['Timestamp', 'Girl', 'Date', 'Form', 'Start', 'Level', 'Correct', 'Total', 'Detail'],
   Feedback: ['Timestamp', 'Who', 'Group', 'Date', 'Score', 'Text'],
-  // Talk to Coco (Talk.js): one row per talk; Voice / Tiles = answers said aloud / tapped, Said = what the phone heard.
+  // Talk to Chacho (Talk.js): one row per talk; Voice / Tiles = answers said aloud / tapped, Said = what the phone heard.
   Chats: ['Timestamp', 'Girl', 'Date', 'Talk', 'Where', 'Level', 'Turns', 'Voice', 'Tiles', 'Mic', 'XP', 'Seconds', 'Said'],
   // The audit trail (Audit.js): opens, wrong PINs, and what parents, the admin, the teacher and the owner changed.
   Audit: ['Timestamp', 'Date', 'Role', 'Who', 'Group', 'Action', 'Detail', 'Ok', 'Device'],
@@ -121,7 +121,7 @@ var WORDS = [
 function doGet() {
   ensureSetup();
   return HtmlService.createHtmlOutputFromFile('Index')
-    .setTitle('English with Coco')
+    .setTitle('English with Chacho')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content')
     .setFaviconUrl('https://fonts.gstatic.com/s/e/notoemoji/latest/1f31f/72.png');
 }
@@ -587,7 +587,7 @@ function parentData(list, isAdmin, who) {
       summaryHour: Number(getSetting('ParentSummaryHour')) || 21,
       devices: readTable('ParentPush').filter(function (r) { return r.Who === who; }).map(function (r) { return { e: r.Endpoint, instant: r.Instant !== 'no' }; })
     },
-    // Coco's Nest last: the admin can add a kid aged 2 to 7 (her age goes in the age field).
+    // Chacho's Nest last: the admin can add a kid aged 2 to 7 (her age goes in the age field).
     levels: LEVELS.map(function (l) { return { id: l, label: LEVEL_LABEL[l] }; }).concat([{ id: 'nest', label: LEVEL_LABEL.nest }]),
     today: t,
     word: wordOfDay(t)
@@ -866,7 +866,7 @@ function ensureAssignments(kid, dates) {
     missing = missing.filter(function (d) { return !out[d]; });
     var first = Object.keys(out).length === 0, missions = missionsOn(kid);
     missing.forEach(function (d, i) {
-      // A Nest kid (ages 2 to 7) gets the next unit of Coco's Nest and never the level test.
+      // A Nest kid (ages 2 to 7) gets the next unit of Chacho's Nest and never the level test.
       var a = isNest(kid) ? nestNext(kid) : first && i === 0 ? LEVEL_TEST : nextExercise(sectionFor(d), kid.Level, used, missions);
       used[a.url] = true;
       out[d] = a;
@@ -921,7 +921,7 @@ function dailyReminder() {
       to: k.Email,
       subject: k.Name + ', your 10 minutes of English are waiting!',
       htmlBody: '<p>Hi ' + k.Name + ',</p><p>Today: <b>' + SECTIONS[a.section].label + '</b> — ' + a.title + '</p>' +
-        '<p><a href="' + groupLink(groupOf(k)) + '">Open English with Coco</a> and keep your streak going.</p>'
+        '<p><a href="' + groupLink(groupOf(k)) + '">Open English with Chacho</a> and keep your streak going.</p>'
     });
   });
 }
@@ -931,10 +931,10 @@ function weeklySummary() {
   var data = parentData(groups(), true, 'admin');
   var owner = Session.getEffectiveUser().getEmail();
   if (owner) {
-    MailApp.sendEmail({ to: owner, subject: 'English with Coco — weekly summary ' + data.today, htmlBody: data.groups.map(summaryHtml).join('<hr>') });
+    MailApp.sendEmail({ to: owner, subject: 'English with Chacho — weekly summary ' + data.today, htmlBody: data.groups.map(summaryHtml).join('<hr>') });
   }
   data.groups.forEach(function (g) {
-    if (g.email) MailApp.sendEmail({ to: g.email, subject: 'English with Coco — ' + g.name + ' weekly summary', htmlBody: summaryHtml(g) });
+    if (g.email) MailApp.sendEmail({ to: g.email, subject: 'English with Chacho — ' + g.name + ' weekly summary', htmlBody: summaryHtml(g) });
   });
 }
 
@@ -946,7 +946,7 @@ function summaryHtml(g) {
       d.games.weekRounds + (d.games.weekAvg === null ? '' : ' (' + d.games.weekAvg + '%)') + '</td></tr>';
   }).join('');
   return '<h3>' + g.name + '</h3><table cellpadding="6" border="1" style="border-collapse:collapse"><tr><th>Name</th><th>Week</th><th>Avg</th><th>Streak</th><th>Points</th><th>Level</th><th>Games</th></tr>' +
-    rows + '</table><p>Group goal: ' + g.goal.total + ' / ' + g.goal.goal + '</p><p><a href="' + g.link + '">Open English with Coco</a></p>';
+    rows + '</table><p>Group goal: ' + g.goal.total + ' / ' + g.goal.goal + '</p><p><a href="' + g.link + '">Open English with Chacho</a></p>';
 }
 
 function installTriggers() {

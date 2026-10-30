@@ -11,6 +11,14 @@ working rules and the traps learned while building it.
   WhatsApp message text. UI language: English. Talk to the owner in Hebrew.
 - Ask only when a decision is genuinely theirs; otherwise pick a sensible default and say so.
 
+## The parrot is Chacho (owner, 2026-10-30)
+Coco was renamed **Chacho** (Hebrew צ׳אצ׳ו, with a geresh U+05F3, never an apostrophe inside JS strings), and the app
+**English with Chacho**: "English with Coco" was already a Marshall Cavendish product and the Instagram names were taken
+(Instagram: `@english.with.chacho`). Everything a kid or parent sees or hears says Chacho. On purpose the old name stays in
+code and addresses: `COCO`, `coco`, `cocoSrc`, `cocoGrade`, `chatCoco`, `docs/coco/` (the art), `eq_*` keys, the Cloudflare
+names and the domain coco.coachkrispel.com (installed apps and kids' links depend on it). Never write "Coco" in new
+visible text. The one-off script was `tools/rename-chacho.js`. Pilot kids got a silent switch (owner's choice).
+
 ## Store rules for every change (owner, 2026-10-27)
 The app may be sold on Google Play and the App Store later, as a kids' app (Apple Kids Category, Google Families Policy,
 COPPA). **Every change must follow the rules in `specs/store-readiness.md`**: no third-party tracking, nothing leaves the
@@ -35,9 +43,9 @@ first. Tablets get the phone layout scaled (`tabletFit`); never add width breakp
 1. Edit `src/` (server: `Code.js`, `Push.js`; UI: `Index.html`). Game content: `docs/games.js`
    (check with `node test/games-check.js`); pet art: see `tools/PETS.md`. Mission content: `docs/missions/<level>.js`
    (`node test/missions-check.js`, then `node tools/missions-index.js` to rewrite `src/MissionIndex.js`, then record new
-   episodes with `python tools/voice.py` and raise `MISSIONS_V` in Index.html). Talk with Coco scripts:
+   episodes with `python tools/voice.py` and raise `MISSIONS_V` in Index.html). Talk with Chacho scripts:
    `docs/talk/<level>.js` (`node test/talk-check.js`, then `python tools/voice.py` and raise `TALK_V`). **Every spoken
-   line is Coco in Chatterbox** (`specs/voice.md`): new words or sentences in games and missions also go through
+   line is Chacho in Chatterbox** (`specs/voice.md`): new words or sentences in games and missions also go through
    `python tools/voice.py` (then raise `SAY_V`), or the phone's voice reads them.
 2. `node test/sim.js` (extend it for new server behaviour), `node test/ui-check.js` (Index.html traps) and, for
    crypto, `node test/push-crypto.js`.
@@ -121,7 +129,7 @@ first. Tablets get the phone layout scaled (`tabletFit`); never add width breakp
 - **New pet art or a new shop item needs the fit data**: `tools/pet_fit.py` (eyes; check the contact sheets, fix in
   `pet-fit-fix.json`), `tools/wear-fit.json` (how the item sits), then `python tools/wear_fit.py export` (writes FIT into
   Index.html). Without it, petArt shows nothing for a new pet and skips a new item.
-- Coco's grading lives twice (`cocoGrade` in Shop.js and Index.html): change both; test/sim.js fails if they disagree.
+- Chacho's grading lives twice (`cocoGrade` in Shop.js and Index.html): change both; test/sim.js fails if they disagree.
   The Studio's `studioWords` + `studioGrade` are copied **as they are** from Shop.js into Index.html (sim checks 34
   descriptions). When copying functions by text, keep the newline after each closing `}`: a copy without it glued the
   next function on (`}function studioGrade(`), and a later replace that searched for `
@@ -140,13 +148,13 @@ first. Tablets get the phone layout scaled (`tabletFit`); never add width breakp
 - Mission CSS classes start with `m`/`ms`, and two collided with older ones (`.mbar` of the duo streak, `.mstar` of the
   map): check `grep -n "\.<name>[{ :.,]"` before adding a class. The single-token `spot`/`teach` questions can only
   replace one word (`*word*` → `fix`): word-order mistakes need a `build` question instead.
-- **Coco's voice is Chatterbox on Kaggle** (`tools/voice.py`, `specs/voice.md`, owner's pick 2026-10-29): the old Kokoro tools
+- **Chacho's voice is Chatterbox on Kaggle** (`tools/voice.py`, `specs/voice.md`, owner's pick 2026-10-29): the old Kokoro tools
   refuse to run without `--kokoro`. The Bash tool's heredocs eat backslashes in regexes too (a `\1` became a control
   character in voice_kernel.py): write Python with the Write tool.
 - Kokoro (the old voices, now only for `python tools/voice.py refs`) lives outside the repo in `C:\Dev\EnglishLessons\kokoro` (`kokoro-v1.0.onnx`,
   `voices-v1.0.bin`); `pip install kokoro-onnx soundfile` needed several tries on this network (`--retries 10`).
   `tools/missions-audio.json` remembers what was recorded; only changed parts are recorded again.
-- **Talk & Tap owns the names `talk*` / `TALK`** (Duels.js, Index.html). Talk with Coco is `chat*` / `CHAT` in code
+- **Talk & Tap owns the names `talk*` / `TALK`** (Duels.js, Index.html). Talk with Chacho is `chat*` / `CHAT` in code
   (`src/Chat.js`, tab `Chats`, `dash.chat`); a server `var TALK` in another file silently broke the Talk & Tap duel.
   Its content keeps the outside names (`docs/talk/`, `EQ_TALK`, `test/talk-check.js`).
 - **The front end moved to https://coco.coachkrispel.com (2026-10-27).** The kids' saved state is per address: the old GitHub
@@ -209,7 +217,7 @@ shortened by the server, so a reload resumes the game; home shows "Back to the g
 finish from both kids' picks (`talkXp`). Words: `talk` in `docs/games.js` (Match it words only, checked by
 games-check). Dev test: two tabs; a background tab's timers slow down, so drive its picks with `talkPick(i)`.
 The Wordrobe, phase 1 (built 2026-10-10, spec `specs/wordrobe.md`, proposal and the owner's picks:
-https://claude.ai/artifact/6GkZRhCvB23frmsM37GXvx): coins (points + XP), Coco's shop with Ask Coco (tiles, voice optional),
+https://claude.ai/artifact/6GkZRhCvB23frmsM37GXvx): coins (points + XP), Chacho's shop with Ask Chacho (tiles, voice optional),
 38 items in six places, four victory moves, the Streak Shield, the Halloween Drop and its culture card, items on the pet
 everywhere (`petArt`), coins and purchases in the parent view. Opens on `Settings.ShopOpens` (2026-10-24), a teaser
 before it; `Settings.ShopEarly` = names that may shop earlier. Merged and live 2026-10-10 (@30).
@@ -228,17 +236,17 @@ Ideas not built yet: per-group reminder times, rewards redemption from the app (
 The friends' pilot (built 2026-10-26, spec `specs/pilot.md`, server `Pilot.js`, SETUP v16): self-signup from `?join=<code>`
 (Settings.InviteCode / InviteOpen, closed by default), the in-app level test (forms A and B, tab Placements), Hebrew parent area
 (`PHE` / `T()`; the admin stays English), feedback (tab Feedback), teacher review (`?missions&t=<Settings.TeacherCode>`), the
-admin Pilot card. 183 missions. Writing days give a mission instead of a link. Shown name: English with Coco. Mission
+admin Pilot card. 183 missions. Writing days give a mission instead of a link. Shown name: English with Chacho. Mission
 writers can check a staging file alone: `MISSIONS_ONLY=<file> MISSIONS_FILE=<path> node test/missions-check.js`.
 
-Talk with Coco (built 2026-10-26 overnight, spec `specs/talk.md`, server `src/Chat.js`, SETUP v17): scripted spoken talks,
-one after Use it in every mission and one home scene a day; recorded Coco lines, the phone's speech recognition matched to
+Talk with Chacho (built 2026-10-26 overnight, spec `specs/talk.md`, server `src/Chat.js`, SETUP v17): scripted spoken talks,
+one after Use it in every mission and one home scene a day; recorded Chacho lines, the phone's speech recognition matched to
 the script by keywords, tiles and a Hebrew hint; a bonus only. Preview: `?talk` (and the button in `?missions`). Stage 0 gate on
 the admin's Pilot card. Writing rules for new scripts: `tools/TALK-WRITING.md`. Live @35 on 2026-10-27; all 4,502
 clips recorded the same day (`TALK_V` 2, @37). After changing a script, run `python tools/voice.py` (it records only
 changed lines and resumes where it stopped), then raise `TALK_V`, build Pages and push.
 
-Coco's Nest (built 2026-10-27, spec `specs/nest.md`, server `src/Nest.js`, content `docs/nest/`): ages 2 to 7, `Girls.Level = nest`
+Chacho's Nest (built 2026-10-27, spec `specs/nest.md`, server `src/Nest.js`, content `docs/nest/`): ages 2 to 7, `Girls.Level = nest`
 (outside `LEVELS` on purpose: a level not in the chain falls back to a2 in several places, so every new code path that reads
 `kid.Level` must check `isNest(kid)` first). Home `renderNest` and audio `nestPlay` (one Audio element per session for
 iPhones) are in Index.html; the session engine and its 18 games are `docs/nest/play.js` (loaded with nest.js; every
@@ -248,8 +256,8 @@ top-level name starts with nk/NK, and nest-check fails on a name shared with Ind
 `test/tablet.html?screen=nest|nest-meet|nest-find|nest-say|nest-done&phones`; every game in phone frames:
 `test/nest-games.html?all` (lists screens that scroll) or `?unit=n07&game=give&age=4`. A new audio folder needs its path in
 `run_worker_first` (wrangler.jsonc), or Safari plays nothing.
-**Coco is a he** (Hebrew: קוקו אומר, שואל). Nest pictures are clay stickers made for the app (`tools/NEST-ART.md`), never emoji.
-**The Nest kid hears no Hebrew** (owner, 2026-10-27): Coco (Chatterbox, `specs/voice.md`) shows each game; Hebrew is text for grown-ups only.
+**Chacho is a he** (Hebrew: צ׳אצ׳ו אומר, שואל). Nest pictures are clay stickers made for the app (`tools/NEST-ART.md`), never emoji.
+**The Nest kid hears no Hebrew** (owner, 2026-10-27): Chacho (Chatterbox, `specs/voice.md`) shows each game; Hebrew is text for grown-ups only.
 
 The audit trail (built 2026-10-27, spec `specs/audit.md`, server `src/Audit.js`, tab Audit, SETUP v19): opens, wrong PINs,
 grown-ups' changes and hand edits in the sheet, with a coarse device label the app sends (`dev` in every call); the admin's
@@ -261,7 +269,7 @@ The Play tab in one screen (owner's pick A, 2026-10-29, spec `specs/play-tab.md`
 (most urgent first, one primary button) and the four games in a row; checked in home-fit.html and tablet.html?screen=play.
 
 The living Nest home (built 2026-10-28, spec `specs/nest-home.md`, @54, NEST_V 10): `docs/nest/home.js` (the scene, `nkHome`),
-`echo.js` (Coco repeats you, `nkEchoStart`), `stickers.js` (sticker book `nkStickers`, parents' postcard `nkPostcard`).
+`echo.js` (Chacho repeats you, `nkEchoStart`), `stickers.js` (sticker book `nkStickers`, parents' postcard `nkPostcard`).
 `nestInfo.home` and `nestInfo.arcade` are on for every Nest kid since 2026-10-29 (the owner); `Settings.NestHome` / `NestArcade` = `off` closes one for everyone (the old home is `renderNest`).
 Screens: `test/tablet.html?screen=nest-living|nest-living-night|nest-living-many|nest-living-pet`, `test/nest-echo.html`,
 `test/nest-stickers.html?view=book|free|places|postcard`.

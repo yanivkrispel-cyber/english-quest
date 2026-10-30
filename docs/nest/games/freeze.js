@@ -1,5 +1,5 @@
-// Dance Freeze (Coco's arcade, stage E, ages 2 to 7; specs/nest.md): the band plays and Coco calls a move ("Jump, jump,
-// jump!", "Spin around!") and does it, the kid's pet with him; the kid dances in the room. The music stops: "Freeze!". Coco
+// Dance Freeze (Chacho's arcade, stage E, ages 2 to 7; specs/nest.md): the band plays and Chacho calls a move ("Jump, jump,
+// jump!", "Spin around!") and does it, the kid's pet with him; the kid dances in the room. The music stops: "Freeze!". Chacho
 // freezes too, wobbles, and every third time he falls over ("Whoa... oops! I fell down!"). Nothing is checked (no camera):
 // it is a game for the body. Six rounds. Loaded on demand by docs/nest/arcade.js.
 
@@ -10,7 +10,7 @@ NK.freeze = {
     const tok = NE.tok, later = (f, ms) => setTimeout(() => { if (NE && NE.tok === tok) f(); }, ms);
     const pl = nkPlace('playroom');
     nkFill(`<div class="nkf${pl.painted ? ' painted' : ''}" style="${pl.painted ? pl.style : ''}">
-      <button class="nkf-coco" id="nkfcoco" aria-label="Coco"><img id="nkfimg" src="${nkPoseSrc('dance')}" alt="" draggable="false"></button>
+      <button class="nkf-coco" id="nkfcoco" aria-label="Chacho"><img id="nkfimg" src="${nkPoseSrc('dance')}" alt="" draggable="false"></button>
       ${dash.pet ? `<div class="nkf-pet" id="nkfpet">${petArt(dash.pet, 'happy', 'nk-petsvg')}</div>` : ''}
       <div class="nkf-word" id="nkfword"></div></div>`);
     const coco = document.getElementById('nkfcoco'), img = document.getElementById('nkfimg'), pet = document.getElementById('nkfpet');

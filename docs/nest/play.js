@@ -1,10 +1,10 @@
-// Coco's Nest: the session engine and every activity (specs/nest.md). Loaded next to docs/nest/nest.js by loadNest() in
+// Chacho's Nest: the session engine and every activity (specs/nest.md). Loaded next to docs/nest/nest.js by loadNest() in
 // src/Index.html, and runs in the app's global scope: it uses the app's helpers (esc, icon, buzz, petArt, nestPlay...)
 // and the Nest's state NE. Every top-level name starts with nk / NK (or is one of the nest* entry points the app calls),
 // so it never replaces a function of the app (test/nest-check.js checks it).
 //
-// The kid hears no Hebrew (owner, 2026-10-27): Coco does the first round himself, a hand shows where to tap or drag, the
-// instructions are short English lines that come back every day, and a long press on Coco shows a grown-up the Hebrew
+// The kid hears no Hebrew (owner, 2026-10-27): Chacho does the first round himself, a hand shows where to tap or drag, the
+// instructions are short English lines that come back every day, and a long press on Chacho shows a grown-up the Hebrew
 // explanation as text. A day is one of five kinds (specs/nest.md, "The week"): a = new words, b = move, c = song and
 // story, d = games, and a review unit.
 
@@ -175,7 +175,7 @@ function nkWord(id){
   }
   return NE.wmap[id] || null;
 }
-// How many times this kid has played an activity on this phone: Coco shows the first rounds himself while it is new.
+// How many times this kid has played an activity on this phone: Chacho shows the first rounds himself while it is new.
 function nkSeen(t){ return (store.get('eq_nest_seen_' + nkKid()) || {})[t] || 0; }
 function nkSeenAdd(t){ const k = 'eq_nest_seen_' + nkKid(), m = store.get(k) || {}; m[t] = (m[t] || 0) + 1; store.set(k, m); }
 const nkShouldDemo = t => NE && (NE.age <= 3 || nkSeen(t) < 3);
@@ -409,7 +409,7 @@ function nkItem(w, spot, i){
   return `<button class="nk-it" data-nki="${i}" style="left:${spot[0]}%;top:${spot[1]}%;width:${spot[2]}%;aspect-ratio:1">${w.id === 'parrot' || !w.id ? `<img src="${cocoSrc('happy')}" alt="" draggable="false">` : nestPic(w)}</button>`;
 }
 
-// ---------- Coloring pages drawn in code: regions with data-r; "main" is the part Coco names ----------
+// ---------- Coloring pages drawn in code: regions with data-r; "main" is the part Chacho names ----------
 const NK_INK = '#3b3551';
 const NK_PAGES = {
   ball: `<circle data-r="main" cx="100" cy="100" r="78"/><path data-r="b" d="M30 70 Q100 40 170 70 L176 92 Q100 62 24 92 Z"/><path data-r="c" d="M24 112 Q100 140 176 112 L170 132 Q100 160 30 132 Z"/>`,
@@ -534,7 +534,7 @@ function nkCompose(u, day, only){
     else if (age <= 5) { if (A.sort() === false) A.find(4); A.pairs(); if (wear) A.dress(3); else A.color(); if (sounds.length >= 3) A.sound(3); else A.pop(); }
     else { A.pairs(); if (A.odd(3) === false) A.find(3); A.missing(2); if (wear) A.dress(3); else A.color(); }
   }
-  // Coco shows the first round of a game while it is new for this kid (always for ages 2 and 3).
+  // Chacho shows the first round of a game while it is new for this kid (always for ages 2 and 3).
   const shown = new Set();
   steps.forEach(s => { if (s.first && !shown.has(s.t) && NK[s.t] && NK[s.t].demo && nkShouldDemo(s.t)) { s.demo = true; shown.add(s.t); } });
   steps.push({ t: 'done' });
@@ -598,7 +598,7 @@ function nkPlayStart(game){
   nestRender(true);
 }
 
-// What Coco says when a step opens: hello at the start, an activity's short instruction the first time, then the step.
+// What Chacho says when a step opens: hello at the start, an activity's short instruction the first time, then the step.
 function nestPrompt(s, opening){
   const hello = opening ? ['en-hi'] : [], first = s.first ? (NK[s.t] && NK[s.t].intro) || [] : [];
   return hello.concat(first, NK[s.t] && NK[s.t].say ? NK[s.t].say(s) : []);
@@ -624,20 +624,20 @@ function nestRender(opening){
     </div>
     <div class="gstage nk-stage" id="nkst"></div>
     <div class="gdock nk-dock">
-      <div class="row-flex nk-coach" id="nkcoach"><img class="nk-coco" id="nkcoco" src="${cocoSrc(s.t === 'done' ? 'celebrate' : 'happy')}" alt="Coco" draggable="false">
+      <div class="row-flex nk-coach" id="nkcoach"><img class="nk-coco" id="nkcoco" src="${cocoSrc(s.t === 'done' ? 'celebrate' : 'happy')}" alt="Chacho" draggable="false">
         <span class="nk-cue ${cue[1]}" id="nkcue">${icon(cue[0], 'duotone')}</span></div>
       <div class="nk-slot" id="nkslot"></div>
     </div>
   </div>`;
   document.getElementById('nkx').onclick = nestExit;
-  // Listen again: only when Coco is quiet, so it never cuts a line whose end starts the next part of a game.
+  // Listen again: only when Chacho is quiet, so it never cuts a line whose end starts the next part of a game.
   document.getElementById('nkagain').onclick = () => { if (nestQueue) return; const k = s.t === 'done' ? ['en-great'] : NK[s.t].say ? NK[s.t].say(s) : []; nestPlay(k.length ? k : (NK[s.t].intro || ['en-listen'])); };
   nkTipBind(s);
   if (s.first && s.t !== 'done') { nkSeenAdd(s.t); const c = document.getElementById('nkcue'); if (c) c.classList.add('on'); }
   NK[s.t].render(s, opening);
-  if (typeof nkActorOn === 'function') nkActorOn(s);  // stage A: a live Coco and the pet (docs/nest/actor.js)
+  if (typeof nkActorOn === 'function') nkActorOn(s);  // stage A: a live Chacho and the pet (docs/nest/actor.js)
 }
-// A long press on Coco: a short Hebrew note for the grown-up (text only).
+// A long press on Chacho: a short Hebrew note for the grown-up (text only).
 function nkTipBind(s){
   const c = document.getElementById('nkcoach'), hint = ((window.EQ_NEST || {}).hints || {})[s.t];
   if (!c || !hint) return;
@@ -660,7 +660,7 @@ function nestAdvance(){
   NE.si = Math.min(NE.si + 1, NE.steps.length - 1);
   nestRender(false);
 }
-// The end of a round: Coco celebrates, then the next step. A demo round ends with "Your turn!".
+// The end of a round: Chacho celebrates, then the next step. A demo round ends with "Your turn!".
 function nkWin(s, keys, wait){
   const tok = NE.tok;
   nkCoco('celebrate');
@@ -685,7 +685,7 @@ function nkSkyOn(){
 }
 
 // ---------- A right answer is a moment ----------
-// The right card jumps and glows, stars burst out of it, a gold star flies into the progress row, Coco hops, a short
+// The right card jumps and glows, stars burst out of it, a gold star flies into the progress row, Chacho hops, a short
 // tune plays; every third right answer in a row the kid's pet pops up under a rainbow with confetti. CSS only, no files.
 const NK_STAR = '<svg viewBox="0 0 24 24"><path d="M12 1.8l3 6.5 7.1.8-5.3 4.8 1.5 7L12 17.3l-6.3 3.6 1.5-7L1.9 9.1 9 8.3z"/></svg>';
 const NK_FUN = ['#f472b6', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa', '#fb923c'];
@@ -693,7 +693,7 @@ const nkCalm = () => window.matchMedia && matchMedia('(prefers-reduced-motion: r
 function nkAgain(el, cls){ if (!el) return; el.classList.remove(cls); void el.getBoundingClientRect(); el.classList.add(cls); }
 function nkCheer(s){
   if (!NE) return;
-  if (!s || !s.demo) NE.run = (NE.run || 0) + 1;  // Coco's own demo round does not count
+  if (!s || !s.demo) NE.run = (NE.run || 0) + 1;  // Chacho's own demo round does not count
   const st = nkStage(), card = st && (st.querySelector('.nk-card.yes') || st.querySelector('.yes'));
   const r = (card || st || document.body).getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
   nkAgain(card, 'nk-joy');
@@ -728,7 +728,7 @@ function nkStarFly(x, y){
     { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(.35) rotate(220deg)`, opacity: 1 }], { duration: 900, easing: 'cubic-bezier(.5,0,.3,1)' })
     .onfinish = () => { s.remove(); dot.classList.add('ok', 'got'); };
 }
-// Every third in a row: the pet (or Coco) jumps up from the bottom under a rainbow, with confetti.
+// Every third in a row: the pet (or Chacho) jumps up from the bottom under a rainbow, with confetti.
 function nkParty(){
   const p = document.createElement('div');
   p.className = 'nk-party';
@@ -771,7 +771,7 @@ function nkBtn(kind, label, on){
 const nkFill = html => { const st = nkStage(); st.innerHTML = `<div class="nk-fill">${html}</div>`; return st.firstChild; };
 
 // ---------- The activities ----------
-// Each: render(step, opening); say(step) = the step's own clips; intro = the instruction the first time; demo = Coco
+// Each: render(step, opening); say(step) = the step's own clips; intro = the instruction the first time; demo = Chacho
 // can do the first round himself.
 
 NK.meet = {
@@ -793,12 +793,12 @@ NK.phrase = {
   }
 };
 
-// Find it: tap the picture Coco asks for. Shared by the story questions.
+// Find it: tap the picture Chacho asks for. Shared by the story questions.
 NK.find = {
   say: s => ['f-' + s.w.id], intro: ['en-find'], demo: true,
   render(s, opening){ nkChoice(s, opening, ['en-try', 'f-' + s.w.id]); }
 };
-// Two to four pictures, one is right (Find it, Who says that?). again: what Coco says after a wrong tap.
+// Two to four pictures, one is right (Find it, Who says that?). again: what Chacho says after a wrong tap.
 function nkChoice(s, opening, again){
   nkFill(`<div class="nk-opts n${s.opts.length}">${s.opts.map((o, i) => `<button class="nk-card" data-nkopt="${i}">${nestPic(o)}<span class="nk-cap"></span></button>`).join('')}</div>`);
   NE.tries = 0;
@@ -859,8 +859,8 @@ function nkMicAsk(s){
   ov.className = 'overlay';
   ov.id = 'nkmic';
   ov.innerHTML = `<div class="sheet glass he" dir="rtl" lang="he" style="display:grid;gap:12px">
-    <h2>קוקו רוצה לשמוע</h2>
-    <div class="sub" style="margin:0">כדי שהטלפון ידע שהילד אמר את המילה, וכדי שקוקו יוכל לחזור על מה שהילד אומר בקול של תוכי, צריך לאשר את המיקרופון. הקול נשאר בזיכרון של הטלפון רק לכמה שניות, מושמע פעם אחת ונמחק: שום דבר לא נשמר ולא נשלח.</div>
+    <h2>צ׳אצ׳ו רוצה לשמוע</h2>
+    <div class="sub" style="margin:0">כדי שהטלפון ידע שהילד אמר את המילה, וכדי שצ׳אצ׳ו יוכל לחזור על מה שהילד אומר בקול של תוכי, צריך לאשר את המיקרופון. הקול נשאר בזיכרון של הטלפון רק לכמה שניות, מושמע פעם אחת ונמחק: שום דבר לא נשמר ולא נשלח.</div>
     <button class="btn btn-primary btn-block" id="nkmicon">${icon('microphone')} לאשר מיקרופון</button>
     <button class="btn btn-glass btn-block" id="nkmicoff">בלי מיקרופון</button></div>`;
   document.body.appendChild(ov);
@@ -907,7 +907,7 @@ NK.give = {
 };
 
 // Peekaboo: ages 2 and 3 tap the bush that wiggles and see who hides there; from 4, a friend peeks out of every bush and
-// Coco asks where one of them is.
+// Chacho asks where one of them is.
 NK.peek = {
   say: s => s.opts ? ['f-' + s.w.id] : ['en-who'], intro: ['en-peek'], demo: true,
   render(s, opening){
@@ -938,13 +938,13 @@ NK.peek = {
 };
 const nkKidBushes = () => NE.age <= 3 ? 2 : 3;
 
-// Who says that? Coco makes a sound; tap who makes it.
+// Who says that? Chacho makes a sound; tap who makes it.
 NK.sound = {
   say: s => nkSnd(s.w.id).concat(['en-whosays']), demo: true,
   render(s, opening){ nkChoice(s, opening, ['en-try'].concat(nkSnd(s.w.id))); }
 };
 
-// Pop it: bubbles float up slowly (no clock); pop the one with the picture Coco asks for. A few targets in a row.
+// Pop it: bubbles float up slowly (no clock); pop the one with the picture Chacho asks for. A few targets in a row.
 NK.pop = {
   say: s => ['f-' + s.targets[s.ti || 0].id], intro: ['en-popit'], demo: true,
   render(s, opening){
@@ -1149,7 +1149,7 @@ NK.odd = {
   }
 };
 
-// The chant: drums made in code, Coco says a line on every second bar, its picture lights up (tap it). Twice: listen,
+// The chant: drums made in code, Chacho says a line on every second bar, its picture lights up (tap it). Twice: listen,
 // then sing along.
 NK.chant = {
   say: () => [],
@@ -1219,7 +1219,7 @@ NK.story = {
   }
 };
 
-// The big picture: the unit's things in one place; tap the one Coco asks for.
+// The big picture: the unit's things in one place; tap the one Chacho asks for.
 NK.scene = {
   say: s => ['f-' + s.w.id], intro: ['en-look'], demo: true,
   render(s, opening){
@@ -1246,7 +1246,7 @@ NK.scene = {
   }
 };
 
-// Color it: pick the color Coco says and color his part; then color the rest freely and keep it (on this phone).
+// Color it: pick the color Chacho says and color his part; then color the rest freely and keep it (on this phone).
 NK.color = {
   say: s => ['k-' + s.page.id], intro: ['en-color'], demo: true,
   render(s, opening){
@@ -1254,7 +1254,7 @@ NK.color = {
     const pots = shuffle([s.page.color].concat(extra.slice(0, NE.age <= 3 ? 1 : NE.age <= 5 ? 3 : 5)));
     nkFill(`<div class="nk-colorbox" id="nkcb">${nkPageSvg(s.page.id)}</div>
       <div class="nk-pots">${pots.map(n => `<button class="nk-pot" data-nkpot="${n}" aria-label="${n}"><img src="${esc(nestPicSrc('blob-' + C[n].color.slice(1).toLowerCase()))}" alt="" draggable="false"></button>`).join('')}</div>`);
-    let brush = null, step = 0, tries = 0;  // step 0: choose Coco's color; 1: color his part; 2: free coloring
+    let brush = null, step = 0, tries = 0;  // step 0: choose Chacho's color; 1: color his part; 2: free coloring
     const potOf = n => app.querySelector(`[data-nkpot="${n}"]`), mains = () => [...app.querySelectorAll('#nkcb [data-r="main"]')];
     const choose = (b, byCoco) => {
       if (!nkLive(s) || (NE.locked && !byCoco)) return;
@@ -1296,7 +1296,7 @@ NK.color = {
   }
 };
 
-// Let's get dressed: drag the thing Coco says onto the teddy; what he wears stays on for the next rounds.
+// Let's get dressed: drag the thing Chacho says onto the teddy; what he wears stays on for the next rounds.
 const NK_SLOT = { head: [50, 14, 34], face: [50, 34, 32], neck: [50, 47, 34], body: [50, 60, 40], hands: [50, 62, 50], legs: [50, 77, 34], feet: [50, 90, 38] };
 NK.dress = {
   say: s => ['d-' + s.w.id], intro: ['en-dress'], demo: true,

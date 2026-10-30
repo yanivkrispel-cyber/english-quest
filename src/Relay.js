@@ -20,7 +20,7 @@ function cfMode() {
 function cfIntercept(req, body) {
   if (CF_ADMIN[req.fn]) return null;
   var m = cfMode();
-  if (m.mode === 'freeze') return JSON.stringify({ ok: false, error: 'Coco is moving to a faster home. Back in a few minutes!' });
+  if (m.mode === 'freeze') return JSON.stringify({ ok: false, error: 'Chacho is moving to a faster home. Back in a few minutes!' });
   if (m.mode === 'relay' && m.url) {
     var r = UrlFetchApp.fetch(m.url, { method: 'post', contentType: 'text/plain;charset=utf-8', payload: body, muteHttpExceptions: true });
     if (r.getResponseCode() === 200) return r.getContentText();

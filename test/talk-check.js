@@ -1,4 +1,4 @@
-// Checks the Talk to Coco scripts in docs/talk/*.js (specs/talk.md): shapes, lengths per level, safety, and that every
+// Checks the Talk to Chacho scripts in docs/talk/*.js (specs/talk.md): shapes, lengths per level, safety, and that every
 // sample answer (x) lands on the branch its writer expects, with the app's own matcher taken from Index.html.
 // Exits with 1 when something is wrong.
 //   node test/talk-check.js                                   -> all levels
@@ -8,13 +8,13 @@ const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..');
 const LEVELS = ['a1', 'a2', 'b1', 'bp', 'b2', 'c1'];
 const FILES = process.env.TALK_ONLY ? [process.env.TALK_ONLY] : LEVELS;
-// Turns per talk, words in Coco's question (c), in her replies (r, o, end) and in a tile (t), per level.
+// Turns per talk, words in Chacho's question (c), in her replies (r, o, end) and in a tile (t), per level.
 const TURNS = { a1: [3, 5], a2: [4, 5], b1: [4, 6], bp: [5, 6], b2: [5, 7], c1: [5, 7] };
 const C_MAX = { a1: 16, a2: 20, b1: 26, bp: 28, b2: 32, c1: 36 };
 const R_MAX = { a1: 12, a2: 14, b1: 18, bp: 20, b2: 22, c1: 24 };
 const T_MAX = { a1: 8, a2: 10, b1: 14, bp: 16, b2: 18, c1: 22 };
 const SCENES = 15;
-// Coco never asks for things that find a child (or for secrets and pictures).
+// Chacho never asks for things that find a child (or for secrets and pictures).
 const PRIVATE = /\b(your (full |last |real )?name|surname|address|where do you live|street|which school|what school|name of your school|phone number|email|password|how old are you|your age|send (me )?(a )?(photo|picture)|selfie|secret|meet (me|up)|instagram|tiktok|whatsapp|snapchat)\b/i;
 const HARSH = /\b(kill(ed|ing|s)?|die[sd]?|dead|death|blood|guns?|knives|knife|sexy|kiss(es|ed|ing)?|boyfriend|girlfriend|stupid|idiot|dumb|shut up|hate you|diet|fat|skinny|ugly|weight|beer|wine|drunk|cigarettes?|church|mosque|synagogue|jesus|allah|god|wars?|army|soldiers?|politics?|political)\b/i;
 const HEB = /[֐-׿]/;
@@ -126,7 +126,7 @@ function check() {
       });
       coco.forEach(line => {
         if (HARSH.test(line || '')) warn('check the word "' + String(line).match(HARSH)[0] + '" in: ' + line);
-        if (/[^\x20-\x7E’éñ—]/.test(line || '')) err('Coco\'s lines must be plain English text: ' + line);
+        if (/[^\x20-\x7E’éñ—]/.test(line || '')) err('Chacho\'s lines must be plain English text: ' + line);
       });
       lines += clips(s).length;
     });

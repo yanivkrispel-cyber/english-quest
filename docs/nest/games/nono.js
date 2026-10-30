@@ -1,6 +1,6 @@
-// No, Coco! (Coco's arcade, stage C; specs/nest.md): Coco shows a picture and names it, and often he is silly ("Banana!"
+// No, Chacho! (Chacho's arcade, stage C; specs/nest.md): Chacho shows a picture and names it, and often he is silly ("Banana!"
 // for a cow). The kid taps No (or shouts it, when the microphone is already on: only how loud, nothing is kept) or Yes.
-// After a No, Coco hides in his wings, laughs at himself and says the right word. A wrong judgment: Coco asks again, and the
+// After a No, Chacho hides in his wings, laughs at himself and says the right word. A wrong judgment: Chacho asks again, and the
 // second time he just tells. Loaded on demand by docs/nest/arcade.js.
 
 NK.nono = {
@@ -31,7 +31,7 @@ NK.nono = {
         else nkIdle(s, () => r().wrong ? no : yes);
       });
     };
-    // ok: the kid says Coco is right.
+    // ok: the kid says Chacho is right.
     const answer = (ok, byCoco) => {
       if (!nkLive(s) || !open || (NE.locked && !byCoco)) return;
       nestMicStop();

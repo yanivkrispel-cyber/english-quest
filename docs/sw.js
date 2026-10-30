@@ -89,7 +89,7 @@ self.addEventListener('message', e => {
 
 self.addEventListener('push', e => {
   e.waitUntil((async () => {
-    let msg = { title: 'English with Coco', body: 'Your 10 minutes of English are waiting.' };
+    let msg = { title: 'English with Chacho', body: 'Your 10 minutes of English are waiting.' };
     try {
       const sub = await self.registration.pushManager.getSubscription();
       const r = await fetch(API_URL, {

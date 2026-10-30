@@ -1,4 +1,4 @@
-# The link preview picture (WhatsApp, Telegram, Facebook): docs/icons/share.jpg, 1200x630, Coco on the app's warm
+# The link preview picture (WhatsApp, Telegram, Facebook): docs/icons/share.jpg, 1200x630, Chacho on the app's warm
 # glass background with the name. Run from app/: python tools/og_image.py  (build-pages.js adds the og: tags).
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
@@ -27,10 +27,10 @@ bold = ImageFont.truetype('C:/Windows/Fonts/segoeuib.ttf', 84)
 semi = ImageFont.truetype('C:/Windows/Fonts/seguisb.ttf', 40) if __import__('os').path.exists('C:/Windows/Fonts/seguisb.ttf') else ImageFont.truetype('C:/Windows/Fonts/segoeui.ttf', 40)
 x = 640
 draw.text((x, 170), 'English', font=bold, fill=ink)
-draw.text((x, 262), 'with Coco', font=bold, fill=accent)
+draw.text((x, 262), 'with Chacho', font=bold, fill=accent)
 draw.text((x, 392), '10 minutes a day.', font=semi, fill=muted)
 draw.text((x, 444), 'Missions, games and', font=semi, fill=muted)
-draw.text((x, 496), 'talks with Coco.', font=semi, fill=muted)
+draw.text((x, 496), 'talks with Chacho.', font=semi, fill=muted)
 
 img.save('docs/icons/share.jpg', quality=86, optimize=True, progressive=True)
 print('docs/icons/share.jpg', img.size)

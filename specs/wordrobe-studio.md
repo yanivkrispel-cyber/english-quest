@@ -1,13 +1,13 @@
 # The Wordrobe, phase 2: the Studio
 
-Phase 2 of Coco's shop (phase 1: `specs/wordrobe.md`; the proposal: https://claude.ai/artifact/6GkZRhCvB23frmsM37GXvx).
+Phase 2 of Chacho's shop (phase 1: `specs/wordrobe.md`; the proposal: https://claude.ai/artifact/6GkZRhCvB23frmsM37GXvx).
 Everything here opens with the shop on `Settings.ShopOpens` (2026-10-24), as the owner chose. The owner's picks for
 this phase: the bases Beanie, Bow, Scarf and Cape (a hoodie and shoes do not sit well on 300 stickers whose bodies
 and legs differ); every rare and epic item is made of words; everything opens on the opening day.
 
 ## Say it, Wear it (the Studio)
 
-She describes a white base in English, and Coco makes it: "a big sparkly purple velvet cape with tiny gold stars".
+She describes a white base in English, and Chacho makes it: "a big sparkly purple velvet cape with tiny gold stars".
 
 - **Bases** (`STUDIO_BASES` in Shop.js): Beanie 150 (head), Bow 120 (head), Scarf 160 (neck), Cape 220 (back). Each
   design costs its base's price; she can make as many as she likes (not the same one twice).
@@ -24,9 +24,9 @@ She describes a white base in English, and Coco makes it: "a big sparkly purple 
   pattern: with stars", or "I don't know the word purpel. Did you mean purple?".
 - **Perfect Fit**: right the first time (no hint shown, no "Show me how") with 3 or more describing words. The design
   gets three gold sparkles; it does not change the price.
-- **The sheet**: the mirror shows what Coco understood so far while she types (any order, `studioLoose`), her words as
-  colored chips by kind (red = a word Coco does not know), the words Coco knows by kind (tap to add), the order rule,
-  "Make it", "Show me how", and the voice (the same optional toggle as Ask Coco: what she says goes into the box).
+- **The sheet**: the mirror shows what Chacho understood so far while she types (any order, `studioLoose`), her words as
+  colored chips by kind (red = a word Chacho does not know), the words Chacho knows by kind (tap to add), the order rule,
+  "Make it", "Show me how", and the voice (the same optional toggle as Ask Chacho: what she says goes into the box).
 - **A design is a token** that carries everything needed to draw it, so other kids' phones show it too:
   `~base.opinion.size.quality.color.material.psize.pquality.pcolor.pattern.fit` (spaces as `-`, fit `p` = Perfect
   Fit). It is the Shop row's `Item` and a Wardrobe entry like any item.
@@ -43,7 +43,7 @@ Every rare and epic item (16, `SHOP_RECIPES` in Shop.js) is made of words: 4 for
 their meanings, in two sets: `a` for A1-A2 and `b` for B1 and up (Rainbow Wings: rainbow, feather, sky, fly / vivid,
 soar, spectrum, plumage).
 
-- **Before buying**: the item's sheet shows its words, and Ask Coco opens only once she has collected them all. Collecting
+- **Before buying**: the item's sheet shows its words, and Ask Chacho opens only once she has collected them all. Collecting
   is a quick quiz (the meaning, pick the word from four); a word she misses shows its meaning, is said aloud, and comes
   back at the end of the round, which ends when every word was answered right once.
 - **Memory** (Words tab, `Memory`, one entry per word, shared by items with the same word): a word answered right the

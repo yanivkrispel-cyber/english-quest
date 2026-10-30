@@ -1,16 +1,16 @@
-// Coco's Nest, the arcade plan stage C (specs/nest.md, "Coco's arcade"): the playground gets two shelves, Coco's games and
-// the learning games. Coco's games are new games on the words the kid has met; each lives in docs/nest/games/<game>.js and
+// Chacho's Nest, the arcade plan stage C (specs/nest.md, "Chacho's arcade"): the playground gets two shelves, Chacho's games and
+// the learning games. Chacho's games are new games on the words the kid has met; each lives in docs/nest/games/<game>.js and
 // loads only when it is played. The parent sets the minutes a day (dash.nest.arcadeMin, 15 by default, 0 = no limit); the
-// phone counts them, and when they are used up Coco sleeps on the shelf until tomorrow (a game that is on goes on to its end).
+// phone counts them, and when they are used up Chacho sleeps on the shelf until tomorrow (a game that is on goes on to its end).
 // Loaded after play.js, in the app's global scope: every top-level name starts with nk/NK (test/nest-check.js).
 
 // [game, the youngest age, the icon while the cover is loading]
 const NK_ARCADE = [['parrot', 2, 'bird'], ['peep', 2, 'eye'], ['nono', 2, 'hand-palm'], ['slice', 4, 'knife'], ['cards', 4, 'cards'],
   ['house', 2, 'house'], ['where', 3, 'binoculars'], ['kitchen', 4, 'cooking-pot'], ['ladders', 4, 'ladder'],
   ['freeze', 2, 'person-simple-run'], ['lights', 2, 'moon-stars'], ['beat', 4, 'drum']];
-const NK_ARC_NAME = { parrot: 'Talking Coco', peep: 'Pop-up Pals', nono: 'No, Coco!', slice: 'Coco Slice', cards: 'Color Cards',
-  house: "Coco's House", where: "Where's Coco?", kitchen: "Coco's Kitchen", ladders: 'Coco Ladders',
-  freeze: 'Dance Freeze', lights: 'Lights out, Coco!', beat: 'Beat Tiles' };
+const NK_ARC_NAME = { parrot: 'Talking Chacho', peep: 'Pop-up Pals', nono: 'No, Chacho!', slice: 'Chacho Slice', cards: 'Color Cards',
+  house: "Chacho's House", where: "Where's Chacho?", kitchen: "Chacho's Kitchen", ladders: 'Chacho Ladders',
+  freeze: 'Dance Freeze', lights: 'Lights out, Chacho!', beat: 'Beat Tiles' };
 Object.assign(NK_CUE, { parrot: ['microphone', 'mic'], peep: ['hand-pointing', ''], nono: ['hand-pointing', ''], slice: ['hand-swipe-right', ''], cards: ['cards', ''],
   house: ['hand-pointing', ''], where: ['magnifying-glass', ''], kitchen: ['hand-grabbing', 'drag'], ladders: ['hand-pointing', ''],
   freeze: ['person-simple-run', 'body'], lights: ['moon-stars', 'body'], beat: ['music-notes', ''] });
@@ -29,7 +29,7 @@ function nkArcLeft(){
   const min = dash && dash.nest && dash.nest.arcadeMin != null ? Number(dash.nest.arcadeMin) : 15;
   return min > 0 ? min * 60 - nkArcUsed() : Infinity;
 }
-// Every 5 s of a Coco game on a visible screen counts; it stops by itself when the game is over.
+// Every 5 s of a Chacho game on a visible screen counts; it stops by itself when the game is over.
 function nkArcCount(){
   clearInterval(NKR.tick);
   NKR.tick = setInterval(() => {
@@ -60,7 +60,7 @@ function nkArcWords(units, core){
   return out;
 }
 const NK_CARD_COLORS = ['red', 'blue', 'yellow', 'green', 'orange', 'purple'];
-// The places a kid's units open (Coco's House rooms; Where's Coco? plays in one of them): the living room always.
+// The places a kid's units open (Chacho's House rooms; Where's Chacho? plays in one of them): the living room always.
 function nkArcPlaces(words){
   const out = ['home'];
   words.forEach(w => { const p = NK_THEME_PLACE[w.theme]; if (p && !out.includes(p)) out.push(p); });
@@ -150,7 +150,7 @@ async function nkArcStart(g, unitId, preview){
 }
 
 // ---------- The arcade screen ----------
-// A painted fairground; two shelves (Coco's games, learning games) by two big buttons; every game a clay cover.
+// A painted fairground; two shelves (Chacho's games, learning games) by two big buttons; every game a clay cover.
 function nkArcade(){
   const coco = nkArcGames(), learn = nkPlayGames(), L = Object.fromEntries(NG_GAMES);
   if (!coco.length && !learn.length) return renderDash();
@@ -163,9 +163,9 @@ function nkArcade(){
     <div class="nka-top">
       <button class="btn btn-glass icon-btn" id="nkaback" aria-label="Home">${icon('house', 'duotone')}</button>
       ${coco.length && learn.length ? `<div class="nka-tabs glass">
-        <button class="nka-tab${tab === 'coco' ? ' on' : ''}" data-nkatab="coco" aria-label="Coco's games"><img src="${cocoSrc('happy')}" alt="" draggable="false"></button>
+        <button class="nka-tab${tab === 'coco' ? ' on' : ''}" data-nkatab="coco" aria-label="Chacho's games"><img src="${cocoSrc('happy')}" alt="" draggable="false"></button>
         <button class="nka-tab${tab === 'learn' ? ' on' : ''}" data-nkatab="learn" aria-label="Learning games">${icon('puzzle-piece', 'duotone')}</button></div>` : '<span></span>'}
-      <img class="nka-coco" id="nkacoco" src="${nkPoseSrc(asleep ? 'sleep' : 'wave')}" alt="Coco" draggable="false">
+      <img class="nka-coco" id="nkacoco" src="${nkPoseSrc(asleep ? 'sleep' : 'wave')}" alt="Chacho" draggable="false">
     </div>
     <div class="nka-shelf ${tab}${asleep ? ' asleep' : ''}${tab === 'coco' && coco.length > 6 ? ' many' : ''}">${cards}</div>
   </div>`;
@@ -215,7 +215,7 @@ function nkArcade(){
   document.head.appendChild(st);
 })();
 
-// ---------- Coco's band for the arcade's music games (stage E): drums and the band of actor.js on the audio clock ----------
+// ---------- Chacho's band for the arcade's music games (stage E): drums and the band of actor.js on the audio clock ----------
 // nkArcBand(seed, bpm, onBeat(b, delayMs)) -> { stop(), pause(), play(), beat, ctx }. Scheduled a little ahead; onBeat is
 // called with each beat's number and how long until it sounds (so pictures can move on it). Without Web Audio it still beats.
 function nkArcBand(seed, bpm, onBeat){

@@ -1,7 +1,7 @@
-// Prints every clip Coco's Nest needs, as JSON, for tools/nest_audio.py: [{ name, text, voice }] with voice 'word'
-// (Kokoro, slow), 'find' (Kokoro, a little faster) or 'en' (Kokoro, Coco's lines). All of it is Coco: the kid hears no
+// Prints every clip Chacho's Nest needs, as JSON, for tools/nest_audio.py: [{ name, text, voice }] with voice 'word'
+// (Kokoro, slow), 'find' (Kokoro, a little faster) or 'en' (Kokoro, Chacho's lines). All of it is Chacho: the kid hears no
 // Hebrew (owner, 2026-10-27). Names (specs/nest.md): w-<word id> (say), f-<word id> (find), p-<unit id> (the unit's
-// phrase), m-<move id> (Coco says), g-<word id> (give it to me), s-<word id> (its sound), d-<word id> (put it on),
+// phrase), m-<move id> (Chacho says), g-<word id> (give it to me), s-<word id> (its sound), d-<word id> (put it on),
 // k-<page id> (a coloring page), o-<word id>-<n> (a kitchen order), c-<unit id>-<n> (a chant line), t-<unit id>-<n> (a story page), en-<key>.
 // test/nest-check.js uses the same list to check that every file exists.
 //   node tools/nest-audio-list.js

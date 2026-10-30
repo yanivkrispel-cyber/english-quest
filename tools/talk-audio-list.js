@@ -1,4 +1,4 @@
-// Prints every clip Talk to Coco needs, as JSON, for tools/talk_audio.py: [{ name, text, level }].
+// Prints every clip Talk to Chacho needs, as JSON, for tools/talk_audio.py: [{ name, text, level }].
 // The order and names are test/talk-check.js's clips(); the bank lines are CHAT_BANK in src/Index.html.
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const { load, clips } = require('../test/talk-check.js');

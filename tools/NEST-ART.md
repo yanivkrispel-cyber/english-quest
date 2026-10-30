@@ -1,6 +1,6 @@
-# Coco's Nest: the clay pictures
+# Chacho's Nest: the clay pictures
 
-Every picture in the Nest (words, unit icons, Coco says moves, the color blobs and the chick that numbers repeat) is a
+Every picture in the Nest (words, unit icons, Chacho says moves, the color blobs and the chick that numbers repeat) is a
 clay sticker made for the app, in the same world as the pets (`tools/PETS.md`): Pixar-like soft matte polymer clay, a
 white die-cut outline. The owner asked for it on 2026-10-27 ("the emojis are not premium at all"); the Fluent Emoji
 pictures stay only as a fallback for a name that has no clay version yet.
@@ -19,6 +19,6 @@ pictures stay only as a fallback for a name that has no clay version yet.
 - `python tools/nest_art.py status` lists what nest.js needs that has no clay version.
 - Then `python tools/nest_pics.py` (writes `docs/nest/pics/*.webp`, 320 px), `node test/nest-check.js`, raise `NEST_V`.
 
-The parrot picture is Coco himself (`docs/coco/happy.webp`, squared into `art/nest/cut/parrot.png`).
+The parrot picture is Chacho himself (`docs/coco/happy.webp`, squared into `art/nest/cut/parrot.png`).
 People in the pictures have varied skin tones; the feelings are one child's face, and the actions one child (yellow
 t-shirt, blue shorts), so a toddler compares what changes and not who it is.

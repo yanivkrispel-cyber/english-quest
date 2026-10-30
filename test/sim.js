@@ -744,7 +744,7 @@ const S3 = save('4821', 'tug-save-0002');
 console.log('the PIN still works:', S3.xp >= 0 && S3.mateXp >= 0, '| rows', tugRows(), '(expect 4)');
 }
 
-// ---- The Wordrobe, phase 1: coins, Ask Coco, the wardrobe, the Streak Shield ----
+// ---- The Wordrobe, phase 1: coins, Ask Chacho, the wardrobe, the Streak Shield ----
 { // a block, so these names do not clash with the sections above
 const sp = { Aviv: '2694', Ziv: '4821', Ron: '7356' };
 const call_ = (fn, who, ...args) => run(fn + '(' + [who, sp[who]].concat(args).map(a => JSON.stringify(a)).join(',') + ')');
@@ -774,7 +774,7 @@ check('coins = points + XP', S.coins.earned === D.stats.earned + xpOf('Aviv') &&
 check('the shop is open on the date', S.open && D.shop.open && D.shop.season === 'halloween', JSON.stringify(D.shop));
 check('the catalog', S.items.length === 45 && S.items.filter(i => i.season === 'halloween').every(i => i.available));
 
-// Ask Coco: the grade decides the price
+// Ask Chacho: the grade decides the price
 const before = S.coins.balance;
 let B = call_('apiShopBuy', 'Aviv', 'star-beanie', 'pink', ['Could', 'I', 'please', 'have', 'the', 'pink', 'Star Beanie', '?', 'Thank you!']);
 check('15% for "Could I please ... ? Thank you!"', B.bought.paid === 102 && B.bought.pct === 15 && B.coins.balance === before - 102,
@@ -974,7 +974,7 @@ fails('the Studio before the opening', () => call_('apiDesign', 'Ziv', 'cape', '
 at(year + '-10-29');
 const coins0 = call_('apiShop', 'Ziv').coins.balance;
 fails('a design with a mistake', () => call_('apiDesign', 'Ziv', 'cape', 'a cape purple', true));
-fails('a base Coco does not have', () => call_('apiDesign', 'Ziv', 'hoodie', 'a pink hoodie', true));
+fails('a base Chacho does not have', () => call_('apiDesign', 'Ziv', 'hoodie', 'a pink hoodie', true));
 B = call_('apiDesign', 'Ziv', 'cape', 'a big sparkly purple velvet cape with tiny gold stars', true);
 const tok = B.bought.id;
 check('made: paid, Perfect Fit, worn', tok === '~cape..big.sparkly.purple.velvet.tiny..gold.stars.p' && B.bought.perfect && B.coins.balance === coins0 - 220
@@ -997,7 +997,7 @@ check('parents see the design sentence', PZ.bought[0].sentence === 'An orange sc
 console.log('words tab:', sheets.Words.rows.length - 1, 'rows');
 }
 
-// ---- Ask Coco: the app grades requests exactly like the server ----
+// ---- Ask Chacho: the app grades requests exactly like the server ----
 {
 const html = fs.readFileSync('src/Index.html', 'utf8').split('\r\n').join('\n');
 const body = html.slice(html.indexOf('function cocoGrade('), html.indexOf('\n}\n', html.indexOf('function cocoGrade(')) + 2);
@@ -1193,7 +1193,7 @@ const c1 = run("JSON.stringify(nextExercise('use-of-english', 'c1', {}, true))")
 check('C1 (no Use of English) gets a grammar mission', JSON.parse(c1).section === 'grammar' && !!run('missionOf(' + JSON.stringify(JSON.parse(c1).url) + ')'), c1);
 }
 
-// ---- Talk to Coco (Chat.js) ----
+// ---- Talk to Chacho (Chat.js) ----
 {
 const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
 const fails = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + label); } catch (e) { console.log('ok: ' + label + ' is rejected: ' + e.message); } };
@@ -1285,7 +1285,7 @@ check('edits in the Audit tab itself are not kept', rows().length === nA);
 fails('the audit for a parent', () => run("apiAudit('5566', 7)"));
 const a = run("apiAudit('1234', 30)");
 check('the timeline is newest first', a.events.every((e, i) => !i || a.events[i - 1].at >= e.at));
-check('it merges practice with the trail', a.events.some(e => e.action === 'game') && a.events.some(e => e.action === 'open') && a.events.some(e => e.action === 'talk with Coco'),
+check('it merges practice with the trail', a.events.some(e => e.action === 'game') && a.events.some(e => e.action === 'open') && a.events.some(e => e.action === 'talk with Chacho'),
   [...new Set(a.events.map(e => e.action))].join(','));
 const fam = a.families.find(f => f.kidOpens >= 3);
 check('the family summary counts opens and devices', fam && fam.devices.includes('iPhone, app') && fam.wrong >= 1 && fam.last, JSON.stringify(fam));
@@ -1293,7 +1293,7 @@ check('the device split counts people per device', a.devices['iPhone, app'] >= 1
 check('the days are capped at 30', run("apiAudit('1234', 400)").days === 30);
 }
 
-// ---- Coco's Nest (Nest.js) ----
+// ---- Chacho's Nest (Nest.js) ----
 {
 const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
 const fails = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + label); } catch (e) { console.log('ok: ' + label + ' is rejected: ' + e.message); } };
@@ -1310,7 +1310,7 @@ let d = run(`apiDashboard('${TALI}', '${tali.PIN}')`);
 check('a Nest kid has no level test, journey, talks, shop or duels', !d.levelTest && !d.journey && !d.chat && !d.shop.open && !d.duels, JSON.stringify({ lt: d.levelTest, j: !!d.journey, chat: !!d.chat, shop: d.shop.open, duels: !!d.duels }));
 check('her day is the first unit, with 2 pictures at age 4', d.nest && d.nest.today === units[0][0] && d.nest.choices === 2 && !d.nest.words && !d.nest.done, JSON.stringify(d.nest));
 const today = d.today;
-check('today shows in the week strip as Coco\'s Nest', d.week.find(w => w.isToday).label === "Coco's Nest");
+check('today shows in the week strip as Chacho\'s Nest', d.week.find(w => w.isToday).label === "Chacho's Nest");
 const o = run(`apiDashboard('${OMER}', '${omer.PIN}')`).nest;
 check('age 7 gets 3 pictures and the written word', o.choices === 3 && o.words, JSON.stringify(o));
 fails('the old score sheet for a Nest kid', () => run(`apiSubmit('${TALI}', '${tali.PIN}', '${today}', 5, 8, null)`));
@@ -1339,7 +1339,7 @@ check('one more lesson is logged, the program moves on, and the week still shows
   d.justEarned === 15 && sheets.Log.rows.filter(r => r[1] === TALI).length === 2 && d.nest.played.includes(units[1][0]) && d.nest.next === null
   && d.week.find(w => w.isToday).percent === Math.round(3 / 8 * 100), JSON.stringify([d.justEarned, d.nest.next, d.week.find(w => w.isToday).percent]));
 run(`apiParentNestPerDay('7788', '${TALI}', 1)`);
-// Coco's arcade (specs/nest.md, stage C): 15 minutes a day by default; the parent sets 0 (no limit) to 60, audited.
+// Chacho's arcade (specs/nest.md, stage C): 15 minutes a day by default; the parent sets 0 (no limit) to 60, audited.
 check('the arcade has 15 minutes a day by default', d.nest.arcadeMin === 15, JSON.stringify(d.nest.arcadeMin));
 fails('arcade minutes from another family', () => run(`apiParentNestArcade('0000', '${TALI}', 30)`));
 fails('arcade minutes out of range', () => run(`apiParentNestArcade('7788', '${TALI}', 90)`));
@@ -1392,7 +1392,7 @@ check('the parent view comes back', p.groups.length === 1 && p.groups[0].girls.s
 d = run(`apiDashboard(${JSON.stringify(LILO)}, '${kid(LILO).PIN}')`);
 check('age 5 moves her into the Nest, the pending level test is gone', kid(LILO).Level === 'nest' && Number(kid(LILO).Age) === 5 && !d.levelTest && d.nest && d.nest.today, JSON.stringify({ lv: kid(LILO).Level, lt: d.levelTest, nest: d.nest }));
 const aud = sheets.Audit.rows.slice(-1)[0];
-check('the change is in the audit trail', aud.includes('kid age') && aud.join('|').includes("Coco's Nest, age 5"), aud.join('|'));
+check('the change is in the audit trail', aud.includes('kid age') && aud.join('|').includes("Chacho's Nest, age 5"), aud.join('|'));
 run(`apiPlacement(${JSON.stringify(TOMER)}, '${kid(TOMER).PIN}', 'A', 'b1', 15, 20, '')`);
 run(`apiParentSetAge('6611', ${JSON.stringify(TOMER)}, { grade: 4 })`);
 check('a class change keeps a tested level', kid(TOMER).Level === 'b1' && Number(kid(TOMER).Age) === 10, kid(TOMER).Level);

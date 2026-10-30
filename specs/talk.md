@@ -1,8 +1,8 @@
-# Talk with Coco (stage 0 of speaking)
+# Talk with Chacho (stage 0 of speaking)
 
-Short spoken talks with Coco the parrot. The analysis and the plan: https://claude.ai/artifact/1Vsdxd7gaKJCRzE6W6MXAF
+Short spoken talks with Chacho the parrot. The analysis and the plan: https://claude.ai/artifact/1Vsdxd7gaKJCRzE6W6MXAF
 (stage 0 = scripted, no AI at run time; the question it answers: do the kids speak English out loud with the app?).
-The owner's choices (2026-10-26): talks both inside every mission and once a day from home; Coco speaks (recorded),
+The owner's choices (2026-10-26): talks both inside every mission and once a day from home; Chacho speaks (recorded),
 the kid's pet cheers; a bonus only, never a score; what the phone heard is kept as text (no audio), parents see a short
 summary; when the phone cannot hear, sentence tiles; a writer and a strict reviewer per level; live for everyone.
 
@@ -10,15 +10,15 @@ summary; when the phone cannot hear, sentence tiles; a writer and a strict revie
 
 - **Mission talk**: after Use it, before the finish, one talk per mission (`t<mission id>`), about what the mission
   taught. Practice and preview play it without saving; the mission review skips it.
-- **Home talk**: a card under today's mission, "Talk with Coco". One scene a day (`s<level><nn>`, 15 per level): the
+- **Home talk**: a card under today's mission, "Talk with Chacho". One scene a day (`s<level><nn>`, 15 per level): the
   first of her level she has not had, then round again. After today's, the card offers "Talk again" (practice).
-- The talk screen (play frame): the Hebrew line of the talk on top, the conversation as chat bubbles (each Coco line
+- The talk screen (play frame): the Hebrew line of the talk on top, the conversation as chat bubbles (each Chacho line
   has a replay button), the pet and its line in the dock, and a bar: **עברית** (the Hebrew hint of the question),
   the **mic** (tap and speak), **Ideas** (the 2-3 tiles).
-- Coco says each line from a recording (`docs/talk/audio/<clip>.mp3`); without one (no file, offline) the phone's voice
+- Chacho says each line from a recording (`docs/talk/audio/<clip>.mp3`); without one (no file, offline) the phone's voice
   reads it. The mic is enabled when she has finished.
 - An answer: the phone's speech recognition (`en-US`, up to 4 guesses; the first guess that fits a branch wins) or a tile
-  (tapping it is the answer; saying it aloud counts as voice). Coco's reply is the branch's `r`, or `o` when nothing
+  (tapping it is the answer; saying it aloud counts as voice). Chacho's reply is the branch's `r`, or `o` when nothing
   fits, then the next question. Nothing heard: "Sorry, I didn't catch that..." (and after the second time the tiles
   open). Too few words and nothing fits: "Ooh, tell me a little more!" once. No mic (no API, permission denied): the
   tiles are always on and a note says to tap and say it aloud. A recognizer that never answers is stopped after 12 s.
@@ -57,5 +57,5 @@ At least half of the pilot kids speak aloud at least 3 times a week for two week
 ## Preview and teacher review
 
 `?talk` (and the button in the mission gallery) lists the home talks of each level; mission talks play at the end of
-each mission in `?missions`. With the teacher code, every Coco line has "Something wrong here?" (`apiTeacherFlag`,
+each mission in `?missions`. With the teacher code, every Chacho line has "Something wrong here?" (`apiTeacherFlag`,
 Mission = the talk id, Item = `c:<talk>:<turn><c|r1|o>`).

@@ -1,6 +1,6 @@
-// Prints every line the app speaks, as JSON for tools/voice.py (Coco's voice, Chatterbox):
+// Prints every line the app speaks, as JSON for tools/voice.py (Chacho's voice, Chatterbox):
 // [{ id, text, kind, level, ref }]. id is the file it becomes under docs/ (without .mp3):
-//   talk/audio/<clip>         Talk with Coco (tools/talk-audio-list.js)
+//   talk/audio/<clip>         Talk with Chacho (tools/talk-audio-list.js)
 //   nest/audio/<clip>         the Nest (tools/nest-audio-list.js)
 //   missions/audio/<ep>-<part>#<k>   one line of a radio show; the lines of a part are joined into <ep>-<part>.mp3
 //   say/<key>                 a word or sentence the games and missions read aloud (sayWord, sayIt, Read to me);

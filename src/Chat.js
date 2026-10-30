@@ -1,4 +1,4 @@
-// Talk to Coco (specs/talk.md): short spoken talks with Coco the parrot, scripted in docs/talk/<level>.js on GitHub Pages.
+// Talk to Chacho (specs/talk.md): short spoken talks with Chacho the parrot, scripted in docs/talk/<level>.js on GitHub Pages.
 // The phone listens and matches what the kid says to the script; no audio ever leaves the phone. The server keeps a
 // summary (how many turns were said aloud, how many with the tiles, and the words the phone heard) and gives a bonus:
 // coins and pet XP, never a score. A mission talk (id t<mission>) follows the mission's questions; a home scene
@@ -7,7 +7,7 @@
 var CHAT = { voiceXp: 3, tileXp: 1, allVoice: 3, dayCap: 30, maxTurns: 8, minSeconds: 10, keepIds: 60 };
 var CHAT_ID = /^(t(a1|a2|b1|bp|b2|c1)[gvlruw]\d\d|s(a1|a2|b1|bp|b2|c1)\d\d)$/;
 
-// turns: Coco's questions in the talk. voice / tiles: answers said aloud and heard / answered with a tile.
+// turns: Chacho's questions in the talk. voice / tiles: answers said aloud and heard / answered with a tile.
 // mic: the phone could listen. said: what the phone heard, one string per answer said aloud.
 function apiChatResult(name, pin, id, turns, voice, tiles, mic, said, seconds) {
   var kid = auth(name, pin);

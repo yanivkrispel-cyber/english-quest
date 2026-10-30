@@ -1,4 +1,4 @@
-# English Quest (English with Coco)
+# English Quest (English with Chacho)
 
 Daily ~10-minute English practice for kids, built on the free exercises at
 [test-english.com](https://test-english.com). Kids open one link, pick their name, enter a PIN,
@@ -34,8 +34,8 @@ notifications, and reward points.
   (home, game XP); "Something wrong here?" goes to the Flags tab; parents get the mission's dinner question in the 21:00
   summary. Content: `docs/missions/<a1|a2|b1|bp|b2|c1>.js` (59 missions: the first week of each level, and Newsroom
   for A1 to B2). Assignments prefer the next topic of her level that has a mission; without one left, the link as before.
-- **Talk with Coco** (spec: `specs/talk.md`): short spoken talks with Coco the parrot, scripted (no AI at run time).
-  One after Use it in every mission, about what it taught, and one home scene a day (15 per level). Coco speaks
+- **Talk with Chacho** (spec: `specs/talk.md`): short spoken talks with Chacho the parrot, scripted (no AI at run time).
+  One after Use it in every mission, about what it taught, and one home scene a day (15 per level). Chacho speaks
   (recorded with Chatterbox, `specs/voice.md`), the kid answers aloud (the phone's speech recognition, matched to the script's branches by
   keywords) or with sentence tiles, with a Hebrew hint on request; every answer moves on. A bonus only (XP and coins),
   kept as text in the Chats tab; parents see how many talks were aloud and one sentence. Content: `docs/talk/<level>.js`.
@@ -83,9 +83,9 @@ notifications, and reward points.
   (with the don't-say words marked); phrases to ask for the one listening. The end screen lists every word with its
   meaning and a read-aloud button; a missed word comes back in Match it. XP for both: 2 per word the team got right
   (describing counts too), +10 for 6 of 8 or more.
-- **The Wordrobe** (spec: `specs/wordrobe.md`): Coco the parrot's shop, where every purchase is made in English. Every
+- **The Wordrobe** (spec: `specs/wordrobe.md`): Chacho the parrot's shop, where every purchase is made in English. Every
   point and every XP is also a coin (computed from what is recorded; the parents' rewards ladder does not change). A kid
-  asks Coco for an item with word tiles (or aloud, optional): "How much is it?", "Can I try it on?", "Do you have it in
+  asks Chacho for an item with word tiles (or aloud, optional): "How much is it?", "Can I try it on?", "Do you have it in
   pink?", then her request; please, a question, could / may / I'd like and thank you each take a little off the price
   (up to 15%), and a wrong request gets a friendly hint. 38 items in six places (head, face, neck, back, aura, buddy),
   four victory moves, a Streak Shield (one missed day a week is saved), and the Halloween Drop (17 Oct - 7 Nov).
@@ -104,7 +104,7 @@ notifications, and reward points.
 **The friends' pilot** (spec: `specs/pilot.md`): families join on their own from the owner's invite link (`?join=<code>`, Hebrew screens
 and a privacy consent), new kids take an adaptive level test inside the app (and a progress check after four weeks), parents see their
 area in Hebrew and can send feedback, the teacher reviews missions at `?missions&t=<code>`, and the admin has a Pilot card with the funnel.
-The app is shown as **English with Coco** with Coco the parrot as its icon.
+The app is shown as **English with Chacho** with Chacho the parrot as its icon.
 
 **Parents**
 - **Groups** (families, friends): each group has its own link and parent PIN and sees only its kids.
@@ -142,7 +142,7 @@ Phone / browser                     GitHub Pages (docs/)            Google
   with BigInt in `Push.js` (verified against Node crypto in `test/push-crypto.js`). Pushes carry no
   payload; the service worker asks `apiPushMessage` what to show. The VAPID key pair is generated
   on first use and stored only in Script Properties.
-- **Home in five tabs** (spec: `specs/home-tabs.md`): Today (the pet, one Start, Talk with Coco and an invite or a
+- **Home in five tabs** (spec: `specs/home-tabs.md`): Today (the pet, one Start, Talk with Chacho and an invite or a
   game, never a scroll), Journey (the map), Play, Pet (and the shop) and Me (stats, week, rewards, switch player).
 - **Speed** (spec: `specs/perf-phase1.md`): a remembered kid's last dashboard is kept on the phone and shown at
   once, fresh data comes in the background (the refresh button spins, or shows a dot when it failed). Every call
@@ -152,7 +152,7 @@ Phone / browser                     GitHub Pages (docs/)            Google
   a newer app is announced with "A new version is ready".
   Phase 2 (spec: `specs/perf-phase2.md`): never a bare spinner (a wait screen with words, then Try again), the silent
   sign-in gives up after 12 s, the parents' view is kept on the phone too, later opens of the day skip the animation when
-  the screen is on the phone, Coco's Nest files load side by side, the icon fonts come from `docs/fonts/`, opens are
+  the screen is on the phone, Chacho's Nest files load side by side, the icon fonts come from `docs/fonts/`, opens are
   written to the Audit tab by the warm-up trigger instead of during the call, and the admin's Audit card shows how fast
   the opens and the server were.
 
@@ -173,7 +173,7 @@ Phone / browser                     GitHub Pages (docs/)            Google
 | Duels | Id, Created, Date, Mode, State, Host, Guest, HostLevel, GuestLevel, Seed, Start, Expires, Reply, HostScore, HostMs, HostTrack, GuestScore, GuestMs, GuestTrack, Winner, Ended, Helped | One row per duel, challenge, boss battle or Talk & Tap game (Id = the 4-letter code; Mode `live` / `challenge` / `boss` / `talk`). Tracks: `1:4210,0:9800,…` (right/wrong and ms since the start, `-` unanswered). Talk & Tap tracks are the kid's own picks, `1:4210:2` (the option tapped last). Each player's XP is a `Games` row with Game = `duel`, `boss` or `talk`; Tug of War writes only `Games` rows (Game = `tug`). |
 | Assignments | Girl, Date, Section, Level, Title, URL | One exercise per kid per day, created lazily. |
 | Log | Timestamp, Girl, Date, DoneOn, Section, Level, Title, URL, Correct, Total, Percent, Points, Mission, Seconds | One row per completed task. `Mission` and `Seconds`: a task played as a mission (empty for the link). |
-| Chats | Timestamp, Girl, Date, Talk, Where, Level, Turns, Voice, Tiles, Mic, XP, Seconds, Said | One row per Talk with Coco (`src/Chat.js`). Voice / Tiles = answers said aloud / tapped; Said = what the phone heard (text only). |
+| Chats | Timestamp, Girl, Date, Talk, Where, Level, Turns, Voice, Tiles, Mic, XP, Seconds, Said | One row per Talk with Chacho (`src/Chat.js`). Voice / Tiles = answers said aloud / tapped; Said = what the phone heard (text only). |
 | Flags | Timestamp, Girl, Date, Mission, Item, Note | "Something wrong here?" under a mission question (at most 20 a kid a day). |
 | Rewards | Points, Reward, Group | Empty Group = applies to groups without rewards of their own. |
 | Push | Girl, Endpoint, Created, Agent | Kids' devices for reminders. |
@@ -191,11 +191,11 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | `src/Push.js` | Web Push: P-256/ES256, VAPID JWT, kid reminders, parent notifications |
 | `src/Duels.js` | Play together: invites, live duels synced by polling, challenges, Boss Battle, Talk & Tap, Tug of War saves, results, Helper stars |
 | `src/Duos.js` | Duo Streak and Team Quest: requests, streak counting, quests, rewards after practice |
-| `src/Shop.js` | The Wordrobe: catalog, coins, Coco's grading of a request (`cocoGrade`, also in Index.html), buying, the wardrobe; phase 2: items made of words (`SHOP_RECIPES`, memory and shine), the Word Saver, the Studio (`studioWords` + `studioGrade`, copied as they are into Index.html; designs as tokens) |
+| `src/Shop.js` | The Wordrobe: catalog, coins, Chacho's grading of a request (`cocoGrade`, also in Index.html), buying, the wardrobe; phase 2: items made of words (`SHOP_RECIPES`, memory and shine), the Word Saver, the Studio (`studioWords` + `studioGrade`, copied as they are into Index.html; designs as tokens) |
 | `src/Missions.js` | Today's Mission: who gets it (`Girls.Missions`), `apiMissionResult` (checks the result against the day's mission), `apiFlag` |
-| `src/Nest.js` | Coco's Nest, ages 2 to 7 (`specs/nest.md`): `isNest`, the day (`nestNext`: four days a unit, a review is one), `nestInfo` (the home and each word's first tries), `apiNestResult`. `src/NestIndex.js` is written by `tools/nest-index.js`; the session engine and its games are `docs/nest/play.js` |
+| `src/Nest.js` | Chacho's Nest, ages 2 to 7 (`specs/nest.md`): `isNest`, the day (`nestNext`: four days a unit, a review is one), `nestInfo` (the home and each word's first tries), `apiNestResult`. `src/NestIndex.js` is written by `tools/nest-index.js`; the session engine and its games are `docs/nest/play.js` |
 | `src/Audit.js` | The audit trail: `audit`, `auditOpen`, `auditPin`, `auditSheetEdit`, `apiAudit` (the admin's Audit card, merged with the practice tabs) |
-| `src/Chat.js` | Talk with Coco: `apiChatResult` (summary and bonus), `chatInfo` (dashboard, parents), `chatBoard` (the admin's stage 0 board) |
+| `src/Chat.js` | Talk with Chacho: `apiChatResult` (summary and bonus), `chatInfo` (dashboard, parents), `chatBoard` (the admin's stage 0 board) |
 | `src/MissionIndex.js` | Generated by `node tools/missions-index.js`: catalog url → mission id, number of questions, dinner question |
 | `src/Index.html` | Whole UI (Liquid Glass design, Phosphor icons), works in Pages and Apps Script |
 | `src/Catalog.js` | Generated exercise catalog (`node gen-catalog.js` from `catalog.tsv`) |
@@ -204,16 +204,16 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | `docs/` | The front end (Cloudflare, and GitHub Pages for the old address): `index.html` (built), `sw.js`, `manifest.webmanifest`, `icons/` |
 | `docs/games.js` | Mini-game content for A1–C1, and the Talk & Tap words with their don't-say words (edited by hand; not in `src/`, so clasp never pushes it; raise `BANK_V` in Index.html after a change) |
 | `docs/missions/` | Mission content per level (`a1.js` … `c1.js`, `bp` = B1+; edited by hand, out of `src/`; raise `MISSIONS_V` in Index.html after a change) and the recordings (`audio/<mission>-<part>.mp3`) |
-| `docs/talk/` | Talk with Coco scripts per level (`a1.js` … `c1.js`; format and writing rules: `tools/TALK-WRITING.md`; raise `TALK_V` in Index.html after a change) and Coco's lines (`audio/<clip>.mp3`, `python tools/talk_audio.py`) |
+| `docs/talk/` | Talk with Chacho scripts per level (`a1.js` … `c1.js`; format and writing rules: `tools/TALK-WRITING.md`; raise `TALK_V` in Index.html after a change) and Chacho's lines (`audio/<clip>.mp3`, `python tools/talk_audio.py`) |
 | `docs/fonts/` | The Phosphor icon fonts (bold, duotone; woff2 only), linked by `build-pages.js` instead of unpkg |
 | `docs/pets/`, `docs/pics/` | Pet stickers (`<pet>/<stage>-<mood>.webp`) and A1 picture words |
-| `docs/items/`, `docs/coco/` | Shop items (`<id>.webp`, and two props: `jack-o-lantern`, `gift-box`), the Studio's gray bases (`base-<id>.webp`) and Coco the parrot (`<mood>.webp`) |
+| `docs/items/`, `docs/coco/` | Shop items (`<id>.webp`, and two props: `jack-o-lantern`, `gift-box`), the Studio's gray bases (`base-<id>.webp`) and Chacho the parrot (`<mood>.webp`) |
 | `tools/` | Art pipeline: `cut_sheet.py` (sticker sheet → stickers), `pics.py` + `pics_fetch.sh`, `PETS.md` (prompts); shop: `cut_items.py` (item sheets → `docs/items/`), `pet_fit.py` (the eyes of every pet sticker → `pet-fit.json`, fixes in `pet-fit-fix.json`), `wear_fit.py` + `wear-fit.json` (how items sit; contact sheets; `export` writes the FIT block into Index.html) |
 | `test/games-check.js` | Validates `docs/games.js` (shapes, duplicates, pictures on disk, Talk & Tap words) |
 | `test/missions-check.js` | Validates `docs/missions/*.js` (shapes, answers, ids, catalog urls, lengths per level, time, recordings) |
 | `test/talk-check.js` | Validates `docs/talk/*.js` (shapes, lengths, privacy, every mission has a talk, every sample answer lands on its branch with the app's matcher) |
 | `tools/missions-index.js` | Write `src/MissionIndex.js` |
-| `tools/voice.py`, `tools/voice_kernel.py`, `tools/voice-list.js`, `tools/voice-refs/` | Coco's voice (`specs/voice.md`): every spoken line (Talk, the Nest, the Radio Show, words and sentences in `docs/say/`) recorded with Chatterbox on a free Kaggle GPU, checked with Whisper; only new or changed lines (`tools/voice-state.json`). The old Kokoro tools (`talk_audio.py`, `nest_audio.py`, `missions_audio.py`) run only with `--kokoro` |
+| `tools/voice.py`, `tools/voice_kernel.py`, `tools/voice-list.js`, `tools/voice-refs/` | Chacho's voice (`specs/voice.md`): every spoken line (Talk, the Nest, the Radio Show, words and sentences in `docs/say/`) recorded with Chatterbox on a free Kaggle GPU, checked with Whisper; only new or changed lines (`tools/voice-state.json`). The old Kokoro tools (`talk_audio.py`, `nest_audio.py`, `missions_audio.py`) run only with `--kokoro` |
 | `build-pages.js` | Builds `docs/index.html` from `src/Index.html` (adds head tags, manifest, icons) |
 | `make-icons.py` | Renders the app icons with Pillow |
 | `test/sim.js` | End-to-end simulation of the server with mocked Google services |
@@ -238,13 +238,13 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | apiShop / apiShopBuy(item, color, words) / apiWear(wear, move) | kid | The Wordrobe (see `specs/wordrobe.md`): the shop and coins; buy with a request (graded again on the server, which decides the price); what the pet wears |
 | apiDesign(base, text, fresh) / apiWords(item, right, missed) / apiSaveWord(id, on) | kid | The Studio, phase 2 (`specs/wordrobe-studio.md`): make a design (graded again on the server); collect or polish an item's words; save a word to her deck |
 | apiMissionResult(name, pin, date, mission, correct, total, missed, right, seconds) / apiFlag(name, pin, mission, item, note) | kid | Today's Mission (`specs/missions.md`): save a played mission as the day's task (the server checks that missions are on for her, the day's mission, the number of questions and the time); report a question |
-| apiChatResult(name, pin, talk, turns, voice, tiles, mic, said, seconds) | kid | Talk with Coco (`specs/talk.md`): save a talk's summary and give the bonus (3 XP aloud, 1 a tile, +3 all aloud; 30 a day) |
+| apiChatResult(name, pin, talk, turns, voice, tiles, mic, said, seconds) | kid | Talk with Chacho (`specs/talk.md`): save a talk's summary and give the bonus (3 XP aloud, 1 a tile, +3 all aloud; 30 a day) |
 | apiTugCheck / apiTugSave | kid | Tug of War on one phone: checks the second kid's PIN once (returns a 2-day token the phone keeps instead of her PIN), then saves both results (a save id makes a save sent twice count once) |
 | apiPushSubscribe / apiPushMessage | kid / service worker | Register a device / text of the pending notification |
 | apiParent(pin) | parent / admin | Overview of the groups this PIN may see |
 | apiParentPushSubscribe / Prefs / Test | parent / admin | Parent notifications on this phone |
 | apiAdminAddGroup / AddKid / Settings / TestPush | admin | Management |
-| apiNestResult(name, pin, date, day, correct, total, seconds, detail) | kid | A Coco's Nest session; the day's own session logs the day (15 points) and each word's first try (`detail`, "cat:1,dog:0"), anything else is free play |
+| apiNestResult(name, pin, date, day, correct, total, seconds, detail) | kid | A Chacho's Nest session; the day's own session logs the day (15 points) and each word's first try (`detail`, "cat:1,dog:0"), anything else is free play |
 | apiAudit(pin, days) | admin | The audit timeline (1 to 30 days) with a summary per family and the device split |
 
 Wrong PINs: 8 attempts per name (or for parent PINs) lock it for 15 minutes.

@@ -90,13 +90,13 @@ accessories, and the crown went missing in 4 of 6 poses twice.)
 - **elephant**: "Peanut", a ___ elephant, soft powder blue-gray skin, big round ears with pink insides, a short curled trunk, a tiny tuft of hair on top of the head, light cream toenails, a thin tail with a small tuft, rosy cheeks, and huge glossy dark-brown eyes with two white catchlights.
 - **lion**: "Leo", a ___ lion, warm golden-yellow fur, a fluffy orange mane around the face (cub-size at stage 1, big later), a cream muzzle and cream belly, small round ears, a tail with an orange tuft, pink paw pads, rosy cheeks, and huge glossy amber-brown eyes with two white catchlights.
 
-## The Wordrobe: Coco and the shop items
+## The Wordrobe: Chacho and the shop items
 
 Same Gemini routine (one new chat per sheet, download from a fresh tab). Source sheets: `art/shop/*.jpg`.
 
-**Coco** (`docs/coco/<mood>.webp`, cut like a pet stage: `tools/cut_sheet.py <sheet> <tmp> 1`, then rename
+**Chacho** (`docs/coco/<mood>.webp`, cut like a pet stage: `tools/cut_sheet.py <sheet> <tmp> 1`, then rename
 `1-<mood>.webp` to `<mood>.webp`): the pet prompt above with this character and these poses:
-"Coco", a fashionable young parrot who runs a clothes shop and is a fashion designer: a scarlet macaw with bright red
+"Chacho", a fashionable young parrot who runs a clothes shop and is a fashion designer: a scarlet macaw with bright red
 feathers, blue and yellow wing feathers, a long red-and-blue tail, a curved cream-white beak, rosy cheeks, huge glossy
 dark-brown eyes with two white catchlights, small round gold-rimmed glasses, and a yellow tailor's measuring tape draped
 around the neck in all 6 poses. Poses: 1) Welcome: one wing open in a warm welcoming gesture. 2) Delighted: clapping both

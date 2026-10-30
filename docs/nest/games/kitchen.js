@@ -1,4 +1,4 @@
-// Coco's Kitchen (Coco's arcade, stage D, ages 4 to 7; specs/nest.md): Coco is the chef in the painted kitchen. Customers
+// Chacho's Kitchen (Chacho's arcade, stage D, ages 4 to 7; specs/nest.md): Chacho is the chef in the painted kitchen. Customers
 // (the animals and people the kid has met, and once the kid's own pet) come to the counter and order in English ("Two
 // bananas, please!", o-<food>-<n>); the kid puts the food on the plate (a tap or a drag) and taps the bell. The right plate:
 // the customer eats, says thank you and goes. Something else on it: "Hmm... no, thank you!" and the order again; a tap on a

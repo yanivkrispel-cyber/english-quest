@@ -1,6 +1,6 @@
-// Beat Tiles (Coco's arcade, stage E, ages 4 to 7; specs/nest.md): Coco's band plays; every two bars Coco says a word on the
+// Beat Tiles (Chacho's arcade, stage E, ages 4 to 7; specs/nest.md): Chacho's band plays; every two bars Chacho says a word on the
 // beat and three pictures fall down three lanes in time with the music. Tap the one he said (anywhere on its way down): it
-// bursts with a drum hit. A wrong one wobbles; a missed one just falls away, and the song never stops. Halfway through, Coco
+// bursts with a drum hit. A wrong one wobbles; a missed one just falls away, and the song never stops. Halfway through, Chacho
 // plays a drum solo. Eight words. Loaded on demand by docs/nest/arcade.js.
 
 NK.beat = {

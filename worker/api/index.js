@@ -1,4 +1,4 @@
-// The Coco server on Cloudflare (specs/cloudflare.md). The Worker passes POST /api (the same {fn, args} body the app sent to
+// The Chacho server on Cloudflare (specs/cloudflare.md). The Worker passes POST /api (the same {fn, args} body the app sent to
 // Apps Script) to one Durable Object, CocoServer, which runs the generated server (worker/api/server.js: src/*.js on the
 // platform layer) over its own SQLite database. One object handles one request at a time, like the old script lock,
 // and keeps the sheets in memory between requests.
@@ -67,9 +67,9 @@ export class CocoServer extends DurableObject {
       u[key] = 1;
       try { this.run(S => S.notifyAdmin({ title, body })); } catch (e) { console.error('notify: ' + ((e && e.message) || e)); }
     };
-    if (u.api > limit * 0.9) say('warn90', "Coco server: 90% of today's free calls", u.api + ' of ' + limit + ' calls today.');
-    else if (u.api > limit * 0.7) say('warn70', "Coco server: 70% of today's free calls", u.api + ' of ' + limit + ' calls today.');
-    if (Number(h) === 21 && u.errors) say('evening', 'Coco server: ' + u.errors + ' failed calls today', u.api + ' calls today, ' + u.errors + ' failed. Details: /admin/stats');
+    if (u.api > limit * 0.9) say('warn90', "Chacho server: 90% of today's free calls", u.api + ' of ' + limit + ' calls today.');
+    else if (u.api > limit * 0.7) say('warn70', "Chacho server: 70% of today's free calls", u.api + ' of ' + limit + ' calls today.');
+    if (Number(h) === 21 && u.errors) say('evening', 'Chacho server: ' + u.errors + ' failed calls today', u.api + ' calls today, ' + u.errors + ' failed. Details: /admin/stats');
     try { this.G.store.propPut('use:' + u.day, JSON.stringify({ api: u.api, errors: u.errors, pushes: u.pushes })); } catch (e) {}
   }
 

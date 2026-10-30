@@ -1,6 +1,6 @@
-// Talking Coco (Coco's arcade, stage C; specs/nest.md): Coco big on the stage and the kid's pet next to him. The microphone
-// button: Coco listens and says it back in his parrot voice (docs/nest/echo.js: in memory for the replay only, nothing kept
-// or sent; without a microphone he says "Hello!"). A tap on Coco: he giggles, spins or sneezes feathers. The food the kid has
+// Talking Chacho (Chacho's arcade, stage C; specs/nest.md): Chacho big on the stage and the kid's pet next to him. The microphone
+// button: Chacho listens and says it back in his parrot voice (docs/nest/echo.js: in memory for the replay only, nothing kept
+// or sent; without a microphone he says "Hello!"). A tap on Chacho: he giggles, spins or sneezes feathers. The food the kid has
 // met sits on a plate: a tap feeds him ("Banana! Yummy!"). Every third thing he asks for a word ("Say it! Apple!") and the
 // picture floats in his bubble. No goal and no end: the close button goes back to the arcade. Loaded on demand.
 
@@ -10,7 +10,7 @@ NK.parrot = {
     const pl = nkPlace('home');
     nkFill(`<div class="nkt${pl.painted ? ' painted' : ''}" style="${pl.painted ? pl.style : ''}">
       <div class="nkt-bubble" id="nktbub"></div>
-      <button class="nkt-coco" id="nktcoco" aria-label="Coco"><img id="nktimg" src="${nkPoseSrc('happy')}" alt="" draggable="false"></button>
+      <button class="nkt-coco" id="nktcoco" aria-label="Chacho"><img id="nktimg" src="${nkPoseSrc('happy')}" alt="" draggable="false"></button>
       ${dash.pet ? `<button class="nkt-pet" id="nktpet" aria-label="Your pet">${petArt(dash.pet, 'happy', 'nk-petsvg')}</button>` : ''}
       <div class="nkt-plate">${s.foods.map((w, i) => `<button class="nkt-food" data-f="${i}" aria-label="${esc(w.en)}">${nestPic(w)}</button>`).join('')}</div>
     </div>`);
@@ -22,7 +22,7 @@ NK.parrot = {
     NE.off = () => { if (echo) echo.stop(); echo = null; };
     const later = (f, ms) => setTimeout(() => { if (NE && NE.tok === tok) f(); }, ms);
     const pose = (p, ms) => { img.src = nkPoseSrc(p); clearTimeout(coco.poseT); if (ms) coco.poseT = later(() => { img.src = nkPoseSrc('happy'); }, ms); };
-    // Every third thing: Coco asks for a word, its picture in his bubble.
+    // Every third thing: Chacho asks for a word, its picture in his bubble.
     const next = () => {
       if (++n % 3 || !s.says.length) return;
       want = s.says[(n / 3 - 1) % s.says.length];
@@ -86,7 +86,7 @@ NK.parrot = {
     nestPlay(nestPrompt(s, opening), () => { if (nkLive(s)) nkIdle(s, mic); });
   }
 };
-// Feathers out of Coco on the stage (the dock's nkFeathers puffs from the small Coco).
+// Feathers out of Chacho on the stage (the dock's nkFeathers puffs from the small Chacho).
 function nkFeathersAt(el){
   if (!el || nkCalm()) return;
   const r = el.getBoundingClientRect();

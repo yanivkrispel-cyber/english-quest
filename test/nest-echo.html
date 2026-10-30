@@ -1,6 +1,6 @@
-<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Coco repeats you</title>
-<!-- "Coco repeats you" (docs/nest/echo.js, specs/nest-home.md), served by test/dev-server.js:
-     http://localhost:8787/test/nest-echo.html          the app as Mia (PIN 5151), with buttons inside it: tap "Talk to Coco", speak, hear it back.
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Chacho repeats you</title>
+<!-- "Chacho repeats you" (docs/nest/echo.js, specs/nest-home.md), served by test/dev-server.js:
+     http://localhost:8787/test/nest-echo.html          the app as Mia (PIN 5151), with buttons inside it: tap "Talk to Chacho", speak, hear it back.
      http://localhost:8787/test/nest-echo.html?auto     runs it once by itself (headless Chrome/Edge with a fake microphone).
      http://localhost:8787/test/nest-echo.html?ask      forgets the mic choice and starts: the parent's sheet.
      The microphone needs a secure page: localhost on the computer; on a phone, an https address (http://192.168... has none).
@@ -53,7 +53,7 @@ async function ready(){
   // The controls live inside the app's page, so a tap there unlocks its sound on iPhones.
   const bar = d.createElement('div');
   bar.style.cssText = 'position:fixed;left:8px;right:8px;top:8px;z-index:9999;display:flex;gap:6px;flex-wrap:wrap;justify-content:center';
-  bar.innerHTML = '<button class="btn btn-primary" id="tgo">Talk to Coco</button><button class="btn btn-glass" id="tstop">Stop</button><button class="btn btn-glass" id="tforget">Forget the mic choice</button>';
+  bar.innerHTML = '<button class="btn btn-primary" id="tgo">Talk to Chacho</button><button class="btn btn-glass" id="tstop">Stop</button><button class="btn btn-glass" id="tforget">Forget the mic choice</button>';
   d.body.appendChild(bar);
   d.getElementById('tgo').onclick = run;
   d.getElementById('tstop').onclick = () => { if (h) h.stop(); log('stop() | ' + trackLine()); };

@@ -1,16 +1,16 @@
-// Coco's Nest (specs/nest.md): the content for ages 2 to 7. One unit a day, in this order; after every two new units a
+// Chacho's Nest (specs/nest.md): the content for ages 2 to 7. One unit a day, in this order; after every two new units a
 // review of both. A word's picture is `pic` (docs/nest/pics/<name>.webp, tools/nest_pics.py), `color` (a blob drawn in
-// code) or `count` (1 to 10 dots drawn in code). `say` is what Coco says when the kid meets the word, `find` her question
+// code) or `count` (1 to 10 dots drawn in code). `say` is what Chacho says when the kid meets the word, `find` her question
 // in Find it; both are recorded by tools/nest_audio.py. After a change: node test/nest-check.js, node tools/nest-index.js,
 // python tools/nest_pics.py --fetch, python tools/nest_audio.py.
 // A new unit also has: `core` (the 4 words ages 2 and 3 play; a unit of 4 words needs none), `phrase` (one chunk the kid
-// can use at home: Coco says it after Meet; `word` is the word whose picture shows it), `moves` (2 or 3 ids from `moves`
-// below: Coco says, the kid does it) and `home` (the parents' card: 2 short Hebrew ideas, English inside {braces}).
+// can use at home: Chacho says it after Meet; `word` is the word whose picture shows it), `moves` (2 or 3 ids from `moves`
+// below: Chacho says, the kid does it) and `home` (the parents' card: 2 short Hebrew ideas, English inside {braces}).
 window.EQ_NEST = {
   units: [
-    { id: 'n01', theme: 'hello', title: 'Hello, Coco!', he: 'שלום, קוקו!', icon: 'wave',
+    { id: 'n01', theme: 'hello', title: 'Hello, Chacho!', he: 'שלום, צ׳אצ׳ו!', icon: 'wave',
       core: ['hello', 'yes', 'no', 'baby'],
-      phrase: { en: "Hello! I'm Coco.", he: 'שלום! אני קוקו.', word: 'parrot' },
+      phrase: { en: "Hello! I'm Chacho.", he: 'שלום! אני צ׳אצ׳ו.', word: 'parrot' },
       moves: ['wave', 'hug', 'clap'],
       home: ['כשנכנסים הביתה או לגן אמרו {Hello!} ונפנפו ביד, וכשיוצאים {Bye-bye!}',
         'שאלו שאלה פשוטה ("רוצה מים?"), והילד עונה {Yes!} או {No!} עם האגודל.'],
@@ -20,7 +20,7 @@ window.EQ_NEST = {
         { id: 'no', en: 'no', he: 'לא', pic: 'no', say: 'No!', find: 'Find no!' },
         { id: 'baby', en: 'baby', he: 'תינוק', pic: 'baby', say: 'A baby!', find: 'Where is the baby?' },
         { id: 'friend', en: 'friend', he: 'חבר', pic: 'friend', say: 'My friend!', find: 'Where is my friend?' },
-        { id: 'parrot', en: 'parrot', he: 'תוכי', pic: 'parrot', say: "A parrot! It's Coco!", find: 'Where is the parrot?' }
+        { id: 'parrot', en: 'parrot', he: 'תוכי', pic: 'parrot', say: "A parrot! It's Chacho!", find: 'Where is the parrot?' }
       ] },
     { id: 'n02', theme: 'colors', title: 'Colors', he: 'צבעים', icon: 'palette',
       core: ['red', 'blue', 'yellow', 'green'],
@@ -197,7 +197,7 @@ window.EQ_NEST = {
       core: ['running', 'dancing', 'clapping', 'sleeping'],
       phrase: { en: "Let's dance!", he: 'בואו נרקוד!', word: 'dancing' },
       moves: ['run', 'dance', 'swim'],
-      home: ['שחקו "קוקו אומרת": {Run!}, {Stop!}, {Dance!}',
+      home: ['שחקו "צ׳אצ׳ו אומרת": {Run!}, {Stop!}, {Dance!}',
         'שימו שיר ואמרו {Dance!}, וכשהשיר נעצר {Sleep!}'],
       words: [
         { id: 'running', en: 'run', he: 'לרוץ', pic: 'running', say: 'Run!', find: 'Who is running?' },
@@ -353,8 +353,8 @@ window.EQ_NEST = {
       ] },
     { id: 'r12', title: 'Review', he: 'חוזרים על הכול', icon: 'star', review: ['n23', 'n24'] }
   ],
-  // Coco says (TPR, Asher 1969): Coco gives an order, the kid does it with the body, then taps the big button. One picture
-  // shows what to do (pic, color or count, like a word). Recorded as m-<id>.mp3, played after en.move ("Coco says...").
+  // Chacho says (TPR, Asher 1969): Chacho gives an order, the kid does it with the body, then taps the big button. One picture
+  // shows what to do (pic, color or count, like a word). Recorded as m-<id>.mp3, played after en.move ("Chacho says...").
   moves: {
     wave: { en: 'Wave hello!', pic: 'wave' },
     hug: { en: 'Give a big hug!', pic: 'friend' },
@@ -391,7 +391,7 @@ window.EQ_NEST = {
     'put-on-hat': { en: 'Put on a hat!', pic: 'cap' },
     'touch-shirt': { en: 'Touch your shirt!', pic: 'shirt' },
     run: { en: 'Run, run, run!', pic: 'running' },
-    dance: { en: 'Dance with Coco!', pic: 'dancing' },
+    dance: { en: 'Dance with Chacho!', pic: 'dancing' },
     swim: { en: 'Swim, like a fish!', pic: 'swimming' },
     'shake-hands': { en: 'Shake your hands!', pic: 'hand' },
     'stamp-feet': { en: 'Stamp your feet!', pic: 'foot' },
@@ -428,8 +428,8 @@ window.EQ_NEST = {
     review: ['היום חוזרים על מילים מהימים האחרונים. בקשו מהילד ללמד אתכם שלוש מילים.',
       'אמרו מילה באנגלית, והילד מצביע על הדבר בבית או עושה את התנועה.']
   },
-  // Coco's English lines (Kokoro, am_fenrir). The kid hears no Hebrew (owner, 2026-10-27): these short lines, the same
-  // every day, are the instructions, and Coco shows each game first.
+  // Chacho's English lines (Kokoro, am_fenrir). The kid hears no Hebrew (owner, 2026-10-27): these short lines, the same
+  // every day, are the instructions, and Chacho shows each game first.
   en: {
     hi: "Hi! Let's play!",
     tickle: 'Hee hee! That tickles!',
@@ -445,7 +445,7 @@ window.EQ_NEST = {
     say: 'Say it!',
     sing: 'Sing with me!',
     again: 'Again!',
-    move: 'Coco says...',
+    move: 'Chacho says...',
     who: 'Who is it?',
     peek: 'Peekaboo!',
     whosays: 'Who says that?',
@@ -475,7 +475,7 @@ window.EQ_NEST = {
     morning: 'Good morning!',
     night: 'Good night!',
     echo: 'Talk to me!',
-    // Coco's arcade (specs/nest.md, stage C)
+    // Chacho's arcade (specs/nest.md, stage C)
     arcade: "Let's play my games!",
     sleepy: "I'm sleepy now. Let's play more tomorrow!",
     nococo: 'Am I right? Say no if I am silly!',
@@ -487,18 +487,18 @@ window.EQ_NEST = {
     draw: 'Take a card!',
     youwin: 'You win! Hooray!',
     iwin: 'I win! Yay! Good game!',
-    // Stage D: Coco's kitchen, Coco's house, Where's Coco?, Coco Ladders
-    kitchen: "Welcome to Coco's kitchen!",
+    // Stage D: Chacho's kitchen, Chacho's house, Where's Chacho?, Chacho Ladders
+    kitchen: "Welcome to Chacho's kitchen!",
     nothanks: 'Hmm... no, thank you!',
     house: 'Welcome to my house!',
-    wherecoco: 'Where is Coco? Find me!',
+    wherecoco: 'Where is Chacho? Find me!',
     foundme: 'You found me! Hee hee!',
     lost: 'Oh no! I lost my things! Help me!',
     roll: 'Roll the dice!',
     ladder: 'Up, up, up the ladder!',
     slide: 'Wheee! Down the slide!',
     count: "Let's count!",
-    // Stage E: Beat Tiles, Dance Freeze, Lights out, Coco!
+    // Stage E: Beat Tiles, Dance Freeze, Lights out, Chacho!
     beat: 'Tap to the beat!',
     dance: 'Dance, dance, dance!',
     freeze: 'Freeze!',
@@ -521,7 +521,7 @@ window.EQ_NEST = {
     findsoft: 'Find something soft!',
     findround: 'Find something round!'
   },
-  // Coco's kitchen (stage D): what a customer orders, o-<word>-<n> (one, two, three of it; one line for what is not counted).
+  // Chacho's kitchen (stage D): what a customer orders, o-<word>-<n> (one, two, three of it; one line for what is not counted).
   orders: {
     apple: ['An apple, please!', 'Two apples, please!', 'Three apples, please!'],
     banana: ['A banana, please!', 'Two bananas, please!', 'Three bananas, please!'],
@@ -536,47 +536,47 @@ window.EQ_NEST = {
     milk: ['Some milk, please!'],
     juice: ['Some juice, please!']
   },
-  // What a grown-up reads on a long press on Coco during a game (Hebrew text only, never spoken to the kid).
+  // What a grown-up reads on a long press on Chacho during a game (Hebrew text only, never spoken to the kid).
   hints: {
-    meet: 'מכירים מילים: קוקו אומר את המילה. נוגעים בתמונה כדי לשמוע שוב.',
-    phrase: 'משפט: קוקו אומר משפט שלם שאפשר להשתמש בו בבית.',
-    find: 'מוצאים: קוקו שואל איפה משהו, והילד נוגע בתמונה הנכונה.',
-    move: 'קוקו אומר: עושים את התנועה עם הגוף, ואז לוחצים על הכפתור הירוק.',
+    meet: 'מכירים מילים: צ׳אצ׳ו אומר את המילה. נוגעים בתמונה כדי לשמוע שוב.',
+    phrase: 'משפט: צ׳אצ׳ו אומר משפט שלם שאפשר להשתמש בו בבית.',
+    find: 'מוצאים: צ׳אצ׳ו שואל איפה משהו, והילד נוגע בתמונה הנכונה.',
+    move: 'צ׳אצ׳ו אומר: עושים את התנועה עם הגוף, ואז לוחצים על הכפתור הירוק.',
     say: 'אומרים: הילד אומר את המילה בקול. לא בודקים הגייה, רק מזמינים לדבר.',
     give: 'תן לי: החבר מבקש משהו באנגלית, והילד גורר אותו אליו.',
-    peek: 'מי מתחבא: נוגעים בשיח שזז ומגלים מי מתחבא. מגיל 4 קוקו שואל איפה מישהו.',
-    sound: 'מה הצליל: קוקו משמיע צליל, והילד בוחר מי עושה אותו.',
-    pop: 'בועות: קוקו אומר מילה, והילד מפוצץ את הבועה עם התמונה הנכונה. אין שעון.',
+    peek: 'מי מתחבא: נוגעים בשיח שזז ומגלים מי מתחבא. מגיל 4 צ׳אצ׳ו שואל איפה מישהו.',
+    sound: 'מה הצליל: צ׳אצ׳ו משמיע צליל, והילד בוחר מי עושה אותו.',
+    pop: 'בועות: צ׳אצ׳ו אומר מילה, והילד מפוצץ את הבועה עם התמונה הנכונה. אין שעון.',
     sort: 'לקופסאות: גוררים כל תמונה לקופסה שמתאימה לה.',
     pairs: 'זוגות: הופכים קלפים ומחפשים שניים זהים. כל קלף אומר את המילה.',
     missing: 'מה חסר: זוכרים את התמונות, אחת נעלמת, ומוצאים אותה.',
     odd: 'מה לא שייך: בוחרים את התמונה שלא מתאימה לאחרות.',
-    chant: 'שיר הקצב: מקשיבים, שרים עם קוקו ונוגעים בתמונה שמאירה.',
+    chant: 'שיר הקצב: מקשיבים, שרים עם צ׳אצ׳ו ונוגעים בתמונה שמאירה.',
     story: 'סיפור: מקשיבים, נוגעים בדברים בתמונה, ובסוף עונים על שאלה.',
-    scene: 'תמונה גדולה: מחפשים בתמונה את מה שקוקו אומר.',
-    color: 'צובעים: בוחרים את הצבע שקוקו אמר וצובעים. אחר כך צובעים חופשי.',
-    dress: 'מלבישים: קוקו אומר מה ללבוש, והילד גורר את הבגד לדובי.',
+    scene: 'תמונה גדולה: מחפשים בתמונה את מה שצ׳אצ׳ו אומר.',
+    color: 'צובעים: בוחרים את הצבע שצ׳אצ׳ו אמר וצובעים. אחר כך צובעים חופשי.',
+    dress: 'מלבישים: צ׳אצ׳ו אומר מה ללבוש, והילד גורר את הבגד לדובי.',
     teach: 'תלמד את ההורה: הילד אומר לכם את המילה. לחצו על האגודל כשהבנתם.',
     done: 'סיימנו להיום. מחר יש משחקים אחרים.'
   },
-  // Things you can hand to the pet in "Give it to me" (Coco records g-<id>: "Give me the ...!", colors without "the").
+  // Things you can hand to the pet in "Give it to me" (Chacho records g-<id>: "Give me the ...!", colors without "the").
   give: ['ball', 'teddy-bear', 'balloon', 'drum', 'kite', 'robot', 'apple', 'banana', 'pear', 'grapes', 'strawberry',
     'watermelon', 'bread', 'cheese', 'egg', 'milk', 'juice', 'ice-cream', 'shirt', 'pants', 'dress', 'socks', 'shoes', 'cap',
     'coat', 'scarf', 'gloves', 'shorts', 'swimsuit', 'glasses', 'flower', 'leaf', 'shell', 'rock', 'toothbrush', 'soap',
     'spoon', 'cup', 'clock', 'key', 'red', 'blue', 'yellow', 'green', 'orange', 'purple', 'pink', 'black', 'white', 'brown',
     'gray'],
-  // What a word sounds like, for "Who says that?" (Coco records s-<id>).
+  // What a word sounds like, for "Who says that?" (Chacho records s-<id>).
   sounds: { cat: 'Meow, meow!', dog: 'Woof, woof!', cow: 'Moo!', horse: 'Neigh!', chicken: 'Cluck, cluck!', duck: 'Quack, quack!',
     lion: 'Roar!', monkey: 'Ooh, ooh, ah, ah!', car: 'Beep, beep!', train: 'Choo, choo!', plane: 'Zoom!', boat: 'Toot, toot!',
     bike: 'Ring, ring!', drum: 'Boom, boom!', clock: 'Tick, tock!', baby: 'Waa, waa!', rain: 'Drip, drop!', sea: 'Splash!',
     bus: 'Honk, honk!', balloon: 'Pop!' },
-  // The words with a real sound before Coco's (docs/nest/sounds, tools/nest_sounds.py and nest-sounds.json; arcade kids).
+  // The words with a real sound before Chacho's (docs/nest/sounds, tools/nest_sounds.py and nest-sounds.json; arcade kids).
   real: ['cow', 'dog', 'cat', 'horse', 'chicken', 'duck', 'car', 'train', 'plane', 'boat', 'bike', 'drum', 'clock', 'rain', 'sea', 'bus',
     'balloon'],
-  // Clothes and where they go on the teddy in "Let's get dressed" (Coco records d-<id>: "Put on the ...!").
+  // Clothes and where they go on the teddy in "Let's get dressed" (Chacho records d-<id>: "Put on the ...!").
   dress: { cap: 'head', glasses: 'face', scarf: 'neck', shirt: 'body', coat: 'body', dress: 'body', swimsuit: 'body',
     pants: 'legs', shorts: 'legs', gloves: 'hands', socks: 'feet', shoes: 'feet' },
-  // Coloring pages (drawn in code, docs/nest/play.js): the part Coco names and its color (k-<id>).
+  // Coloring pages (drawn in code, docs/nest/play.js): the part Chacho names and its color (k-<id>).
   color: [
     { id: 'ball', color: 'red', say: 'Color the ball red!' },
     { id: 'car', color: 'blue', say: 'Color the car blue!' },
@@ -593,7 +593,7 @@ window.EQ_NEST = {
   ],
   // A chant for every unit: 4 lines on a beat (c-<unit>-<n>), each with the picture of one of its words.
   chants: {
-    n01: [['Hello, hello, hello to you!', 'hello'], ['Yes, yes, yes! Nod your head!', 'yes'], ['No, no, no! Shake your head!', 'no'], ['Hello, my friend! Hello, Coco!', 'parrot']],
+    n01: [['Hello, hello, hello to you!', 'hello'], ['Yes, yes, yes! Nod your head!', 'yes'], ['No, no, no! Shake your head!', 'no'], ['Hello, my friend! Hello, Chacho!', 'parrot']],
     n02: [['Red, red, I see red!', 'red'], ['Blue, blue, I see blue!', 'blue'], ['Yellow, yellow, I see yellow!', 'yellow'], ['Green, green, I see green!', 'green']],
     n03: [['One, two, buckle my shoe!', 'two'], ['Three, four, knock at the door!', 'four'], ['Five, six, pick up sticks!', 'six'], ['One, two, three, four, five, six!', 'five']],
     n04: [['Cat, cat, meow, meow!', 'cat'], ['Dog, dog, woof, woof!', 'dog'], ['Cow, cow, moo, moo!', 'cow'], ['Duck, duck, quack, quack!', 'duck']],
@@ -619,31 +619,31 @@ window.EQ_NEST = {
     n24: [['Brush, brush, brush your teeth!', 'toothbrush'], ['Wash, wash, soap and water!', 'soap'], ['A spoon, a spoon, yum, yum, yum!', 'spoon'], ['Drink, drink, from my cup!', 'cup']]
   },
   // A short picture story for every unit (t-<unit>-<n>): a place (drawn in code) and pages of one line with 1 to 3 word
-  // pictures (any unit's word ids; 'parrot' is Coco). After the story Coco asks two Find it questions about its words.
+  // pictures (any unit's word ids; 'parrot' is Chacho). After the story Chacho asks two Find it questions about its words.
   stories: {
-    n01: { place: 'home', pages: [['This is Coco. Hello, Coco!', ['parrot']], ['Coco sees a baby.', ['parrot', 'baby']], ['Hello, baby!', ['baby', 'hello']], ['Is the baby happy? Yes!', ['baby', 'yes']], ['Coco and the baby are friends.', ['parrot', 'friend', 'baby']]] },
-    n02: { place: 'playroom', pages: [['Coco paints. Red!', ['parrot', 'red']], ['Blue, like the sea.', ['blue', 'sea']], ['Yellow, like the sun.', ['yellow', 'sun']], ['Green, like a tree.', ['green', 'tree']], ['Red, blue, yellow, green. Wow!', ['red', 'blue', 'yellow']]] },
-    n03: { place: 'farm', pages: [['Coco counts the chicks.', ['parrot']], ['One chick.', ['one']], ['Two chicks.', ['two']], ['Three chicks!', ['three']], ['Four, five, six. So many!', ['six']]] },
-    n04: { place: 'farm', pages: [['Coco goes to the farm.', ['parrot']], ['The cow says moo.', ['cow']], ['The duck says quack.', ['duck']], ['The dog says woof.', ['dog']], ['The cat is sleepy. Shh!', ['cat']]] },
+    n01: { place: 'home', pages: [['This is Chacho. Hello, Chacho!', ['parrot']], ['Chacho sees a baby.', ['parrot', 'baby']], ['Hello, baby!', ['baby', 'hello']], ['Is the baby happy? Yes!', ['baby', 'yes']], ['Chacho and the baby are friends.', ['parrot', 'friend', 'baby']]] },
+    n02: { place: 'playroom', pages: [['Chacho paints. Red!', ['parrot', 'red']], ['Blue, like the sea.', ['blue', 'sea']], ['Yellow, like the sun.', ['yellow', 'sun']], ['Green, like a tree.', ['green', 'tree']], ['Red, blue, yellow, green. Wow!', ['red', 'blue', 'yellow']]] },
+    n03: { place: 'farm', pages: [['Chacho counts the chicks.', ['parrot']], ['One chick.', ['one']], ['Two chicks.', ['two']], ['Three chicks!', ['three']], ['Four, five, six. So many!', ['six']]] },
+    n04: { place: 'farm', pages: [['Chacho goes to the farm.', ['parrot']], ['The cow says moo.', ['cow']], ['The duck says quack.', ['duck']], ['The dog says woof.', ['dog']], ['The cat is sleepy. Shh!', ['cat']]] },
     n05: { place: 'home', pages: [['This is my family.', ['mom', 'dad']], ['Mom and Dad.', ['mom', 'dad']], ['My brother and my sister.', ['brother', 'sister']], ['Grandma and Grandpa.', ['grandma', 'grandpa']], ['I love my family!', ['mom', 'dad', 'grandma']]] },
-    n06: { place: 'playroom', pages: [['Coco looks at his face.', ['parrot']], ['Two eyes. Blink, blink!', ['eyes']], ['A nose. Sniff, sniff!', ['nose']], ['A mouth. Open wide!', ['mouth']], ['Two ears. Listen!', ['ear']]] },
-    n07: { place: 'kitchen', pages: [['Coco is hungry.', ['parrot']], ['An apple? Yummy!', ['apple']], ['A banana? Yummy!', ['banana']], ['Grapes? Yummy, yummy!', ['grapes']], ['Watermelon! Coco is happy.', ['watermelon', 'parrot']]] },
-    n08: { place: 'playroom', pages: [['Coco plays with his toys.', ['parrot']], ['A ball. Kick!', ['ball']], ['A drum. Boom, boom!', ['drum']], ['A balloon. Up, up!', ['balloon']], ['A teddy bear. Night night!', ['teddy-bear']]] },
-    n09: { place: 'home', pages: [['Coco has a kite. Happy!', ['happy', 'kite']], ['Oh no! The kite is gone. Sad.', ['sad']], ['Coco is angry. Grr!', ['angry']], ['Look! The kite! Surprise!', ['surprised', 'kite']], ['Now Coco is sleepy. Good night!', ['sleepy']]] },
+    n06: { place: 'playroom', pages: [['Chacho looks at his face.', ['parrot']], ['Two eyes. Blink, blink!', ['eyes']], ['A nose. Sniff, sniff!', ['nose']], ['A mouth. Open wide!', ['mouth']], ['Two ears. Listen!', ['ear']]] },
+    n07: { place: 'kitchen', pages: [['Chacho is hungry.', ['parrot']], ['An apple? Yummy!', ['apple']], ['A banana? Yummy!', ['banana']], ['Grapes? Yummy, yummy!', ['grapes']], ['Watermelon! Chacho is happy.', ['watermelon', 'parrot']]] },
+    n08: { place: 'playroom', pages: [['Chacho plays with his toys.', ['parrot']], ['A ball. Kick!', ['ball']], ['A drum. Boom, boom!', ['drum']], ['A balloon. Up, up!', ['balloon']], ['A teddy bear. Night night!', ['teddy-bear']]] },
+    n09: { place: 'home', pages: [['Chacho has a kite. Happy!', ['happy', 'kite']], ['Oh no! The kite is gone. Sad.', ['sad']], ['Chacho is angry. Grr!', ['angry']], ['Look! The kite! Surprise!', ['surprised', 'kite']], ['Now Chacho is sleepy. Good night!', ['sleepy']]] },
     n10: { place: 'park', pages: [['Rain, and then the sun!', ['rain', 'sun']], ['Look! A rainbow!', ['rainbow']], ['Pink flowers.', ['pink', 'flower']], ['A white cloud.', ['white', 'cloud']], ['So many colors!', ['rainbow', 'parrot']]] },
-    n11: { place: 'farm', pages: [['Coco counts again.', ['parrot']], ['Seven chicks.', ['seven']], ['Eight chicks.', ['eight']], ['Nine chicks.', ['nine']], ['Ten! Hooray!', ['ten']]] },
-    n12: { place: 'savanna', pages: [['Coco goes to see the animals.', ['parrot']], ['A big lion. Roar!', ['lion']], ['A tall giraffe.', ['giraffe']], ['A funny monkey.', ['monkey']], ['A big elephant. Stomp, stomp!', ['elephant']]] },
-    n13: { place: 'home', pages: [['Coco gets dressed.', ['parrot']], ['A shirt.', ['shirt']], ['Pants.', ['pants']], ['Socks and shoes.', ['socks', 'shoes']], ["And a cap! Let's go!", ['cap']]] },
-    n14: { place: 'park', pages: [['Coco and his friends play.', ['friend']], ['They run.', ['running']], ['They dance.', ['dancing']], ['They clap.', ['clapping']], ['Now they sleep. Shh!', ['sleeping']]] },
-    n15: { place: 'playroom', pages: [['Coco dances.', ['dancing']], ['Hands up!', ['hand']], ['Stamp your foot!', ['foot']], ['Shake your leg!', ['leg']], ['Arms up! Hooray!', ['arm']]] },
+    n11: { place: 'farm', pages: [['Chacho counts again.', ['parrot']], ['Seven chicks.', ['seven']], ['Eight chicks.', ['eight']], ['Nine chicks.', ['nine']], ['Ten! Hooray!', ['ten']]] },
+    n12: { place: 'savanna', pages: [['Chacho goes to see the animals.', ['parrot']], ['A big lion. Roar!', ['lion']], ['A tall giraffe.', ['giraffe']], ['A funny monkey.', ['monkey']], ['A big elephant. Stomp, stomp!', ['elephant']]] },
+    n13: { place: 'home', pages: [['Chacho gets dressed.', ['parrot']], ['A shirt.', ['shirt']], ['Pants.', ['pants']], ['Socks and shoes.', ['socks', 'shoes']], ["And a cap! Let's go!", ['cap']]] },
+    n14: { place: 'park', pages: [['Chacho and his friends play.', ['friend']], ['They run.', ['running']], ['They dance.', ['dancing']], ['They clap.', ['clapping']], ['Now they sleep. Shh!', ['sleeping']]] },
+    n15: { place: 'playroom', pages: [['Chacho dances.', ['dancing']], ['Hands up!', ['hand']], ['Stamp your foot!', ['foot']], ['Shake your leg!', ['leg']], ['Arms up! Hooray!', ['arm']]] },
     n16: { place: 'kitchen', pages: [['Breakfast time!', ['bread']], ['Bread and cheese.', ['bread', 'cheese']], ['An egg.', ['egg']], ['Milk or juice?', ['milk', 'juice']], ['And ice cream! Yummy!', ['ice-cream']]] },
     n17: { place: 'sky', pages: [['Good morning, sun!', ['sun']], ['Oh, a cloud.', ['cloud']], ['Rain! Drip, drop.', ['rain']], ['Night. The moon.', ['moon']], ['And the stars. Good night!', ['star']]] },
-    n18: { place: 'home', pages: [["This is Coco's house.", ['house']], ['Knock, knock! Open the door.', ['door']], ['A chair. Sit down.', ['chair']], ['A bath. Splash!', ['bath']], ['A bed. Good night, Coco!', ['bed']]] },
+    n18: { place: 'home', pages: [["This is Chacho's house.", ['house']], ['Knock, knock! Open the door.', ['door']], ['A chair. Sit down.', ['chair']], ['A bath. Splash!', ['bath']], ['A bed. Good night, Chacho!', ['bed']]] },
     n19: { place: 'town', pages: [['Who helps us?', ['parrot']], ['The doctor helps.', ['doctor']], ['The teacher helps.', ['teacher']], ['The farmer helps.', ['farmer']], ['The firefighter helps. Thank you!', ['firefighter']]] },
-    n20: { place: 'town', pages: [['Coco wants to go.', ['parrot']], ['By car? Beep, beep!', ['car']], ['By bus? Honk, honk!', ['bus']], ['By train? Choo, choo!', ['train']], ['By plane! Zoom!', ['plane']]] },
+    n20: { place: 'town', pages: [['Chacho wants to go.', ['parrot']], ['By car? Beep, beep!', ['car']], ['By bus? Honk, honk!', ['bus']], ['By train? Choo, choo!', ['train']], ['By plane! Zoom!', ['plane']]] },
     n21: { place: 'home', pages: [['It is cold.', ['snow']], ['A coat and a scarf.', ['coat', 'scarf']], ['Gloves on my hands.', ['gloves']], ['Now it is hot! Shorts.', ['sun', 'shorts']], ['A swimsuit. Splash!', ['swimsuit', 'sea']]] },
-    n22: { place: 'park', pages: [['What is Coco doing?', ['parrot']], ['Singing. La, la, la!', ['singing']], ['Painting.', ['painting']], ['Climbing. Up, up!', ['climbing']], ['Cooking. Yummy!', ['cooking']]] },
-    n23: { place: 'beach', pages: [['Coco goes outside.', ['parrot']], ['A tree and a flower.', ['tree', 'flower']], ['A leaf falls down.', ['leaf']], ['The sea! Splash!', ['sea']], ['A shell and a rock.', ['shell', 'rock']]] },
-    n24: { place: 'home', pages: [['Good morning, Coco!', ['parrot']], ['Brush your teeth.', ['toothbrush']], ['Wash with soap.', ['soap']], ['Eat with a spoon.', ['spoon']], ['Drink from a cup. Good job!', ['cup']]] }
+    n22: { place: 'park', pages: [['What is Chacho doing?', ['parrot']], ['Singing. La, la, la!', ['singing']], ['Painting.', ['painting']], ['Climbing. Up, up!', ['climbing']], ['Cooking. Yummy!', ['cooking']]] },
+    n23: { place: 'beach', pages: [['Chacho goes outside.', ['parrot']], ['A tree and a flower.', ['tree', 'flower']], ['A leaf falls down.', ['leaf']], ['The sea! Splash!', ['sea']], ['A shell and a rock.', ['shell', 'rock']]] },
+    n24: { place: 'home', pages: [['Good morning, Chacho!', ['parrot']], ['Brush your teeth.', ['toothbrush']], ['Wash with soap.', ['soap']], ['Eat with a spoon.', ['spoon']], ['Drink from a cup. Good job!', ['cup']]] }
   }
 };

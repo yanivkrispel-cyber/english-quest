@@ -24,7 +24,7 @@ screen is built from these pieces, not from new ones.
    `.tile` (40 px, `.tile.sm` 32 px). Where a clay picture exists (`docs/icons/<phosphor name>.webp`, made in Gemini with
    `tools/ui_icons.py`), `clayIcons()` swaps it in by itself in tiles, the tab bar and the Nest buttons: a new object icon in a
    tile gets a clay picture (a new row in `tools/ui-icons.json`), small controls (close, back, check, caret) stay Phosphor. **Never emoji in the UI** (founding rule; emoji only inside WhatsApp text).
-5. **Pictures:** original clay art (pets, Coco, Nest stickers, items; `tools/PETS.md`, `tools/NEST-ART.md`). No clip art,
+5. **Pictures:** original clay art (pets, Chacho, Nest stickers, items; `tools/PETS.md`, `tools/NEST-ART.md`). No clip art,
    no stock icons, no emoji standing in for a picture.
 6. **Type:** Plus Jakarta Sans (400 to 800). `h1` 30/800, `h2` 18/700, `.sub` 15 muted, `.label` 12/700 uppercase.
    Nothing a kid must read under 13 px. Hebrew text (parents' area, hints) uses the system font, `direction:rtl`
@@ -39,7 +39,7 @@ screen is built from these pieces, not from new ones.
    nothing moves when a button in a play screen is tapped (the play frame rules in `CLAUDE.md`).
 10. **The Nest (ages 2 to 7)** uses the same glass and tokens, bigger: tap targets at least 88 px, pictures instead of
     words, no text the kid must read. A right answer is a moment, never just a colored border: use `nkCheer` (stars, the
-    gold star into the progress row, Coco hops, the tune) for every new Nest game.
+    gold star into the progress row, Chacho hops, the tune) for every new Nest game.
 11. **Same thing, same look.** Before drawing a new card, list, header or empty state, find the closest existing one
     (home tabs, missions, shop, parent area) and reuse its classes. Two ways to show the same kind of thing is the bug
     this file exists to stop.

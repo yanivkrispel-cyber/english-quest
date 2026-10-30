@@ -1,5 +1,5 @@
-// The Wordrobe: Coco's shop (spec: specs/wordrobe.md). Every point and every XP is also a coin; a purchase is
-// a request to Coco in English, and nicer English costs less. Coins are computed from what is already recorded
+// The Wordrobe: Chacho's shop (spec: specs/wordrobe.md). Every point and every XP is also a coin; a purchase is
+// a request to Chacho in English, and nicer English costs less. Coins are computed from what is already recorded
 // (Log, Games, Gates, Bonus minus the Shop tab), so no number can drift.
 // Only functions and literal constants here: files load in one global scope, so nothing at the top level may
 // use another file's names.
@@ -169,14 +169,14 @@ function apiShop(name, pin) {
   return shopView(auth(name, pin));
 }
 
-// Buy with a request to Coco: words = the tiles in order (or the words heard, matched to the tiles by the app).
+// Buy with a request to Chacho: words = the tiles in order (or the words heard, matched to the tiles by the app).
 // The server grades the request again and decides the price. A bought item is worn at once.
 function apiShopBuy(name, pin, itemId, color, words) {
   var kid = auth(name, pin), t = today();
   if (pendingLevelTest(kid)) throw new Error('Take the level test first.');
-  if (!shopOpenFor(kid, t)) throw new Error('Coco\'s Wordrobe opens on ' + shopOpens() + '.');
+  if (!shopOpenFor(kid, t)) throw new Error('Chacho\'s Wordrobe opens on ' + shopOpens() + '.');
   var it = shopItem(itemId);
-  if (!it) throw new Error('Coco does not sell that');
+  if (!it) throw new Error('Chacho does not sell that');
   if (!shopAvailable(it, t)) throw new Error('The ' + it.name + ' is back next season');
   color = it.colors ? String(color || it.colors[0]) : '';
   if (it.colors && it.colors.indexOf(color) < 0) throw new Error('Choose a color');
@@ -232,7 +232,7 @@ function apiWear(name, pin, wear, move) {
       return;
     }
     var p = e.split(':'), it = shopItem(p[0]), color = p[1] || '';
-    if (!it || SHOP.places.indexOf(it.place) < 0) throw new Error('Coco does not sell that');
+    if (!it || SHOP.places.indexOf(it.place) < 0) throw new Error('Chacho does not sell that');
     if (!owned[it.id]) throw new Error('Buy the ' + it.name + ' first');
     if (places[it.place]) throw new Error('One item per place');
     if (color && (!it.colors || it.colors.indexOf(color) < 0)) throw new Error('The ' + it.name + ' does not come in ' + color);
@@ -506,7 +506,7 @@ function apiWords(name, pin, itemId, right, missed) {
 // on its own ("My words", a round of game 'mine'). Up to 150.
 function apiSaveWord(name, pin, id, on) {
   var kid = auth(name, pin);
-  if (!ownedItems(kid.Name)['word-saver']) throw new Error('The Word Saver is in Coco\'s shop');
+  if (!ownedItems(kid.Name)['word-saver']) throw new Error('The Word Saver is in Chacho\'s shop');
   id = cleanIds([id])[0];
   if (!id || !/^[mplbs]:/.test(id)) throw new Error('That one cannot be saved');
   var w, lock = LockService.getScriptLock();
@@ -534,7 +534,7 @@ function apiSaveWord(name, pin, id, on) {
 function apiDesign(name, pin, base, text, fresh) {
   var kid = auth(name, pin), t = today();
   if (pendingLevelTest(kid)) throw new Error('Take the level test first.');
-  if (!shopOpenFor(kid, t)) throw new Error('Coco\'s Wordrobe opens on ' + shopOpens() + '.');
+  if (!shopOpenFor(kid, t)) throw new Error('Chacho\'s Wordrobe opens on ' + shopOpens() + '.');
   var b = STUDIO_BASES.hasOwnProperty(base) ? STUDIO_BASES[base] : null;
   if (!b) throw new Error('Choose a base first');
   var g = studioGrade(text, base);
@@ -632,7 +632,7 @@ function studioGrade(text, base) {
   };
   var kinds = words.map(kindOf);
   if (!words.length) { out.hint = 'Describe your ' + thing + ' in English, darling. For example: "' + eg + '".'; return out; }
-  // A word Coco does not know: the closest one she knows (a typo), or the list.
+  // A word Chacho does not know: the closest one she knows (a typo), or the list.
   for (i = 0; i < words.length; i++) {
     if (kinds[i]) continue;
     var w0 = words[i], best = '', bd = 3, all = [];
@@ -756,7 +756,7 @@ function shopSentence(words) {
   return out.slice(0, 200);
 }
 
-// ---------- Ask Coco: grading a request ----------
+// ---------- Ask Chacho: grading a request ----------
 // The same function is in src/Index.html (the live manners meter); test/sim.js checks they agree.
 // words: the tiles in order. Accepted shapes (X = the [color] item):
 //   [Please] give me X.  I want X[, please].  I'd like X[, please].  Can/Could/May I [please] have X[, please]?

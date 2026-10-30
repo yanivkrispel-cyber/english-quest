@@ -41,13 +41,13 @@ async function show(f){
   // picker: the kids of the family with "Not your family? Switch"; signin: the screen that button opens.
   else if (screen === 'picker') await ev("(async () => { pub = await call('apiPublic', ''); home(); })()");
   else if (screen === 'signin') await ev("(async () => { pub = await call('apiPublic', ''); home(); document.getElementById('swfam').click(); })()");
-  // Coco's Nest: Mia, 4 (dev-server.js). nest = her home, nest-meet / nest-phrase / nest-find / nest-move / nest-say / nest-done = a session step.
+  // Chacho's Nest: Mia, 4 (dev-server.js). nest = her home, nest-meet / nest-phrase / nest-find / nest-move / nest-say / nest-done = a session step.
   else if (screen.startsWith('nest')) {
     await ev("(async () => { await login('Mia', '5151', false, false); })()");
     await new Promise(r => setTimeout(r, 1500));
     // nest-all: Settings.NestAll on (every unit open) and one unit's days in the sheet.
     // nest-ground: the playground; nest-home2: the home with it; nest-cheer: a right answer, the third in a row (the party). Try-out kid, two units played.
-    // nest-arcade: Coco's arcade (stage C), an arcade kid with colors, numbers, the farm and food met.
+    // nest-arcade: Chacho's arcade (stage C), an arcade kid with colors, numbers, the farm and food met.
     if (screen === 'nest-arcade') { ev("dash.nest.arcade = true; dash.nest.played = ['n01', 'n02', 'n03', 'n04', 'n05', 'n07']; dash.nest.home = true; nestPlayground()"); }
     if (['nest-ground', 'nest-home2', 'nest-cheer'].includes(screen)) { ev("dash.nest.all = true; dash.nest.played = ['n01', 'n01.b', 'n02']; dash.nest.done = true; renderNest(dash)"); if (screen === 'nest-ground') ev('nestPlayground()'); }
     if (screen === 'nest-cheer') { ev('nestPlay = function(k, cb){}; window.setTimeout = (st => (f, t) => t >= 300 ? 0 : st(f, t))(window.setTimeout); nkPlayStart("find")'); ev('const b = document.querySelector("[data-nkopt]"); b.classList.add("yes"); NE.run = 2; nkCheer({})'); }

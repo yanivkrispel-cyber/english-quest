@@ -1,8 +1,8 @@
-# Coco's voice (2026-10-29)
+# Chacho's voice (2026-10-29)
 
 Pilot families said the voice was robotic. Two causes: the phone's own voice (`speechSynthesis`) read the games, the word
 taps and Read to me, and the recordings were Kokoro `am_fenrir`, flat and slowed down. The owner wanted a free fix, heard
-four free voices blind and picked Chatterbox (MIT, Resemble AI) cloned from a clip of the old Coco, so Coco keeps his
+four free voices blind and picked Chatterbox (MIT, Resemble AI) cloned from a clip of the old Chacho, so Chacho keeps his
 colour but sounds like a person.
 
 ## What is recorded
@@ -11,7 +11,7 @@ Every line the app speaks, listed by `tools/voice-list.js`:
 
 | Part | File | Count (2026-10-29) |
 |------|------|------|
-| Talk with Coco | `docs/talk/audio/<clip>.mp3` | 4,504 |
+| Talk with Chacho | `docs/talk/audio/<clip>.mp3` | 4,504 |
 | The Nest | `docs/nest/audio/<clip>.mp3` | 792 |
 | Radio Show (22 characters) | `docs/missions/audio/<mission>-<part>.mp3`, its lines joined | 546 lines |
 | Words and sentences read aloud (game bank, mission words, examples, Hear it) | `docs/say/<key>.mp3` | about 1,240 |

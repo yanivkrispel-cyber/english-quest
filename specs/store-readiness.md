@@ -28,10 +28,10 @@ commit.
    account deletion). A new tab or column must be covered by the deletion path once it exists (gap below).
 6. **Permissions in context, and the app works without them.** Ask for the microphone or notifications only at the moment
    they are used, with a sentence that says why; every feature needs a fallback when the answer is no (the tiles for Talk
-   with Coco, the reminders being optional). New permissions need the purpose strings for the native shell
+   with Chacho, the reminders being optional). New permissions need the purpose strings for the native shell
    (`NSMicrophoneUsageDescription`, `NSSpeechRecognitionUsageDescription`) noted here. The Nest asks once, in context, with
-   a Hebrew sentence for the parent (Say it, or tapping Coco for "Coco repeats you"), and keeps the answer on the phone
-   (`eq_nest_mic`); without the microphone Say it shows its button and Coco just says "Hello!". The microphone string must
+   a Hebrew sentence for the parent (Say it, or tapping Chacho for "Chacho repeats you"), and keeps the answer on the phone
+   (`eq_nest_mic`); without the microphone Say it shows its button and Chacho just says "Hello!". The microphone string must
    cover both: it hears whether the child spoke, and replays the child's voice once from memory, nothing kept or sent.
 7. **No money outside the store, and no gambling.** Anything digital that is ever sold (subscription, coins, items) goes
    through Apple In-App Purchase and Google Play Billing, and never through a link to a payment page. Coins are earned,
@@ -53,20 +53,20 @@ commit.
 
 Kept by the app's own server: today the private Google Sheet (Apps Script, owner's Google account); after the move to
 Cloudflare (`specs/cloudflare.md`) a SQLite database inside the server's Durable Object (the owner's Cloudflare account),
-with the sheet as a nightly copy. Retention on Cloudflare: the audit trail 180 days, the text of what a kid said to Coco 90 days
+with the sheet as a nightly copy. Retention on Cloudflare: the audit trail 180 days, the text of what a kid said to Chacho 90 days
 (`retentionSweep`). A family's plan (tab `Plans`, empty in the pilot).
 
-- Kid: first name (English), age or grade (a Coco's Nest kid: the real age, 2 to 7), level, PIN, color, pet and its name,
+- Kid: first name (English), age or grade (a Chacho's Nest kid: the real age, 2 to 7), level, PIN, color, pet and its name,
   group. Optional email (older setups). The Nest's Say it step uses the microphone for loudness only, on the phone:
-  nothing is recorded or sent. The Nest's "Coco repeats you" (`docs/nest/echo.js`) holds the kid's few seconds of voice in
+  nothing is recorded or sent. The Nest's "Chacho repeats you" (`docs/nest/echo.js`) holds the kid's few seconds of voice in
   the phone's memory only, plays it back once in a parrot's voice and drops it: never written to storage, never sent, no
   speech recognition, the microphone off before the replay.
 - Parent / family: family name, parent's first name, parent PIN, optional email, consent date.
 - Activity: tasks and missions with scores and time spent, game rounds, missed items for review, gate challenges,
   level tests, duels and their answers, duo streaks, shop purchases (coins), what the pet wears, saved words, bonus XP.
-  Coco's Nest: the day played and, for each word of the day, whether it was found on the first try (Log.Detail, for the
+  Chacho's Nest: the day played and, for each word of the day, whether it was found on the first try (Log.Detail, for the
   review days); deleted with the kid's Log rows.
-- Talk with Coco: the text the phone heard (no audio), counts of spoken and tapped answers.
+- Talk with Chacho: the text the phone heard (no audio), counts of spoken and tapped answers.
 - Feedback and "Something wrong here?" notes.
 - Devices: push subscription endpoints and the browser's user-agent string.
 - Audit trail (tab Audit, `specs/audit.md`): when a kid, parent, admin or teacher opened the app (once per half hour),
@@ -76,15 +76,15 @@ with the sheet as a nightly copy. Retention on Cloudflare: the audit trail 180 d
 
 On the phone (local storage): the remembered kid and PIN, the group, the last dashboard, settings (sound, voice), the
 last parents' view of a parent who chose to be remembered (`eq_par`, deleted on sign-out), and how long the last open
-took (`eq_open_m`). Coco's
-Nest also keeps, on the phone only: how many times each game was played (Coco shows a new game first), the microphone
+took (`eq_open_m`). Chacho's
+Nest also keeps, on the phone only: how many times each game was played (Chacho shows a new game first), the microphone
 choice, the kid's last 12 colored pictures (which colors went where; no drawing, photo or sound), and the sticker book
 (`docs/nest/stickers.js`): which stickers the kid has already seen pop (word ids, `eq_nest_stickers_<kid>`) and the
 free page (the place and up to 40 stickers with their spots, `eq_nest_board_<kid>`). The parents' weekly postcard is
 drawn on the phone from the parents' view data and leaves the phone only when a parent shares or saves it from the
-parents' area (behind the parents' code); nothing new is stored on the server. Coco's arcade (stage C) keeps today's date and the
+parents' area (behind the parents' code); nothing new is stored on the server. Chacho's arcade (stage C) keeps today's date and the
 seconds played on the phone (`eq_nest_arc_<kid>`), and the server keeps one number the parent sets, the arcade minutes a day
-(`Girls.NestArcadeMin`). Talking Coco and No, Coco! use the microphone as the living home does: in memory for one replay, or
+(`Girls.NestArcadeMin`). Talking Chacho and No, Chacho! use the microphone as the living home does: in memory for one replay, or
 loudness only; nothing is kept or sent.
 
 ## Known gaps before a store submission
@@ -104,9 +104,9 @@ loudness only; nothing is kept or sent.
   (`specs/cloudflare.md`, not switched on yet). Still personal accounts (Cloudflare too): a business account and a data
   processing note are needed before selling.
 - No `assetlinks.json` / native shell yet; no store listing, age rating questionnaire or data safety form yet.
-- The app name and Coco: trademark check in Israel not done.
+- The app name and Chacho: trademark check in Israel not done.
 - The Nest's microphone: a parent who said "no" (or a phone that refused) cannot turn the microphone back on in the app
   (`eq_nest_mic` has no switch in the parents' area yet).
-- Coco's Nest (ages 2 to 7, `specs/nest.md`) puts kids under 5 in the same app as teenagers. Apple's Kids Category takes
+- Chacho's Nest (ages 2 to 7, `specs/nest.md`) puts kids under 5 in the same app as teenagers. Apple's Kids Category takes
   one age band an app (5 and under, 6 to 8, 9 to 11): choose a band, ship the Nest as its own app, or stay out of the
   Kids Category. Google Families allows several age groups, with stricter rules for "5 and under".

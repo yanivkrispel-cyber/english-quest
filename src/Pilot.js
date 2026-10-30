@@ -31,7 +31,7 @@ function apiJoin(code, data) {
   if (!/^\d{4}$/.test(parentPin)) throw new Error('קוד ההורה צריך להיות 4 ספרות');
   if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error('כתובת המייל לא נראית תקינה');
   if (data.consent !== true) throw new Error('צריך לאשר את תנאי הפרטיות כדי להמשיך');
-  // A school kid sends a grade (3 to 12); a Coco's Nest kid (Nest.js) sends her age (2 to 7) instead.
+  // A school kid sends a grade (3 to 12); a Chacho's Nest kid (Nest.js) sends her age (2 to 7) instead.
   var kids = (data.kids || []).map(function (k) { return { name: clean(k.name, 20), grade: Number(k.grade) || 0, age: Number(k.age) || 0 }; }).filter(function (k) { return k.name; });
   if (!kids.length) throw new Error('הוסיפו לפחות ילד אחד');
   if (kids.length > PILOT.maxKids) throw new Error('אפשר עד ' + PILOT.maxKids + ' ילדים במשפחה');
@@ -202,7 +202,7 @@ function placementInfo(kid) {
 }
 
 // A parent moves a kid to another age or class (the owner, 2026-10-27: a family signed a 5-year-old up as grade 3 before
-// Coco's Nest existed). choice = { age: 2..7 } (Coco's Nest) or { grade: 3..12 }. A tested level is kept; a kid with no
+// Chacho's Nest existed). choice = { age: 2..7 } (Chacho's Nest) or { grade: 3..12 }. A tested level is kept; a kid with no
 // level test (or coming back from the Nest) starts from the class. Days handed out but not played are dropped, so the
 // next dashboard builds the new track's day (a pending level test goes away on the way into the Nest).
 function apiParentSetAge(pin, name, choice) {
@@ -215,7 +215,7 @@ function apiParentSetAge(pin, name, choice) {
   var fields, label;
   if (age >= NEST.ages[0] && age <= NEST.ages[1]) {
     fields = { Level: 'nest', Age: age };
-    label = "Coco's Nest, age " + age;
+    label = "Chacho's Nest, age " + age;
   } else if (GRADE_LEVEL[grade]) {
     var tested = kidRows('Placements', kid.Name).filter(function (p) { return p.Form === 'A'; })[0];
     fields = { Age: grade + 6 };

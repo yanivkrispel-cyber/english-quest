@@ -1,11 +1,11 @@
-// Talk with Coco, level c1 (specs/talk.md; format and writing rules: tools/TALK-WRITING.md).
+// Talk with Chacho, level c1 (specs/talk.md; format and writing rules: tools/TALK-WRITING.md).
 // Mission talks (t<mission id>) first, then the home scenes (s<level><nn>). Check: node test/talk-check.js
 window.EQ_TALK = window.EQ_TALK || {};
-// Talk to Coco, level C1: mission talks (one per mission in docs/missions/c1.js). Rules: tools/TALK-WRITING.md.
+// Talk to Chacho, level C1: mission talks (one per mission in docs/missions/c1.js). Rules: tools/TALK-WRITING.md.
 window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   {
-    id: "tc1g01", title: "Coco's live commentary",
-    he: "מדברים עם קוקו על פרשנות ספורט, הרגלים מעצבנים ו-be being, בהווה של מומחים",
+    id: "tc1g01", title: "Chacho's live commentary",
+    he: "מדברים עם צ׳אצ׳ו על פרשנות ספורט, הרגלים מעצבנים ו-be being, בהווה של מומחים",
     turns: [
       {
         c: "Ooh, that was a mission for experts! Imagine you're commentating on a match live. How would you describe the winning goal as it happens, in the present simple?",
@@ -25,7 +25,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
       },
       {
         c: "Here's a tricky one. I've been very quiet today, which isn't like me at all. Why do you think I'm being so quiet?",
-        he: "למה קוקו שקט היום? נחשו עם being. למשל: Maybe you're being quiet because you're tired.",
+        he: "למה צ׳אצ׳ו שקט היום? נחשו עם being. למשל: Maybe you're being quiet because you're tired.",
         a: [
           { k: ["tired sleepy sleep exhausted"], n: "not", r: "Spot on! I'm being quiet because I was up all night rearranging my feathers." },
           { k: ["sad upset unhappy angry bored lonely"], r: "Don't worry, nothing is wrong! I'm just being quiet while I concentrate." },
@@ -57,7 +57,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1g02", title: "Stories in the past",
-    he: "מספרים לקוקו סיפורים בעבר, עם past continuous, past perfect ו-was going to",
+    he: "מספרים לצ׳אצ׳ו סיפורים בעבר, עם past continuous, past perfect ו-was going to",
     turns: [
       {
         c: "Story time! Every good story starts with the background. Think of a happy day you remember well. What was happening around you when it began?",
@@ -89,7 +89,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
       },
       {
         c: "Here's a little mystery. I came home last night with my feathers soaking wet and covered in sand. What had I been doing all afternoon?",
-        he: "מה קוקו עשה כל אחר הצהריים? עם had been. למשל: You had been swimming in the sea.",
+        he: "מה צ׳אצ׳ו עשה כל אחר הצהריים? עם had been. למשל: You had been swimming in the sea.",
         a: [
           { k: ["beach sea swim swimming swam ocean waves sand sandcastle sandcastles"], r: "Correct! I had been swimming in the sea and rolling in the sand. Very undignified." },
           { k: ["rain raining storm shower puddle puddles"], r: "Good guess! I had been dancing in the rain, and then I landed in a sandpit." }
@@ -111,7 +111,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1g03", title: "Habits, guesses and refusals",
-    he: "מדברים עם קוקו על הרגלים מהעבר, ניחושים ודברים שמסרבים לעבוד, עם will, would ו-should",
+    he: "מדברים עם צ׳אצ׳ו על הרגלים מהעבר, ניחושים ודברים שמסרבים לעבוד, עם will, would ו-should",
     turns: [
       {
         c: "When I was a chick, I would spend hours in my tree, copying every sound I heard. What would you do every summer when you were younger?",
@@ -162,7 +162,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1v01", title: "Over the moon or gutted?",
-    he: "מדברים עם קוקו על רגשות במילים מדויקות: over the moon, on edge, livid ועוד",
+    he: "מדברים עם צ׳אצ׳ו על רגשות במילים מדויקות: over the moon, on edge, livid ועוד",
     turns: [
       {
         c: "Eight brilliant feelings! Let's start with a happy one. What would make you absolutely over the moon this year?",
@@ -214,7 +214,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1v02", title: "Stroll, stride or trudge?",
-    he: "מדברים עם קוקו על איך הולכים: stroll, stride, tiptoe, trudge ועוד",
+    he: "מדברים עם צ׳אצ׳ו על איך הולכים: stroll, stride, tiptoe, trudge ועוד",
     turns: [
       {
         c: "Be honest! On the first morning of the school week, do you stride in full of energy, or trudge in like a tired penguin?",
@@ -271,7 +271,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1l01", title: "Cringe, then laugh",
-    he: "מדברים עם קוקו על הסיפור של Hannah ועל רגעים מביכים שאפשר לצחוק עליהם",
+    he: "מדברים עם צ׳אצ׳ו על הסיפור של Hannah ועל רגעים מביכים שאפשר לצחוק עליהם",
     turns: [
       {
         c: "Poor Hannah! She introduced herself as the new maths teacher, when she was actually the English teacher. If you'd been in that staff room, how would you have reacted?",
@@ -321,7 +321,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1l02", title: "Walk it out",
-    he: "מדברים עם קוקו על ההרצאה של Doctor Price: הליכה, סיבולת ורעיונות יצירתיים",
+    he: "מדברים עם צ׳אצ׳ו על ההרצאה של Doctor Price: הליכה, סיבולת ורעיונות יצירתיים",
     turns: [
       {
         c: "Doctor Price says walking on two legs is one of the strangest things humans do. As a bird, I totally agree! What surprised you most in her talk?",
@@ -376,7 +376,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1l03", title: "Is that really you?",
-    he: "מדברים עם קוקו על הונאות קול מהפודקאסט: איך מזהים red flag ומה עושים",
+    he: "מדברים עם צ׳אצ׳ו על הונאות קול מהפודקאסט: איך מזהים red flag ומה עושים",
     turns: [
       {
         c: "Zoe opened with a tough one. Imagine a call from a voice that sounds exactly like someone you know, asking for money right now. What would your first reaction honestly be?",
@@ -427,11 +427,11 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
         x: [["the code word is the best", -1], ["call back to the real number", -1]]
       }
     ],
-    end: "Stay curious and a little sceptical. It's me, the real Coco, saying goodbye. See you soon!"
+    end: "Stay curious and a little sceptical. It's me, the real Chacho, saying goodbye. See you soon!"
   },
   {
     id: "tc1r01", title: "The science of giggles",
-    he: "מדברים עם קוקו על המאמר על צחוק: למה צוחקים, ולמה אי אפשר לדגדג את עצמנו",
+    he: "מדברים עם צ׳אצ׳ו על המאמר על צחוק: למה צוחקים, ולמה אי אפשר לדגדג את עצמנו",
     turns: [
       {
         c: "Provine found we're about thirty times more likely to laugh with other people than alone. Does that match your experience, or do you laugh a lot on your own too?",
@@ -482,7 +482,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1g04", title: "Might as well dream big",
-    he: "מדברים עם קוקו על יכולות וניחושים, עם be able to, managed to ו-might have",
+    he: "מדברים עם צ׳אצ׳ו על יכולות וניחושים, עם be able to, managed to ו-might have",
     turns: [
       {
         c: "I'd love to be able to sing opera, but my squawk isn't quite there yet. What would you love to be able to do that you can't do yet?",
@@ -534,7 +534,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1g05", title: "If I were head teacher",
-    he: "מדברים עם קוקו על דמיון ודרישות, עם If I were, insist that, I wish ו-It's time",
+    he: "מדברים עם צ׳אצ׳ו על דמיון ודרישות, עם If I were, insist that, I wish ו-It's time",
     turns: [
       {
         c: "If you were the head teacher for a day, what's the first thing you'd change, and why?",
@@ -584,7 +584,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1g06", title: "Looking back, looking ahead",
-    he: "מדברים עם קוקו על מה שכבר עשינו ומה נספיק, עם present perfect ו-future perfect",
+    he: "מדברים עם צ׳אצ׳ו על מה שכבר עשינו ומה נספיק, עם present perfect ו-future perfect",
     turns: [
       {
         c: "I've sold three hundred scarves this month, and I've been smiling all week. What's the best thing you've done so far this year?",
@@ -631,7 +631,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1g07", title: "Fewer words, more meaning",
-    he: "מדברים עם קוקו בפסוקיות קצרות: Walking home, Having finished, Not wanting",
+    he: "מדברים עם צ׳אצ׳ו בפסוקיות קצרות: Walking home, Having finished, Not wanting",
     turns: [
       {
         c: "Flying over the beach this morning, I spotted a dolphin! Starting with Walking home or Sitting on the bus, what do you usually notice on your way home?",
@@ -678,7 +678,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1g08", title: "Never have I ever",
-    he: "מדברים עם קוקו בהיפוך דרמטי: Never have I, Not only, No sooner, Little did I know",
+    he: "מדברים עם צ׳אצ׳ו בהיפוך דרמטי: Never have I, Not only, No sooner, Little did I know",
     turns: [
       {
         c: "Never have I met such a talented student! Now it's your turn. Can you tell me something you've never done, starting with Never have I?",
@@ -725,7 +725,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1g09", title: "What are you looking forward to?",
-    he: "מדברים עם קוקו עם מילות יחס במקום הנכון: look forward to, used to, good at",
+    he: "מדברים עם צ׳אצ׳ו עם מילות יחס במקום הנכון: look forward to, used to, good at",
     turns: [
       {
         c: "I'm really looking forward to opening my winter collection. What are you most looking forward to this month?",
@@ -772,7 +772,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1g10", title: "The news is good!",
-    he: "מדברים עם קוקו על התאמת פועל: The news is, maths is, every student has",
+    he: "מדברים עם צ׳אצ׳ו על התאמת פועל: The news is, maths is, every student has",
     turns: [
       {
         c: "Maths is my weakest subject. I count my crackers on my claws! Which subject is the most interesting for you this year, and why?",
@@ -819,7 +819,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1v03", title: "Sort of, roughly, -ish",
-    he: "מדברים עם קוקו בלי להיות מדויקים: roughly, give or take, -ish, thingy",
+    he: "מדברים עם צ׳אצ׳ו בלי להיות מדויקים: roughly, give or take, -ish, thingy",
     turns: [
       {
         c: "Let's be vague on purpose! Roughly how many hours did you spend outside this week, give or take?",
@@ -866,7 +866,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1v04", title: "To cut a long story short",
-    he: "מספרים לקוקו סיפורים עם to be honest, to make matters worse, to top it all",
+    he: "מספרים לצ׳אצ׳ו סיפורים עם to be honest, to make matters worse, to top it all",
     turns: [
       {
         c: "I'll start. To be honest, the best part of my day is my afternoon nap. What's the best part of your day, to be honest?",
@@ -913,7 +913,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1v05", title: "Utterly ridiculous!",
-    he: "מדברים עם קוקו בצירופים: wildly popular, highly unlikely, utterly ridiculous",
+    he: "מדברים עם צ׳אצ׳ו בצירופים: wildly popular, highly unlikely, utterly ridiculous",
     turns: [
       {
         c: "What's wildly popular among teenagers right now, and do you think it really deserves to be?",
@@ -963,7 +963,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1l04", title: "Engine and brakes",
-    he: "מדברים עם קוקו על הפודקאסט של Doctor Klein: רשתות חברתיות והמוח של בני נוער",
+    he: "מדברים עם צ׳אצ׳ו על הפודקאסט של Doctor Klein: רשתות חברתיות והמוח של בני נוער",
     turns: [
       {
         c: "Doctor Klein compared the teenage brain to a car with a powerful engine and brakes that are still being built. Do you think that's a fair comparison? Why?",
@@ -1013,7 +1013,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1l05", title: "Good enough is good enough",
-    he: "מדברים עם קוקו על חוכמה ואושר: overthinking, perfectionism ומה באמת חשוב",
+    he: "מדברים עם צ׳אצ׳ו על חוכמה ואושר: overthinking, perfectionism ומה באמת חשוב",
     turns: [
       {
         c: "Daniel wondered if very clever people are less happy. Studies say it's mostly a myth. Why do you think that myth is still so popular?",
@@ -1063,7 +1063,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1l06", title: "Knowledge or habits?",
-    he: "מדברים עם קוקו על התוכנית על אוכל: בישול ביחד, קריאת תוויות והרגלים",
+    he: "מדברים עם צ׳אצ׳ו על התוכנית על אוכל: בישול ביחד, קריאת תוויות והרגלים",
     turns: [
       {
         c: "Tom says knowledge and habits are two very different things. Why do you think people often know what's good for them but still don't do it?",
@@ -1113,7 +1113,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1l07", title: "Rest or stress?",
-    he: "מדברים עם קוקו על חופשת השינה של Lily, מכשירי מעקב והרגלי שינה",
+    he: "מדברים עם צ׳אצ׳ו על חופשת השינה של Lily, מכשירי מעקב והרגלי שינה",
     turns: [
       {
         c: "Lily's hotel had blackout curtains, a pillow menu and even a sleep coach. Would you ever go on a holiday just to sleep, or does that sound like a waste?",
@@ -1166,7 +1166,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1l08", title: "Fair and square?",
-    he: "מדברים עם קוקו על ההצבעה של Yael ו-Omer: מה זה הוגן ואיך מגיעים לפשרה",
+    he: "מדברים עם צ׳אצ׳ו על ההצבעה של Yael ו-Omer: מה זה הוגן ואיך מגיעים לפשרה",
     turns: [
       {
         c: "After the first vote, the water park had twelve votes out of thirty. Do you think it should have won, or was the second round fairer?",
@@ -1219,7 +1219,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1l09", title: "One fix, two problems",
-    he: "מדברים עם קוקו על Operation Cat Drop: תופעות לוואי ושרשרת המזון",
+    he: "מדברים עם צ׳אצ׳ו על Operation Cat Drop: תופעות לוואי ושרשרת המזון",
     turns: [
       {
         c: "What a story! Spraying for mosquitoes ended with cats being dropped by parachute. Which part of that chain of events surprised you most?",
@@ -1271,7 +1271,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1r02", title: "The shortcut that wasn't",
-    he: "מדברים עם קוקו על הטיול של Noa, Eitan ו-Mia: קיצורי דרך, החלטות ובטיחות",
+    he: "מדברים עם צ׳אצ׳ו על הטיול של Noa, Eitan ו-Mia: קיצורי דרך, החלטות ובטיחות",
     turns: [
       {
         c: "Eitan saw a narrow path, said Shortcut, and strode off before anyone could object. If you'd been there, would you have followed him or stayed on the marked trail?",
@@ -1326,7 +1326,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1r03", title: "A voice is not proof",
-    he: "מדברים עם קוקו על המאמר על שכפול קול: שימושים טובים, סכנות ואיך בודקים",
+    he: "מדברים עם צ׳אצ׳ו על המאמר על שכפול קול: שימושים טובים, סכנות ואיך בודקים",
     turns: [
       {
         c: "The article says cloning lets films be dubbed in the original actors' own voices. Would you rather watch a film dubbed like that, or in the original with subtitles?",
@@ -1379,7 +1379,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "tc1r04", title: "Fame before you can decide",
-    he: "מדברים עם קוקו על המאמר על kidfluencers: פרסום, פרטיות וזכויות של ילדים",
+    he: "מדברים עם צ׳אצ׳ו על המאמר על kidfluencers: פרסום, פרטיות וזכויות של ילדים",
     turns: [
       {
         c: "To many viewers, a kidfluencer's life looks like a dream: fame, free gifts and no boring office job. Would you have wanted that life at ten? Why, or why not?",
@@ -1426,11 +1426,11 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   }
 ]);
 
-// Talk to Coco: C1 home scenes (sc101 to sc115). Format: app/specs/talk.md; rules: app/tools/TALK-WRITING.md.
+// Talk to Chacho: C1 home scenes (sc101 to sc115). Format: app/specs/talk.md; rules: app/tools/TALK-WRITING.md.
 window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   {
     id: "sc101", title: "Should homework go?",
-    he: "מועדון הדיבייט של קוקו: האם לבטל שיעורי בית?",
+    he: "מועדון הדיבייט של צ׳אצ׳ו: האם לבטל שיעורי בית?",
     turns: [
       {
         c: "Welcome to the Debate Society! Today's motion is: this house would abolish homework. Before we choose sides, what's your gut reaction to the idea?",
@@ -1483,7 +1483,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc102", title: "Exam practice: the future",
-    he: "מתרגלים עם קוקו בגרות בעל פה: תוכניות לעתיד",
+    he: "מתרגלים עם צ׳אצ׳ו בגרות בעל פה: תוכניות לעתיד",
     turns: [
       {
         c: "Let's practise the oral exam. Here's a classic question: if you could study any subject in real depth one day, what would it be, and what draws you to it?",
@@ -1547,7 +1547,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc103", title: "Exam practice: social media",
-    he: "מתרגלים עם קוקו בגרות בעל פה: רשתות חברתיות ובני נוער",
+    he: "מתרגלים עם צ׳אצ׳ו בגרות בעל פה: רשתות חברתיות ובני נוער",
     turns: [
       {
         c: "Here's another exam topic: social media. How much of a role would you say it plays in your daily life?",
@@ -1602,7 +1602,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc104", title: "Making sense of modern art",
-    he: "קוקו מדריך בגלריה לאמנות מודרנית ושואל מה אתם חושבים באמת",
+    he: "צ׳אצ׳ו מדריך בגלריה לאמנות מודרנית ושואל מה אתם חושבים באמת",
     turns: [
       {
         c: "Step right in! This is the Gallery of Modern Art, and I'm your guide. In front of us is a huge white canvas with a single red dot. What's your honest first impression?",
@@ -1661,7 +1661,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc105", title: "The city of the future",
-    he: "ראש העיר קוקו מתכנן את העיר של 2050 ומבקש את דעתכם",
+    he: "ראש העיר צ׳אצ׳ו מתכנן את העיר של 2050 ומבקש את דעתכם",
     turns: [
       {
         c: "Welcome to City Hall! As mayor, I'm redesigning our city for the year twenty fifty. If you could change one thing about the way cities work today, what would it be?",
@@ -1728,7 +1728,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc106", title: "What makes us laugh?",
-    he: "בפודקאסט של קוקו מדברים על הומור: מה מצחיק אותנו ולמה",
+    he: "בפודקאסט של צ׳אצ׳ו מדברים על הומור: מה מצחיק אותנו ולמה",
     turns: [
       {
         c: "Welcome to Feathers and Laughter, the podcast about humour! First question: what kind of thing makes you laugh the most?",
@@ -1783,10 +1783,10 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc107", title: "The vanishing trophy",
-    he: "הבלש קוקו חוקר: הגביע של בית הספר נעלם לפני הטקס",
+    he: "הבלש צ׳אצ׳ו חוקר: הגביע של בית הספר נעלם לפני הטקס",
     turns: [
       {
-        c: "Detective Coco here. The school's football trophy has vanished from its glass case, just hours before the ceremony. Where would you start investigating, and why?",
+        c: "Detective Chacho here. The school's football trophy has vanished from its glass case, just hours before the ceremony. Where would you start investigating, and why?",
         he: "איפה תתחילו לחקור ולמה? למשל: I'd check the security camera near the case first.",
         a: [],
         o: "A logical starting point. You think like a professional.",
@@ -1838,7 +1838,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc108", title: "Real or fake?",
-    he: "בחדר החדשות של קוקו אתם בודקי עובדות: סרטון ויראלי, אמיתי או מזויף?",
+    he: "בחדר החדשות של צ׳אצ׳ו אתם בודקי עובדות: סרטון ויראלי, אמיתי או מזויף?",
     turns: [
       {
         c: "Hold the front page! I'm the editor of this newsroom, and you're our new fact-checker. A video of a famous singer saying something shocking is going viral. What's the first thing you'd check?",
@@ -1893,7 +1893,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc109", title: "Across the desert",
-    he: "קוקו מוביל מסע רגלי של שלושה ימים בנגב, ואתם בצוות",
+    he: "צ׳אצ׳ו מוביל מסע רגלי של שלושה ימים בנגב, ואתם בצוות",
     turns: [
       {
         c: "Welcome, explorer! I'm leading a three-day hiking expedition across the Negev, and you're on the team. What appeals to you most about a trip like this?",
@@ -1946,10 +1946,10 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc110", title: "The time travel agency",
-    he: "סוכנות מסעות בזמן של קוקו: לאן בהיסטוריה הייתם נוסעים?",
+    he: "סוכנות מסעות בזמן של צ׳אצ׳ו: לאן בהיסטוריה הייתם נוסעים?",
     turns: [
       {
-        c: "Step inside Coco's Time Travel Agency, where we offer trips to any era! If you could visit any period in history, which would you choose, and why?",
+        c: "Step inside Chacho's Time Travel Agency, where we offer trips to any era! If you could visit any period in history, which would you choose, and why?",
         he: "לאיזו תקופה הייתם נוסעים ולמה? למשל: Ancient Egypt, because I'd love to see the pyramids being built.",
         a: [],
         o: "Fascinating choice! I'll start preparing the time machine.",
@@ -2004,14 +2004,14 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
         x: [["my birthday party last year", -1], ["the first day of the summer holiday", -1]]
       }
     ],
-    end: "Your ticket is booked! Thank you for choosing Coco's Time Travel. Mind the dinosaurs!"
+    end: "Your ticket is booked! Thank you for choosing Chacho's Time Travel. Mind the dinosaurs!"
   },
   {
     id: "sc111", title: "An AI for a teacher?",
-    he: "פרופסור קוקו חוקר את עתיד החינוך: מורה בינה מלאכותית, כן או לא?",
+    he: "פרופסור צ׳אצ׳ו חוקר את עתיד החינוך: מורה בינה מלאכותית, כן או לא?",
     turns: [
       {
-        c: "Hello! I'm Professor Coco, and I'm researching the future of education. Imagine your school replaced half of its lessons with a computer tutor powered by artificial intelligence. What's your first reaction?",
+        c: "Hello! I'm Professor Chacho, and I'm researching the future of education. Imagine your school replaced half of its lessons with a computer tutor powered by artificial intelligence. What's your first reaction?",
         he: "מה התגובה הראשונה שלכם? למשל: I'd be curious, but a bit worried about losing real teachers.",
         a: [],
         o: "That's a very understandable reaction.",
@@ -2062,7 +2062,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc112", title: "The surprise party",
-    he: "מתכננים עם קוקו מסיבת הפתעה לחברה שזכתה בתחרות מדע",
+    he: "מתכננים עם צ׳אצ׳ו מסיבת הפתעה לחברה שזכתה בתחרות מדע",
     turns: [
       {
         c: "Psst! We're planning a surprise party for a friend who's just won a big science competition. Roughly how many people should we invite, would you say?",
@@ -2119,10 +2119,10 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc113", title: "Book versus film",
-    he: "מועדון הקריאה של קוקו: הספר או הסרט?",
+    he: "מועדון הקריאה של צ׳אצ׳ו: הספר או הסרט?",
     turns: [
       {
-        c: "Pull up a cushion, Coco's Book Club is open! Today's question is an old favourite: would you say the book is usually better than the film?",
+        c: "Pull up a cushion, Chacho's Book Club is open! Today's question is an old favourite: would you say the book is usually better than the film?",
         he: "הספר בדרך כלל טוב יותר מהסרט? למשל: The book is usually better. או The film is often better.",
         a: [
           { k: ["depends usually_not not_always sometimes"], r: "It depends, true. Some films are even better than the book." },
@@ -2180,7 +2180,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc114", title: "Running for student council",
-    he: "אתם מתמודדים למועצת התלמידים, וקוקו מנהל את הקמפיין",
+    he: "אתם מתמודדים למועצת התלמידים, וצ׳אצ׳ו מנהל את הקמפיין",
     turns: [
       {
         c: "Congratulations! You've decided to run for student council, and I'm your campaign manager. What's the main reason you want to represent the students?",
@@ -2238,7 +2238,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
   },
   {
     id: "sc115", title: "Fast fashion",
-    he: "קוקו, חובב האופנה, מדבר איתכם על אופנה מהירה, יד שנייה ואיכות הסביבה",
+    he: "צ׳אצ׳ו, חובב האופנה, מדבר איתכם על אופנה מהירה, יד שנייה ואיכות הסביבה",
     turns: [
       {
         c: "Ooh, my favourite topic: fashion! Did you know some brands release new collections almost every week? How often do you think people really need new clothes?",

@@ -1,6 +1,6 @@
-// Checks Coco's Nest content in docs/nest/nest.js (specs/nest.md): unit order and ids, 6 words a new unit, exactly one
-// picture kind per word, colors and counts, core words, the phrase, Coco says moves, the parents' home ideas, one meaning
-// per English word across units, reviews that point back, safe words, Coco's English lines (no Hebrew voice), the games'
+// Checks Chacho's Nest content in docs/nest/nest.js (specs/nest.md): unit order and ids, 6 words a new unit, exactly one
+// picture kind per word, colors and counts, core words, the phrase, Chacho says moves, the parents' home ideas, one meaning
+// per English word across units, reviews that point back, safe words, Chacho's English lines (no Hebrew voice), the games'
 // content (chants, stories, sounds, things to give and wear, coloring pages, the grown-ups' notes), every picture and
 // clip on disk, that docs/nest/play.js never reuses a top-level name of src/Index.html, and that src/NestIndex.js has
 // the same days in the same order.
@@ -144,17 +144,17 @@ function check(opts) {
     oneKind('move ' + k, moves[k]);
     if (!usedMoves.has(k)) err('move ' + k, 'no unit uses it');
   });
-  ok.push(Object.keys(moves).length + ' Coco says moves');
+  ok.push(Object.keys(moves).length + ' Chacho says moves');
   const rv = (nest.parent || {}).review;
   if (!Array.isArray(rv) || !rv.length) err('parent', 'needs review ideas');
   else rv.forEach((t, k) => homeLine('parent review ' + (k + 1), t));
 
-  // The kid hears only Coco's English (owner, 2026-10-27): no Hebrew lines to record.
+  // The kid hears only Chacho's English (owner, 2026-10-27): no Hebrew lines to record.
   if (nest.he) err('he', 'the Nest has no Hebrew voice any more: remove the he lines');
   EN_KEYS.forEach(k => { if (!((nest.en || {})[k] || '').trim()) err('en', 'missing line ' + k); });
   Object.keys(nest.en || {}).forEach(k => english('en.' + k, nest.en[k], 7));
   ok.push(Object.keys(nest.en || {}).length + ' English lines');
-  // The grown-ups' notes (a long press on Coco): Hebrew text for every game.
+  // The grown-ups' notes (a long press on Chacho): Hebrew text for every game.
   GAMES.forEach(g => { const t = (nest.hints || {})[g]; if (!HEB.test(t || '')) err('hints', 'missing Hebrew note for ' + g); else if (t.length > 150) err('hints.' + g, 'too long'); });
 
   // The games' content.
@@ -171,7 +171,7 @@ function check(opts) {
     if (!PAGES.includes(c.id)) err(where, 'no coloring page drawn for it (docs/nest/play.js NK_PAGES)');
     if (!colorWords.has(c.color)) err(where, 'color ' + c.color + ' is not a Nest color word');
     english(where, c.say, 6);
-    if (c.say && c.color && !c.say.toLowerCase().includes(c.color)) err(where, 'Coco does not say the color');
+    if (c.say && c.color && !c.say.toLowerCase().includes(c.color)) err(where, 'Chacho does not say the color');
   });
   if ((nest.color || []).length < 6) err('color', 'needs at least 6 pages');
   units.filter(u => !u.review).forEach(u => {
@@ -228,15 +228,15 @@ function check(opts) {
     const html = fs.readFileSync(path.join(ROOT, 'src/Index.html'), 'utf8'), play = fs.readFileSync(path.join(ROOT, 'docs/nest/play.js'), 'utf8');
     const app = names(html), seen = new Map();
     // The real sounds (docs/nest/sounds): every word in EQ_NEST.real has its clip, a line in tools/nest-sounds.json and a
-    // Coco line in sounds (it plays after the real one).
+    // Chacho line in sounds (it plays after the real one).
     const listed = JSON.parse(fs.readFileSync(path.join(ROOT, 'tools/nest-sounds.json'), 'utf8')).sounds;
     (nest.real || []).forEach(id => {
       if (!listed[id]) err('real ' + id, 'not in tools/nest-sounds.json');
       if (!fs.existsSync(path.join(ROOT, 'docs/nest/sounds', id + '.mp3'))) err('real ' + id, 'no docs/nest/sounds/' + id + '.mp3 (python tools/nest_sounds.py)');
-      if (!(nest.sounds || {})[id]) err('real ' + id, 'no Coco line in sounds');
+      if (!(nest.sounds || {})[id]) err('real ' + id, 'no Chacho line in sounds');
     });
     // play.js and the living home's files (specs/nest-home.md) share the app's scope and each other's.
-    // Coco's arcade (stage C): arcade.js, and one file a game in docs/nest/games/ (loaded when played).
+    // Chacho's arcade (stage C): arcade.js, and one file a game in docs/nest/games/ (loaded when played).
     const arcGames = fs.readdirSync(path.join(ROOT, 'docs/nest/games')).filter(f => f.endsWith('.js'));
     ['play.js', 'actor.js', 'home.js', 'echo.js', 'stickers.js', 'arcade.js'].concat(arcGames.map(f => 'games/' + f)).forEach(file => {
       const where = 'docs/nest/' + file, p = path.join(ROOT, where);
@@ -248,7 +248,7 @@ function check(opts) {
       own.forEach(n => seen.set(n, file));
       try { new vm.Script(code, { filename: file }); } catch (e) { err(where, e.message); }
     });
-    // Every arcade game in NK_ARCADE has its file, which defines NK.<game>; every Coco line (en-*) the code says is in nest.en.
+    // Every arcade game in NK_ARCADE has its file, which defines NK.<game>; every Chacho line (en-*) the code says is in nest.en.
     const arc = fs.readFileSync(path.join(ROOT, 'docs/nest/arcade.js'), 'utf8'), list = (/NK_ARCADE = ([[^;]+]);/.exec(arc) || [])[1];
     (list ? eval(list) : []).forEach(([g]) => {
       const p = path.join(ROOT, 'docs/nest/games', g + '.js');
@@ -257,7 +257,7 @@ function check(opts) {
     });
     ['play.js', 'actor.js', 'home.js', 'arcade.js'].concat(arcGames.map(f => 'games/' + f)).forEach(file => {
       const code = fs.readFileSync(path.join(ROOT, 'docs/nest', file), 'utf8');
-      for (const m of code.matchAll(/'en-([a-z]+)'/g)) if (!(nest.en || {})[m[1]]) err('docs/nest/' + file, 'Coco has no line en-' + m[1] + ' in nest.en');
+      for (const m of code.matchAll(/'en-([a-z]+)'/g)) if (!(nest.en || {})[m[1]]) err('docs/nest/' + file, 'Chacho has no line en-' + m[1] + ' in nest.en');
     });
     // Every game the day plans has its activity in play.js.
     GAMES.forEach(g => { if (!new RegExp('^NK\\.' + g + ' = ', 'm').test(play)) err('docs/nest/play.js', 'no activity NK.' + g); });

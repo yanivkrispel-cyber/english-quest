@@ -1,6 +1,6 @@
 # The home screen in five tabs
 
-Owner's choice on 2026-10-27, from the mockups (canvas "English with Coco: new home"): direction A, five tabs, the
+Owner's choice on 2026-10-27, from the mockups (canvas "English with Chacho: new home"): direction A, five tabs, the
 kid's own phone opens straight to her home, and the pet moves.
 
 ## Why
@@ -17,7 +17,7 @@ A sign-in opens on Today; a game, the shop, a talk or the map goes back to the t
 
 | Tab | What is on it |
 | --- | --- |
-| Today | `homeTop` (face, greeting, streak, coins, refresh), `petHero` (the pet, its line, XP to grow), `todayMain` (one Start; done or no task says so, with "Catch up" when days were missed), `homePills` (Talk with Coco, and an invite or a warm-up game) |
+| Today | `homeTop` (face, greeting, streak, coins, refresh), `petHero` (the pet, its line, XP to grow), `todayMain` (one Start; done or no task says so, with "Catch up" when days were missed), `homePills` (Talk with Chacho, and an invite or a warm-up game) |
 | Journey | the map (`renderMap`), now a tab: no back button |
 | Play | one screen since 2026-10-29 (`specs/play-tab.md`): friends, the stage (invites, duo streak, team quest, review, last games; swiped sideways), the four games |
 | Pet | the pet card (wardrobe, change pet, a warm-up game) and the shop card |

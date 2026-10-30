@@ -1,8 +1,8 @@
-// Coco repeats you (specs/nest-home.md): the kid speaks, Coco plays it back higher, like a parrot.
+// Chacho repeats you (specs/nest-home.md): the kid speaks, Chacho plays it back higher, like a parrot.
 // The voice lives in memory only for the replay: raw samples from the microphone (a ScriptProcessor, which every browser we
 // support has, iOS Safari 15+ included, with no codec), one AudioBuffer, played once and dropped. Nothing is saved or sent,
 // and there is no speech recognition. The microphone is asked for in context (the same stored choice as Say it,
-// eq_nest_mic); without it the caller makes Coco say "Hello!".
+// eq_nest_mic); without it the caller makes Chacho say "Hello!".
 //
 //   const h = nkEchoStart({ onState(s){}, onDone(ok){}, onLevel(v){} });   h.stop();
 //   onState: 'ask' (the parent's sheet is up), 'listen' (the microphone is live), 'talk' (the parrot replay), 'idle' (over).
@@ -46,8 +46,8 @@ function nkEchoAsk(E){
   ov.className = 'overlay';
   ov.id = 'nkmic';
   ov.innerHTML = `<div class="sheet glass he" dir="rtl" lang="he" style="display:grid;gap:12px">
-    <h2>קוקו רוצה לשמוע</h2>
-    <div class="sub" style="margin:0">קוקו חוזר על מה שהילד אומר בקול של תוכי, וגם בודק שהילד אמר את המילה במשחקים. לשם כך צריך לאשר את המיקרופון. הקול נשאר בזיכרון של הטלפון רק לכמה שניות, מושמע פעם אחת ונמחק: שום דבר לא נשמר ולא נשלח.</div>
+    <h2>צ׳אצ׳ו רוצה לשמוע</h2>
+    <div class="sub" style="margin:0">צ׳אצ׳ו חוזר על מה שהילד אומר בקול של תוכי, וגם בודק שהילד אמר את המילה במשחקים. לשם כך צריך לאשר את המיקרופון. הקול נשאר בזיכרון של הטלפון רק לכמה שניות, מושמע פעם אחת ונמחק: שום דבר לא נשמר ולא נשלח.</div>
     <button class="btn btn-primary btn-block" id="nkmicon">${icon('microphone')} לאשר מיקרופון</button>
     <button class="btn btn-glass btn-block" id="nkmicoff">בלי מיקרופון</button></div>`;
   document.body.appendChild(ov);
@@ -57,7 +57,7 @@ function nkEchoAsk(E){
   E.state('ask');
 }
 
-// Coco says "Talk to me!", then the microphone listens. Android opens it during the line (echo cancellation keeps Coco out,
+// Chacho says "Talk to me!", then the microphone listens. Android opens it during the line (echo cancellation keeps Chacho out,
 // and nothing is captured before the line ends); iPhones open it after, because a live microphone turns the speaker down.
 function nkEchoGo(E){
   if (!E.alive) return;
@@ -190,7 +190,7 @@ function nkEchoFinish(E, ok){
   try { if (o.onDone) o.onDone(ok); } catch(e){}
 }
 
-// Ends everything at once, without calling back: timers, the sheet, Coco's line, the microphone, every node, the buffer.
+// Ends everything at once, without calling back: timers, the sheet, Chacho's line, the microphone, every node, the buffer.
 function nkEchoEnd(E){
   if (!E.alive) return;
   E.alive = false;

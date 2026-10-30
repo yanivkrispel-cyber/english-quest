@@ -1,9 +1,9 @@
-# Writing Talk to Coco scripts
+# Writing Talk to Chacho scripts
 
-Talk to Coco (spec: `specs/talk.md`) is a short spoken conversation between a kid (8 to 16, Hebrew speaker, learning
-English) and Coco, a cheerful parrot who runs the app's clothes shop and loves words. Coco speaks first, the kid answers
-**aloud** (the phone's speech recognition turns it into text), Coco reacts and asks the next question. Nothing is
-generated at run time: every line Coco says is written here and recorded in advance, and the kid's answer is matched to
+Talk to Chacho (spec: `specs/talk.md`) is a short spoken conversation between a kid (8 to 16, Hebrew speaker, learning
+English) and Chacho, a cheerful parrot who runs the app's clothes shop and loves words. Chacho speaks first, the kid answers
+**aloud** (the phone's speech recognition turns it into text), Chacho reacts and asks the next question. Nothing is
+generated at run time: every line Chacho says is written here and recorded in advance, and the kid's answer is matched to
 your branches by keywords. If the phone cannot hear, the kid sees your tiles (2 or 3 example answers) and says or taps one.
 
 Two kinds of scripts, one file per level (`docs/talk/<level>.js`, levels a1 a2 b1 bp b2 c1; bp = B1+):
@@ -15,28 +15,28 @@ Two kinds of scripts, one file per level (`docs/talk/<level>.js`, levels a1 a2 b
 - **Home scenes** (`id: 's' + level + nn`, `sa101` to `sa115`): 15 per level, a different everyday situation each, played
   once a day from the home screen: ordering food, a shop, asking the way, planning a weekend, a pet show, a lost item, a
   birthday, the weather, a holiday, a game, a sports day, a school club, a trip, a TV show, a recipe, an interview, a
-  debate (higher levels), and so on. Coco plays a role (shopkeeper, tour guide, reporter, chef). Vary them.
+  debate (higher levels), and so on. Chacho plays a role (shopkeeper, tour guide, reporter, chef). Vary them.
 
 ## The format
 
 ```js
 window.EQ_TALK = window.EQ_TALK || {};
 window.EQ_TALK.a1 = [
-  { id: 'ta1g01', title: 'Coco is happy!',            // title: at most 34 characters
-    he: 'מדברים עם קוקו על איך מרגישים היום, עם am, is, are',   // one Hebrew line for the start card (max 90)
+  { id: 'ta1g01', title: 'Chacho is happy!',            // title: at most 34 characters
+    he: 'מדברים עם צ׳אצ׳ו על איך מרגישים היום, עם am, is, are',   // one Hebrew line for the start card (max 90)
     turns: [
-      { c: "Hello! I am so happy today. Are you happy today?",   // Coco's line, ends with a question
+      { c: "Hello! I am so happy today. Are you happy today?",   // Chacho's line, ends with a question
         he: 'ענו כן או לא, למשל: Yes, I am happy. או No, I am tired.',   // Hebrew hint, with an English example (max 120)
         a: [                                                  // branches, tried in order, first fit wins (0 to 4)
           { k: ['tired sleepy sad', 'not no'], r: "Oh no! I hope you are okay soon." },
           { k: ['yes happy good great fine'], n: 'not', r: "Yay! We are both happy!" }
         ],
-        o: "Thank you for telling me!",    // Coco's reply when no branch fits: must suit ANY answer
+        o: "Thank you for telling me!",    // Chacho's reply when no branch fits: must suit ANY answer
         t: ["Yes, I am happy.", "No, I am tired."],          // 2 or 3 tiles: answers a kid could say
         x: [["yes i am", 1], ["no I am tired", 0], ["banana", -1]] },   // sample answers -> expected branch (-1 = o)
       ...
     ],
-    end: "You are great at English! Bye bye, see you soon!" }   // Coco's goodbye, not a question
+    end: "You are great at English! Bye bye, see you soon!" }   // Chacho's goodbye, not a question
 ];
 ```
 
@@ -55,7 +55,7 @@ The finished example with two talks: `C:\Dev\EnglishLessons-work\talk\example-a1
 - Branches are tried in order: put the narrower one first (a "no, tired" branch before a "yes, happy" branch; a negative
   answer before a positive one that has `n: 'not'`).
 - An open question (anything goes: "What is your favourite animal?") has `a: []`. Every answer gets `o`, as long as the
-  kid said enough words (A1 1, A2 2, B1 3, B1+ 3, B2 4, C1 5; fewer and Coco asks for a little more, once).
+  kid said enough words (A1 1, A2 2, B1 3, B1+ 3, B2 4, C1 5; fewer and Chacho asks for a little more, once).
 - Speech recognition makes mistakes and kids make grammar mistakes. Match on **meaning words**, not on grammar, and be
   generous: list synonyms and the words a Hebrew speaker would use ("I am agree", "close the light").
 
@@ -75,7 +75,7 @@ branch (or, for an open turn, be long enough).
 
 ## Lengths per level (the check enforces them)
 
-| Level | Turns | Coco's question (words) | Replies, `o`, `end` | Tile |
+| Level | Turns | Chacho's question (words) | Replies, `o`, `end` | Tile |
 |---|---|---|---|---|
 | A1 | 3 to 5 (4 is best) | 16 | 12 (end 18) | 8 |
 | A2 | 4 to 5 | 20 | 14 | 10 |
@@ -86,10 +86,10 @@ branch (or, for an open turn, be long enough).
 
 Language: A1 and A2 use the words and grammar of that level (present simple, be, have got, can; A2 adds past simple,
 going to, comparatives). B1 and up: natural spoken English with the level's grammar (B1 present perfect, first and second
-conditional; B2 and C1 opinions with reasons, hypotheticals, hedging). Coco's question at the higher levels asks for a
+conditional; B2 and C1 opinions with reasons, hypotheticals, hedging). Chacho's question at the higher levels asks for a
 reason or an example ("Why?", "What would you do if...?"), so the kid says a full sentence. At A1 a word or two is fine.
 
-## How Coco talks
+## How Chacho talks
 
 - Warm, a little silly, loves fashion and words, says "Ooh!" and "Fabulous!" now and then (not every line). She is a
   parrot: she can joke about feathers, flying and crackers. She is "she".
@@ -99,7 +99,7 @@ reason or an example ("Why?", "What would you do if...?"), so the kid says a ful
   The next `c` must make sense after **any** branch's reply and after `o`.
 - `o` must make sense whatever the kid said, including nonsense or something off-topic ("Interesting! Thank you for
   telling me." is fine; "Wow, a dog!" is not).
-- Plain text only: no emoji, no names of the kid (Coco does not know who is playing; the line is recorded once for
+- Plain text only: no emoji, no names of the kid (Chacho does not know who is playing; the line is recorded once for
   everyone), no "[name]" placeholders, no stage directions. Write numbers as words when they are said ("three coins").
 - Spell British or American, but be consistent within a level (the missions use British: favourite, colour).
 

@@ -1,7 +1,7 @@
-// Color Cards (Coco's arcade, stage C, ages 4 to 7; specs/nest.md): a matching card game against Coco on the colors (and
+// Color Cards (Chacho's arcade, stage C, ages 4 to 7; specs/nest.md): a matching card game against Chacho on the colors (and
 // numbers) the kid has met. Play a card of the same color or the same number as the one on the pile; every card played is
-// said in English ("Blue! Three!"). No card to play: take one from the deck. Coco plays his own cards (and often has to take
-// one), and once a game the "Coco sneezes!" card blows the color to a new one. Whoever empties the hand first wins; nobody
+// said in English ("Blue! Three!"). No card to play: take one from the deck. Chacho plays his own cards (and often has to take
+// one), and once a game the "Chacho sneezes!" card blows the color to a new one. Whoever empties the hand first wins; nobody
 // keeps score and both endings are happy. Loaded on demand by docs/nest/arcade.js.
 
 NK.cards = {
@@ -110,7 +110,7 @@ NK.cards = {
       nestPlay(['en-draw'], () => { if (!nkLive(s)) return; if (ok(k)) { turn = 'kid'; kidTurn(); } else later(cocoTurn, 300); });
     };
     deckEl.onclick = () => pick();
-    // Coco: he plays a card he can (not always: he is a bit silly), or takes one and looks surprised.
+    // Chacho: he plays a card he can (not always: he is a bit silly), or takes one and looks surprised.
     const cocoTurn = () => {
       if (!nkLive(s) || over) return;
       turn = 'coco'; draw();

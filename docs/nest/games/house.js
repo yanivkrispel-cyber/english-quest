@@ -1,7 +1,7 @@
-// Coco's House (Coco's arcade, stage D, ages 2 to 7; specs/nest.md): Coco lives here. Every room is one of the painted places
+// Chacho's House (Chacho's arcade, stage D, ages 2 to 7; specs/nest.md): Chacho lives here. Every room is one of the painted places
 // the kid's units have opened (the living room always; the kitchen once food is met, the playroom with toys or colors, the
 // farm with animals...), with the things of those units standing in it. Everything answers a tap: it bounces and says its
-// name, and Coco hops over to it. The painting's own things answer too (stage B). The arrows go from room to room; a new
+// name, and Chacho hops over to it. The painting's own things answer too (stage B). The arrows go from room to room; a new
 // room opens with each unit. No goal: the close button goes back to the arcade. Loaded on demand by docs/nest/arcade.js.
 
 const NK_HOUSE_SPOTS = [[18, 70, 24], [50, 76, 26], [82, 70, 24], [32, 88, 22], [68, 90, 22]];
@@ -15,12 +15,12 @@ NK.house = {
       const r = room(), pl = nkPlace(r.place);
       const st = nkFill(`<div class="nk-scene nkho${pl.painted ? ' painted' : ''}${dir ? ' from-' + dir : ''}" style="${pl.style}">${pl.html}
         ${r.things.map((w, i) => `<button class="nk-it nkho-it" data-i="${i}" style="left:${NK_HOUSE_SPOTS[i][0]}%;top:${NK_HOUSE_SPOTS[i][1]}%;width:${NK_HOUSE_SPOTS[i][2]}%;aspect-ratio:1" aria-label="${esc(w.en)}">${nestPic(w)}</button>`).join('')}
-        <img class="nkho-coco" id="nkhococo" src="${nkPoseSrc('wave')}" alt="Coco" draggable="false">
+        <img class="nkho-coco" id="nkhococo" src="${nkPoseSrc('wave')}" alt="Chacho" draggable="false">
         ${s.rooms.length > 1 ? `<button class="btn btn-glass icon-btn nkho-go l" data-go="-1" aria-label="Back">${icon('caret-left', 'bold')}</button>
           <button class="btn btn-glass icon-btn nkho-go r" data-go="1" aria-label="Next room">${icon('caret-right', 'bold')}</button>` : ''}
         <div class="nkho-dots">${s.rooms.map((x, i) => `<i class="${i === s.ri ? 'on' : ''}"></i>`).join('')}</div></div>`);
       const scene = st.querySelector('.nkho'), coco = document.getElementById('nkhococo');
-      // Coco hops to what was tapped and does something with it.
+      // Chacho hops to what was tapped and does something with it.
       const visit = el => {
         const a = scene.getBoundingClientRect(), b = el.getBoundingClientRect();
         coco.style.left = ((b.left + b.width / 2 - a.left) / a.width * 100).toFixed(1) + '%';
@@ -44,7 +44,7 @@ NK.house = {
         if (typeof nkActorOn === 'function') nkActorOn(s);
       });
       if (pl.painted && typeof nkHots === 'function') nkHots(scene, r.place);
-      // A painted thing also brings Coco over.
+      // A painted thing also brings Chacho over.
       scene.querySelectorAll('.nk-hot').forEach(h => h.addEventListener('click', () => visit(h)));
       later(() => { const it = scene.querySelector('.nkho-it'); if (it && nkLive(s)) nkIdle(s, it); }, 200);
     };

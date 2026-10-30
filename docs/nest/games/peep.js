@@ -1,6 +1,6 @@
-// Pop-up Pals (Coco's arcade, stage C; specs/nest.md): pals peek out of holes in the park; Coco asks for one ("Find the
+// Pop-up Pals (Chacho's arcade, stage C; specs/nest.md): pals peek out of holes in the park; Chacho asks for one ("Find the
 // cat!") and the kid taps it when it pops up. A pal tapped by mistake says its name, waves and goes down: nothing is lost.
-// No clock: a pal stays up long (longer for the small ones), and the one Coco wants comes up at least every third time.
+// No clock: a pal stays up long (longer for the small ones), and the one Chacho wants comes up at least every third time.
 // Once a game the kid's own pet pops up instead (a giggle, a celebration). Loaded on demand by docs/nest/arcade.js.
 
 NK.peep = {

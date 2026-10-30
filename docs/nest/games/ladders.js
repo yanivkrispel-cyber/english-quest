@@ -1,5 +1,5 @@
-// Coco Ladders (Coco's arcade, stage D, ages 4 to 7; specs/nest.md): a board of twelve pictures in the painted park, two
-// ladders and a rainbow slide. The kid (the pet) and Coco take turns: tap the dice (1 to 3), and Coco counts every hop out
+// Chacho Ladders (Chacho's arcade, stage D, ages 4 to 7; specs/nest.md): a board of twelve pictures in the painted park, two
+// ladders and a rainbow slide. The kid (the pet) and Chacho take turns: tap the dice (1 to 3), and Chacho counts every hop out
 // loud ("One, two, three!"); the picture landed on is said. The foot of a ladder goes up ("Up, up, up the ladder!"), the top
 // of the slide goes down laughing ("Wheee!"). No snakes and nothing to lose; the first one home wins, and both endings are
 // happy. Loaded on demand by docs/nest/arcade.js.
@@ -15,7 +15,7 @@ NK.ladders = {
     nkFill(`<div class="nk-scene nkl${pl.painted ? ' painted' : ''}" style="${pl.style}">${pl.html}
       <div class="nkl-board" id="nklb">${s.squares.map((w, i) => { const [x, y] = nkLadPos(i); return `<div class="nkl-sq${i === 11 ? ' home' : ''}" style="left:${x}%;top:${y}%">${i === 11 ? `<img src="${ASSETS}nest/arcade/tent.webp?v=${NEST_V}" alt="" draggable="false">` : nestPic(w)}</div>`; }).join('')}
         <div class="nkl-tok kid" id="nkltk">${dash.pet ? petArt(dash.pet, 'happy', 'nk-petsvg') : `<img src="${petSrc('fawn', 1, 'happy')}" alt="">`}</div>
-        <img class="nkl-tok coco" id="nkltc" src="${nkPoseSrc('happy')}" alt="Coco" draggable="false"></div>
+        <img class="nkl-tok coco" id="nkltc" src="${nkPoseSrc('happy')}" alt="Chacho" draggable="false"></div>
       <button class="nkl-dice" id="nkldice" aria-label="Roll"><img src="${ASSETS}nest/arcade/dice.webp?v=${NEST_V}" alt="" draggable="false"><span class="nkl-pips" id="nklpips"></span></button>
     </div>`);
     const board = document.getElementById('nklb'), dice = document.getElementById('nkldice'), pips = document.getElementById('nklpips');

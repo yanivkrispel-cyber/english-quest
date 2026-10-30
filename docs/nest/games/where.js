@@ -1,6 +1,6 @@
-// Where's Coco? (Coco's arcade, stage D, ages 3 to 7; specs/nest.md): a painted place full of the things the kid has met.
-// Coco lost some of them ("Where is the ball?"): the kid finds each one, and it flies to him. Then Coco hides behind one of
-// the things, only his head peeking, and asks "Where is Coco? Find me!". A wrong tap: the thing says its name and wiggles.
+// Where's Chacho? (Chacho's arcade, stage D, ages 3 to 7; specs/nest.md): a painted place full of the things the kid has met.
+// Chacho lost some of them ("Where is the ball?"): the kid finds each one, and it flies to him. Then Chacho hides behind one of
+// the things, only his head peeking, and asks "Where is Chacho? Find me!". A wrong tap: the thing says its name and wiggles.
 // After a quiet while the hand shows the way and the thing shines. Loaded on demand by docs/nest/arcade.js.
 
 const NK_WHERE_SPOTS = [[14, 50], [38, 46], [62, 48], [86, 52], [24, 68], [52, 66], [80, 70], [14, 86], [40, 88], [68, 88], [90, 86]];
@@ -18,7 +18,7 @@ NK.where = {
     let tries = 0, hide = -1;
     const btn = i => app.querySelector(`.nkw-it[data-i="${i}"]`);
     const want = () => s.li < s.lost.length ? s.items.findIndex(w => w.id === s.lost[s.li].id) : hide;
-    // Coco hides behind a thing that is still there: his head peeks out above it.
+    // Chacho hides behind a thing that is still there: his head peeks out above it.
     const hideCoco = () => {
       const left = s.items.map((w, i) => i).filter(i => !btn(i).classList.contains('gone'));
       hide = nkPick(left);

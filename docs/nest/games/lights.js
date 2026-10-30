@@ -1,7 +1,7 @@
-// Lights out, Coco! (Coco's arcade, stage E, ages 2 to 7; specs/nest.md): the screen goes dark (a soft night, nothing to
-// look at) and Coco leads a game in the house by voice: "Find something red! Show it to Mommy or Daddy!", a move of the
+// Lights out, Chacho! (Chacho's arcade, stage E, ages 2 to 7; specs/nest.md): the screen goes dark (a soft night, nothing to
+// look at) and Chacho leads a game in the house by voice: "Find something red! Show it to Mommy or Daddy!", a move of the
 // units met ("Touch your nose!"), and at the end a hug. The grown-up taps the big thumb when it is done, or the small arrow to
-// skip; Coco says the next one. Then "Lights on! Great job!". Loaded on demand by docs/nest/arcade.js.
+// skip; Chacho says the next one. Then "Lights on! Great job!". Loaded on demand by docs/nest/arcade.js.
 
 NK.lights = {
   say: s => nkLightKeys(s.tasks[s.ti || 0]), intro: ['en-lightsout'],
@@ -45,7 +45,7 @@ NK.lights = {
     nestPlay(nestPrompt(s, opening).slice(0, -nkLightKeys(s.tasks[0]).length), ask);
   }
 };
-// What Coco says for a task: a "find" line and "Show it!", a move (m-<id>), or the hug at the end.
+// What Chacho says for a task: a "find" line and "Show it!", a move (m-<id>), or the hug at the end.
 const nkLightKeys = t => t.find ? ['en-' + t.find, 'en-showme'] : t.move ? ['m-' + t.move] : ['en-hug'];
 
 (function nkLightsStyle(){

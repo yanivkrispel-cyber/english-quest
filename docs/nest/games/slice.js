@@ -1,5 +1,5 @@
-// Coco Slice (Coco's arcade, stage C, ages 4 to 7; specs/nest.md): fruit the kid has met is thrown up from the bottom in
-// soft arcs; Coco says which one to slice ("Slice it! Banana!"). A swipe (or a tap) through the right fruit cuts it in two
+// Chacho Slice (Chacho's arcade, stage C, ages 4 to 7; specs/nest.md): fruit the kid has met is thrown up from the bottom in
+// soft arcs; Chacho says which one to slice ("Slice it! Banana!"). A swipe (or a tap) through the right fruit cuts it in two
 // halves with a splash, and the kid's pet in the dock eats a piece. The wrong fruit bounces off and giggles; a fruit that
 // falls is just thrown again: nothing is lost, and after a miss the throws get slower. Three of each fruit, three fruits.
 // Once a game a big watermelon needs three cuts. Loaded on demand by docs/nest/arcade.js.
@@ -108,7 +108,7 @@ NK.slice = {
         if (f.x < f.sz / 2 || f.x > W() - f.sz / 2) f.vx = -f.vx;
         if (f.y > H() + f.sz && f.vy > 0) { f.el.remove(); fr.splice(i, 1); continue; }
         f.el.style.transform = `translate(${f.x - f.sz / 2}px,${f.y - f.sz / 2}px) rotate(${f.r}deg)`;
-        // The demo: Coco's hand cuts the first right fruit at the top of its arc.
+        // The demo: Chacho's hand cuts the first right fruit at the top of its arc.
         if (!demoDone && f.w.id === target().id && f.vy > -40 && f.vy < 60 && !f.big) {
           demoDone = true; paused = true; const keep = f;
           nkHandTap(f.el, () => { cut(keep, true); NE.locked = false; nestPlay(['en-turn'], () => { if (nkLive(s)) paused = false; }); });

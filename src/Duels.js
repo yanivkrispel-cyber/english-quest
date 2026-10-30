@@ -272,7 +272,7 @@ function duelGroupOpen(id) {
   return !(g && String(g.Friends || '').trim().toLowerCase() === 'no');
 }
 function duelCanMeet(a, b) {
-  // Coco's Nest kids (ages 2 to 7) play alone: they never show up in Play together or duo lists.
+  // Chacho's Nest kids (ages 2 to 7) play alone: they never show up in Play together or duo lists.
   if (isNest(a) || isNest(b)) return false;
   return groupOf(a) === groupOf(b) || (duelGroupOpen(groupOf(a)) && duelGroupOpen(groupOf(b)));
 }

@@ -6,7 +6,7 @@ animation choice below. Phase 1 is `specs/perf-phase1.md`.
 
 ## What was wrong
 
-- **Coco's Nest, a spinner forever.** A remembered Nest kid's saved dashboard was drawn as a spinner while the five Nest
+- **Chacho's Nest, a spinner forever.** A remembered Nest kid's saved dashboard was drawn as a spinner while the five Nest
   files loaded one after another, and the dashboard was refreshed from the server at the same time. When the server
   answered first, `dash` became a new object; the loader then checked `dash === d`, found it false and drew nothing, and
   the refresh drew nothing either (no dashboard on screen). Every `NEST_V` change (three on 2026-10-28) made phones load
@@ -21,7 +21,7 @@ animation choice below. Phase 1 is `specs/perf-phase1.md`.
 
 - **The wait screen** (`loading()`, `WAIT_HTML`, `waitArm()`): the spinner with "Getting your day ready…", and after 10 s
   "This is taking longer than usual." with Try again (reloads). The page starts with it, and the Nest's loading uses it.
-- **Coco's Nest**: when its files are in, the dashboard on screen now (`dash`) is drawn if the wait screen (`#nkwait`) is
+- **Chacho's Nest**: when its files are in, the dashboard on screen now (`dash`) is drawn if the wait screen (`#nkwait`) is
   still up; a background refresh during the wait draws again (`onDashboard` counts `#nkwait`). The five files download
   side by side and run in order (`async = false`), each with 15 s.
 - **The silent sign-in** (a remembered kid or parent without a saved screen) gives up after 12 s in all (`callBy`) and
