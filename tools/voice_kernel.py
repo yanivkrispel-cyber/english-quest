@@ -75,30 +75,58 @@ def worker(gpu, n):
     from faster_whisper import WhisperModel
     data = find_data()
     lines = json.load(open(os.path.join(data, 'lines.json'), encoding='utf-8'))
-    mine = [c for i, c in enumerate(lines) if i % PARTS == PART][gpu::n]
+    mine = [c for c in lines if c.get('part', 0) == PART][gpu::n]
     tts = ChatterboxTTS.from_pretrained(device='cuda')
     asr = WhisperModel('small.en', device='cuda', compute_type='float16')
     out = open(os.path.join(W, 'results-%d-%d.jsonl' % (PART, gpu)), 'a', encoding='utf-8')
     os.makedirs(os.path.join(W, 'out'), exist_ok=True)
     pad = np.zeros(int(16000 * PAD), 'float32')
+
+    def listen(wav):
+        pcm = ta.functional.resample(wav.cpu(), tts.sr, 16000)[0].numpy().astype('float32')
+        segs, _ = asr.transcribe(np.concatenate([pad, pcm, pad]), language='en', word_timestamps=True, beam_size=5)
+        segs = list(segs)
+        return (' '.join(s.text.strip() for s in segs),
+                [[w.word.strip(), round(w.start - PAD, 3), round(w.end - PAD, 3)] for s in segs for w in (s.words or [])])
+
+    def cut_lead(wav, ws):
+        """Drops the lead-in ("Okay.") at the quietest 20 ms between it and the first word of the line."""
+        if len(ws) < 2:
+            return None
+        a, b = max(0.0, ws[0][2] - 0.05), ws[1][1] + 0.06
+        x = wav[0].cpu().numpy()
+        hop = int(tts.sr * 0.02)
+        lo, hi = int(a * tts.sr), min(len(x) - hop, int(b * tts.sr))
+        if hi <= lo:
+            return None
+        frames = [(float(np.sqrt(np.mean(x[i:i + hop] ** 2))), i) for i in range(lo, hi, hop // 2)]
+        at = min(frames)[1] + hop // 2
+        return wav[:, at:]
+
     for k, c in enumerate(mine):
         t0, best = time.time(), None
         short = len(c['text'].split()) <= 2
+        lead = c.get('lead', '')
         for take in range(5 if short else 3):
-            torch.manual_seed(1000 + take)
-            wav = tts.generate(c['say'], audio_prompt_path=os.path.join(data, 'ref-' + c['ref'] + '.wav'),
+            torch.manual_seed(c.get('seed', 1000) + take)
+            wav = tts.generate(lead + c['say'], audio_prompt_path=os.path.join(data, 'ref-' + c['ref'] + '.wav'),
                                exaggeration=c['ex'], cfg_weight=c['cfg'])
-            pcm = ta.functional.resample(wav.cpu(), tts.sr, 16000)[0].numpy().astype('float32')
-            segs, _ = asr.transcribe(np.concatenate([pad, pcm, pad]), language='en', word_timestamps=True, beam_size=5)
-            segs = list(segs)
-            heard = ' '.join(s.text.strip() for s in segs)
-            ws = [[w.word.strip(), round(w.start - PAD, 3), round(w.end - PAD, 3)] for s in segs for w in (s.words or [])]
+            heard, ws = listen(wav)
+            if lead:
+                # Very short lines lose their first sound (pen -> hen); said after a lead-in they come out whole.
+                cut = cut_lead(wav, ws)
+                if cut is None:
+                    continue
+                wav = cut
+                heard, ws = listen(wav)
             sc = score(c['text'], heard)
             if best is None or sc > best['score']:
                 best = {'score': round(sc, 3), 'heard': heard, 'words': ws, 'take': take, 'dur': round(wav.shape[-1] / tts.sr, 2)}
                 ta.save(os.path.join(W, 'out', '%d.flac' % c['n']), wav.cpu(), tts.sr, format='flac')
             if sc >= 0.97:
                 break
+        if best is None:
+            best = {'score': 0, 'heard': '', 'words': [], 'take': -1, 'dur': 0}
         best.update({'n': c['n'], 'secs': round(time.time() - t0, 1)})
         out.write(json.dumps(best, ensure_ascii=False) + '\n')
         out.flush()

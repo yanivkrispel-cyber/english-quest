@@ -5,6 +5,8 @@
     python tools/voice.py --finish   finishes the parts already downloaded (after a stop), records nothing
     python tools/voice.py --dry      prints what would be recorded
     python tools/voice.py --sample   records a few lines of each kind (a quick check of the whole chain)
+    python tools/voice.py --redo     records the lines of the last review.json again (other takes; a file is replaced
+                                     only when the new take scores better)
     python tools/voice.py refs       makes the radio voices' reference clips again (tools/voice-refs, from Kokoro)
 
 The lines come from tools/voice-list.js. Each is cloned from a reference clip in tools/voice-refs (coco.flac is the
@@ -40,6 +42,7 @@ PACE = {'nest-word': 0.85, 'nest-find': 0.9, 'nest-en': 0.94, 'word': 0.95, 'lis
 GAP = 0.38  # seconds between the lines of a radio part
 # Titles the voice would spell out: said in full (the text on screen keeps them).
 SAY = [(r'\bMrs\b\.?', 'Missus'), (r'\bMr\b\.?', 'Mister'), (r'\bMs\b\.?', 'Miz'), (r'\bDr\b\.?', 'Doctor')]
+LEAD = 'Okay. '
 REF_TEXT = ("Hi there! I love learning new words with you. Let's play a game today, okay? "
             "You are doing a really great job, and I'm so proud of you.")
 
@@ -57,6 +60,9 @@ def lines():
         c['say'] = say(c['text'])
         c['ex'], c['cfg'] = EX[c['kind']]
         c['hash'] = hashlib.sha1(json.dumps([c['say'], c['ref'], c['ex'], c['cfg'], pace(c), V]).encode('utf-8')).hexdigest()[:16]
+        # One or two words lose their first sound when said alone (pen -> hen): Chatterbox says them after a lead-in,
+        # which the kernel cuts off. Not part of the hash, so the lines recorded before it stay.
+        c['lead'] = LEAD if len(c['text'].split()) <= 2 else ''
     return out
 
 
@@ -117,7 +123,8 @@ def upload(todo):
     for v in sorted({c['ref'] for c in todo}):
         y, r = sf.read(os.path.join(REFS, v + '.flac'))
         sf.write(os.path.join(data, 'ref-' + v + '.wav'), y, r)
-    json.dump([{k: c[k] for k in ('n', 'part', 'id', 'hash', 'kind', 'level', 'say', 'text', 'ref', 'ex', 'cfg')} for c in todo],
+    json.dump([{k: c[k] for k in ('n', 'part', 'id', 'hash', 'kind', 'level', 'say', 'text', 'ref', 'ex', 'cfg', 'lead', 'seed', 'old')
+               if k in c} for c in todo],
               open(os.path.join(data, 'lines.json'), 'w', encoding='utf-8'), ensure_ascii=False)
     json.dump({'title': 'coco-voice-data', 'id': DATASET, 'licenses': [{'name': 'other'}]},
               open(os.path.join(data, 'dataset-metadata.json'), 'w'))
@@ -218,6 +225,9 @@ def finish(out, by_n, st, review):
     for r in res:
         c = by_n[r['n']]
         f = os.path.join(out, 'out', '%d.flac' % r['n'])
+        if 'old' in c and r['score'] <= c['old']['score']:
+            review.append(c['old'])  # a redo that did no better: the file stays as it was
+            continue
         if r['score'] < 0.9:
             review.append({'id': c['id'], 'text': c['text'], 'heard': r['heard'], 'score': r['score']})
         if r['score'] < 0.5 or not os.path.exists(f):
@@ -277,6 +287,13 @@ def main():
         c['n'] = n
     st = load_state()
     todo = [c for c in all_lines if '--all' in sys.argv or not done(c, st)]
+    if '--redo' in sys.argv:
+        old = {x['id']: x for x in json.load(open(os.path.join(WORK, 'review.json'), encoding='utf-8'))}
+        todo = [c for c in all_lines if c['id'] in old]
+        for c in todo:
+            c['old'], c['seed'] = old[c['id']], 5000
+            if len(c['text'].split()) <= 3:
+                c['lead'] = LEAD
     if '--sample' in sys.argv:  # a quick end-to-end check: four lines of each kind, and one whole radio part
         g0 = next(group(c) for c in todo if c['kind'] == 'radio')
         todo = [c for k in EX for c in [c for c in todo if c['kind'] == k and c['kind'] != 'radio'][:4]] + [c for c in todo if group(c) == g0]
