@@ -351,6 +351,10 @@ html:has(.nkh),html:has(.nkh) body{height:100%;overflow:hidden;overscroll-behavi
 .nkh-crack{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .nkh-crack path{fill:none;stroke:#7a4a26;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
 .nkh-egg.open .nkh-in{animation:nkh-crackle .8s ease-in-out}
+.nkh-egg.call .nkh-in{animation:nkh-tentcall .7s ease-in-out 3}
+.nkh-egg.call .nkh-glow{animation:nkh-halo .6s ease-in-out 4}
+.nkh-egg.nk-lead{box-shadow:none!important}
+.nkh-egg.nk-lead .nkh-glow{animation:nkh-halo .8s ease-in-out infinite}
 .nkh-egg.open .nkh-crack path{animation:nkh-draw .4s .3s ease-out forwards}
 .nkh-visitor{left:calc(40% + var(--s) * 28);bottom:14%;width:calc(var(--s) * 24);min-width:88px;z-index:4}
 .nkh-garden{position:absolute;left:2%;width:96%;bottom:env(safe-area-inset-bottom);height:15%;z-index:5;pointer-events:none}
@@ -7758,9 +7762,9 @@ function dataCard(){
 }
 const DATA = { table: 'Girls', open: '', q: '' };
 const DATA_LABEL = { ParentPIN: 'Parent code', GoalReward: 'Goal reward', PetName: 'Pet name', Redeemed: 'Redeemed points', Missions: 'Daily task',
-  Friends: 'Play with other families', NestPerDay: 'Nest sessions a day', NestArcadeMin: 'Arcade minutes a day', Group: 'Family' };
+  Friends: 'Play with other families', NestPerDay: 'Nest sessions a day', NestArcadeMin: 'Arcade minutes a day', NestHebrew: 'Nest Hebrew guidance', Group: 'Family' };
 const DATA_TABLES = { Girls: 'Kids', Groups: 'Families', Settings: 'Settings' };
-const DATA_HINT = { Missions: 'empty = Today\'s Mission, no = test-english.com', Friends: 'empty = plays with other families, no = only its own',
+const DATA_HINT = { NestHebrew: 'empty = auto (up to age 5), on = always, off', Missions: 'empty = Today\'s Mission, no = test-english.com', Friends: 'empty = plays with other families, no = only its own',
   Redeemed: 'points spent on rewards' };
 async function dataLoad(pin){
   const card = document.getElementById('datacard');
@@ -7900,7 +7904,7 @@ function auditRender(pin){
 // Listening and pictures only, and only Chacho's English (no Hebrew voice): he shows each game first. No reading, timers
 // or fail screens, and the pet is the only reward. Content: docs/nest/nest.js (EQ_NEST); the session engine and its
 // games: docs/nest/play.js; recordings: docs/nest/audio (tools/nest_audio.py).
-const NEST_V = 19, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
+const NEST_V = 20, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
 let NE = null, nestLoading = null, nestAudioEl = null, nestQueue = null, nestMic = null;
 function loadNest(){
   if (window.EQ_NEST && typeof NK === 'object' && typeof nkActorOn === 'function' && typeof nkHome === 'function' && typeof nkEchoStart === 'function' && typeof nkStickers === 'function' && typeof nkArcade === 'function') return Promise.resolve(window.EQ_NEST);
@@ -7942,7 +7946,8 @@ function nestPhrasePic(u){
 
 // ---- Sound: one audio element for the whole session, unlocked by the first tap, so iPhones keep playing ----
 // x-<word>: a real animal or thing sound (docs/nest/sounds, tools/nest_sounds.py); everything else is Chacho.
-const nestClip = key => ASSETS + (key.startsWith('x-') ? 'nest/sounds/' + key.slice(2) : 'nest/audio/' + key) + '.mp3?v=' + NEST_V;
+// h-<key>: Chacho's Hebrew guidance (docs/nest/he, package B): instructions only; the phone's voice never reads them.
+const nestClip = key => ASSETS + (key.startsWith('x-') ? 'nest/sounds/' + key.slice(2) : key.startsWith('h-') ? 'nest/he/' + key.slice(2) : 'nest/audio/' + key) + '.mp3?v=' + NEST_V;
 // The text behind a clip, for the phone's own voice when a recording does not play (English only).
 function nestText(key){
   const N = window.EQ_NEST || {}, id = key.slice(2), w = (N.units || []).reduce((f, u) => f || (u.words || []).find(x => x.id === id), null);
@@ -8199,6 +8204,14 @@ function nestPerDayRow(g){
     <span class="sub" style="margin:0;font-size:13px">שיעורים ביום:</span>
     ${[[1, 'אחד'], [2, 'שניים'], [3, 'שלושה'], [0, 'בלי הגבלה']].map(([n, l]) => `<button class="btn btn-sm ${v === n ? 'btn-primary' : 'btn-glass'}" data-perday="${n}" data-perkid="${esc(g.girl.name)}">${l}</button>`).join('')}</div>`;
 }
+// Chacho's Hebrew guidance (Girls.NestHebrew): auto (up to age 5, while a game is new and when the kid is stuck), always, off.
+function nestHebrewRow(g){
+  if (!g.nest) return '';
+  const v = g.nest.hebrew || '';
+  return `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:6px;flex-wrap:wrap;align-items:center">
+    <span class="sub" style="margin:0;font-size:13px">הסבר בעברית:</span>
+    ${[['', g.nest.age <= 5 ? 'אוטומטי (פועל)' : 'אוטומטי (כבוי)'], ['on', 'תמיד'], ['off', 'כבוי']].map(([n, l]) => `<button class="btn btn-sm ${v === n ? 'btn-primary' : 'btn-glass'}" data-nkheb="${n}" data-nkhebkid="${esc(g.girl.name)}">${l}</button>`).join('')}</div>`;
+}
 // Chacho's arcade: minutes a day (Girls.NestArcadeMin; 15 when empty, 0 = no limit), for the kids who have the arcade.
 function nestArcadeRow(g){
   if (!g.nest || !g.nest.arcade) return '';
@@ -8208,6 +8221,11 @@ function nestArcadeRow(g){
     ${[[10, 'עשר דקות'], [15, 'רבע שעה'], [30, 'חצי שעה'], [0, 'בלי הגבלה']].map(([n, l]) => `<button class="btn btn-sm ${v === n ? 'btn-primary' : 'btn-glass'}" data-arcmin="${n}" data-arckid="${esc(g.girl.name)}">${l}</button>`).join('')}</div>`;
 }
 function bindAgeRows(p, pin){
+  app.querySelectorAll('[data-nkheb]').forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try { renderParent(await call('apiParentNestHebrew', pin, b.dataset.nkhebkid, b.dataset.nkheb), pin); toast(b.dataset.nkhebkid + ': ' + b.textContent.trim()); }
+    catch(err){ toast(err.message, true); b.disabled = false; }
+  });
   app.querySelectorAll('[data-arcmin]').forEach(b => b.onclick = async () => {
     b.disabled = true;
     try { renderParent(await call('apiParentNestArcade', pin, b.dataset.arckid, Number(b.dataset.arcmin)), pin); toast(b.dataset.arckid + ': ' + b.textContent.trim()); }
@@ -9346,7 +9364,7 @@ function girlCard(g, isAdmin, grp){
     ${placementLine(g)}
     ${nestParentCard(g)}
     ${ageRow(g)}
-    ${nestPerDayRow(g)}${nestArcadeRow(g)}
+    ${nestPerDayRow(g)}${nestArcadeRow(g)}${nestHebrewRow(g)}
     ${!isAdmin && g.pin && grp ? `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:8px;flex-wrap:wrap">
       <a class="btn btn-teal btn-sm" href="${esc(waLink(kidInvite(grp.link, { name: g.girl.name, pin: g.pin, nest: !!g.nest })))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} שליחת הקישור האישי</a>
       <button class="btn btn-glass btn-sm" data-kidhere="${esc(g.girl.name)}" data-kidpin="${esc(g.pin)}" data-kidgroup="${esc(grp.id)}">${icon('device-mobile')} משחק בטלפון הזה</button>

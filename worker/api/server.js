@@ -362,7 +362,7 @@ var CATALOG = {"grammar":{"a1":[{"t":"Present simple forms of 'to be': am/is/are
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v23';
+var SETUP_VERSION = 'v24';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 // The kids' front end (Cloudflare, docs/). Until 2026-10 it was https://yanivkrispel-cyber.github.io/english-quest/.
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
@@ -407,7 +407,7 @@ var WORLDS = { a1: 'Sunny Meadow', a2: 'Whisper Woods', b1: 'Crystal Caves', 'b1
 // The sheet tab for kids is still called "Girls" (it predates groups).
 var HEADERS = {
   // Missions: "no" keeps her daily task on test-english.com (the old link); empty = Today's Mission in the app.
-  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince', 'Missions', 'NestPerDay', 'NestArcadeMin'],
+  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince', 'Missions', 'NestPerDay', 'NestArcadeMin', 'NestHebrew'],
   Games: ['Timestamp', 'Girl', 'Date', 'Game', 'Level', 'Correct', 'Total', 'XP', 'Missed'],
   Review: ['Girl', 'Items'],
   Gates: ['Timestamp', 'Girl', 'Date', 'From', 'To', 'Correct', 'Total', 'Passed', 'Tasks', 'XP'],
@@ -503,7 +503,7 @@ function api() {
   apiMissionResult: apiMissionResult, apiFlag: apiFlag,
   apiJoinCheck: apiJoinCheck, apiJoin: apiJoin, apiPlacement: apiPlacement, apiFeedback: apiFeedback,
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
-  apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade,
+  apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade, apiParentNestHebrew: apiParentNestHebrew,
   apiCfExport: apiCfExport, apiCfMode: apiCfMode, apiAdminData: apiAdminData, apiAdminEdit: apiAdminEdit,
   apiDeleteData: apiDeleteData, apiExportData: apiExportData
   };
@@ -4730,6 +4730,8 @@ function nestInfo(kid, t, assigned, logs) {
     perDay: perDay,
     // Minutes a day in Chacho's arcade (the parent sets it; 0 = no limit). The phone counts the minutes.
     arcadeMin: nestArcadeMin(kid),
+    // Chacho's Hebrew guidance (the parent's switch): '' = auto (on up to age 5), 'on' = always, 'off'.
+    hebrew: nestHebrew(kid),
     // One more lesson: once the day's own is done, the next day of the program while the parent's daily number allows.
     next: done && (!perDay || today < perDay) ? String(nestNext(kid, logs).url).slice(5) : null
   };
@@ -4772,6 +4774,25 @@ function apiParentNestArcade(pin, name, n) {
   if (!(n >= 0 && n <= 60)) throw new Error('בחרו כמה דקות ביום');
   setGirlFields(kid.Name, { NestArcadeMin: n });
   audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest arcade minutes', kid.Name + ': ' + (n || 'no limit'));
+  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
+}
+
+// Chacho's Hebrew guidance in the Nest (Girls.NestHebrew, set by the parent; package B, owner 2026-10-31): empty = auto (on up
+// to age 5, the first plays of a game and when the kid is stuck), 'on' = always, 'off'. Only instructions, never translations.
+function nestHebrew(kid) {
+  var v = String(kid.NestHebrew == null ? '' : kid.NestHebrew).trim().toLowerCase();
+  return v === 'on' || v === 'off' ? v : '';
+}
+
+function apiParentNestHebrew(pin, name, v) {
+  ensureSetup();
+  var access = parentAccess(pin);
+  var kid = findGirl(name);
+  if (!kid || !isNest(kid) || (!access.isAdmin && groupOf(kid) !== String(access.group.Id))) throw new Error('Unknown kid');
+  v = String(v == null ? '' : v).trim().toLowerCase();
+  if (['', 'on', 'off'].indexOf(v) < 0) throw new Error('בחרו מתי צ׳אצ׳ו מסביר בעברית');
+  setGirlFields(kid.Name, { NestHebrew: v });
+  audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest hebrew guidance', kid.Name + ': ' + (v || 'auto'));
   return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
 }
 
@@ -5066,7 +5087,7 @@ function cfWriteSheets(data) {
 // a nightly copy, so these edits happen here. Admin PIN only; every change goes to the audit trail (PINs masked).
 
 var EDIT = {
-  Girls: { key: 'Name', fields: ['PIN', 'Level', 'Age', 'Group', 'Email', 'Redeemed', 'Missions', 'PetName', 'NestPerDay', 'NestArcadeMin'] },
+  Girls: { key: 'Name', fields: ['PIN', 'Level', 'Age', 'Group', 'Email', 'Redeemed', 'Missions', 'PetName', 'NestPerDay', 'NestArcadeMin', 'NestHebrew'] },
   Groups: { key: 'Id', fields: ['Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email', 'Friends'] },
   Settings: { key: 'Key', fields: ['Value'] }
 };

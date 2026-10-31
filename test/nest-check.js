@@ -149,8 +149,7 @@ function check(opts) {
   if (!Array.isArray(rv) || !rv.length) err('parent', 'needs review ideas');
   else rv.forEach((t, k) => homeLine('parent review ' + (k + 1), t));
 
-  // The kid hears only Chacho's English (owner, 2026-10-27): no Hebrew lines to record.
-  if (nest.he) err('he', 'the Nest has no Hebrew voice any more: remove the he lines');
+  // The kid hears Chacho's English; since 2026-10-31 (package B) Chacho also says in Hebrew how to play (nest.he, checked below).
   EN_KEYS.forEach(k => { if (!((nest.en || {})[k] || '').trim()) err('en', 'missing line ' + k); });
   Object.keys(nest.en || {}).forEach(k => english('en.' + k, nest.en[k], 7));
   ok.push(Object.keys(nest.en || {}).length + ' English lines');
@@ -259,6 +258,20 @@ function check(opts) {
       const code = fs.readFileSync(path.join(ROOT, 'docs/nest', file), 'utf8');
       for (const m of code.matchAll(/'en-([a-z]+)'/g)) if (!(nest.en || {})[m[1]]) err('docs/nest/' + file, 'Chacho has no line en-' + m[1] + ' in nest.en');
     });
+    // Chacho's Hebrew guidance (package B): every h-<key> and he: '<key>' the code says has its line in nest.he, every game
+    // of the lesson (but the phrase, part of Meet) and of the arcade has one, and every line has its recording.
+    const he = nest.he || {};
+    ['play.js', 'home.js', 'arcade.js'].concat(arcGames.map(f => 'games/' + f)).forEach(file => {
+      const code = fs.readFileSync(path.join(ROOT, 'docs/nest', file), 'utf8');
+      for (const m of code.matchAll(/'h-([a-z0-9-]+)'|\bhe: '([a-z0-9-]+)'/g)) if (!he[m[1] || m[2]]) err('docs/nest/' + file, 'Chacho has no Hebrew line ' + (m[1] || m[2]) + ' in nest.he');
+    });
+    GAMES.filter(g => g !== 'phrase' && g !== 'done').concat((list ? eval(list) : []).map(x => x[0])).forEach(g => { if (!he[g]) err('nest.he', 'no Hebrew instruction for the game ' + g); });
+    if (!he.peek2) err('nest.he', 'no peek2 (Peekaboo from age 4)');
+    Object.entries(he).forEach(([k, v]) => {
+      if (!/[\u05d0-\u05ea]/.test(v) || /[a-z]/i.test(v)) err('nest.he ' + k, 'a Hebrew line without English in it');
+      if (opts.files && !fs.existsSync(path.join(ROOT, 'docs/nest/he', k + '.mp3'))) err('nest.he ' + k, 'no recording docs/nest/he/' + k + '.mp3');
+    });
+    ok.push('nest.he: ' + Object.keys(he).length + ' Hebrew lines');
     // Every game the day plans has its activity in play.js.
     GAMES.forEach(g => { if (!new RegExp('^NK\\.' + g + ' = ', 'm').test(play)) err('docs/nest/play.js', 'no activity NK.' + g); });
     ok.push('docs/nest/*.js: ' + seen.size + ' names, none shared with the app or each other');

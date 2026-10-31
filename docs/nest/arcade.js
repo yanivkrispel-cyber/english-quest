@@ -169,7 +169,7 @@ function nkArcade(){
     </div>
     <div class="nka-shelf ${tab}${asleep ? ' asleep' : ''}${tab === 'coco' && coco.length > 6 ? ' many' : ''}">${cards}</div>
   </div>`;
-  document.getElementById('nkaback').onclick = () => { nestStopAudio(); renderDash(); };
+  document.getElementById('nkaback').onclick = () => { nkLadderStop(); nestStopAudio(); renderDash(); };
   app.querySelectorAll('[data-nkatab]').forEach(b => b.onclick = () => { NKR.tab = b.dataset.nkatab; nkSfx('flip'); nkArcade(); });
   app.querySelectorAll('[data-nka]').forEach(b => b.onclick = () => {
     if (asleep) { nkMove(document.getElementById('nkacoco'), 'giggle'); nestPlay(['en-sleepy']); return; }
@@ -179,7 +179,13 @@ function nkArcade(){
   const c = document.getElementById('nkacoco');
   c.onclick = () => { nkMove(c, asleep ? 'giggle' : 'spin'); if (!asleep) nkSfx('boing'); };
   if (!nkCalm()) app.querySelectorAll('.nka-card').forEach((b, i) => b.animate([{ opacity: 0, transform: 'translateY(24px) scale(.9)' }, { opacity: 1, transform: 'none' }], { duration: 420, delay: 60 * i, easing: 'cubic-bezier(.2,1.4,.4,1)', fill: 'backwards' }));
-  nestPlay([asleep ? 'en-sleepy' : tab === 'coco' ? 'en-arcade' : 'en-hi']);
+  // Package B: the first visits Chacho says in Hebrew how the shelf works (once an open of the app), and the help ladder
+  // points at a game when nothing is touched.
+  const he = !asleep && !NKR.heSaid && nkHeFull('_shelf');
+  if (he) { NKR.heSaid = true; nkSeenAdd('_shelf'); }
+  nestPlay((he ? ['h-games'] : []).concat([asleep ? 'en-sleepy' : tab === 'coco' ? 'en-arcade' : 'en-hi']));
+  const root = document.getElementById('nka');
+  if (!asleep) nkLadder({ live: () => document.getElementById('nka') === root, target: () => root.querySelector('.nka-card'), en: [tab === 'coco' ? 'en-arcade' : 'en-hi'], he: 'games' });
 }
 
 // ---------- Look (the design tokens of src/Index.html: glass cards, the primary pill, clay art) ----------

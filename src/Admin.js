@@ -3,7 +3,7 @@
 // a nightly copy, so these edits happen here. Admin PIN only; every change goes to the audit trail (PINs masked).
 
 var EDIT = {
-  Girls: { key: 'Name', fields: ['PIN', 'Level', 'Age', 'Group', 'Email', 'Redeemed', 'Missions', 'PetName', 'NestPerDay', 'NestArcadeMin'] },
+  Girls: { key: 'Name', fields: ['PIN', 'Level', 'Age', 'Group', 'Email', 'Redeemed', 'Missions', 'PetName', 'NestPerDay', 'NestArcadeMin', 'NestHebrew'] },
   Groups: { key: 'Id', fields: ['Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email', 'Friends'] },
   Settings: { key: 'Key', fields: ['Value'] }
 };

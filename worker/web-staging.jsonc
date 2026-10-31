@@ -6,7 +6,7 @@
   "name": "coco-web-staging",
   "compatibility_date": "2026-10-23",
   "main": "range.js",
-  "assets": { "directory": "../docs", "binding": "ASSETS", "run_worker_first": ["/api", "/missions/audio/*", "/talk/audio/*", "/nest/audio/*", "/nest/sounds/*", "/say/*"] },
+  "assets": { "directory": "../docs", "binding": "ASSETS", "run_worker_first": ["/api", "/missions/audio/*", "/talk/audio/*", "/nest/audio/*", "/nest/sounds/*", "/nest/he/*", "/say/*"] },
   "durable_objects": { "bindings": [{ "name": "COCO", "class_name": "CocoServer", "script_name": "coco-api-staging" }] },
   "vars": { "LOCATION_HINT": "eeur" },
   "workers_dev": true

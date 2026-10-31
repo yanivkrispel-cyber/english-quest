@@ -85,7 +85,9 @@ drawn on the phone from the parents' view data and leaves the phone only when a 
 parents' area (behind the parents' code); nothing new is stored on the server. Chacho's arcade (stage C) keeps today's date and the
 seconds played on the phone (`eq_nest_arc_<kid>`), and the server keeps one number the parent sets, the arcade minutes a day
 (`Girls.NestArcadeMin`). Talking Chacho and No, Chacho! use the microphone as the living home does: in memory for one replay, or
-loudness only; nothing is kept or sent.
+loudness only; nothing is kept or sent. Chacho's Hebrew guidance (package B, 2026-10-31) adds one choice the parent sets on the
+server (`Girls.NestHebrew`: empty = auto, on, off) and, on the phone, how many lessons were started and how many times the
+games shelf was opened (in `eq_nest_seen_<kid>`, with the games' counts); the help ladder only watches for touches and keeps nothing.
 
 ## Known gaps before a store submission
 
