@@ -31,8 +31,8 @@
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
 <style>
 :root{
-  --ink:#1c1e2b; --muted:#6b7083; --faint:#9aa0b2;
-  --primary:#6366f1; --primary-2:#8b8ffb; --teal:#3cc7b6; --teal-2:#b9f5ec; --orange:#f6a04d;
+  --ink:#1c1e2b; --muted:#4b5064; --faint:#555a6e;
+  --primary:#5558e0; --primary-2:#6b6ff0; --teal:#3cc7b6; --teal-2:#b9f5ec; --orange:#f6a04d;
   --danger:#e8687a;
   --glass:linear-gradient(140deg,rgba(255,255,255,.52),rgba(255,255,255,.2));
   --glass-soft:linear-gradient(140deg,rgba(255,255,255,.42),rgba(255,255,255,.14));
@@ -394,7 +394,7 @@ html:has(.nkh),html:has(.nkh) body{height:100%;overflow:hidden;overscroll-behavi
 h1{font-size:30px;font-weight:800;letter-spacing:-.6px;margin:0}
 h2{font-size:18px;font-weight:700;margin:0}
 .sub{color:var(--muted);font-size:15px;margin-top:4px}
-.label{font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
+.label{font-size:13px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
 .row-flex{display:flex;align-items:center;gap:12px}
 .between{justify-content:space-between}
 .stack{display:flex;flex-direction:column;gap:14px}
@@ -480,7 +480,7 @@ h2{font-size:18px;font-weight:700;margin:0}
 .ring-wrap svg{position:absolute;inset:0;transform:rotate(-90deg)}
 .ring-center{width:92px;height:92px;border-radius:30px;display:grid;place-items:center;text-align:center}
 .ring-num{font-size:26px;font-weight:800;line-height:1}
-.ring-cap{font-size:11px;color:var(--muted);font-weight:700;margin-top:3px}
+.ring-cap{font-size:13px;color:var(--muted);font-weight:700;margin-top:3px}
 .stat{padding:10px 14px;display:flex;align-items:center;gap:10px}
 .stat b{font-size:20px}
 .stat span{color:var(--muted);font-size:13px;font-weight:600}
@@ -496,7 +496,7 @@ h2{font-size:18px;font-weight:700;margin:0}
 .box{width:32px;height:32px;border-radius:10px;flex:none;display:grid;place-items:center;background:rgba(255,255,255,.75);
   border:1px solid rgba(255,255,255,.95);box-shadow:inset 0 1px 2px rgba(0,0,0,.06)}
 .task-main{flex:1;min-width:0}
-.task-top{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.3px}
+.task-top{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.3px}
 .task-title{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .task.future{opacity:.5}
 .task.missed .task-title{color:var(--muted)}
@@ -524,7 +524,7 @@ h2{font-size:18px;font-weight:700;margin:0}
 
 /* Parent */
 .strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:14px}
-.cell{border-radius:14px;padding:8px 0 6px;text-align:center;font-size:11px;font-weight:700;color:var(--muted);background:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.7)}
+.cell{border-radius:14px;padding:8px 0 6px;text-align:center;font-size:13px;font-weight:700;color:var(--muted);background:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.7)}
 .cell .v{font-size:13px;margin-top:4px;color:var(--ink);height:18px}
 .cell.done{background:linear-gradient(180deg,rgba(139,143,251,.9),rgba(99,102,241,.9));color:rgba(255,255,255,.85)}
 .cell.done .v{color:#fff}
@@ -578,7 +578,7 @@ a{color:inherit}
 .pet-name{font-size:21px;font-weight:800;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bubble{position:relative;margin-top:8px;padding:9px 12px;border-radius:16px;background:rgba(255,255,255,.78);font-size:13.5px;font-weight:600;color:#3b3f55;line-height:1.35;border:1px solid rgba(255,255,255,.95)}
 .bubble::before{content:'';position:absolute;left:-7px;top:14px;border:7px solid transparent;border-right-color:rgba(255,255,255,.85);border-left:0}
-.xp-row{display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:700;color:var(--muted);margin-top:6px}
+.xp-row{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:700;color:var(--muted);margin-top:6px}
 .pet-face{width:50px;height:50px;border-radius:50%;flex:none;display:flex;justify-content:center;align-items:flex-start;overflow:hidden;
   background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.95);box-shadow:0 10px 20px -10px rgba(38,40,80,.35)}
 .pet-face img{width:94px;height:94px;max-width:none;flex:none;object-fit:contain;margin-top:-1px}
@@ -588,7 +588,7 @@ a{color:inherit}
 .pick b{display:block;font-size:16px;margin-top:4px}
 .pick.sel{border-color:var(--primary);box-shadow:0 0 0 4px rgba(99,102,241,.18),var(--shadow)}
 .evo{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}
-.evo>div{text-align:center;font-size:11px;font-weight:700;color:var(--muted)}
+.evo>div{text-align:center;font-size:13px;font-weight:700;color:var(--muted)}
 .evo .slot{aspect-ratio:1;border-radius:16px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.9);display:grid;place-items:center;margin-bottom:4px;font-size:18px;color:var(--faint)}
 .evo .slot img{width:92%;height:92%;object-fit:contain}
 .evo .slot.now{border:2px solid var(--primary)}
@@ -598,8 +598,8 @@ a{color:inherit}
 .game-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .game-tile{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:14px;border-radius:24px;cursor:pointer;font:inherit;color:var(--ink);text-align:left;position:relative;border:1px solid rgba(255,255,255,.62)}
 .game-tile b{font-size:16px}
-.game-tile span.sub{margin:0;font-size:12.5px;line-height:1.3}
-.game-tile .chip{position:absolute;top:10px;right:10px;height:24px;font-size:11px;padding:0 9px}
+.game-tile span.sub{margin:0;font-size:13px;line-height:1.3}
+.game-tile .chip{position:absolute;top:10px;right:10px;height:24px;font-size:13px;padding:0 9px}
 .game-tile.rec{border:2px solid rgba(99,102,241,.55)}
 .game-tile.locked{cursor:default;opacity:.6;filter:saturate(.6)}
 
@@ -636,7 +636,7 @@ body.splashing #app{opacity:0}
 @keyframes portalIn{from{transform:scale(.3);opacity:0}}
 .portal-in{display:grid;justify-items:center;gap:3px;padding:10px}
 .ptitle{font-size:clamp(17px,5.2vw,23px);font-weight:800;letter-spacing:-.4px;line-height:1.1}
-.psub{font-size:12px;font-weight:700;color:var(--muted)}
+.psub{font-size:13px;font-weight:700;color:var(--muted)}
 .splash .me{display:none;width:46%;height:auto}
 .splash.hello .me{display:block;animation:petIn .6s cubic-bezier(.3,1.7,.5,1) both}
 .splash.hello .orbit{opacity:.3}
@@ -654,7 +654,7 @@ body.splashing #app{opacity:0}
 .splash.still img{opacity:1}
 /* Today's Mission (specs/missions.md) */
 .mparts{display:flex;gap:5px}
-.mparts span{flex:1;padding-top:6px;border-top:6px solid rgba(255,255,255,.7);font-size:10.5px;font-weight:800;text-align:center;color:var(--muted);border-radius:3px;white-space:nowrap}
+.mparts span{flex:1;padding-top:6px;border-top:6px solid rgba(255,255,255,.7);font-size:13px;font-weight:800;text-align:center;color:var(--muted);border-radius:3px;white-space:nowrap}
 .mparts span.on{border-top-color:var(--primary);color:var(--ink)}
 .mparts span.done{border-top-color:#34d399}
 .mcard{padding:18px 16px;display:flex;flex-direction:column;gap:12px}
@@ -702,7 +702,7 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
 .mgaps .g.now{background:rgba(99,102,241,.16);color:#4338ca;outline:1.5px dashed rgba(99,102,241,.6)}
 .mgaps .g.ok{background:rgba(52,211,153,.25);color:#047857}
 .mgaps .g.no{background:rgba(251,113,133,.22);color:#be123c}
-.mflag{background:none;border:0;color:var(--muted);font:inherit;font-size:12.5px;text-decoration:underline;cursor:pointer;padding:6px 0 0}
+.mflag{background:none;border:0;color:var(--muted);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:6px 0 0}
 .ms-stars{display:flex;justify-content:center;gap:8px}
 .ms-star{width:38px;height:38px;fill:rgba(28,30,43,.12)}
 .ms-star.on{fill:#f6c14d;stroke:#e0a21b;stroke-width:1.2;stroke-linejoin:round}
@@ -711,7 +711,7 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
 .mscript hr{border:0;border-top:1px dashed rgba(28,30,43,.15);margin:4px 0;width:100%}
 .mdet summary{cursor:pointer}
 .mission-parts{display:flex;gap:4px;margin-top:12px}
-.mission-parts span{flex:1;padding-top:5px;border-top:5px solid rgba(255,255,255,.75);font-size:10px;font-weight:800;text-align:center;color:#3b3f55;border-radius:2px}
+.mission-parts span{flex:1;padding-top:5px;border-top:5px solid rgba(255,255,255,.75);font-size:13px;font-weight:800;text-align:center;color:#3b3f55;border-radius:2px}
 .gscreen{display:flex;flex-direction:column;gap:14px;min-height:calc(100vh - 68px)}
 .gtop{display:flex;align-items:center;gap:12px}
 .gtop h2{flex:1;font-size:20px}
@@ -797,7 +797,7 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
   backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);
   border-bottom:1px solid rgba(255,255,255,.7);box-shadow:0 16px 30px -22px rgba(38,40,80,.5)}
 .wstrip{flex:1;min-width:0;display:flex;justify-content:space-between;align-items:flex-end;gap:2px}
-.wdot{flex:1;display:grid;justify-items:center;gap:4px;font-size:10.5px;font-weight:800;color:var(--faint)}
+.wdot{flex:1;display:grid;justify-items:center;gap:4px;font-size:13px;font-weight:800;color:var(--faint)}
 .wball{position:relative;width:38px;height:38px;border-radius:14px;display:grid;place-items:center;
   background:var(--clay-face);box-shadow:0 8px 14px -9px rgba(60,58,105,.5),inset 0 -3px 6px rgba(118,108,165,.18),inset 0 3px 6px rgba(255,255,255,.95)}
 .wball img{width:118%;height:118%;object-fit:contain;filter:grayscale(1) opacity(.45);-webkit-user-drag:none}
@@ -863,10 +863,10 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
 .evolve .halo img.lvpet{inset:auto -30px -16px auto;width:130px;height:130px}
 .cert{margin-top:14px;padding:14px 16px;border-radius:22px;display:grid;gap:3px;
   background:linear-gradient(140deg,rgba(255,255,255,.22),rgba(255,255,255,.07));border:1px solid rgba(255,255,255,.35)}
-.cert small{font-size:11px;font-weight:700;letter-spacing:1.4px;color:rgba(255,255,255,.72)}
+.cert small{font-size:13px;font-weight:700;letter-spacing:1.4px;color:rgba(255,255,255,.72)}
 .cert b{font-size:18px}
 .unlock{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
-.unlock span{font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3)}
+.unlock span{font-size:13px;font-weight:700;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3)}
 .btn-ghost{color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3)}
 /* Play together */
 .t-together{background:linear-gradient(145deg,#8b8ffb,#3cc7b6);--tc:#3cc7b6}
@@ -876,7 +876,7 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
   background:rgba(255,255,255,.52);border:1px solid rgba(255,255,255,.88);transition:transform .12s}
 .fr:active{transform:scale(.96)}
 .fr b{font-size:14px;margin-top:4px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fr small{font-size:11px;font-weight:700;color:var(--muted)}
+.fr small{font-size:13px;font-weight:700;color:var(--muted)}
 .fr small.ok{color:#047857}
 .fr.off{opacity:.55}
 .fr .av{position:relative;display:block}
@@ -889,7 +889,7 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
 .drow .pet-face img{width:78px;height:78px}
 .drow-main{flex:1;min-width:0;display:block}
 .drow-main b{display:block;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.drow-main small{display:block;font-size:12px;color:var(--muted);font-weight:600}
+.drow-main small{display:block;font-size:13px;color:var(--muted);font-weight:600}
 .mrow{background:rgba(255,255,255,.72);border:1.5px solid rgba(255,255,255,.95);box-shadow:0 8px 16px -14px rgba(38,40,80,.5)}
 .mrow.sel{border-color:var(--primary);box-shadow:0 0 0 4px rgba(99,102,241,.14)}
 .mrow[disabled]{opacity:.6}
@@ -915,7 +915,7 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
 .lane{display:grid;grid-template-columns:76px minmax(0,1fr) 20px;align-items:center;gap:8px}
 .lwho{display:flex;align-items:center;gap:6px;font-weight:700;font-size:13px;min-width:0}
 .lwho span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lwho .pet-face,.lwho .avatar{width:26px;height:26px;box-shadow:none;font-size:12px}
+.lwho .pet-face,.lwho .avatar{width:26px;height:26px;box-shadow:none;font-size:13px}
 .lwho .pet-face img{width:50px;height:50px}
 .track{position:relative;height:28px;border-radius:999px;background:rgba(255,255,255,.62);box-shadow:inset 0 1px 3px rgba(0,0,0,.08)}
 .track .stn{position:absolute;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:rgba(99,102,241,.25)}
@@ -926,7 +926,7 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
 .runner.dot{width:18px;height:18px;margin-left:-9px;bottom:5px;border-radius:50%;border:3px solid #fff}
 .lane > b{font-weight:800;font-size:17px;text-align:right}
 .reacts{display:flex;gap:6px;flex-wrap:wrap}
-.reacts button{height:34px;padding:0 12px;border-radius:999px;font:inherit;font-weight:700;font-size:12.5px;cursor:pointer;color:var(--ink);
+.reacts button{height:34px;padding:0 12px;border-radius:999px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;color:var(--ink);
   background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.95);box-shadow:0 8px 16px -12px rgba(38,40,80,.45)}
 .reacts button.sent{background:linear-gradient(180deg,#e0e7ff,#c7d2fe)}
 .rtoast{position:fixed;z-index:45;top:66px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:5px 16px 5px 5px;border-radius:999px;
@@ -948,7 +948,7 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
 .podium.team .big{width:118px;height:118px;left:0}
 .podium.team .big.flip{left:auto;right:0}
 .podium.team .crown{left:50%;margin-left:-16px;top:-6px}
-.score2 small{display:block;font-size:12px;font-weight:700;letter-spacing:0;color:var(--muted);margin-top:4px}
+.score2 small{display:block;font-size:13px;font-weight:700;letter-spacing:0;color:var(--muted);margin-top:4px}
 .score2{font-size:44px;font-weight:800;letter-spacing:-1px;line-height:1}
 .score2 span{color:var(--faint);margin:0 8px}
 .lrow{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:16px;background:rgba(255,255,255,.62);text-align:left}
@@ -956,12 +956,12 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
 .lrow .x.ok{color:#b45309;background:rgba(246,160,77,.2)}
 .lrow .lt{flex:1;min-width:0;font-size:13.5px;line-height:1.35}
 .lrow .lt b{color:var(--ink)}
-.lrow .btn-sm{height:32px;font-size:12.5px;padding:0 12px;flex:none}
+.lrow .btn-sm{height:32px;font-size:13px;padding:0 12px;flex:none}
 /* Boss Battle */
 .bossbox{padding:12px 14px;display:grid;gap:7px;border-radius:28px;border:1px solid rgba(255,255,255,.85);
   background:linear-gradient(160deg,rgba(237,233,254,.92),rgba(251,207,232,.66));box-shadow:0 22px 40px -22px rgba(124,58,237,.45),var(--inner)}
 .bossbox > .row-flex b{font-size:14px}
-.bossbox > .row-flex small{font-size:12px;font-weight:800;color:#7c3aed;font-variant-numeric:tabular-nums}
+.bossbox > .row-flex small{font-size:13px;font-weight:800;color:#7c3aed;font-variant-numeric:tabular-nums}
 .bossbar{height:12px;border-radius:9px;background:rgba(255,255,255,.75);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.08)}
 .bossbar i{display:block;height:100%;width:100%;border-radius:inherit;background:linear-gradient(90deg,#a855f7,#f472b6);transition:width .6s ease}
 .bossstage{position:relative;height:126px;display:grid;place-items:center}
@@ -974,11 +974,11 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
 .bpop.go{animation:bpop 1s ease-out}
 @keyframes bpop{0%{opacity:0;transform:translateY(10px) scale(.8)}20%{opacity:1;transform:translateY(0) scale(1.15)}70%{opacity:1;transform:translateY(-14px)}100%{opacity:0;transform:translateY(-22px)}}
 .team{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:end;gap:6px}
-.tm{display:grid;justify-items:center;font-size:12px}
-.tm b{font-size:12px}
+.tm{display:grid;justify-items:center;font-size:13px}
+.tm b{font-size:13px}
 .tm .tmpet{width:56px;height:56px;object-fit:contain}
 .tm .duel-av.tmpet{width:44px;height:44px;font-size:18px}
-.feed{align-self:center;text-align:center;font-size:12px;font-weight:700;color:#7c3aed;background:rgba(255,255,255,.75);border-radius:999px;padding:5px 8px}
+.feed{align-self:center;text-align:center;font-size:13px;font-weight:700;color:#7c3aed;background:rgba(255,255,255,.75);border-radius:999px;padding:5px 8px}
 .assist{display:flex;align-items:center;gap:11px;padding:10px 12px}
 .opt.gone{opacity:.25;text-decoration:line-through}
 /* Tug of War */
@@ -1016,7 +1016,7 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
 .tword{font-size:38px;font-weight:800;letter-spacing:-.6px;line-height:1.1;color:#4338ca;word-break:break-word}
 .vsb i{font-size:22px}
 .tabooin{color:#be123c;font-weight:700;text-decoration:underline dotted}
-.taboo{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;font-size:12.5px;font-weight:700;color:var(--muted)}
+.taboo{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;font-size:13px;font-weight:700;color:var(--muted)}
 .mic{display:flex;align-items:center;gap:12px;padding:12px 14px}
 .micb{position:relative;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;flex:none;color:#fff;font-size:26px;
   background:linear-gradient(145deg,#5eead4,#0d9488);box-shadow:0 14px 24px -12px #0d9488}
@@ -1058,24 +1058,24 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
 .flame.cold svg{filter:grayscale(.85) opacity(.45);animation:none}
 .flame b{position:relative;margin-top:38px;font-size:30px;font-weight:800;color:#fff;text-shadow:0 2px 6px rgba(194,65,12,.6);line-height:1}
 .flame.cold b{color:#9a3412;text-shadow:none}
-.flame small{position:absolute;bottom:-17px;font-size:11px;font-weight:800;letter-spacing:1px;color:#9a3412}
+.flame small{position:absolute;bottom:-17px;font-size:13px;font-weight:800;letter-spacing:1px;color:#9a3412}
 @keyframes flick{0%,100%{transform:scale(1) rotate(0)}30%{transform:scale(1.04,1.07) rotate(-2deg)}60%{transform:scale(.98,1.02) rotate(2deg)}}
-.names{display:grid;grid-template-columns:1fr 1fr;text-align:center;font-size:12.5px;font-weight:700;margin-top:8px}
+.names{display:grid;grid-template-columns:1fr 1fr;text-align:center;font-size:13px;font-weight:700;margin-top:8px}
 .names .ok{color:#047857}
 .names .wait{color:#b45309}
-.weeks{display:grid;grid-template-columns:46px repeat(7,minmax(0,1fr));gap:5px;align-items:center;font-size:11px;font-weight:800;color:var(--muted)}
+.weeks{display:grid;grid-template-columns:46px repeat(7,minmax(0,1fr));gap:5px;align-items:center;font-size:13px;font-weight:800;color:var(--muted)}
 .weeks span{text-align:center}
 .weeks span.now{color:#9a3412}
 .weeks .rl{text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wd{height:20px;border-radius:7px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.9);display:grid;place-items:center;font-style:normal;font-size:12px}
+.wd{height:20px;border-radius:7px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.9);display:grid;place-items:center;font-style:normal;font-size:13px}
 .wd.me{background:linear-gradient(180deg,#a5b4fc,#6366f1);border-color:transparent}
 .wd.them{background:linear-gradient(180deg,#fdba74,#f97316);border-color:transparent}
 .wd.wait{background:rgba(255,255,255,.3);border:2px dashed rgba(234,88,12,.6)}
 .wd.off{opacity:.45}
 .wd.saved{background:rgba(255,255,255,.8);color:#0d9488}
-.mile{display:grid;gap:6px;font-size:12.5px;font-weight:700;color:#3b3f55}
+.mile{display:grid;gap:6px;font-size:13px;font-weight:700;color:#3b3f55}
 .mile i{color:#d97706;font-size:16px}
-.mbadge{display:inline-grid;place-items:center;min-width:26px;height:20px;padding:0 6px;margin-left:3px;border-radius:999px;font-size:11px;font-weight:800;color:#fff;
+.mbadge{display:inline-grid;place-items:center;min-width:26px;height:20px;padding:0 6px;margin-left:3px;border-radius:999px;font-size:13px;font-weight:800;color:#fff;
   background:linear-gradient(180deg,#fbbf24,#f97316)}
 .mbar{height:8px;border-radius:9px;background:rgba(255,255,255,.65);overflow:hidden}
 .mbar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#fbbf24,#f97316)}
@@ -1089,12 +1089,12 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
 .qbar .ab{background:linear-gradient(90deg,#8b8ffb,#f6a04d)}
 .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;font-weight:700}
 .legend span{display:flex;align-items:center;gap:6px}
-.legend small{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:600}
-.legend .pet-face,.legend .avatar{width:24px;height:24px;font-size:11px;box-shadow:none}
+.legend small{margin-left:auto;font-size:13px;color:var(--muted);font-weight:600}
+.legend .pet-face,.legend .avatar{width:24px;height:24px;font-size:13px;box-shadow:none}
 .legend .pet-face img{width:46px;height:46px}
 .qreward{display:flex;align-items:center;gap:11px;padding:10px 12px}
 .qreward b{display:block;font-size:14.5px}
-.qreward small{display:block;font-size:12px;color:var(--muted);font-weight:600}
+.qreward small{display:block;font-size:13px;color:var(--muted);font-weight:600}
 .duoparty{position:relative;height:190px;display:flex;align-items:flex-end;justify-content:center;gap:2px}
 .duoparty img,.duoparty .duel-av{width:118px;height:118px;object-fit:contain}
 .dp-mid{width:104px;height:124px;position:relative;display:grid;place-items:center}
@@ -1131,9 +1131,9 @@ svg.pa{display:block;overflow:visible}
 .shopcard{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;width:100%;font:inherit;color:var(--ink);text-align:left;cursor:pointer}
 .shopcard .coco-face{width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 8px 8px rgba(38,40,80,.2))}
 .shopcard-main{min-width:0;display:block}
-.shopcard-main .label{display:block;font-size:11px}
+.shopcard-main .label{display:block;font-size:13px}
 .shopcard-main b{display:block;font-size:17px;margin-top:1px}
-.shopcard .sub{margin:3px 0 0;font-size:12.5px;display:flex;align-items:center;flex-wrap:wrap;gap:2px}
+.shopcard .sub{margin:3px 0 0;font-size:13px;display:flex;align-items:center;flex-wrap:wrap;gap:2px}
 .shopcard .sub b{display:inline;font-size:inherit;margin:0 2px 0 0}
 .shopcard.open{background:linear-gradient(150deg,rgba(254,215,226,.88),rgba(253,230,138,.62) 55%,rgba(221,214,254,.88));border-color:rgba(255,255,255,.85)}
 .shopscreen{min-height:calc(100vh - 68px)}
@@ -1145,7 +1145,7 @@ svg.pa{display:block;overflow:visible}
 .seasonbar img{width:46px;height:46px;object-fit:contain;flex:none}
 .seasonbar span{flex:1;min-width:0}
 .seasonbar b{display:block}
-.seasonbar .sub{color:rgba(255,255,255,.88);margin:2px 0 0;font-size:12px}
+.seasonbar .sub{color:rgba(255,255,255,.88);margin:2px 0 0;font-size:13px}
 .seasonbar .sub b{display:inline}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:5px;border-radius:999px;background:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.8)}
 .seg button{height:40px;border:0;border-radius:999px;font:inherit;font-weight:700;font-size:13.5px;color:var(--muted);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
@@ -1164,9 +1164,9 @@ svg.pa{display:block;overflow:visible}
 .icard .iname{font-size:14px;line-height:1.2}
 .irow{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%}
 .iprice{display:inline-flex;align-items:center;font-weight:800;font-size:14px}
-.irar{font-size:10.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--faint)}
+.irar{font-size:13px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--faint)}
 .icard.r-rare .irar{color:#0f766e}.icard.r-epic .irar{color:#b45309}
-.icard .chip{height:24px;font-size:11.5px;padding:0 8px}
+.icard .chip{height:24px;font-size:13px;padding:0 8px}
 .icard.owned{border-color:rgba(60,199,182,.45)}
 .iseason{position:absolute;top:8px;right:10px;color:#7c3aed;font-size:18px}
 .auraprev{width:92px;height:92px;overflow:visible}
@@ -1198,7 +1198,7 @@ svg.pa{display:block;overflow:visible}
 .phrases .tok{font-size:14px;min-height:36px;background:rgba(224,231,255,.9)}
 .manners{display:grid;gap:8px}
 .mchips{display:flex;flex-wrap:wrap;gap:6px}
-.mchips .chip{height:26px;font-size:12px}
+.mchips .chip{height:26px;font-size:13px}
 .mprice{display:flex;align-items:center;gap:6px;font-size:16px;min-height:26px}
 .mprice s{color:var(--faint);font-weight:600}
 .linkbtn{border:0;background:none;font:inherit;font-weight:700;font-size:13px;color:#4338ca;cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:4px 2px}
@@ -1211,7 +1211,7 @@ svg.pa{display:block;overflow:visible}
 .chip.r-epic{background:rgba(246,160,77,.2);color:#b45309;border-color:rgba(246,160,77,.35)}
 .wardrobe{display:grid;gap:10px;justify-items:center}
 .wrow{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
-.wcell{flex:none;width:92px;display:grid;justify-items:center;gap:4px;padding:8px 6px;border-radius:18px;font:inherit;font-size:11.5px;font-weight:700;color:var(--ink);cursor:pointer;text-align:center}
+.wcell{flex:none;width:92px;display:grid;justify-items:center;gap:4px;padding:8px 6px;border-radius:18px;font:inherit;font-size:13px;font-weight:700;color:var(--ink);cursor:pointer;text-align:center}
 .wcell img{width:56px;height:56px;object-fit:contain}
 .wcell .auraprev{width:56px;height:56px}
 .wcell .tile{margin:8px 0}
@@ -1223,18 +1223,18 @@ svg.pa{display:block;overflow:visible}
 @keyframes paPulse{50%{opacity:.4}}
 .iwords{position:absolute;top:8px;left:10px;color:#0d9488;font-size:17px}
 .dpic{width:86%;height:88px;overflow:visible;filter:drop-shadow(0 8px 8px rgba(38,40,80,.18))}
-.icard .dname{font-size:12px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.icard .dname{font-size:13px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .wcell{position:relative}
 .wcell .dpic{width:56px;height:56px}
-.wcell.wdesign span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:10.5px}
-.wshine{position:absolute;top:4px;right:4px;font-style:normal;font-size:10px;font-weight:800;padding:1px 5px;border-radius:999px;background:rgba(246,160,77,.22);color:#b45309}
+.wcell.wdesign span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13px}
+.wshine{position:absolute;top:4px;right:4px;font-style:normal;font-size:13px;font-weight:800;padding:1px 5px;border-radius:999px;background:rgba(246,160,77,.22);color:#b45309}
 .studiointro{display:flex;align-items:center;gap:12px;padding:12px 14px}
 .studiointro .coco-face{width:58px;height:58px;object-fit:contain;flex:none;filter:drop-shadow(0 8px 8px rgba(38,40,80,.2))}
 .dinput{display:flex;gap:8px;margin-top:6px}
 .dinput input{flex:1;min-width:0;height:48px;border-radius:16px;border:1.5px solid rgba(99,102,241,.45);background:#fff;padding:0 14px;font:inherit;font-size:16px;font-weight:600;color:var(--ink);box-shadow:0 0 0 4px rgba(99,102,241,.1)}
 .dinput input:focus{outline:none;border-color:var(--primary)}
 .dchips{display:flex;flex-wrap:wrap;gap:5px;min-height:28px;margin-top:8px}
-.dchip{display:inline-flex;align-items:center;height:26px;padding:0 9px;border-radius:999px;font-size:12.5px;font-weight:700;background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.95)}
+.dchip{display:inline-flex;align-items:center;height:26px;padding:0 9px;border-radius:999px;font-size:13px;font-weight:700;background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.95)}
 .k-opinion{color:#be185d}.k-size{color:#4338ca}.k-quality{color:#b45309}.k-color{color:#0f766e}.k-material{color:#9a3412}.k-pattern{color:#7c3aed}.k-base{color:var(--ink)}.k-little{color:var(--muted)}
 .dchip.k-opinion{background:rgba(251,207,232,.6)}.dchip.k-size{background:rgba(199,210,254,.65)}.dchip.k-quality{background:rgba(253,230,138,.6)}
 .dchip.k-color{background:rgba(153,246,228,.55)}.dchip.k-material{background:rgba(254,215,170,.6)}.dchip.k-pattern{background:rgba(221,214,254,.7)}
@@ -1242,21 +1242,21 @@ svg.pa{display:block;overflow:visible}
 .dbank{border-radius:18px;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.85);padding:6px 10px 10px}
 .dbank summary{cursor:pointer;font-weight:700;font-size:13px;color:#4338ca;padding:4px 0;list-style:none;display:flex;align-items:center;gap:6px}
 .dbank summary::-webkit-details-marker{display:none}
-.dbank summary .sub{margin:0;font-size:12px;font-weight:600}
+.dbank summary .sub{margin:0;font-size:13px;font-weight:600}
 .dgroup{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:6px}
-.dlabel{width:100%;font-size:10.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--faint)}
+.dlabel{width:100%;font-size:13px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--faint)}
 .tok.sm{min-height:32px;font-size:13.5px;padding:0 10px;border-radius:11px}
-.dorder{font-size:11.5px;margin:8px 0 0;text-align:center}
+.dorder{font-size:13px;margin:8px 0 0;text-align:center}
 .wordsbox{padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.9)}
 .wordsbox .label{display:inline-flex;align-items:center;gap:5px}
 .wchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.wchips .chip{height:26px;font-size:12.5px}
+.wchips .chip{height:26px;font-size:13px}
 .shinepct{font-size:16px;color:#b45309}
 .polishbar{display:flex;align-items:center;gap:12px;padding:10px 14px;width:100%;font:inherit;color:var(--ink);text-align:left;cursor:pointer;border-radius:22px;
   background:linear-gradient(135deg,rgba(253,230,138,.88),rgba(255,255,255,.72));border:1px solid rgba(255,255,255,.9)}
 .polishbar > span:nth-child(2){flex:1}
 .polishbar b{display:block;font-size:14.5px}
-.polishbar .sub{margin:1px 0 0;font-size:12px}
+.polishbar .sub{margin:1px 0 0;font-size:13px}
 .wquiz .qcard{text-align:center}
 .react .bubble.half{color:#b45309}
 .gprog i.half{background:#fbbf24}
@@ -1268,12 +1268,12 @@ svg.pa{display:block;overflow:visible}
 .keeplist{display:grid;gap:6px}
 .keeprow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:16px;background:rgba(255,255,255,.62);text-align:left}
 .keeprow > span{flex:1;min-width:0;font-size:14px;line-height:1.3}
-.keeprow .sub{display:block;margin:2px 0 0;font-size:12px}
+.keeprow .sub{display:block;margin:2px 0 0;font-size:13px}
 .keeprow .tsay{width:36px;height:36px;font-size:15px;flex:none}
 .keepwords{width:100%}
 .mywordsrow{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border-radius:18px;font:inherit;color:var(--ink);cursor:pointer;text-align:left}
 .mywordsrow b{flex:1}
-.mywordsrow .sub{margin:0;font-size:12.5px}
+.mywordsrow .sub{margin:0;font-size:13px}
 @media (prefers-reduced-motion:reduce){.pa .pa-tw,.pa .pa-bob,.pa .pa-pulse{animation:none}}
 /* Talk with Chacho (specs/talk.md): the talk in the play frame; the stage scrolls to the newest line. */
 .t-chat{background:linear-gradient(145deg,#5eead4,#0d9488);--tc:#0d9488}
@@ -1370,7 +1370,7 @@ button{touch-action:manipulation}
   display:flex;justify-content:space-around;align-items:center;padding:0 6px;border-radius:26px}
 #app>.tabbar{animation:none}
 .tabb{position:relative;flex:1;max-width:80px;height:56px;border:0;background:none;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-  font-family:inherit;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;-webkit-tap-highlight-color:transparent}
+  font-family:inherit;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;-webkit-tap-highlight-color:transparent}
 .tabb i{font-size:23px}
 .tabb.on{color:#4338ca;background:rgba(99,102,241,.14)}
 .tabb:focus-visible{outline:2px solid var(--primary);outline-offset:-2px}
@@ -1406,7 +1406,7 @@ html:has(.tabbar) .netbar:not(.upd){bottom:calc(88px + env(safe-area-inset-botto
 .spot .flamerow{margin-bottom:14px}
 .spot .flamerow .duopet{width:clamp(64px,12vh,100px);height:clamp(64px,12vh,100px)}
 .spot .flame{width:clamp(70px,11vh,98px);height:clamp(82px,13vh,114px)}
-.wk{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;text-align:center;font-size:11px;font-weight:800;color:var(--muted)}
+.wk{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;text-align:center;font-size:13px;font-weight:800;color:var(--muted)}
 .wk>div{display:grid;gap:3px}
 .wk>div.off{opacity:.45}
 .wk i{height:9px;border-radius:5px;background:rgba(255,255,255,.55)}
@@ -1416,10 +1416,10 @@ html:has(.tabbar) .netbar:not(.upd){bottom:calc(88px + env(safe-area-inset-botto
 .wk .now span{color:#9a3412}
 .wk .now i:not(.me):not(.them):not(.saved){background:none;outline:2px dashed rgba(234,88,12,.6);outline-offset:-2px}
 .dstat{text-align:center;font-size:14px;font-weight:700;color:#3b3f55}
-.dbadge{text-align:center;font-size:12.5px;font-weight:700;color:#9a3412}
+.dbadge{text-align:center;font-size:13px;font-weight:700;color:#9a3412}
 .qring{width:100px;height:100px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--primary) var(--p),rgba(255,255,255,.65) 0)}
 .qring b{width:80px;height:80px;border-radius:50%;display:grid;place-content:center;background:var(--clay-face);font-size:28px;font-weight:800;line-height:1}
-.qring small{font-size:12px;color:var(--muted);font-weight:700}
+.qring small{font-size:13px;color:var(--muted);font-weight:700}
 .spot .legend{justify-content:center}
 .pdots{display:flex;justify-content:center;gap:4px;flex:none;min-height:12px}
 .pdots button{width:18px;height:12px;padding:0;border:0;background:none;cursor:pointer;display:grid;place-items:center}
@@ -1428,7 +1428,7 @@ html:has(.tabbar) .netbar:not(.upd){bottom:calc(88px + env(safe-area-inset-botto
 .solo{padding:12px;border-radius:26px;flex:none}
 .solo4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px}
 .solo4 .gt{position:relative;display:grid;justify-items:center;gap:4px;padding:10px 2px 8px;border-radius:20px;font:inherit;color:var(--ink);cursor:pointer}
-.solo4 .gt b{font-size:12.5px;white-space:nowrap}
+.solo4 .gt b{font-size:13px;white-space:nowrap}
 .solo4 .gt.rec::after{content:'';position:absolute;top:7px;right:8px;width:9px;height:9px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 3px rgba(99,102,241,.2)}
 .fsheet{max-height:82vh;display:flex;flex-direction:column}
 .fsheet .flist{overflow-y:auto;min-height:0;overscroll-behavior:contain}
@@ -1462,7 +1462,7 @@ html:has(.tabbar) .netbar:not(.upd){bottom:calc(88px + env(safe-area-inset-botto
 .htop{display:flex;align-items:center;gap:8px;flex:none}
 .hme{border:0;background:none;padding:0;cursor:pointer;flex:none;border-radius:50%}
 .hhi{display:flex;flex-direction:column;line-height:1.2;min-width:0;margin-right:auto}
-.hhi span{font-size:12.5px;color:var(--muted);font-weight:600;white-space:nowrap}
+.hhi span{font-size:13px;color:var(--muted);font-weight:600;white-space:nowrap}
 .hhi b{font-size:19px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hchip{height:34px;font-weight:800;flex:none}
 .hchip.fire{color:#c2410c}
@@ -1474,7 +1474,7 @@ html:has(.tabbar) .netbar:not(.upd){bottom:calc(88px + env(safe-area-inset-botto
 .phbody{position:absolute;left:0;right:0;bottom:0;height:min(100%,290px);transform-origin:50% 100%;will-change:transform}
 .phbody .pet-img{width:100%;height:100%;object-fit:contain}
 .phero>.btn{flex:none;margin-top:10px}
-.phrow{display:flex;align-items:center;gap:8px;width:100%;margin-top:8px;font-size:12.5px;color:var(--muted);font-weight:700;flex:none;white-space:nowrap}
+.phrow{display:flex;align-items:center;gap:8px;width:100%;margin-top:8px;font-size:13px;color:var(--muted);font-weight:700;flex:none;white-space:nowrap}
 .phrow b{color:var(--ink);font-size:15px}
 .phrow .bar{flex:1;height:8px;margin:0;min-width:40px}
 @media (prefers-reduced-motion:no-preference){
@@ -1507,7 +1507,7 @@ html:has(.tabbar) .netbar:not(.upd){bottom:calc(88px + env(safe-area-inset-botto
 .tmain .mission-parts span{border-top-color:rgba(99,102,241,.22)}
 .hpill>span:last-child{display:flex;flex-direction:column;line-height:1.2;min-width:0}
 .hpill b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hpill small{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hpill small{font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hpill small.ok{color:#0f766e}
 .hpill.hot{border:2px solid rgba(99,102,241,.55)}
 .tv-pet .pet-card{grid-template-columns:minmax(0,1fr);justify-items:stretch}
@@ -1554,12 +1554,13 @@ html:has(.tabbar) .netbar:not(.upd){bottom:calc(88px + env(safe-area-inset-botto
   .gplay .gstage{gap:10px}
   .gplay .mword{padding:9px 12px}
   .gplay .mword img{width:38px;height:38px}
+  .mparts span{font-size:0;padding-top:0}
 }
 /* ---------- Clay controls (owner, 2026-10-29: "ג", the clay look of the pets for every button, card and tile; specs/design.md rule 3) ----------
    One material for everything you tap: a soft matte puff lit from above (--clay-up), shaded below (--clay-down), with a soft drop
    (--clay-drop). A tap squishes it (scale .96 by .9) and it springs back. Colors stay the tokens; only the material changes. */
 :root{
-  --clay-face:#f6f4fa; --clay-primary:#7a7ef6; --clay-teal:#6ad9ca; --clay-ok:#7fe2b9; --clay-no:#f9aab8; --clay-sel:#d4d5fd; --clay-green:#3fcf86;
+  --clay-face:#f6f4fa; --clay-primary:#5f63ea; --clay-teal:#6ad9ca; --clay-ok:#7fe2b9; --clay-no:#f9aab8; --clay-sel:#d4d5fd; --clay-green:#3fcf86;
   --clay-up:inset 0 6px 10px rgba(255,255,255,.95);
   --clay-down:inset 0 -6px 10px rgba(118,108,165,.2);
   --clay-drop:0 14px 22px -12px rgba(60,58,105,.5);
@@ -1569,7 +1570,7 @@ html:has(.tabbar) .netbar:not(.upd){bottom:calc(88px + env(safe-area-inset-botto
 .btn{transition:transform .22s var(--clay-spring),box-shadow .15s,filter .15s}
 .btn:active{transform:scale(.96,.9)}
 .btn-primary{background:var(--clay-primary);text-shadow:0 1px 1px rgba(40,30,150,.3);
-  box-shadow:0 14px 22px -12px rgba(76,70,200,.7),inset 0 -6px 11px rgba(40,30,160,.38),inset 0 6px 11px rgba(255,255,255,.42)}
+  box-shadow:0 14px 22px -12px rgba(76,70,200,.7),inset 0 -6px 11px rgba(40,30,160,.38),inset 0 6px 11px rgba(255,255,255,.32)}
 .btn-primary:active{box-shadow:0 6px 12px -8px rgba(76,70,200,.7),inset 0 -2px 6px rgba(40,30,160,.3),inset 0 8px 14px rgba(30,20,140,.32)}
 .btn-teal{color:#063c35;background:var(--clay-teal);
   box-shadow:0 14px 22px -12px rgba(30,150,135,.65),inset 0 -6px 11px rgba(10,110,95,.3),inset 0 6px 11px rgba(255,255,255,.55)}
@@ -1648,6 +1649,45 @@ button.soft[disabled],button.glass[disabled]{opacity:.6}
 .nkh-tag .cicon{width:22px;height:22px;object-fit:contain}
 .nka-tab .cicon{width:40px;height:40px;object-fit:contain}
 @media (prefers-reduced-motion:reduce){.btn,.opt,.tabb,button.soft,button.glass,.nk-card{transition:none}.opt.ok,.opt.no{animation:none}}
+/* ---------- Kids' experience and accessibility (night review 2026-11-01, findings 10, 11, 18; specs/design.md rule 12) ----------
+   Hebrew help: a small right-to-left line under a title, an instruction or a message, for A1 and A2 kids (heLine). */
+.khe{display:block;direction:rtl;unicode-bidi:isolate;font-family:system-ui,'Segoe UI',Arial,sans-serif;font-size:13px;font-weight:600;line-height:1.35;
+  color:var(--muted);margin-top:2px;text-transform:none;letter-spacing:0;white-space:normal}
+.qprompt .khe{font-weight:600}
+.label .khe{display:inline;margin-left:8px;font-weight:600}
+.toast .khe,.netbar .khe{color:inherit;opacity:.9}
+.netbar{width:max-content}
+.netbar:has(.khe){border-radius:22px}
+.hpill small.khe{direction:rtl;margin:0;font-weight:700}
+.solo4 .gt .khe{font-size:13px;margin:0;white-space:nowrap}
+.saybtn{width:30px;height:30px;font-size:14px;vertical-align:middle;margin-left:6px;flex:none}
+.qprompt .saybtn{width:26px;height:26px;font-size:13px;margin:-5px 0 -5px 6px}
+/* Keyboard focus: one ring for everything, round like the clay. */
+:focus-visible{outline:3px solid var(--primary);outline-offset:3px}
+input:focus-visible,textarea:focus-visible,select:focus-visible{outline-offset:1px}
+.sheet:focus,.sheet:focus-visible{outline:none}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+/* The streak lives with the pet, in words (finding 11). */
+.pstreak{display:flex;align-items:center;justify-content:center;gap:6px;flex:none;margin-top:6px;font-size:13px;font-weight:800;color:#9a3412;white-space:nowrap}
+.pstreak i{font-size:16px}
+.pstreak .khe{display:inline;margin:0 0 0 4px;color:#9a3412;font-weight:700}
+/* The first-run tour: three pictures, once per kid on this phone. */
+.tour{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.tour .tpic{width:150px;height:150px;display:grid;place-items:center}
+.tour .tpic img,.tour .tpic svg{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 12px 14px rgba(40,30,80,.22))}
+.tour h2{font-size:22px}
+.tour .sub{margin:0}
+.tour .khe{font-size:15px;color:var(--ink);font-weight:600}
+.tour .tdots{display:flex;gap:6px}
+.tour .tdots i{width:8px;height:8px;border-radius:4px;background:rgba(60,58,105,.22)}
+.tour .tdots i.on{width:22px;background:var(--primary)}
+.tour .btns{display:flex;gap:10px;width:100%}
+.tour .btns .btn{flex:1}
+/* Reduced motion: nothing loops, nothing slides (the background blobs included). */
+@media (prefers-reduced-motion:reduce){
+  .blob{animation:none}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
 </style>
 </head>
 <body>
@@ -1766,7 +1806,8 @@ function netBar(){
   if (b) return;
   b = document.createElement('div');
   b.id = 'netbar'; b.className = 'netbar';
-  b.innerHTML = icon('wifi-slash') + '<span>Offline. Games still work, and results wait on this phone.</span>';
+  b.setAttribute('role', 'status');
+  b.innerHTML = icon('wifi-slash') + '<span>Offline. Games still work, and results wait on this phone.' + heLine(heOf('Offline. Games still work, and results wait on this phone.')) + '</span>';
   document.body.appendChild(b);
 }
 window.addEventListener('offline', netBar);
@@ -1780,10 +1821,199 @@ function toast(msg, err){
   const t = document.createElement('div');
   t.className = 'toast glass' + (err ? ' err' : '');
   t.textContent = msg;
+  // Young kids get the message in Hebrew too; a message with no Hebrew of its own says to ask a grown-up.
+  const he = heOf(msg) || (err ? 'משהו לא הסתדר. אפשר לבקש עזרה ממבוגר.' : '');
+  t.insertAdjacentHTML('beforeend', heLine(he));
   document.body.appendChild(t);
+  announce(msg, err);
   t.onclick = () => t.remove();
   setTimeout(() => t.remove(), err ? 7000 : 2600);
 }
+// Screen readers hear toasts and answers (night review, finding 18): two live regions that stay in the page.
+function announce(msg, urgent){
+  let el = document.getElementById(urgent ? 'live-a' : 'live-p');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = urgent ? 'live-a' : 'live-p'; el.className = 'sr-only';
+    el.setAttribute(urgent ? 'role' : 'aria-live', urgent ? 'alert' : 'polite');
+    document.body.appendChild(el);
+  }
+  el.textContent = '';
+  setTimeout(() => { el.textContent = String(msg || ''); }, 30);
+}
+
+// Every bottom sheet is a dialog (night review, finding 18): role and label, the focus moves into it and back to the
+// button that opened it, Tab stays inside, and Escape closes it the way its close button (or a tap outside) does.
+let dlgN = 0;
+new MutationObserver(ms => ms.forEach(m => {
+  m.addedNodes.forEach(n => { if (n.nodeType === 1 && n.classList.contains('overlay')) dialogOpen(n); });
+  m.removedNodes.forEach(n => { if (n.nodeType === 1 && n.classList.contains('overlay') && n._back && n._back.isConnected) try { n._back.focus({ preventScroll: true }); } catch(e){} });
+})).observe(document.body, { childList: true });
+function dialogOpen(ov){
+  const s = ov.querySelector('.sheet') || ov;
+  s.setAttribute('role', 'dialog'); s.setAttribute('aria-modal', 'true'); s.tabIndex = -1;
+  const h = s.querySelector('h2, .label');
+  if (h) { if (!h.id) h.id = 'dlg' + (++dlgN); s.setAttribute('aria-labelledby', h.id); }
+  ov._back = document.activeElement;
+  setTimeout(() => { if (s.isConnected && !s.contains(document.activeElement)) try { s.focus({ preventScroll: true }); } catch(e){} }, 30);
+}
+document.addEventListener('keydown', e => {
+  const all = document.querySelectorAll('.overlay'), ov = all[all.length - 1];
+  if (!ov) return;
+  if (e.key === 'Escape') {
+    const x = ov.querySelector('#x, [data-close], .sheet > .row-flex .icon-btn');
+    if (x) x.click(); else ov.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    return;
+  }
+  if (e.key !== 'Tab') return;
+  const f = [...ov.querySelectorAll('button:not([disabled]), a[href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])')].filter(el => el.offsetParent !== null);
+  if (!f.length) return;
+  const first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && (document.activeElement === first || !ov.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && (document.activeElement === last || !ov.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+});
+
+// ---------- Hebrew help for young kids (night review 2026-11-01, finding 10) ----------
+// A1 and A2 kids see a small Hebrew line under titles, instructions, game rules and messages (dash.girl.he: Girls.Hebrew,
+// on by itself for A1 and A2; a parent or the kid in Me turns it on or off). Never for the English being learned, only
+// for the words around it. Before a sign-in (the wait screen, the offline bar) the last kid's choice on this phone counts.
+function heOn(){ return dash && dash.girl ? !!dash.girl.he : !!store.get('eq_he'); }
+// No point or XP numbers for A1 and A2 kids (finding 11): the pet grows and the coins count; parents still see the numbers.
+const lowKid = () => !!(dash && dash.girl && ['a1', 'a2'].indexOf(dash.girl.level) >= 0);
+function heLine(he, cls){ return he && heOn() ? `<span class="khe${cls ? ' ' + cls : ''}" dir="rtl" lang="he">${msHe(he)}</span>` : ''; }
+// The Hebrew of an English line the app shows (instructions, messages), or ''.
+function heOf(en){
+  en = String(en || '');
+  if (KHE.hasOwnProperty(en)) return KHE[en];
+  const r = KHE_RX.find(x => x[0].test(en));
+  return r ? r[1] : '';
+}
+// A speaker next to an instruction: Chacho reads it (a recorded line when there is one, else the phone's voice).
+const sayBtn = en => `<button class="btn btn-glass icon-btn saybtn" data-sayline="${esc(en)}" aria-label="Read it to me">${icon('speaker-high')}</button>`;
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-sayline]'); if (b) { e.stopPropagation(); sayWord(b.dataset.sayline); } }, true);
+// A prompt line of a game or a mission: the English, a speaker for young kids, and the Hebrew under it.
+function qPrompt(en, style){
+  return `<div class="qprompt"${style ? ` style="${style}"` : ''}>${esc(en)}${heOn() ? sayBtn(en) : ''}${heLine(heOf(en))}</div>`;
+}
+const KHE = {
+  // Instructions in games and missions
+  'What is this?': 'מה זה?',
+  'Which word matches?': 'איזו מילה מתאימה?',
+  'Which word do you hear?': 'איזו מילה שומעים?',
+  'Which one do you hear?': 'מה שומעים?',
+  'Tap the words in the right order': 'הקישו על המילים לפי הסדר הנכון',
+  'One word is wrong. Tap it!': 'מילה אחת לא נכונה. הקישו עליה!',
+  'Is this right?': 'זה נכון או לא נכון?',
+  'Type the missing word': 'כתבו את המילה החסרה',
+  'Type the missing words': 'כתבו את המילים החסרות',
+  'Put each word in its group': 'שימו כל מילה בקבוצה שלה',
+  'Tap one, then tap its group.': 'הקישו על מילה, ואז על הקבוצה שלה.',
+  'Spell the word': 'אייתו את המילה',
+  'Before we start': 'לפני שמתחילים: נחשו! אין כאן תשובה לא נכונה',
+  'Guess first': 'קודם מנחשים',
+  'Key words before you listen': 'מילים חשובות לפני ההאזנה',
+  'Before you read': 'לפני הקריאה',
+  'Your new words': 'המילים החדשות שלכם',
+  'The rule': 'הכלל',
+  'Tap play and listen.': 'הקישו על הכפתור והקשיבו. אחר כך יש שאלות.',
+  // Today, Play, Me
+  'Today\'s mission': 'המשימה של היום',
+  'No mission today': 'היום אין משימה',
+  'Play a game or talk with Chacho for bonus points.': 'אפשר לשחק או לדבר עם צ׳אצ׳ו בשביל בונוס.',
+  'Mission done!': 'המשימה הושלמה!',
+  'Catch up a day': 'להשלים יום שפספסתם',
+  'Talk to Chacho': 'לדבר עם צ׳אצ׳ו',
+  'Match it': 'התאמה',
+  'Hear it': 'הקשבה',
+  'Build it': 'משפטים',
+  'Spot it': 'טעויות',
+  'Play alone': 'לשחק לבד',
+  'This week': 'השבוע',
+  'Rewards': 'פרסים מההורים',
+  'Hebrew help': 'עזרה בעברית',
+  'Your journey starts soon': 'המסע שלכם מתחיל בקרוב',
+  'Finish your first daily task to open the map.': 'סיימו את המשימה הראשונה כדי לפתוח את המפה.',
+  'A friend who grows every time you practice English.': 'חבר שגדל בכל פעם שמתרגלים אנגלית.',
+  'Choose your pet': 'בחרו חיה',
+  'Adopt a pet': 'אמצו חיה',
+  // Waiting, offline, errors
+  'Getting your day ready…': 'מכינים לכם את היום…',
+  'This is taking longer than usual.': 'זה לוקח יותר זמן מהרגיל.',
+  'Try again': 'נסו שוב',
+  'Offline. Games still work, and results wait on this phone.': 'אין אינטרנט. המשחקים עובדים, והתוצאות נשמרות בטלפון.',
+  'No connection': 'אין חיבור לאינטרנט',
+  'Check the internet and try again.': 'בדקו את האינטרנט ונסו שוב.',
+  'The server is slow right now': 'השרת איטי עכשיו',
+  'Wait a moment and try again.': 'חכו רגע ונסו שוב.',
+  'The server is taking too long. Try again in a moment.': 'השרת מתעכב. נסו שוב עוד רגע.',
+  'No internet connection. Check it and try again.': 'אין חיבור לאינטרנט. בדקו ונסו שוב.',
+  'The server is busy right now. Try again in a moment.': 'השרת עמוס עכשיו. נסו שוב עוד רגע.',
+  'Could not load the games. Check the connection and try again.': 'המשחקים לא נטענו. בדקו את החיבור ונסו שוב.',
+  'Could not load the mission. Check the connection and try again.': 'המשימה לא נטענה. בדקו את החיבור ונסו שוב.',
+  'Could not load the talk. Check the connection and try again.': 'השיחה לא נטענה. בדקו את החיבור ונסו שוב.',
+  'This mission is not ready yet.': 'המשימה הזאת עוד לא מוכנה.',
+  'Could not save it. Try again.': 'לא הצלחנו לשמור. נסו שוב.',
+  // Toasts
+  'Time is up!': 'נגמר הזמן!',
+  'No sound on this device': 'אין צליל במכשיר הזה',
+  'No sound on this phone. Read it instead.': 'אין צליל בטלפון. אפשר לקרוא במקום.',
+  'Welcome back! Your mission goes on from where you stopped.': 'ברוכים השבים! המשימה ממשיכה מאיפה שעצרתם.',
+  'This phone cannot listen. Use the word tiles!': 'הטלפון הזה לא יכול להקשיב. אפשר להשתמש בכרטיסי המילים!',
+  'This phone cannot listen. Type it or tap the words!': 'הטלפון הזה לא יכול להקשיב. אפשר להקליד או להקיש על המילים!',
+  'This mission is being updated. Here is the exercise on the website for today.': 'המשימה הזאת מתעדכנת, אז היום התרגיל באתר.',
+  'The result will be in Play together': 'התוצאה תופיע בלשונית Play',
+  'The microphone is off. Tap an answer, and say it out loud too!': 'המיקרופון כבוי. הקישו על תשובה, ותגידו אותה גם בקול!',
+  'The connection is slow…': 'החיבור איטי…',
+  'Tap play to listen': 'הקישו על הכפתור כדי להקשיב',
+  'Save a few words first': 'קודם שומרים כמה מילים',
+  'Please sign in again': 'צריך להיכנס שוב',
+  'Notifications are blocked': 'ההתראות חסומות',
+  'Nothing to review right now': 'אין עכשיו מה לחזור עליו',
+  'No talks for your level yet.': 'עוד אין שיחות לרמה שלכם.',
+  'Installed': 'האפליקציה הותקנה',
+  'Give your pet a name': 'תנו שם לחיה שלכם',
+  'Choose a pet': 'בחרו חיה',
+  'Everything shines already!': 'הכול כבר נוצץ!',
+  'Enter a valid score': 'כתבו ציון נכון',
+  'Duo streak stopped': 'הרצף הזוגי נעצר',
+  'Do the level test first, then the games open': 'קודם עושים את מבחן הרמה, ואז המשחקים נפתחים',
+  'Could not prepare the challenge. Try again later.': 'לא הצלחנו להכין את האתגר. נסו שוב אחר כך.',
+  'Choose your level': 'בחרו את הרמה שלכם',
+  'Adopt a pet first': 'קודם מאמצים חיה',
+  'A code has 4 letters': 'בקוד יש 4 אותיות',
+  'Wrong PIN, try again': 'הקוד לא נכון, נסו שוב',
+  'Nudge sent': 'התזכורת נשלחה',
+  'Your duo streak starts today!': 'הרצף הזוגי שלכם מתחיל היום!',
+  'OK, maybe later': 'בסדר, אולי אחר כך',
+  'OK, maybe next time': 'בסדר, אולי בפעם הבאה',
+  'Tap again to leave the duel.': 'הקישו שוב כדי לצאת מהמשחק.',
+  'Tap again to leave. This try won\'t count.': 'הקישו שוב כדי לצאת. הניסיון הזה לא ייספר.',
+  'Tap again to stop.': 'הקישו שוב כדי לעצור.',
+  'Tap again to stop. Your mission waits for you here.': 'הקישו שוב כדי לעצור. המשימה תחכה לכם כאן.',
+  'Tap again to stop. Nothing is saved.': 'הקישו שוב כדי לעצור. שום דבר לא יישמר.',
+  'Tap again to stop the game. Your words so far are saved.': 'הקישו שוב כדי לעצור. המילים עד עכשיו נשמרו.',
+  'I didn\'t catch that. Try again, or use the tiles!': 'לא שמעתי טוב. נסו שוב, או השתמשו בכרטיסים!',
+  'I didn\'t catch that. Try again, or tap the words!': 'לא שמעתי טוב. נסו שוב, או הקישו על המילים!'
+};
+const KHE_RX = [
+  [/ invites you to /, 'מזמינים אתכם לשחק!'],
+  [/ challenged you$/, 'קיבלתם אתגר!'],
+  [/^Duo streak request sent to /, 'הבקשה לרצף זוגי נשלחה'],
+  [/^Helper star!/, 'קיבלתם כוכב עוזר!'],
+  [/^The gate to .* is open/, 'השער לרמה הבאה נפתח! האתגר מחכה לכם במפה.'],
+  [/^The gate opens again on /, 'השער ייפתח שוב בעוד כמה ימים.'],
+  [/^Finish today's task to reach station /, 'סיימו את המשימה של היום כדי להגיע לתחנה הבאה.'],
+  [/^Level .* saved\./, 'הרמה נשמרה. המשימות, המשחקים והמסע נפתחו!'],
+  [/sent you a 50\/50!$/, 'קיבלתם עזרה: נשארו רק שתי תשובות!'],
+  [/^50\/50 sent to /, 'שלחתם עזרה לחבר!'],
+  [/^Say hi to /, 'תגידו שלום!'],
+  [/^Welcome home, /, 'ברוכים הבאים הביתה!'],
+  [/ stopped the game\. /, 'החבר עצר את המשחק. המילים שלכם נשמרו.'],
+  [/^You can help again in /, 'אפשר לעזור שוב עוד כמה שניות.'],
+  [/ takes the level test first$/, 'קודם עושים מבחן רמה.'],
+  [/ made a mistake\. Tap the wrong word\.$/, 'החיה שלכם טעתה. הקישו על המילה הלא נכונה.'],
+  [/ knows you'll be there in 5 minutes$/, 'החבר יודע שתגיעו בעוד 5 דקות.']
+];
 // Group from the link (?g=...), remembered on the device so the installed app (which always
 // starts at the base URL) opens the right group. Empty means the default group.
 const IN_APPS_SCRIPT = !!(window.google && google.script);
@@ -1876,13 +2106,13 @@ function installCard(){
 
 // The wait screen (specs/perf-phase2.md): never a bare spinner. After 10 s it says so and offers to try again.
 const WAIT_HTML = '<div class="wait"><div class="spinner"></div><div class="sub">Getting your day ready…</div></div>';
-function loading(){ app.innerHTML = WAIT_HTML; waitArm(); }
+function loading(){ app.innerHTML = WAIT_HTML; const s = app.querySelector('.wait .sub'); if (s) s.insertAdjacentHTML('beforeend', heLine(heOf('Getting your day ready…'))); waitArm(); }
 function waitArm(){
   const w = app.querySelector('.wait');
   if (!w) return;
   setTimeout(() => {
     if (!w.isConnected || w.querySelector('button')) return;
-    w.insertAdjacentHTML('beforeend', '<div class="sub">This is taking longer than usual.</div><button class="btn btn-glass" data-waitagain>' + icon('arrows-clockwise') + ' Try again</button>');
+    w.insertAdjacentHTML('beforeend', '<div class="sub">This is taking longer than usual.' + heLine(heOf('This is taking longer than usual.')) + '</div><button class="btn btn-glass" data-waitagain>' + icon('arrows-clockwise') + ' Try again</button>');
     w.querySelector('[data-waitagain]').onclick = () => location.reload();
   }, 10000);
 }
@@ -1939,7 +2169,7 @@ function petCard(d){
       <div class="bubble" id="petline">${esc(lt ? 'Hi! First, let\'s find your English level. Then we can play together!'
         : d.journey && d.journey.gate.state === 'open' ? pick(PET_LINES.gate) : petLine(d, mood))}</div>
       <div class="bar mt-s" style="height:10px"><i style="width:${Math.max(3, pct)}%"></i></div>
-      <div class="xp-row"><span>${p.to ? (p.xp - p.from) + ' / ' + span + ' XP' : p.xp + ' XP'}</span><span>${p.to ? 'to ' + STAGES[p.stage] : 'Fully grown!'}</span></div>
+      <div class="xp-row"><span>${lowKid() ? (p.to ? 'Growing' : '') : p.to ? (p.xp - p.from) + ' / ' + span + ' XP' : p.xp + ' XP'}</span><span>${p.to ? 'to ' + STAGES[p.stage] : 'Fully grown!'}</span></div>
     </div>
     ${lt ? `<a class="btn btn-teal btn-block" href="${esc(lt.url)}" target="_blank" rel="noopener" style="grid-column:1 / -1">${icon('target')} Start the level test</a>`
       : `<button class="btn btn-primary btn-block" data-game="${rec}" style="grid-column:1 / -1">${icon('play')} Play ${GAME_INFO[rec].name}</button>`}
@@ -2023,7 +2253,7 @@ function renderOnboarding(d){
 function petPicker(){
   const cur = dash.pet;
   app.innerHTML = `<div class="stack">
-    <div class="row-flex between"><button class="btn btn-glass icon-btn" id="back">${icon('arrow-left')}</button>
+    <div class="row-flex between"><button class="btn btn-glass icon-btn" id="back" aria-label="Back">${icon('arrow-left')}</button>
       <h2>${cur ? 'Change your pet' : 'Choose your pet'}</h2><span style="width:46px"></span></div>
     <div class="sub" style="text-align:center;margin-top:-6px">${cur ? 'Your XP stays with you.' : 'Your pet grows every time you practice English.'}</div>
     <div class="pick-grid">${PETS.filter(p => PET_ART[p[0]]).map(([id, nm]) => `<button class="glass pick ${cur && cur.id === id ? 'sel' : ''}" data-pet="${id}">
@@ -2039,14 +2269,14 @@ function adoptSheet(id){
   ov.className = 'overlay';
   ov.innerHTML = `<div class="sheet glass">
     <div class="row-flex between"><span class="label">Meet ${esc(petName(id))}</span>
-      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x" aria-label="Close">${icon('x')}</button></div>
     <img class="pet-big" src="${petSrc(id, stage, 'celebrate')}" alt="">
     <div class="label mt">Name your pet</div>
     <input class="input mt-s" id="pname" maxlength="16" value="${esc(cur && cur.id === id ? cur.name : petName(id))}">
     <div class="label mt">How it grows</div>
     <div class="evo">${STAGES.map((s, i) => `<div><div class="slot ${i === stage - 1 ? 'now' : ''}">${i < (PET_ART[id] || 1)
       ? `<img src="${petSrc(id, i + 1, 'happy')}" alt="">` : icon('lock-simple', 'duotone')}</div>${s}</div>`).join('')}</div>
-    <div class="sub mt-s" style="font-size:12px">Right answers in games and every task you finish give XP. New looks unlock as it grows.</div>
+    <div class="sub mt-s" style="font-size:13px">Right answers in games and every task you finish give XP. New looks unlock as it grows.</div>
     <button class="btn btn-primary btn-block mt" id="go">${icon('heart')} ${cur ? 'Choose' : 'Adopt'} ${esc(petName(id))}</button>
   </div>`;
   document.body.appendChild(ov);
@@ -2634,7 +2864,7 @@ function renderShop(){
   const v = SHOP, d = dash;
   app.innerHTML = `<div class="stack shopscreen" id="shopscreen">
     <div class="gtop"><button class="btn btn-glass icon-btn" id="shopback" title="Back">${icon('arrow-left')}</button>
-      <div style="flex:1;min-width:0"><h2>Chacho's Wordrobe</h2><div class="sub" style="font-size:12px;margin:0">Pay in coins, and in English</div></div>
+      <div style="flex:1;min-width:0"><h2>Chacho's Wordrobe</h2><div class="sub" style="font-size:13px;margin:0">Pay in coins, and in English</div></div>
       <span class="coinpill" title="Every point and every XP is a coin">${coin}<b id="coinnum">${coinsTxt(v.coins.balance)}</b></span></div>
     <div class="glass cocobar">
       <img class="coco" id="cocoimg" src="${cocoSrc(v.open ? 'happy' : 'sleepy')}" alt="Chacho">
@@ -2685,7 +2915,7 @@ function shopGridHtml(){
     ${season.length ? `<div class="label mt">${icon('ghost')} Halloween Drop · back next year</div><div class="igrid mt-s">${season.map(card).join('')}</div><div class="label mt">Chacho's collection</div>` : ''}
     <div class="igrid mt-s">${rest.map(card).join('') || '<div class="sub">Nothing here yet.</div>'}</div>
     ${v.bought && v.bought.length ? `<div class="glass panel mt"><h2 style="font-size:16px">Your receipts</h2>${v.bought.map(b => `<div class="receipt"><span>"${esc(b.sentence)}"</span><b>${coin}${coinsTxt(b.paid)}</b></div>`).join('')}</div>` : ''}
-    <div class="sub mt" style="font-size:12px;text-align:center">Every point and every XP is also a coin. Coins never touch your points for rewards.</div>`;
+    <div class="sub mt" style="font-size:13px;text-align:center">Every point and every XP is also a coin. Coins never touch your points for rewards.</div>`;
 }
 function bindShopGrid(){
   app.querySelectorAll('[data-place]').forEach(b => b.onclick = () => { shopPlace = b.dataset.place; document.getElementById('shopbody').innerHTML = shopGridHtml(); bindShopGrid(); });
@@ -2811,7 +3041,7 @@ function itemSheet(it){
     const pct = g.ok ? g.pct : 0, paid = Math.round(it.price * (100 - pct) / 100);
     ov.querySelector('#manners').innerHTML = `<div class="mchips">${[['please', 'please'], ['question', 'question'], ['polite', 'could / may / I\'d like'], ['thanks', 'thank you']]
       .map(([k, t]) => `<span class="chip ${lit[k] ? 'teal' : ''}">${icon(lit[k] ? 'check' : 'circle')} ${t}</span>`).join('')}</div>
-      <div class="mprice">${g.ok ? (pct ? `<s>${coinsTxt(it.price)}</s> ` : '') + coin + '<b>' + coinsTxt(paid) + '</b>' + (pct ? ` <span class="chip teal">−${pct}%</span>` : '') : '<span class="sub" style="margin:0;font-size:12px">The nicer you ask, the less you pay (up to 15% off)</span>'}</div>`;
+      <div class="mprice">${g.ok ? (pct ? `<s>${coinsTxt(it.price)}</s> ` : '') + coin + '<b>' + coinsTxt(paid) + '</b>' + (pct ? ` <span class="chip teal">−${pct}%</span>` : '') : '<span class="sub" style="margin:0;font-size:13px">The nicer you ask, the less you pay (up to 15% off)</span>'}</div>`;
     const short = it.price * .85 > v.coins.balance && paid > v.coins.balance;
     const btn = ov.querySelector('#cask');
     btn.disabled = busy || !v.open;
@@ -2915,7 +3145,7 @@ function wordsPanel(it){
   if (!R || it.owned || !R.words.length) return '';
   const need = R.words.filter(w => w[2] === 'new').length;
   return `<div class="wordsbox mt-s"><div class="row-flex between"><span class="label">${icon('book-open-text')} Made of words</span>
-      <span class="sub" style="margin:0;font-size:12px">${R.words.length - need}/${R.words.length} collected</span></div>
+      <span class="sub" style="margin:0;font-size:13px">${R.words.length - need}/${R.words.length} collected</span></div>
     <div class="wchips">${R.words.map(w => `<span class="chip ${w[2] === 'new' ? '' : 'teal'}">${icon(w[2] === 'new' ? 'lock-simple' : 'check')} ${esc(w[0])}</span>`).join('')}</div>
     ${need ? `<button class="btn btn-teal btn-block mt-s" id="collect">${icon('sparkle')} Collect ${need === R.words.length ? 'the' : 'the last'} ${need} word${need > 1 ? 's' : ''} · 1 min</button>` : ''}</div>`;
 }
@@ -2930,7 +3160,7 @@ function shinePanel(it){
     <div class="bar mt-s" style="height:9px"><i style="width:${R.shine}%"></i></div>
     <div class="wchips">${R.words.map(chip).join('')}</div>
     ${due.length ? `<button class="btn btn-teal btn-block mt-s" id="opolish">${icon('sparkle')} Polish · ${due.length} word${due.length > 1 ? 's' : ''}</button>`
-      : `<div class="sub" style="font-size:12px;margin:6px 0 0">${R.words.every(w => w[2] === 'mastered') ? 'These words are yours for good: it shines forever!' : esc(COCO.shiny)}</div>`}</div>`;
+      : `<div class="sub" style="font-size:13px;margin:6px 0 0">${R.words.every(w => w[2] === 'mastered') ? 'These words are yours for good: it shines forever!' : esc(COCO.shiny)}</div>`}</div>`;
 }
 function bindOwned(ov, it, remirror){
   const colors = it.colors || [];
@@ -3417,7 +3647,7 @@ function wordQuiz(o){
     if (missed.indexOf(cur.w) < 0) missed.push(cur.w);
     queue.push(cur);
     sayWord(cur.w);
-    body.querySelector('#wqmore').innerHTML = `<div class="answer-box mt-s"><div class="row-flex" style="gap:10px"><button class="btn btn-glass icon-btn tsay" id="wqsay">${icon('speaker-high')}</button>
+    body.querySelector('#wqmore').innerHTML = `<div class="answer-box mt-s"><div class="row-flex" style="gap:10px"><button class="btn btn-glass icon-btn tsay" id="wqsay" aria-label="Listen">${icon('speaker-high')}</button>
       <span><b>${esc(cur.w)}</b>: ${esc(cur.m)}</span></div></div><button class="btn btn-primary btn-block mt-s" id="wqnext">Got it ${icon('arrow-right')}</button>`;
     const w = cur.w;
     body.querySelector('#wqsay').onclick = () => sayWord(w);
@@ -3498,15 +3728,15 @@ function cultureSheet(){
   const ov = document.createElement('div');
   ov.className = 'overlay';
   ov.innerHTML = `<div class="sheet glass asksheet">
-    <div class="row-flex between"><span class="label">Culture card</span><button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
+    <div class="row-flex between"><span class="label">Culture card</span><button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x" aria-label="Close">${icon('x')}</button></div>
     <div class="row-flex mt-s" style="gap:12px"><img src="${itemSrc('jack-o-lantern')}" alt="" style="width:76px;height:76px;object-fit:contain"><h2 style="font-size:22px">Trick or treat?</h2></div>
     <div class="answer-box mt" style="font-size:15px;line-height:1.55">Halloween is on October 31. In the USA, the UK and Ireland, kids put on <b>costumes</b> and knock on doors in their neighborhood.
       They say <b>"Trick or treat!"</b> and get <b>candy</b>. People cut faces into pumpkins and put a light inside: a <b>jack-o'-lantern</b>.
       Houses have spiders, bats and ghosts on them. It's <b>spooky</b>, but it's fun!</div>
     <div class="label mt">Words to hear</div>
-    <div class="stack mt-s" style="gap:8px">${words.map(([w, m]) => `<div class="lrow"><button class="btn btn-glass icon-btn tsay" data-word="${esc(w)}">${icon('speaker-high')}</button>
+    <div class="stack mt-s" style="gap:8px">${words.map(([w, m]) => `<div class="lrow"><button class="btn btn-glass icon-btn tsay" data-word="${esc(w)}" aria-label="Listen">${icon('speaker-high')}</button>
       <span class="lt"><b>${esc(w)}</b> · ${esc(m)}</span></div>`).join('')}</div>
-    <div class="sub mt" style="font-size:12px">Chacho's Halloween Drop is in the shop until November 7. It comes back next year.</div>
+    <div class="sub mt" style="font-size:13px">Chacho's Halloween Drop is in the shop until November 7. It comes back next year.</div>
   </div>`;
   document.body.appendChild(ov);
   ov.onclick = e => { if (e.target === ov) ov.remove(); };
@@ -3692,34 +3922,34 @@ function renderItem(){
   let body;
   if (game === 'match') {
     body = `<div class="glass qcard">${it.kind === 'pic'
-        ? `<div class="qprompt">What is this?</div><img class="qpic" src="${picSrc(it.word)}" alt="">`
-        : `<div class="qprompt">Which word matches?</div><div class="qbig">${esc(it.def)}</div>`}</div>
+        ? `${qPrompt('What is this?')}<img class="qpic" src="${picSrc(it.word)}" alt="">`
+        : `${qPrompt('Which word matches?')}<div class="qbig">${esc(it.def)}</div>`}</div>
       <div class="opts">${it.options.map(o => `<button class="opt" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div>`;
   } else if (game === 'listen') {
     body = `<div class="glass qcard">
         <div class="speak-row"><button class="speak" id="say" aria-label="Listen">${icon('speaker-high')}</button>
           <button class="btn btn-glass btn-sm" id="slow">${icon('gauge')} Slow</button></div>
-        <div class="qbig" style="font-size:18px">${esc(it.q)}</div><div id="transcript"></div></div>
+        <div class="qbig" style="font-size:18px">${esc(it.q)}${heLine(heOf(it.q))}</div><div id="transcript"></div></div>
       <div class="opts ${it.options.some(o => o.length > 13) ? 'one' : ''}">${it.options.map(o => `<button class="opt" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div>`;
   } else if (game === 'build') {
-    body = `<div class="qprompt" style="text-align:center">Tap the words in the right order</div>
+    body = `${qPrompt('Tap the words in the right order', 'text-align:center')}
       <div class="slots" id="slots"></div>
       <div class="bank" id="bank">${it.order.map(k => `<button class="tok" data-k="${k}">${esc(it.words[k])}</button>`).join('')}</div>`;
   } else {
-    body = `<div class="glass qcard"><div class="qprompt">One word is wrong. Tap it!</div>
+    body = `<div class="glass qcard">${qPrompt('One word is wrong. Tap it!')}
       <div class="sentence">${it.tokens.map((t, k) => `<button class="tok" data-k="${k}">${esc(t)}</button>`).join('')}</div></div>`;
   }
   const hint = { match: 'Hmm… which one is it?', listen: 'Listen carefully!', build: 'Let\'s build it together!', spot: 'Can you find it?' }[game];
   app.innerHTML = `<div class="gscreen gplay" id="gs">
     <div class="gtop"><button class="btn btn-glass icon-btn" id="gquit" title="Stop">${icon('x')}</button>
-      <div style="flex:1;min-width:0"><h2>${G.duel ? G.duel.title : G.place ? (G.place.form === 'A' ? 'Level test' : 'Progress check') : G.gate ? 'Gate challenge' : info.name}</h2><div class="sub" style="font-size:12px;margin:0">${G.duel
+      <div style="flex:1;min-width:0"><h2>${G.duel ? G.duel.title : G.place ? (G.place.form === 'A' ? 'Level test' : 'Progress check') : G.gate ? 'Gate challenge' : info.name}</h2><div class="sub" style="font-size:13px;margin:0">${G.duel
         ? info.name + ' · level ' + esc(G.duel.label) : G.place ? info.name : G.gate ? info.name + ' · level ' + esc(dash.journey.gate.nextLabel) : G.game === 'mine' ? 'My words · ' + info.name : 'Level ' + esc(dash.girl.levelLabel)} · ${G.i + 1} of ${n}</div></div>
       ${soundBtn()}${G.duel ? `<span class="chip" id="dtimer">${icon('timer')} ${duelClockText()}</span>` : `<span class="tile ${info.tile}">${icon(info.icon, 'duotone')}</span>`}</div>
     ${G.duel ? duelRaceCard() : `<div class="gprog" id="gprog">${gameBars()}</div>`}
     <div class="gstage enter">${body}</div>
     <div class="gdock">
       <div class="react">${dash.pet ? petArt(dash.pet, 'thinking', 'gpet', { id: 'gpet' }) : ''}
-        <div class="bubble" id="fb">${hint}</div></div>
+        <div class="bubble" id="fb" aria-live="polite">${hint}</div></div>
       <div id="explain"></div>
       <div class="gslot" id="gnext">${game === 'build' ? `<button class="btn btn-primary btn-block" id="check" disabled>Check ${icon('check')}</button>`
         : `<button class="btn btn-glass btn-block" disabled>Next ${icon('arrow-right')}</button>`}</div>
@@ -3863,7 +4093,7 @@ function xpPop(half){
   const img = document.getElementById('gpet'), r = img ? img.getBoundingClientRect() : { left: window.innerWidth - 90, top: 30 };
   const s = document.createElement('div');
   s.className = 'xp-pop';
-  s.textContent = half ? '+1 XP' : '+2 XP';
+  if (lowKid()) s.innerHTML = icon('heart', 'duotone'); else s.textContent = half ? '+1 XP' : '+2 XP';
   s.style.left = Math.max(8, r.left - 20) + 'px'; s.style.top = (r.top + 10) + 'px';
   document.body.appendChild(s);
   setTimeout(() => s.remove(), 1000);
@@ -3887,7 +4117,7 @@ function finishRound(){
       <div class="saved wait" id="savest"><span class="mini-spin"></span>Saving…</div>
       ${R.missed.length ? '<div class="sub" style="font-size:13px;max-width:290px">The ones you missed will come back in another game, so you can learn them.</div>' : ''}
     </div>
-    ${keep.length ? `<div class="glass panel keepwords" id="keepwords"><div class="row-flex between"><h2 style="font-size:16px">Save words</h2><span class="sub" style="margin:0;font-size:12px">for My words</span></div>
+    ${keep.length ? `<div class="glass panel keepwords" id="keepwords"><div class="row-flex between"><h2 style="font-size:16px">Save words</h2><span class="sub" style="margin:0;font-size:13px">for My words</span></div>
       <div class="keeplist mt-s" id="keeplist"><div class="mini-spin"></div></div></div>` : ''}
     <div class="stack" style="gap:10px">
       <button class="btn btn-primary btn-block" id="again">${icon('arrows-clockwise')} Play again</button>
@@ -3911,7 +4141,7 @@ async function saveRound(R){
   try {
     setDash(await call('apiGameResult', session.name, session.pin, R.game, R.level, R.correct, R.total, R.missed, R.right, R.second || 0));
     homeStale = true;
-    status('', icon('check') + (dash.gameXp ? ' Saved · +' + dash.gameXp + ' XP for ' + esc(dash.pet ? dash.pet.name : 'you') : ' Saved · XP is full for today'));
+    status('', icon('check') + (lowKid() ? (dash.gameXp && dash.pet ? ' Saved · ' + esc(dash.pet.name) + ' grew a little!' : ' Saved') : dash.gameXp ? ' Saved · +' + dash.gameXp + ' XP for ' + esc(dash.pet ? dash.pet.name : 'you') : ' Saved · XP is full for today'));
     checkGrowth();
   } catch(e){
     queueResult(R);
@@ -3955,7 +4185,7 @@ async function openMyWords(){
     const ids = ((dash.games && dash.games.saved) || []).slice().reverse(), rows = ids.map(id => { const x = itemById(B, id); return x ? [id, savedView(x)] : null; }).filter(r => r && r[1]);
     app.innerHTML = `<div class="stack mywords">
       <div class="gtop"><button class="btn btn-glass icon-btn" id="mwback" title="Back">${icon('arrow-left')}</button>
-        <div style="flex:1;min-width:0"><h2>My words</h2><div class="sub" style="font-size:12px;margin:0">${rows.length} saved · they come back in your games</div></div>
+        <div style="flex:1;min-width:0"><h2>My words</h2><div class="sub" style="font-size:13px;margin:0">${rows.length} saved · they come back in your games</div></div>
         <span class="tile t-vocab">${icon('bookmarks-simple', 'duotone')}</span></div>
       ${rows.length ? `<button class="btn btn-primary btn-block" id="mwplay">${icon('play')} Practice my words</button>` : ''}
       <div class="glass panel" id="mwlist">${rows.length ? rows.map(([id, v]) => `<div class="keeprow"><button class="btn btn-glass icon-btn tsay" data-say="${esc(v.say)}" title="Listen">${icon('speaker-high')}</button>
@@ -4210,6 +4440,8 @@ function msClock(){
     el.innerHTML = msClockText();
   }, 1000);
 }
+// The running clock adds pressure for young kids (night review, finding 23): below B1 it is hidden; the time is still measured.
+const msShowClock = () => !(dash && dash.girl && ['a1', 'a2'].indexOf(dash.girl.level) >= 0);
 function msClockText(){
   const s = Math.floor((MS.active + Math.min(Date.now() - MS.last, 120000)) / 1000);
   return icon('timer') + ' ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
@@ -4253,12 +4485,12 @@ function msRender(){
     : `<button class="btn btn-glass btn-block" disabled>${sc.t === 'q' ? 'Next' : 'Continue'} ${icon('arrow-right')}</button>`;
   app.innerHTML = `<div class="gscreen mscreen gplay" id="ms">
     <div class="gtop"><button class="btn btn-glass icon-btn" id="msquit" title="Stop">${icon('x')}</button>
-      <div style="flex:1;min-width:0"><h2>${esc(m.title)}</h2><div class="sub" style="font-size:12px;margin:0">${sub}</div></div>
-      ${soundBtn()}<span class="chip" id="msclock">${msClockText()}</span></div>
+      <div style="flex:1;min-width:0"><h2>${esc(m.kid || m.title)}</h2><div class="sub" style="font-size:13px;margin:0">${sub}</div></div>
+      ${soundBtn()}${msShowClock() ? `<span class="chip" id="msclock">${msClockText()}</span>` : ''}</div>
     ${parts}
     <div class="gstage${same ? '' : ' enter'}">${body}</div>
     <div class="gdock">
-      <div class="react">${dash.pet ? petArt(dash.pet, mood, 'gpet', { id: 'gpet' }) : ''}<div class="bubble" id="fb">${line}</div></div>
+      <div class="react">${dash.pet ? petArt(dash.pet, mood, 'gpet', { id: 'gpet' }) : ''}<div class="bubble" id="fb" aria-live="polite">${line}</div></div>
       <div id="explain"></div>
       <div class="gslot" id="gnext">${slot}</div>
     </div>
@@ -4267,6 +4499,7 @@ function msRender(){
   if (keep) app.querySelectorAll('#ms .gstage, #ms .mtext').forEach((el, i) => { if (keep[i] != null) el.scrollTop = keep[i]; });
   else window.scrollTo(0, 0);
   MS.drawn = MS.si;
+  if (MS.sub.words != null && MS.m.show) msShowLines(MS.m.show.parts[MS.sub.words].lines);
   holdSlots();
   msDeckDots();
   const gapNow = app.querySelector('.mgaps .g.now');
@@ -4314,7 +4547,7 @@ function msNextBtn(label){
 
 function msHook(){
   const h = MS.m.hook, picked = MS.guess != null;
-  const body = `<div class="glass qcard"><div class="qprompt">Before we start</div><div class="qbig" style="font-size:18px">${esc(h.q)}</div></div>
+  const body = `<div class="glass qcard">${qPrompt('Before we start')}<div class="qbig" style="font-size:18px">${esc(h.q)}</div></div>
     <div class="opts one">${h.o.map((o, i) => `<button class="opt${MS.guess === i ? ' sel' : ''}" data-guess="${i}"${picked ? ' disabled' : ''}>${esc(o)}</button>`).join('')}</div>`;
   if (picked) MS.ready = 'Continue';
   return [body, picked ? 'Good guess! You will find out at the end.' : 'Take a guess. There is no wrong answer here.', picked ? 'happy' : 'thinking'];
@@ -4332,7 +4565,7 @@ function msLearn(){
   const L = MS.m.learn;
   let body = '';
   if (L.kind === 'rule') {
-    body = `<div class="glass mcard"><div class="qprompt" style="text-align:center">${esc(L.title || 'The rule')}</div>
+    body = `<div class="glass mcard"><div class="qprompt" style="text-align:center">${esc(L.title || 'The rule')}${heLine(heOf('The rule'))}</div>
       ${L.form ? `<div class="mform">${L.form.map((f, i) => (i ? '<b>+</b>' : '') + `<span>${esc(f)}</span>`).join('')}</div>` : ''}
       ${(L.lines || []).map(x => `<div class="mline">${msMark(x)}</div>`).join('')}
       ${(L.ex || []).map(x => `<div class="mex"><button class="btn btn-glass icon-btn tsay" data-say="${esc(x.replace(/\*/g, ''))}" title="Listen">${icon('speaker-high')}</button><span>${msMark(x)}</span></div>`).join('')}
@@ -4340,7 +4573,7 @@ function msLearn(){
     </div>`;
   } else if (L.kind === 'words') {
     // One card per word, side by side: swipe or tap the arrows. Every card has the same height, so nothing scrolls.
-    body = `<div class="qprompt" style="text-align:center">${esc(L.title || 'Your new words')}</div>
+    body = `<div class="qprompt" style="text-align:center">${esc(L.title || 'Your new words')}${heLine(heOf('Your new words'))}</div>
       <div class="mdeck" id="mdeck">${L.words.map(x => `<div class="glass">
         ${x.pic ? `<img src="${picSrc(x.pic)}" alt="">` : ''}
         <div class="row-flex" style="gap:10px;justify-content:center"><b class="mw">${esc(x.w)}</b><button class="btn btn-glass icon-btn tsay" data-say="${esc(x.w)}" title="Listen">${icon('speaker-high')}</button></div>
@@ -4350,11 +4583,11 @@ function msLearn(){
         <button class="btn btn-glass icon-btn" data-deck="next" title="Next word">${icon('caret-right')}</button></div>`;
   } else {
     const p = L.predict;
-    body = `<div class="glass mcard"><div class="qprompt" style="text-align:center">${esc(L.title || (L.kind === 'keys' ? 'Key words before you listen' : 'Before you read'))}</div>
+    body = `<div class="glass mcard"><div class="qprompt" style="text-align:center">${esc(L.title || (L.kind === 'keys' ? 'Key words before you listen' : 'Before you read'))}${heLine(heOf(L.kind === 'keys' ? 'Key words before you listen' : 'Before you read'))}</div>
       ${L.line ? `<div class="mline" style="text-align:center">${msMark(L.line)}</div>` : ''}
       ${(L.words || []).map(x => `<div class="mex"><button class="btn btn-glass icon-btn tsay" data-say="${esc(x.w)}" title="Listen">${icon('speaker-high')}</button><span><b>${esc(x.w)}</b> · ${esc(x.d)}</span></div>`).join('')}
     </div>
-    ${p ? `<div class="glass qcard"><div class="qprompt">Guess first</div><div class="qbig" style="font-size:17px">${esc(p.q)}</div></div>
+    ${p ? `<div class="glass qcard">${qPrompt('Guess first')}<div class="qbig" style="font-size:17px">${esc(p.q)}</div></div>
       <div class="opts one">${p.o.map((o, i) => `<button class="opt${MS.sub.pred === i ? ' sel' : ''}" data-pred="${i}"${MS.sub.pred != null ? ' disabled' : ''}>${esc(o)}</button>`).join('')}</div>` : ''}`;
   }
   const ready = !L.predict || MS.sub.pred != null;
@@ -4367,14 +4600,22 @@ function msLearn(){
 function msPlay(sc){
   const part = MS.m.show.parts[sc.p], heard = !!(MS.sub.heard && MS.sub.heard[sc.p]);
   const body = `<div class="glass qcard mplay">
-      <div class="qprompt">Part ${sc.p + 1} of ${MS.m.show.parts.length}${part.title ? ' · ' + esc(part.title) : ''}</div>
+      <div class="qprompt">Part ${sc.p + 1} of ${MS.m.show.parts.length}${part.title ? ' · ' + esc(part.title) : ''}${heLine(heOf('Tap play and listen.'))}</div>
       <button class="speak" id="msplay" aria-label="Play">${icon('play')}</button>
       <div class="msbar"><i id="msbar" style="width:0%"></i></div>
-      <div class="row-flex" style="gap:8px;justify-content:center"><button class="btn btn-glass btn-sm" data-slow="1">${icon('gauge')} ${MS.slow ? 'Normal speed' : 'Slow'}</button></div>
+      <div class="row-flex" id="msplayrow" style="gap:8px;justify-content:center"><button class="btn btn-glass btn-sm" data-slow="1">${icon('gauge')} ${MS.slow ? 'Normal speed' : 'Slow'}</button>${heard ? msWordsBtn(sc.p) : ''}</div>
       <div class="sub" style="font-size:13px">${esc(MS.m.show.cast || '')}</div>
     </div>`;
   if (heard) MS.ready = 'Questions';
   return [body, heard ? 'Ready for the questions?' : 'Tap play and listen. You can listen again later.', 'thinking'];
+}
+// "Show the words" (night review, finding 18, WCAG 1.2.1): after the first listen the kid can read the part too.
+const msWordsBtn = p => `<button class="btn btn-glass btn-sm" data-words="${p}" aria-expanded="${MS.sub.words === p ? 'true' : 'false'}">${icon('article')} ${MS.sub.words === p ? 'Hide the words' : 'Show the words'}</button>`;
+function msWords(p){
+  const ex = document.getElementById('explain');
+  if (MS.sub.words === p) { MS.sub.words = null; if (ex) ex.innerHTML = ''; }
+  else { MS.sub.words = p; msShowLines(MS.m.show.parts[p].lines); }
+  app.querySelectorAll('[data-words]').forEach(b => b.outerHTML = msWordsBtn(Number(b.dataset.words)));
 }
 function msAudioSrc(p){ return ASSETS + 'missions/audio/' + MS.id + '-' + (p + 1) + '.mp3?v=' + MISSIONS_V; }
 function msListen(p, onEnd){
@@ -4427,7 +4668,7 @@ function msItem(sc){
   const prevWrong = sc.q0 >= 2 && MS.res[sc.q0 - 1] === false && MS.res[sc.q0 - 2] === false;
   let top = '';
   const playPart = sc.ctx.play != null ? sc.ctx.play : it.clip;
-  if (playPart != null && MS.m.show) top = `<button class="btn btn-glass btn-sm" data-again="${playPart}" style="align-self:center">${icon('speaker-high')} Listen again</button>`;
+  if (playPart != null && MS.m.show) top = `<div class="row-flex" style="gap:8px;justify-content:center"><button class="btn btn-glass btn-sm" data-again="${playPart}">${icon('speaker-high')} Listen again</button>${msWordsBtn(playPart)}</div>`;
   if (sc.ctx.chunk != null) top = msChunk(sc.ctx.chunk, k === 'find' && !sub.done, k === 'find' && sub.done ? it.a : null, sc.ctx.step);
   const remind = prevWrong && !sub.done ? msRemind() : '';
   const step = sc.ctx.chunk != null ? '' : `<div class="qprompt" style="text-align:center">${esc(sc.ctx.step || '')}</div>`;
@@ -4438,28 +4679,28 @@ function msItem(sc){
     const right = k === 'tf' ? (it.a ? 0 : 1) : it.a;
     const q = k === 'hear' ? `<div class="speak-row"><button class="speak" data-say="${esc(it.say)}" aria-label="Listen">${icon('speaker-high')}</button></div><div class="qbig" style="font-size:17px">${esc(it.q || 'Which one do you hear?')}</div>`
       : `${it.pic ? `<img class="qpic" src="${picSrc(it.pic)}" alt="">` : ''}<div class="qbig mq">${msGap(it.q)}</div>${it.say ? `<button class="btn btn-glass btn-sm" data-say="${esc(it.say)}">${icon('speaker-high')} Listen</button>` : ''}`;
-    body = `<div class="glass qcard">${k === 'tf' ? '<div class="qprompt">Is this right?</div>' : ''}${q}</div>
+    body = `<div class="glass qcard">${k === 'tf' ? qPrompt('Is this right?') : ''}${q}</div>
       <div class="opts${msOptsClass(opts)}">${order.map(i => {
         const cls = sub.done ? (i === right ? ' ok' : i === sub.pick ? ' no' : '') : '';
         return `<button class="opt${cls}" data-opt="${i}"${sub.done ? ' disabled' : ''}>${esc(opts[i])}</button>`;
       }).join('')}</div>`;
     MS.sub.right = right;
   } else if (k === 'type') {
-    body = `<div class="glass qcard"><div class="qprompt">Type the missing word${/\s/.test((it.a || [''])[0]) ? 's' : ''}</div><div class="qbig mq">${msGap(it.q)}</div>
+    body = `<div class="glass qcard">${qPrompt('Type the missing word' + (/\s/.test((it.a || [''])[0]) ? 's' : ''))}<div class="qbig mq">${msGap(it.q)}</div>
       ${it.hint ? `<div class="sub" style="margin:0">${esc(it.hint)}</div>` : ''}
       <input class="mtype" id="mstype" type="text" enterkeyhint="go" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Your answer"${sub.done ? ` disabled value="${esc(sub.typed || '')}"` : ''}></div>`;
     if (!sub.done) MS.check = { k: 'type', ready: true };
   } else if (k === 'build') {
     const words = it.s.split(' '), order = sub.order || (sub.order = (() => { let o = shuffled(words, 'b'); if (o.every((v, i) => words[v] === words[i])) o = o.reverse(); return o; })());
     const built = sub.built || (sub.built = []);
-    body = `<div class="qprompt" style="text-align:center">${esc(it.q || 'Tap the words in the right order')}</div>
+    body = `${qPrompt(it.q || 'Tap the words in the right order', 'text-align:center')}
       <div class="slots" id="slots">${built.map(x => `<button class="tok placed" data-unbuild="${x}"${sub.done ? ' disabled' : ''}>${esc(words[x])}</button>`).join('')}</div>
       <div class="bank">${order.map(x => `<button class="tok${built.indexOf(x) >= 0 ? ' used' : ''}" data-build="${x}"${sub.done ? ' disabled' : ''}>${esc(words[x])}</button>`).join('')}</div>`;
     if (!sub.done) MS.check = { k: 'build', ready: built.length === words.length };
   } else if (k === 'spot' || k === 'teach') {
     const raw = it.s.split(' '), wrong = raw.findIndex(t => t.indexOf('*') >= 0), toks = raw.map(t => t.replace(/\*/g, ''));
     MS.sub.wrong = wrong;
-    body = `<div class="glass qcard"><div class="qprompt">${k === 'teach' ? esc(dash.pet ? dash.pet.name : 'Your friend') + ' made a mistake. Tap the wrong word.' : 'One word is wrong. Tap it!'}</div>
+    body = `<div class="glass qcard">${qPrompt(k === 'teach' ? (dash.pet ? dash.pet.name : 'Your friend') + ' made a mistake. Tap the wrong word.' : 'One word is wrong. Tap it!')}
       <div class="sentence">${toks.map((t, i) => {
         let cls = '', label = esc(t);
         if (sub.done && i === wrong) { cls = ' fixed'; label = '<s>' + esc(t) + '</s>' + esc(raw[wrong].replace(/\*(.*?)\*/, it.fix || '')); }
@@ -4470,13 +4711,13 @@ function msItem(sc){
     const place = sub.place || (sub.place = {}), order = sub.order || (sub.order = shuffled(it.w, 's'));
     const chip = i => { const ok = sub.done ? place[i] === it.w[i][1] : null; return `<button class="tok${sub.sel === i ? ' sel' : ''}${ok === true ? ' fixed' : ok === false ? ' wrongpick' : ''}" data-sortw="${i}"${sub.done ? ' disabled' : ''}>${esc(it.w[i][0])}</button>`; };
     // The words wait above the groups and keep their places when they move, so a tap never shifts the rest.
-    body = `<div class="glass qcard"><div class="qprompt">${esc(it.q || 'Put each word in its group')}</div><div class="sub" style="margin:0;font-size:13px">Tap one, then tap its group.</div></div>
+    body = `<div class="glass qcard">${qPrompt(it.q || 'Put each word in its group')}<div class="sub" style="margin:0;font-size:13px">Tap one, then tap its group.${heLine(heOf('Tap one, then tap its group.'))}</div></div>
       <div class="bank">${order.map(i => place[i] == null ? chip(i) : `<button class="tok used" tabindex="-1" disabled>${esc(it.w[i][0])}</button>`).join('')}</div>
       <div class="msort" style="--n:${it.g.length}">${it.g.map((g, gi) => `<div class="mbasket" data-basket="${gi}"><b>${esc(g)}</b>${order.filter(i => place[i] === gi).map(chip).join('')}</div>`).join('')}</div>`;
     if (!sub.done) MS.check = { k: 'sort', ready: Object.keys(place).length === it.w.length };
   } else if (k === 'spell') {
     const letters = it.w.split(''), order = sub.order || (sub.order = shuffled(letters, 'l')), got = sub.got || (sub.got = []);
-    body = `<div class="glass qcard"><div class="qprompt">Spell the word</div><div class="qbig" style="font-size:17px">${esc(it.clue)}</div>
+    body = `<div class="glass qcard">${qPrompt('Spell the word')}<div class="qbig" style="font-size:17px">${esc(it.clue)}</div>
       <button class="btn btn-glass btn-sm" data-say="${esc(it.w)}">${icon('speaker-high')} Listen</button></div>
       <div class="mspell">${letters.map((x, i) => `<span class="slot${sub.done ? (sub.ok ? ' ok' : ' no') : ''}" data-unspell="${i}">${got[i] != null ? esc(letters[got[i]]) : ''}</span>`).join('')}</div>
       <div class="bank">${order.map(i => `<button class="tok${got.indexOf(i) >= 0 ? ' used' : ''}" data-spell="${i}"${sub.done ? ' disabled' : ''}>${esc(letters[i])}</button>`).join('')}</div>`;
@@ -4573,9 +4814,16 @@ function msClick(e){
   if (d.read != null) return msReadAloud(Number(d.read));
   if (d.again != null) { const b = t; b.classList.add('talk'); return msListen(Number(d.again), () => b.classList.remove('talk')); }
   if (d.slow) { MS.slow = !MS.slow; return msRender(); }
+  if (d.words != null) return msWords(Number(d.words));
   if (t.id === 'msplay') {
     msTouch();
-    return msListen(sc.p, () => { if (!MS) return; (MS.sub.heard = MS.sub.heard || {})[sc.p] = true; const fb = document.getElementById('fb'); if (fb) fb.textContent = 'Ready for the questions?'; msNextBtn('Questions'); });
+    return msListen(sc.p, () => {
+      if (!MS) return;
+      const first = !(MS.sub.heard && MS.sub.heard[sc.p]);
+      (MS.sub.heard = MS.sub.heard || {})[sc.p] = true;
+      const fb = document.getElementById('fb'); if (fb) fb.textContent = 'Ready for the questions?'; msNextBtn('Questions');
+      const row = document.getElementById('msplayrow'); if (first && row && !row.querySelector('[data-words]')) row.insertAdjacentHTML('beforeend', msWordsBtn(sc.p));
+    });
   }
   if (d.flag && MS.preview && TEACHER) {
     t.parentElement.innerHTML = '<input class="input" id="tnote" placeholder="What is wrong? A short note" style="flex:1;min-width:0;height:36px"><button class="mflag" data-tsend="' + esc(d.flag) + '">Send</button>';
@@ -4692,7 +4940,7 @@ function msFinish(){
       <h1>${correct}/${total}</h1>
       <h2>${pct === 100 ? 'Perfect mission!' : pct >= 80 ? 'Great job!' : pct >= 50 ? 'Nice work!' : 'Good try. Keep going!'}</h2>
       <div class="saved wait" id="savest"><span class="mini-spin"></span>Saving…</div>
-      ${MS.review || MS.practice ? '' : `<div class="sub" style="font-size:13px">${pct}% · ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')} minutes</div>`}
+      ${MS.review || MS.practice ? '' : `<div class="sub" style="font-size:13px">${pct}%${msShowClock() ? ' · ' + Math.floor(seconds / 60) + ':' + String(seconds % 60).padStart(2, '0') + ' minutes' : ''}</div>`}
     </div>
     ${m.hook && !MS.review ? `<div class="glass panel"><div class="label">The answer to our question</div><div style="font-weight:700;margin-top:6px">${msMark(m.hook.reveal)}</div>
       ${MS.guess === m.hook.a ? '<div class="sub" style="color:#047857;margin-top:4px">You guessed it!</div>' : ''}</div>` : ''}
@@ -4725,7 +4973,7 @@ async function msSave(args){
     setDash(await call('apiMissionResult', session.name, session.pin, ...args));
     homeStale = true;
     const j = dash.journey;
-    status('', icon('check') + ' Saved · +' + esc(dash.justEarned) + ' points');
+    status('', icon('check') + (lowKid() ? ' Saved' : ' Saved · +' + esc(dash.justEarned) + ' points'));
     celebrate(dash.justEarned, j ? 'Station ' + Math.min(j.stations, j.goal) + ' of ' + j.goal + ' · ' + j.name : '');
     if (j && !wasOpen && j.gate.state === 'open') setTimeout(() => toast('The gate to ' + j.gate.nextLabel + ' is open! Take the challenge on your map.'), 2300);
   } catch(e){
@@ -4774,7 +5022,7 @@ async function msSaveReview(R, correct, total){
   try {
     setDash(await call('apiGameResult', session.name, session.pin, 'review', dash.girl.level, correct, total, missed, right, 0));
     homeStale = true;
-    status('', icon('check') + (dash.gameXp ? ' Saved · +' + dash.gameXp + ' XP' : ' Saved · XP is full for today'));
+    status('', icon('check') + (lowKid() ? ' Saved' : dash.gameXp ? ' Saved · +' + dash.gameXp + ' XP' : ' Saved · XP is full for today'));
   } catch(e){
     queueResult({ game: 'review', level: dash.girl.level, correct, total, missed, right, second: 0 });
     status('err', icon('wifi-slash') + ' Saved on this phone. It will sync when you are online.');
@@ -4788,6 +5036,8 @@ let msGalleryLevel = 'a2';
 async function missionGallery(){
   MS = null;
   if (!dash || !dash.preview) dash = { preview: true, pet: { id: 'fawn', name: 'Fern', stage: 3, xp: 600, wear: [], move: 'spin' }, girl: { name: 'Preview', level: msGalleryLevel, levelLabel: '' }, week: [], games: Object.assign({}, GAMES_DEFAULT), stats: { streak: 0 } };
+  // The preview shows a level the way its kids see it: Hebrew help and no clock for A1 and A2.
+  dash.girl.level = msGalleryLevel; dash.girl.he = ['a1', 'a2'].indexOf(msGalleryLevel) >= 0;
   app.innerHTML = '<div class="spinner"></div>';
   let list = [];
   try { list = await loadMissions(MS_FILES[msGalleryLevel]); } catch(e){ list = []; }
@@ -4896,7 +5146,7 @@ function chatRender(){
       </div>`;
   app.innerHTML = `<div class="gscreen mscreen gplay" id="ct">
     <div class="gtop"><button class="btn btn-glass icon-btn" id="ctquit" title="Stop">${icon('x')}</button>
-      <div style="flex:1;min-width:0"><h2>${esc(s.title)}</h2><div class="sub" style="font-size:12px;margin:0">${sub}</div></div>
+      <div style="flex:1;min-width:0"><h2>${esc(s.title)}</h2><div class="sub" style="font-size:13px;margin:0">${sub}</div></div>
       <span class="tile sm t-chat">${icon('chats-circle', 'duotone')}</span></div>
     <div class="gstage ctstage">
       <div class="ctintro" dir="rtl" lang="he">${msHe(s.he)}</div>
@@ -5073,7 +5323,7 @@ async function chatSave(args){
     setDash(await call('apiChatResult', session.name, session.pin, ...args));
     homeStale = true;
     const xp = dash.chatXp || 0;
-    status(icon('check') + (xp ? ' Saved · +' + xp + ' XP and coins' : ' Saved'));
+    status(icon('check') + (xp && !lowKid() ? ' Saved · +' + xp + ' XP and coins' : xp ? ' Saved · coins too!' : ' Saved'));
   } catch(e){
     if (e.app) return status(icon('warning') + ' ' + esc(e.message));
     queueResult({ fn: 'chat', args });
@@ -5213,7 +5463,7 @@ function friendsSheet(){
   ov.className = 'overlay';
   ov.innerHTML = `<div class="sheet glass fsheet">
     <div class="row-flex between"><span class="label">Play with a friend</span>
-      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x" aria-label="Close">${icon('x')}</button></div>
     ${all.length > 8 ? `<input class="input mt-s" id="fsearch" placeholder="Find a name" autocomplete="off">` : ''}
     <div class="flist mt-s">
       ${others.length ? '<div class="label">Your group</div>' : ''}<div class="friends mt-s">${mates.map(friendTile).join('')}</div>
@@ -5287,7 +5537,7 @@ function lastCard(h){
     <div class="grow">${rows.length ? rows.join('') : '<div class="sub" style="margin:0;text-align:center">Your games with friends show up here. Tap a friend to start one.</div>'}</div>
     <button class="soft drow" id="tugopen"><span class="tile t-write">${icon('rope', 'duotone')}</span>
       <span class="drow-main"><b>Tug of War</b><small>Two players, one phone</small></span>${icon('caret-right')}</button>
-    ${h && h.helper ? `<div class="sub" style="margin:0;font-size:12.5px">${icon('star', 'duotone')} ${plural(h.helper, 'Helper star')} for explaining to a friend</div>` : ''}</div>`;
+    ${h && h.helper ? `<div class="sub" style="margin:0;font-size:13px">${icon('star', 'duotone')} ${plural(h.helper, 'Helper star')} for explaining to a friend</div>` : ''}</div>`;
 }
 
 function playStage(d){
@@ -5314,9 +5564,12 @@ function placeStage(){
 
 function gamesPanel(d){
   const g = d.games, rec = warmupGame(d), full = g.todayXp >= g.dayCap;
-  return `<div class="glass solo"><div class="row-flex between"><span class="label">Play alone</span><span class="chip ${full ? 'teal' : 'orange'}">${icon('lightning')} ${g.todayXp}/${g.dayCap} XP</span></div>
+  // A1 and A2 kids see no XP numbers (finding 11): the chip says it in words once the pet has eaten enough for today.
+  const chip = lowKid() ? (full ? `<span class="chip teal">${icon('check')} Your pet is full today</span>` : '')
+    : `<span class="chip ${full ? 'teal' : 'orange'}">${icon('lightning')} ${g.todayXp}/${g.dayCap} XP</span>`;
+  return `<div class="glass solo"><div class="row-flex between"><span class="label">Play alone${heLine(heOf('Play alone'))}</span>${chip}</div>
     <div class="solo4">${Object.keys(GAME_INFO).map(k => `<button class="soft gt ${k === rec ? 'rec' : ''}" data-game="${k}" aria-label="${GAME_INFO[k].name}: ${GAME_INFO[k].desc}${k === rec ? ' (warm-up)' : ''}">
-      <span class="tile ${GAME_INFO[k].tile}">${icon(GAME_INFO[k].icon, 'duotone')}</span><b>${GAME_INFO[k].name}</b></button>`).join('')}</div></div>`;
+      <span class="tile ${GAME_INFO[k].tile}">${icon(GAME_INFO[k].icon, 'duotone')}</span><b>${GAME_INFO[k].name}</b>${heLine(heOf(GAME_INFO[k].name))}</button>`).join('')}</div></div>`;
 }
 
 function playTab(d){
@@ -5397,7 +5650,7 @@ function inviteSheet(name){
   ov.className = 'overlay';
   ov.innerHTML = `<div class="sheet glass">
     <div class="row-flex between"><span class="label">Play with ${esc(name)}</span>
-      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x" aria-label="Close">${icon('x')}</button></div>
     <div class="row-flex mt-s" style="gap:6px">${petFace(dash.pet, dash.girl.color, dash.girl.name)}<b style="color:var(--faint)">+</b>${faceOf(f)}
       <span class="sub" style="margin:0 0 0 6px;font-size:13px">${f.online ? esc(name) + ' is online now' : esc(name) + ' will get a notification'}</span></div>
     <div class="stack mt" style="gap:10px">
@@ -5447,7 +5700,7 @@ function codeSheet(){
   ov.className = 'overlay';
   ov.innerHTML = `<div class="sheet glass">
     <div class="row-flex between"><span class="label">Play with a code</span>
-      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x" aria-label="Close">${icon('x')}</button></div>
     <div class="label mt">Got a code from a friend?</div>
     <div class="row-flex mt-s" style="gap:10px"><input class="input code-in" id="dcode" maxlength="4" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="ABCD">
       <button class="btn btn-teal" id="djoin">Join</button></div>
@@ -5456,7 +5709,7 @@ function codeSheet(){
       <button class="mrow" data-open="live"><span class="tile t-grammar">${icon('sword', 'duotone')}</span><span class="drow-main"><b>Word Duel code</b><small>Play together now</small></span>${icon('caret-right')}</button>
       <button class="mrow" data-open="challenge"><span class="tile t-read">${icon('ghost', 'duotone')}</span><span class="drow-main"><b>Challenge code</b><small>You play now, your friend within 24 hours</small></span>${icon('caret-right')}</button>
     </div>
-    <div class="sub mt-s" style="font-size:12px">You get a 4-letter code to send on WhatsApp. The first friend who enters it in English with Chacho plays with you.</div>
+    <div class="sub mt-s" style="font-size:13px">You get a 4-letter code to send on WhatsApp. The first friend who enters it in English with Chacho plays with you.</div>
   </div>`;
   document.body.appendChild(ov);
   const close = () => ov.remove();
@@ -5602,8 +5855,8 @@ function duelLobby(v){
   window.scrollTo(0, 0);
   const me = duelMe(v);
   app.innerHTML = `<div class="gscreen" id="lobby">
-    <div class="gtop"><button class="btn btn-glass icon-btn" id="lquit">${icon('x')}</button>
-      <div style="flex:1;min-width:0"><h2>${modeTitle(v)}</h2><div class="sub" style="font-size:12px;margin:0" id="lsub"></div></div>
+    <div class="gtop"><button class="btn btn-glass icon-btn" id="lquit" aria-label="Close">${icon('x')}</button>
+      <div style="flex:1;min-width:0"><h2>${modeTitle(v)}</h2><div class="sub" style="font-size:13px;margin:0" id="lsub"></div></div>
       ${v.role === 'host' ? `<span class="chip purple">${icon('key')} ${esc(v.code)}</span>` : ''}</div>
     <div class="glass panel iri" style="padding:18px 14px 16px">
       <div class="duo">
@@ -5685,7 +5938,7 @@ function codeShare(v){
     <div class="row-flex" style="justify-content:center;gap:8px;flex-wrap:wrap">
       <a class="btn btn-teal btn-sm" target="_blank" rel="noopener" href="${esc(waLink(text))}">${icon('whatsapp-logo')} WhatsApp</a>
       <button class="btn btn-glass btn-sm" data-copy="${esc(text)}">${icon('copy')} Copy</button></div>
-    <div class="sub mt-s" style="font-size:12px">${v.mode === 'challenge' ? 'Your friend has 24 hours to play it.' : 'The code is open for ' + duelLeft(v, true) + '.'}</div>
+    <div class="sub mt-s" style="font-size:13px">${v.mode === 'challenge' ? 'Your friend has 24 hours to play it.' : 'The code is open for ' + duelLeft(v, true) + '.'}</div>
   </div>`;
 }
 
@@ -5710,7 +5963,7 @@ function duelInvitation(v){
   window.scrollTo(0, 0);
   const host = v.host;
   app.innerHTML = `<div class="gscreen" id="dinv">
-    <div class="gtop"><button class="btn btn-glass icon-btn" data-act="home">${icon('arrow-left')}</button><h2>Invitation</h2></div>
+    <div class="gtop"><button class="btn btn-glass icon-btn" data-act="home" aria-label="Back">${icon('arrow-left')}</button><h2>Invitation</h2></div>
     <div class="glass panel iri" style="text-align:center;display:grid;gap:12px;justify-items:center">
       <div class="vs">${petPic(host, 'happy')}<span class="vsb">${v.mode === 'boss' || v.mode === 'talk' ? icon('handshake') : 'VS'}</span>${petPic(meAsPlayer(), 'happy', 'flip')}</div>
       <h2>${esc(host.name)} invites you to ${modeInvite(v)}</h2>
@@ -5720,7 +5973,7 @@ function duelInvitation(v){
       <button class="btn btn-teal btn-block" data-act="join">${icon('play')} Join</button>
       <button class="btn btn-glass btn-block" data-act="wait">Give me 5 minutes</button>
       <button class="btn btn-glass btn-block" data-act="no">Not now</button>
-      <div class="sub" style="margin:0;font-size:12.5px">${icon('clock-countdown')} ${duelLeft(v)}</div>
+      <div class="sub" style="margin:0;font-size:13px">${icon('clock-countdown')} ${duelLeft(v)}</div>
     </div>
   </div>`;
   document.getElementById('dinv').onclick = e => {
@@ -5741,7 +5994,7 @@ function duelIntro(v){
   window.scrollTo(0, 0);
   const host = v.host, guest = v.guest, isHost = v.role === 'host';
   app.innerHTML = `<div class="gscreen" id="dintro">
-    <div class="gtop"><button class="btn btn-glass icon-btn" data-act="home">${icon('arrow-left')}</button><h2>${isHost ? 'Challenge' : esc(host.name) + '\'s challenge'}</h2></div>
+    <div class="gtop"><button class="btn btn-glass icon-btn" data-act="home" aria-label="Back">${icon('arrow-left')}</button><h2>${isHost ? 'Challenge' : esc(host.name) + '\'s challenge'}</h2></div>
     <div class="result">
       ${petPic(isHost ? meAsPlayer() : host, 'cool', 'pet-img' + (isHost ? '' : ' ghostpet'))}
       <h1 style="font-size:28px">${isHost ? 'You play first' : 'Beat ' + host.score + '/' + DUEL_ITEMS + ' in ' + secs(host.ms)}</h1>
@@ -5888,8 +6141,8 @@ function duelWait(v){
   DU.view = v; DU.screen = 'wait';
   const them = duelThem(v);
   app.innerHTML = `<div class="gscreen" id="dwait">
-    <div class="gtop"><button class="btn btn-glass icon-btn" data-act="home">${icon('x')}</button>
-      <div style="flex:1;min-width:0"><h2>${modeTitle(v)}</h2><div class="sub" style="font-size:12px;margin:0">You finished!</div></div></div>
+    <div class="gtop"><button class="btn btn-glass icon-btn" data-act="home" aria-label="Close">${icon('x')}</button>
+      <div style="flex:1;min-width:0"><h2>${modeTitle(v)}</h2><div class="sub" style="font-size:13px;margin:0">You finished!</div></div></div>
     ${duelRaceCard()}
     <div class="result">
       ${dash.pet ? `${petArt(dash.pet, 'cool', 'pet-img')}` : ''}
@@ -5970,8 +6223,8 @@ async function duelResult(v){
     : draw ? 'A draw! Same score, same time.' : esc(them.name) + ' won this time.';
   const learn = rows ? talkLearn(rows, me) : B && !talk ? learnTogether(B, v, me, them) : '';
   app.innerHTML = `<div class="gscreen" id="dres">
-    <div class="gtop"><button class="btn btn-glass icon-btn" data-act="home">${icon('x')}</button>
-      <div style="flex:1;min-width:0"><h2>${modeTitle(v)}</h2><div class="sub" style="font-size:12px;margin:0">${esc(me.name)} and ${esc(them.name)} · ${fmtDate(v.date || dash.today)}</div></div></div>
+    <div class="gtop"><button class="btn btn-glass icon-btn" data-act="home" aria-label="Close">${icon('x')}</button>
+      <div style="flex:1;min-width:0"><h2>${modeTitle(v)}</h2><div class="sub" style="font-size:13px;margin:0">${esc(me.name)} and ${esc(them.name)} · ${fmtDate(v.date || dash.today)}</div></div></div>
     <div class="result" style="flex:none">
       <div class="podium ${team ? 'team' : ''}">${team ? petPic(me, won ? 'celebrate' : talk ? 'happy' : 'oops', 'big') + (won ? `<span class="crown">${icon('crown-simple', 'duotone')}</span>` : '') + petPic(them, won ? 'celebrate' : talk ? 'happy' : 'oops', 'big flip')
         : draw ? petPic(me, 'happy', 'big') + petPic(them, 'happy', 'small flip')
@@ -6036,7 +6289,7 @@ function learnTogether(B, v, me, them){
       ${done.has(x.it.id) ? `<span class="chip teal">${icon('star')} Helper</span>` : `<button class="btn btn-glass btn-sm" data-helped="${esc(x.it.id)}">I explained it</button>`}</div>`).join('');
   return `<div class="glass panel" style="padding:16px">
     <div class="row-flex between"><h2>Learn together</h2>${missed.length ? `<span class="chip">${missed.length} to review</span>` : ''}</div>
-    ${rows ? `<div class="stack mt-s" style="gap:8px">${rows}</div><div class="sub mt-s" style="font-size:12px">These come back in your games.</div>`
+    ${rows ? `<div class="stack mt-s" style="gap:8px">${rows}</div><div class="sub mt-s" style="font-size:13px">These come back in your games.</div>`
       : `<div class="sub mt-s" style="font-size:13px">${me.track ? 'No mistakes. Well done!' : ''}</div>`}
     ${help ? `<div class="label mt">${esc(them.name)} missed these. Can you explain one?</div><div class="stack mt-s" style="gap:8px">${help}</div>` : ''}
   </div>`;
@@ -6294,7 +6547,7 @@ function talkRender(){
   const [stage, react] = describe ? talkDescribeHtml(it, them, T) : talkListenHtml(it, them);
   app.innerHTML = `<div class="gscreen talk gplay" id="talk">
     <div class="gtop"><button class="btn btn-glass icon-btn" id="tquit" title="Stop">${icon('x')}</button>
-      <div style="flex:1;min-width:0"><h2>Talk &amp; Tap</h2><div class="sub" style="font-size:12px;margin:0">Word ${k + 1} of ${TALK_ITEMS} · ${describe ? 'you describe' : 'you listen'}</div></div>
+      <div style="flex:1;min-width:0"><h2>Talk &amp; Tap</h2><div class="sub" style="font-size:13px;margin:0">Word ${k + 1} of ${TALK_ITEMS} · ${describe ? 'you describe' : 'you listen'}</div></div>
       ${soundBtn()}<span class="chip orange" id="tstreak" title="Team streak">${icon('fire')} ${talkStreak(picks).s}</span><span class="chip" id="dtimer">${icon('timer')} ${duelClockText()}</span></div>
     <div class="gprog">${Array.from({ length: TALK_ITEMS }, (_, j) => `<i class="${j < k ? (picks[j].ok ? 'ok' : 'no') : j === k ? 'on' : ''}"></i>`).join('')}</div>
     <div class="gstage enter">${stage}</div>
@@ -6455,9 +6708,9 @@ function talkLearn(rows, me){
   }).join('');
   return `<div class="glass panel" style="padding:16px">
     <div class="row-flex between"><h2>Learn together</h2>${missed ? `<span class="chip">${missed} to review</span>` : ''}</div>
-    <div class="sub mt-s" style="font-size:12.5px">Say each word out loud together. Tap ${icon('speaker-high')} to hear it.</div>
+    <div class="sub mt-s" style="font-size:13px">Say each word out loud together. Tap ${icon('speaker-high')} to hear it.</div>
     <div class="stack mt-s" style="gap:8px">${list}</div>
-    ${missed ? '<div class="sub mt-s" style="font-size:12px">The words you missed come back in Match it.</div>' : ''}</div>`;
+    ${missed ? '<div class="sub mt-s" style="font-size:13px">The words you missed come back in Match it.</div>' : ''}</div>`;
 }
 
 // A word or sentence read aloud: Chacho's recording, or the phone's English voice.
@@ -6481,7 +6734,11 @@ function sayPhone(text){
 // Spec: specs/boss-tug.md. The top half is turned to the second kid; each half has its own questions
 // at its player's level. A right answer pulls the knot one step; five steps win.
 let TW = null;
-const TUG_STEPS = 5, TUG_MS = 120000, TUG_FREEZE = 1500;
+// Relaxed (night review, finding 23; on by itself when the kid who starts is A1 or A2): no clock on screen (the game still
+// ends after five minutes at most) and a short pause after a wrong answer instead of the freeze.
+const TUG_STEPS = 5, TUG_MS = 120000, TUG_FREEZE = 1500, TUG_RELAX_MS = 300000, TUG_RELAX_FREEZE = 700;
+let tugRelax = null;
+const tugRelaxed = () => tugRelax != null ? tugRelax : lowKid();
 
 function tugSheet(){
   const h = duelsHome, list = (h ? h.friends : []).filter(f => f.ready);
@@ -6489,8 +6746,11 @@ function tugSheet(){
   ov.className = 'overlay';
   ov.innerHTML = `<div class="sheet glass">
     <div class="row-flex between"><span class="label">Tug of War · one phone</span>
-      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x" aria-label="Close">${icon('x')}</button></div>
     <div class="sub mt-s" style="font-size:13px">Put the phone flat on the table between you. Each of you gets your own questions at your level; right answers pull the rope.</div>
+    <div class="soft stat mt-s" style="padding:10px 14px"><span class="tile sm t-listen">${icon('timer', 'duotone')}</span>
+      <div style="flex:1;min-width:0"><b>Relaxed</b><div class="sub" style="margin:0;font-size:13px">No clock, and a wrong answer only waits a moment</div></div>
+      <button class="btn btn-sm ${tugRelaxed() ? 'btn-teal' : 'btn-glass'}" id="tugrelax" aria-pressed="${tugRelaxed()}">${tugRelaxed() ? 'On' : 'Off'}</button></div>
     <div class="label mt">Who plays with you?</div>
     <div class="friends mt-s">${list.map(f => `<button class="fr" data-tugmate="${esc(f.name)}"><span class="av">${petFace(f.pet, f.color, f.name)}</span><b>${esc(f.name)}</b><small>Level ${esc(f.level)}</small></button>`).join('')}
       <button class="fr" data-tugmate=""><span class="addc">${icon('user')}</span><b>Guest</b><small>No XP</small></button></div>
@@ -6499,6 +6759,8 @@ function tugSheet(){
   const close = () => ov.remove();
   ov.onclick = e => {
     if (e.target === ov) return close();
+    const rx = e.target.closest('#tugrelax');
+    if (rx) { tugRelax = !tugRelaxed(); rx.className = 'btn btn-sm ' + (tugRelax ? 'btn-teal' : 'btn-glass'); rx.textContent = tugRelax ? 'On' : 'Off'; rx.setAttribute('aria-pressed', tugRelax); return; }
     const t = e.target.closest('[data-tugmate]');
     if (t) { close(); return t.dataset.tugmate ? tugPin(t.dataset.tugmate) : tugStart(null, ''); }
   };
@@ -6512,11 +6774,11 @@ function tugPin(name){
   ov.className = 'overlay';
   ov.innerHTML = `<div class="sheet glass" style="text-align:center">
     <div class="row-flex between"><span class="label">${esc(name)}, your PIN</span>
-      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x" aria-label="Close">${icon('x')}</button></div>
     <div class="dots" id="tdots">${'<div class="dot"></div>'.repeat(4)}</div>
     <div class="pad">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="btn btn-glass" data-k="${n}">${n}</button>`).join('')}
       <span></span><button class="btn btn-glass" data-k="0">0</button><button class="btn btn-glass" data-k="del">${icon('backspace')}</button></div>
-    <div class="sub mt-s" style="font-size:12px">So the game saves XP for both of you.</div>
+    <div class="sub mt-s" style="font-size:13px">So the game saves XP for both of you.</div>
   </div>`;
   document.body.appendChild(ov);
   const dots = ov.querySelector('#tdots'), pad = ov.querySelector('.pad');
@@ -6550,7 +6812,8 @@ async function tugStart(mate, cred){
   try { B = await loadBank(); } catch(e){ toast(e.message, true); return renderDash(); }
   const me = meAsPlayer(), guest = !mate;
   const two = [Object.assign({}, me, { pin: session.pin }), guest ? { name: 'Guest', level: me.level, label: me.label, color: '#94a3b8', pet: null, guest: true } : Object.assign({}, mate, { cred })];
-  TW = { B, pos: 0, end: Date.now() + TUG_MS, over: false, quitAt: 0,
+  const relax = tugRelaxed();
+  TW = { B, pos: 0, end: Date.now() + (relax ? TUG_RELAX_MS : TUG_MS), relax, freeze: relax ? TUG_RELAX_FREEZE : TUG_FREEZE, over: false, quitAt: 0,
     p: two.map(x => Object.assign(x, { q: tugQueue(B, x.level), cur: null, frozen: 0, correct: 0, total: 0, missed: [], right: [] })) };
   TW.p.forEach(p => tugNext(B, p));
   G = null; stopDuel();
@@ -6560,8 +6823,8 @@ async function tugStart(mate, cred){
       <div class="tsc top">${faceOf(TW.p[1])}<b id="tsc1">0</b></div>
       <div class="rope" id="rope">${[-5, -2.5, 0, 2.5, 5].map(k => `<i class="mk ${k === 0 ? 'mid' : k === 5 ? 'end0' : k === -5 ? 'end1' : ''}" style="top:${50 + k * 9}%"></i>`).join('')}<span class="knot" id="knot"></span></div>
       <div class="tsc">${faceOf(TW.p[0])}<b id="tsc0">0</b></div>
-      <button class="btn btn-glass icon-btn tquit" id="tquit">${icon('x')}</button>
-      <span class="chip ttime" id="ttime">2:00</span>
+      <button class="btn btn-glass icon-btn tquit" id="tquit" aria-label="Close">${icon('x')}</button>
+      ${TW.relax ? '' : '<span class="chip ttime" id="ttime">2:00</span>'}
     </div>
     <div class="tughalf" data-half="0"></div>
   </div>`;
@@ -6579,7 +6842,7 @@ function tugHalf(i){
     : `<div class="glass qcard"><div class="qprompt">One word is wrong. Tap it!</div>
        <div class="sentence">${it.tokens.map((t, k) => `<button class="tok" data-p="${i}" data-k="${k}">${esc(t)}</button>`).join('')}</div></div>`;
   el.innerHTML = `<div class="row-flex between"><span class="chip ${i ? 'orange' : 'purple'}">${esc(p.name)} · ${esc(p.label || '')}</span>
-      <span class="sub" style="margin:0;font-size:12px">${p.correct} right</span></div>${q}<div class="tfreeze" hidden></div>`;
+      <span class="sub" style="margin:0;font-size:13px">${p.correct} right</span></div>${q}<div class="tfreeze" hidden></div>`;
 }
 
 function tugClick(e){
@@ -6608,10 +6871,10 @@ function tugClick(e){
   } else {
     t.classList.add('no', 'shake');
     chime(false);
-    p.frozen = Date.now() + TUG_FREEZE;
+    p.frozen = Date.now() + TW.freeze;
     const fz = half.querySelector('.tfreeze');
-    if (fz) { fz.hidden = false; fz.innerHTML = `<b>${icon('snowflake', 'duotone')} Frozen</b><span>${it.game === 'match' ? esc(it.answer) : esc(fixedSentence(it))}</span>`; }
-    setTimeout(() => { p.busy = false; if (!TW || TW.over) return; tugNext(TW.B, p); tugHalf(i); }, TUG_FREEZE);
+    if (fz) { fz.hidden = false; fz.innerHTML = `<b>${TW.relax ? icon('lightbulb', 'duotone') + ' Look' : icon('snowflake', 'duotone') + ' Frozen'}</b><span>${it.game === 'match' ? esc(it.answer) : esc(fixedSentence(it))}</span>`; }
+    setTimeout(() => { p.busy = false; if (!TW || TW.over) return; tugNext(TW.B, p); tugHalf(i); }, TW.relax ? Math.max(TW.freeze, 1200) : TW.freeze);
   }
   if (Math.abs(TW.pos) >= TUG_STEPS) setTimeout(() => tugEnd(false), 500);
 }
@@ -6662,7 +6925,7 @@ async function tugEnd(quit){
     const r = await call('apiTugSave', session.name, session.pin, job.mate, job.cred, job.a, job.b, job.id);
     if (r.dash) { setDash(r.dash); checkGrowth(); }
     homeStale = true;
-    if (st) { st.className = 'saved'; st.innerHTML = icon('check') + ' Saved · +' + r.xp + ' XP for ' + esc(a.name) + (mate ? ', +' + r.mateXp + ' XP for ' + esc(mate.name) : ''); }
+    if (st) { st.className = 'saved'; st.innerHTML = icon('check') + (lowKid() ? ' Saved for ' + esc(a.name) + (mate ? ' and ' + esc(mate.name) : '') : ' Saved · +' + r.xp + ' XP for ' + esc(a.name) + (mate ? ', +' + r.mateXp + ' XP for ' + esc(mate.name) : '')); }
   } catch(err){
     if (!err.app) { tugKeep(job); if (st) { st.className = 'saved err'; st.innerHTML = icon('wifi-slash') + ' Saved on this phone. It will sync when you are online.'; } }
     else if (st) { st.className = 'saved err'; st.innerHTML = icon('warning') + ' ' + esc(err.message); }
@@ -6696,7 +6959,7 @@ function tugLearn(){
     return items.length ? `<div class="label mt-s">${esc(p.name)}</div>` + items.map(it => `<div class="lrow"><span class="x">${icon('x')}</span><div class="lt">${itemAnswer(it)}</div></div>`).join('') : '';
   }).join('');
   return rows ? `<div class="glass panel" style="padding:16px"><div class="row-flex between"><h2>Learn together</h2></div><div class="stack" style="gap:8px">${rows}</div>
-    <div class="sub mt-s" style="font-size:12px">The ones you missed come back in your games.</div></div>` : '';
+    <div class="sub mt-s" style="font-size:13px">The ones you missed come back in your games.</div></div>` : '';
 }
 
 // ---------- Duo Streak and Team Quest ----------
@@ -6783,7 +7046,7 @@ function duoMenu(id){
   ov.className = 'overlay';
   ov.innerHTML = `<div class="sheet glass">
     <div class="row-flex between"><span class="label">Duo streak with ${esc(v.partner.name)}</span>
-      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x" aria-label="Close">${icon('x')}</button></div>
     <div class="sub mt-s">Together since ${longDate(v.since)}. ${v.milestones.length ? 'Badges: ' + v.milestones.join(', ') + ' days.' : ''}</div>
     <div class="jrules" style="--wb:#ea580c">
       <div>${icon('fire', 'duotone')}<span>The streak grows on every day you both practice (a task, a game or a duel).</span></div>
@@ -7013,7 +7276,7 @@ function gateIntro(){
   if (g.state !== 'open') return renderMap();
   window.scrollTo(0, 0);
   app.innerHTML = `<div class="gscreen" style="--na:${nl.c[0]};--nb:${nl.c[1]}">
-    <div class="gtop"><button class="btn btn-glass icon-btn" id="gback">${icon('arrow-left')}</button><h2>Gate challenge</h2>
+    <div class="gtop"><button class="btn btn-glass icon-btn" id="gback" aria-label="Back">${icon('arrow-left')}</button><h2>Gate challenge</h2>
       <span class="chip purple">${esc(j.label)} ${icon('arrow-right')} ${esc(g.nextLabel)}</span></div>
     <div class="result">
       <span class="gate-hero">${icon('castle-turret', 'duotone')}</span>
@@ -7313,7 +7576,7 @@ function placeBlock(B, lv, form, n){
 function placeIntro(form){
   const retest = form !== 'A';
   app.innerHTML = `<div class="gscreen">
-    <div class="gtop"><button class="btn btn-glass icon-btn" id="pback">${icon('arrow-left')}</button><h2>${retest ? 'Progress check' : 'Your level'}</h2><span></span></div>
+    <div class="gtop"><button class="btn btn-glass icon-btn" id="pback" aria-label="Back">${icon('arrow-left')}</button><h2>${retest ? 'Progress check' : 'Your level'}</h2><span></span></div>
     <div class="result">
       <span class="gate-hero">${icon('target', 'duotone')}</span>
       <h1 style="font-size:28px">${retest ? 'How much have you grown?' : 'Let\'s find your level'}</h1>
@@ -7696,7 +7959,7 @@ async function pilotLoad(pin, open, code){
   const base = /^https?:/.test(s.base || '') && !/^(localhost|127.)/.test(location.hostname) ? s.base : location.origin + location.pathname;
   const link = base + '?join=' + encodeURIComponent(s.invite.code), tlink = base + '?missions&t=' + encodeURIComponent(s.teacherCode), nlink = base + '?nest&t=' + encodeURIComponent(s.teacherCode);
   const T = s.totals, dots = k => k.weeks.map(n => `<i style="display:inline-block;width:22px;text-align:center;font-weight:800;color:${n >= 4 ? 'var(--teal,#14b8a6)' : n ? 'var(--ink)' : 'var(--muted)'}">${n}</i>`).join('');
-  card.innerHTML = `<div class="row-flex between"><h2>Pilot</h2><button class="btn btn-glass icon-btn" id="pilotref">${icon('arrows-clockwise')}</button></div>
+  card.innerHTML = `<div class="row-flex between"><h2>Pilot</h2><button class="btn btn-glass icon-btn" id="pilotref" aria-label="Refresh">${icon('arrows-clockwise')}</button></div>
     <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">
       <span class="chip purple">${T.families} families</span><span class="chip">${T.kids} kids</span><span class="chip">${T.placed} level tests</span>
       <span class="chip">${T.firstMission} first mission</span><span class="chip teal">${T.active7} active 4+ of 7 days</span></div>
@@ -7772,7 +8035,7 @@ function dataRender(pin){
         <div class="row-flex mt-s" style="gap:8px"><input class="input" id="df-del-word" placeholder="Type DELETE" autocomplete="off"><button class="btn btn-glass" id="df-del">${icon('trash')} Delete</button></div>` : ''}</div>`
     : `<button class="soft row-flex between" data-dopen="${esc(r.key)}" style="width:100%;padding:8px 12px;border-radius:12px;font-size:13px;text-align:left;border:0;cursor:pointer">
         <b>${esc(r.key)}</b><span class="sub" style="font-size:12px">${line(r)}</span></button>`;
-  card.innerHTML = `<div class="row-flex between"><h2>Data</h2><button class="btn btn-glass icon-btn" id="dataref">${icon('arrows-clockwise')}</button></div>
+  card.innerHTML = `<div class="row-flex between"><h2>Data</h2><button class="btn btn-glass icon-btn" id="dataref" aria-label="Refresh">${icon('arrows-clockwise')}</button></div>
     <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">${Object.keys(DATA_TABLES).map(k => `<button class="btn ${k === DATA.table ? 'btn-primary' : 'btn-glass'} btn-sm" data-dtable="${k}" aria-pressed="${k === DATA.table}">${DATA_TABLES[k]} · ${d[k].rows.length}</button>`).join('')}</div>
     <input class="input mt-s" id="df-q" placeholder="Search" value="${esc(DATA.q)}">
     <div class="stack mt-s" style="gap:6px">${rows.map(item).join('') || '<div class="sub">Nothing here.</div>'}</div>`;
@@ -7849,7 +8112,7 @@ function auditRender(pin){
         ${e.device ? `<div class="sub" style="font-size:11px">${esc(e.device)}</div>` : ''}</span></div>`;
   }).join('');
   const dev = Object.keys(a.devices).sort((x, y) => a.devices[y] - a.devices[x]);
-  card.innerHTML = `<div class="row-flex between"><h2>Audit</h2><button class="btn btn-glass icon-btn" id="audref">${icon('arrows-clockwise')}</button></div>
+  card.innerHTML = `<div class="row-flex between"><h2>Audit</h2><button class="btn btn-glass icon-btn" id="audref" aria-label="Refresh">${icon('arrows-clockwise')}</button></div>
     <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">${[1, 7, 30].map(n => `<button class="btn ${AUD.days === n ? 'btn-primary' : 'btn-glass'} btn-sm" data-auddays="${n}">${n === 1 ? 'Today' : n + ' days'}</button>`).join('')}</div>
     <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">
       <span class="chip purple">${visits.filter(e => e.role === 'kid').length} kid visits</span><span class="chip">${visits.filter(e => e.role === 'parent').length} parent visits</span>
@@ -8477,7 +8740,7 @@ function pinPad(name, he){
   app.innerHTML = `
   <div class="glass panel">
     <div class="row-flex between">
-      <button class="btn btn-glass icon-btn" id="back">${icon('arrow-left')}</button>
+      <button class="btn btn-glass icon-btn" id="back" aria-label="Back">${icon('arrow-left')}</button>
       ${isParent ? '' : petFace(((pub && pub.girls) || []).find(x => x.name === name)?.pet, colorOf(name), name)}
       <span style="width:46px"></span>
     </div>
@@ -8523,6 +8786,7 @@ function setDash(d){
   if (session && session.keep) { const k = deviceKids().find(x => x.name === session.name); if (k && k.nest !== !!d.nest) deviceKidAdd(session.name, session.pin, !!d.nest); }
   dashFresh = Date.now();
   if (session && session.keep) store.set(dashKey(session.name), d);
+  if (d.girl) store.set('eq_he', !!d.girl.he);
 }
 const dashSig = d => JSON.stringify(d, (k, v) => k === 'now' ? undefined : v);
 const onDashboard = () => !G && !DU && !TW && !!document.querySelector('.tabview,.tabmap,#nkwait');
@@ -8591,7 +8855,7 @@ function offlineStart(e){
   openSrc = 'offline';
   app.innerHTML = `<div class="glass panel" style="text-align:center;display:grid;gap:12px;justify-items:center">
     <span class="gate-hero" style="--na:#c7d2fe;--nb:#818cf8">${icon(off ? 'wifi-slash' : 'hourglass-medium', 'duotone')}</span>
-    <h2>${off ? 'No connection' : 'The server is slow right now'}</h2><div class="sub" style="margin:0">${off ? 'Check the internet and try again.' : 'Wait a moment and try again.'}</div>
+    <h2>${off ? 'No connection' : 'The server is slow right now'}${heLine(heOf(off ? 'No connection' : 'The server is slow right now'))}</h2><div class="sub" style="margin:0">${off ? 'Check the internet and try again.' : 'Wait a moment and try again.'}${heLine(heOf(off ? 'Check the internet and try again.' : 'Wait a moment and try again.'))}</div>
     <button class="btn btn-primary btn-block" id="startagain">${icon('arrows-clockwise')} Try again</button></div>`;
   document.getElementById('startagain').onclick = () => { loading(); start(); };
 }
@@ -8638,6 +8902,8 @@ function renderDash(){
   app.querySelectorAll('.tabview [data-game]').forEach(b => b.onclick = () => startGame(b.dataset.game));
   ['adopt', 'petedit'].forEach(id => { const b = document.getElementById(id); if (b) b.onclick = petPicker; });
   bindPet(d);
+  bindHeCard();
+  setTimeout(() => { if (dash === d && session) maybeTour(d); }, 600);
   const sg = document.getElementById('shopgo'), pw = document.getElementById('petwear');
   if (sg) sg.onclick = () => openShop('shop');
   if (pw) pw.onclick = () => openShop('wardrobe');
@@ -8680,18 +8946,20 @@ function dashBody(d){
   const s = d.stats, today = d.week.find(w => w.isToday);
   if (dashTab === 'play') return playTab(d);
   if (dashTab === 'pet') return `${petCard(d)}${shopCard(d)}`;
-  if (dashTab === 'journey') return `<div class="glass panel" style="text-align:center"><h2>Your journey starts soon</h2><div class="sub mt-s">Finish your first daily task to open the map.</div></div>`;
+  if (dashTab === 'journey') return `<div class="glass panel" style="text-align:center"><h2>Your journey starts soon${heLine(heOf('Your journey starts soon'))}</h2><div class="sub mt-s">Finish your first daily task to open the map.${heLine(heOf('Finish your first daily task to open the map.'))}</div></div>`;
   if (dashTab === 'me') {
     const next = d.nextReward;
     const prevPts = d.rewards.filter(r => r.points <= s.balance).map(r => r.points).pop() || 0;
     const prog = next ? Math.round((s.balance - prevPts) / (next.points - prevPts) * 100) : 100;
+    // Me holds the other meters (finding 11); A1 and A2 kids see words and bars, not point numbers.
+    const low = lowKid(), open = openMissed(d);
     return `${dashHeader(d)}
     ${retestCard(d)}
     <div class="hero">
       ${ring(s.weekDone, s.weekTotal)}
       <div class="stack" style="gap:10px">
-        <div class="soft stat"><span class="tile sm t-fire">${icon('fire', 'duotone')}</span><div><b>${s.streak}</b> <span>day streak</span></div>${s.shield ? `<span class="chip teal" style="margin-left:auto;height:24px;padding:0 8px" title="Streak Shield: one missed day a week is saved">${icon('shield-check')}</span>` : ''}</div>
-        <div class="soft stat"><span class="tile sm t-star">${icon('star', 'duotone')}</span><div><b>${s.balance}</b> <span>points</span></div></div>
+        <div class="soft stat"><span class="tile sm t-fire">${icon('fire', 'duotone')}</span><div><b>${s.streak}</b> <span>day${s.streak === 1 ? '' : 's'} in a row</span></div>${s.shield ? `<span class="chip teal" style="margin-left:auto;height:24px;padding:0 8px" title="Streak Shield: one missed day a week is saved" aria-label="Streak Shield">${icon('shield-check')}</span>` : ''}</div>
+        ${low ? '' : `<div class="soft stat"><span class="tile sm t-star">${icon('star', 'duotone')}</span><div><b>${s.balance}</b> <span>points</span></div></div>`}
         <div class="soft stat"><span class="tile sm t-target">${icon('target', 'duotone')}</span><div><b>${s.avg == null ? '–' : s.avg + '%'}</b> <span>avg score</span></div></div>
       </div>
     </div>
@@ -8699,18 +8967,20 @@ function dashBody(d){
     <div id="pushcard"></div>
 
     <div class="glass panel">
-      <div class="row-flex between"><h2>This week</h2><span class="chip">${s.weekDone} done</span></div>
-      <div class="stack mt" style="gap:10px">${d.week.filter(w => !w.beforeStart).map(taskRow).join('')}</div>
+      <div class="row-flex between"><h2>This week${heLine(heOf('This week'))}</h2><span class="chip">${s.weekDone} done</span></div>
+      <div class="stack mt" style="gap:10px">${d.week.filter(w => !w.beforeStart).map(w => taskRow(w, open)).join('')}</div>
     </div>
 
     <div class="glass panel">
-      <div class="row-flex between"><h2>Rewards</h2><span class="chip orange">${icon('star')} ${s.balance}</span></div>
-      ${next ? `<div class="sub mt-s">${next.points - s.balance} points to <b style="color:var(--ink)">${rtext(next.reward)}</b></div>
-        <div class="bar mt-s"><i style="width:${Math.max(3, prog)}%"></i></div>` : '<div class="sub mt-s">You unlocked everything!</div>'}
+      <div class="row-flex between"><h2>Rewards${heLine(heOf('Rewards'))}</h2>${low ? '' : `<span class="chip orange">${icon('star')} ${s.balance}</span>`}</div>
+      ${next ? `<div class="sub mt-s">${low ? 'Keep going to' : next.points - s.balance + ' points to'} <b style="color:var(--ink)">${rtext(next.reward)}</b></div>
+        <div class="bar mt-s" role="img" aria-label="${Math.max(0, Math.min(100, prog))}% of the way"><i style="width:${Math.max(3, prog)}%"></i></div>` : '<div class="sub mt-s">You unlocked everything!</div>'}
       <div class="mt">${d.rewards.map((r, i) => `<div class="reward ${r.points <= s.balance ? 'got' : ''}">
-        <span class="tile sm ghost ${r.points <= s.balance ? 'on' : ''}">${icon(r.points <= s.balance ? REWARD_ICONS[i % REWARD_ICONS.length] : 'lock-simple', 'duotone')}</span><span>${rtext(r.reward)}</span><span class="pts">${r.points} pts</span></div>`).join('')}</div>
-      <div class="sub mt-s" style="font-size:12px">10 pts per task · +5 for 80%+ · +3 if done on the day · +20 for a full week</div>
+        <span class="tile sm ghost ${r.points <= s.balance ? 'on' : ''}">${icon(r.points <= s.balance ? REWARD_ICONS[i % REWARD_ICONS.length] : 'lock-simple', 'duotone')}</span><span>${rtext(r.reward)}</span>${low ? '' : `<span class="pts">${r.points} pts</span>`}</div>`).join('')}</div>
+      ${low ? '' : '<div class="sub mt-s" style="font-size:13px">10 pts per task · +5 for 80%+ · +3 if done on the day · +20 for a full week</div>'}
     </div>
+
+    ${heCard(d)}
 
     <div class="word-card">
       <div class="label">Word of the day</div>
@@ -8721,22 +8991,29 @@ function dashBody(d){
   return `${homeTop(d)}${petHero(d)}${todayMain(d, today)}${homePills(d)}`;
 }
 
+// The top of Today (finding 11): two things up front, the pet (below) and the coins, in words; the streak sits with the pet.
 function homeTop(d){
   const s = d.stats, hr = new Date().getHours();
   const hi = hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
   return `<div class="htop">
     <button class="hme" data-tab="me" aria-label="Me">${petFace(d.pet, d.girl.color, d.girl.name)}</button>
     <div class="hhi"><span>${hi}</span><b>${esc(d.girl.name)}</b></div>
-    <span class="chip hchip fire" title="Day streak">${icon('fire', 'duotone')} ${s.streak}</span>
-    ${d.shop ? `<span class="chip hchip" title="Coins">${coin}${coinsTxt(d.coins)}</span>` : `<span class="chip hchip" title="Points">${icon('star', 'duotone')} ${s.balance}</span>`}
-    <button class="btn btn-glass icon-btn" id="refresh" title="Refresh">${icon('arrows-clockwise')}</button>
+    ${d.shop ? `<span class="chip hchip" title="Your coins">${coin}${coinsTxt(d.coins)} coins</span>` : lowKid() ? '' : `<span class="chip hchip" title="Your points">${icon('star', 'duotone')} ${s.balance} points</span>`}
+    <button class="btn btn-glass icon-btn" id="refresh" title="Refresh" aria-label="Refresh">${icon('arrows-clockwise')}</button>
   </div>`;
+}
+// The streak in words, with the pet: "3 days in a row" (nothing before the first day).
+function streakLine(d){
+  const n = d.stats.streak;
+  if (!n) return '';
+  const he = n === 1 ? 'יום אחד ברצף' : n === 2 ? 'יומיים ברצף' : n + ' ימים ברצף';
+  return `<div class="pstreak">${icon('fire', 'duotone')}<span>${n} day${n > 1 ? 's' : ''} in a row</span>${heLine(he)}</div>`;
 }
 
 // The pet, big: it greets, breathes, looks around now and then (petLife) and jumps when tapped (bindPet).
 function petHero(d){
   const p = d.pet;
-  if (!p) return `<div class="glass phero"><div class="bubble">A friend who grows every time you practice English.</div>
+  if (!p) return `<div class="glass phero"><div class="bubble">A friend who grows every time you practice English.${heLine(heOf('A friend who grows every time you practice English.'))}</div>
     <div class="phstage"><div class="phbody"><img class="pet-img" src="${petSrc('cat', 1, 'happy')}" alt=""></div></div>
     <button class="btn btn-primary btn-block" id="adopt">${icon('paw-print')} Choose your pet</button></div>`;
   const mood = petMood(d), span = p.to ? p.to - p.from : 0, pct = p.to ? Math.round((p.xp - p.from) / span * 100) : 100;
@@ -8746,37 +9023,108 @@ function petHero(d){
   return `<div class="glass phero iri">
     <div class="bubble" id="petline">${esc(line)}</div>
     <div class="phstage"><div class="phbody${enter ? ' enter' : ''}">${petArt(p, mood, 'pet-img', { id: 'petimg', label: p.name })}</div></div>
-    <div class="phrow"><b>${esc(p.name)}</b><span>${STAGES[p.stage - 1]}</span><div class="bar"><i style="width:${Math.max(3, pct)}%"></i></div>
-      <span>${p.to ? (p.to - p.xp) + ' XP to grow' : 'Fully grown!'}</span></div>
+    <div class="phrow"><b>${esc(p.name)}</b><span>${STAGES[p.stage - 1]}</span><div class="bar" role="img" aria-label="${p.to ? 'Growing: ' + pct + '%' : 'Fully grown'}"><i style="width:${Math.max(3, pct)}%"></i></div>
+      <span>${!p.to ? 'Fully grown!' : lowKid() ? 'Growing' : (p.to - p.xp) + ' XP to grow'}</span></div>
+    ${streakLine(d)}
   </div>`;
+}
+
+// Hebrew help on or off (night review, finding 10): on by itself for A1 and A2 (Girls.Hebrew empty); the kid here, or a
+// parent (apiParentKidHebrew), can change it. The card says what it is in Hebrew too, so a parent finds it.
+function heCard(d){
+  if (!d.girl || d.nest) return '';
+  const on = !!d.girl.he;
+  return `<div class="glass panel"><div class="row-flex" style="gap:12px"><span class="tile t-vocab">${icon('translate', 'duotone')}</span>
+    <div style="flex:1;min-width:0"><h2>Hebrew help</h2><div class="sub" style="margin:2px 0 0;font-size:13px">A small line in Hebrew under instructions and messages</div>
+      <span class="khe" dir="rtl" lang="he">עזרה בעברית: שורה קטנה בעברית מתחת להוראות ולהודעות</span></div>
+    <button class="btn btn-sm ${on ? 'btn-teal' : 'btn-glass'}" id="hetoggle" aria-pressed="${on}">${on ? 'On' : 'Off'}</button></div></div>`;
+}
+function bindHeCard(){
+  const b = document.getElementById('hetoggle');
+  if (!b) return;
+  b.onclick = async () => {
+    b.disabled = true;
+    try { setDash(await call('apiKidHebrew', session.name, session.pin, !dash.girl.he)); renderDash(); }
+    catch(e){ toast(e.message, true); b.disabled = false; }
+  };
+}
+
+// ---------- The first-run tour (night review, finding 11) ----------
+// Three pictures (the pet, one mission a day, coins), with Chacho's voice on tap and Hebrew for young kids. Once per kid on
+// this phone, and Skip closes it. Not inside the test pages, which show the app in frames.
+const TOUR = [
+  { pic: d => d.pet ? petArt(d.pet, 'happy', 'pet-img') : `<img src="${cocoSrc('happy')}" alt="">`,
+    t: d => d.pet ? 'Meet ' + d.pet.name : 'Hi, I am Chacho!',
+    s: d => d.pet ? 'Your pet grows every time you practice English.' : 'Choose a pet. It grows every time you practice English.',
+    he: d => d.pet ? 'החיה שלכם גדלה בכל פעם שמתרגלים אנגלית.' : 'בחרו חיה. היא גדלה בכל פעם שמתרגלים אנגלית.' },
+  { pic: () => `<img src="${ASSETS}icons/map-trifold.webp?v=${ICONS_V}" alt="">`, t: () => 'One mission a day',
+    s: () => 'Tap Start on Today. A mission takes about seven minutes.', he: () => 'כל יום מקישים על Start במסך Today. משימה לוקחת בערך שבע דקות.' },
+  { pic: () => `<img src="${ASSETS}icons/coins.webp?v=${ICONS_V}" alt="">`, t: () => 'Coins for your pet',
+    s: () => 'Practice to earn coins, and dress up your pet in the shop.', he: () => 'כשמתרגלים מקבלים מטבעות, ובחנות קונים בגדים לחיה.' }
+];
+const tourKey = () => 'eq_tour_' + (session ? session.name : '');
+function maybeTour(d){
+  if (window.top !== window || dashTab !== 'today' || d.levelTest || d.nest || !session || store.get(tourKey()) || document.querySelector('.overlay')) return;
+  tourShow(d);
+}
+function tourShow(d){
+  store.set(tourKey(), 1);
+  let k = 0;
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  const close = () => { ov.remove(); speechStop(); };
+  const draw = () => {
+    const s = TOUR[k], last = k === TOUR.length - 1;
+    ov.innerHTML = `<div class="sheet glass tour">
+      <div class="tdots" aria-hidden="true">${TOUR.map((_, i) => `<i class="${i === k ? 'on' : ''}"></i>`).join('')}</div>
+      <div class="tpic">${s.pic(d)}</div>
+      <h2 id="tourh">${esc(s.t(d))}</h2>
+      <div class="sub">${esc(s.s(d))}${sayBtn(s.s(d))}</div>${heLine(s.he(d))}
+      <div class="btns"><button class="btn btn-glass" data-close>${last ? 'Close' : 'Skip'}</button>
+        <button class="btn btn-primary" data-tournext>${last ? 'Let\'s go' : 'Next'} ${icon('arrow-right')}</button></div>
+    </div>`;
+    const sh = ov.querySelector('.sheet');
+    sh.setAttribute('role', 'dialog'); sh.setAttribute('aria-modal', 'true'); sh.setAttribute('aria-labelledby', 'tourh'); sh.tabIndex = -1;
+    try { sh.focus({ preventScroll: true }); } catch(e){}
+  };
+  ov.onclick = e => {
+    if (e.target === ov || e.target.closest('[data-close]')) return close();
+    if (e.target.closest('[data-tournext]')) { if (k === TOUR.length - 1) return close(); k++; draw(); }
+  };
+  draw();
+  document.body.appendChild(ov);
 }
 
 // Today's mission: one big Start. Done, it says so; a day without a task says that.
 function todayMain(d, t){
+  // One calm "Catch up" (finding 8): no count, and it opens the one open day in Me.
   const missed = d.week.filter(w => !w.done && !w.isToday && !w.isFuture && !w.beforeStart).length;
-  const catchUp = missed ? `<button class="btn btn-glass btn-sm" data-tab="me">Catch up · ${missed}</button>` : '';
+  const catchUp = missed ? `<button class="btn btn-glass btn-sm" data-tab="me">Catch up a day</button>` : '';
   if (!t) return `<div class="glass tmain done"><span class="tcheck rest">${icon('sun', 'duotone')}</span>
-    <div class="tm-main"><b>No mission today</b><span class="sub">Play a game or talk with Chacho for bonus points.</span></div>${catchUp}</div>`;
+    <div class="tm-main"><b>No mission today${heLine(heOf('No mission today'))}</b><span class="sub">Play a game or talk with Chacho for bonus points.</span></div>${catchUp}</div>`;
   if (!t.mission) return todayCard(t);
   if (t.done) return `<div class="glass tmain done"><span class="tcheck">${icon('check', 'bold')}</span>
-    <div class="tm-main"><b>Mission done!</b><span class="sub">${esc(scoreText(t))} · +${esc(t.points)} points · next one tomorrow</span></div>${catchUp}</div>`;
+    <div class="tm-main"><b>Mission done!${heLine(heOf('Mission done!'))}</b><span class="sub">${esc(scoreText(t))}${lowKid() ? '' : ' · +' + esc(t.points) + ' points'} · next one tomorrow</span></div>${catchUp}</div>`;
   const info = MS_TYPES[t.section] || MS_TYPES.grammar, saved = msSaved(t);
   const left = saved ? Math.max(1, t.mission.n - (saved.res || []).filter(x => x != null).length) : 0;
   return `<div class="glass tmain">
     <div class="tm-top"><span class="label">Today's mission</span><span class="sub">${esc(info[0])} · ${info[1]} min</span></div>
-    <h2>${esc(t.title)}</h2>
+    <h2>${esc(kidTitle(t))}${heLine(t.mission.he || heOf('Today\'s mission'))}</h2>
     <div class="mission-parts">${MS_PARTS.map(p => `<span>${p}</span>`).join('')}</div>
     <button class="btn btn-primary btn-block" data-mission="${t.date}">${icon('play', 'bold')} ${saved ? 'Continue · ' + left + ' left' : 'Start'}</button>
   </div>`;
 }
 
+// The title kids see for a day: the mission's own kids' title (missions' kid field, MissionIndex k), else the catalog topic.
+const kidTitle = t => (t && t.mission && t.mission.kid) || (t && t.title) || '';
 // The two small extras under the mission: Talk with Chacho, and an invite (or a warm-up game).
+// With Hebrew help the small line says what it is in Hebrew instead (the same height, so Today still fits).
 function homePills(d){
-  const c = d.chat, rec = warmupGame(d);
+  const c = d.chat, rec = warmupGame(d), he = heOn();
   const talk = c ? `<button class="glass hpill" id="chatgo"><img src="${cocoSrc(c.homeToday ? 'celebrate' : 'happy')}" alt="">
-    <span><b>Talk to Chacho</b><small class="${c.homeToday ? '' : 'ok'}">${c.homeToday ? 'Done · talk again' : 'Bonus · 3 min'}</small></span></button>` : '';
+    <span><b>Talk to Chacho</b>${he ? `<small class="khe" dir="rtl" lang="he">${heOf('Talk to Chacho')}</small>` : `<small class="${c.homeToday ? '' : 'ok'}">${c.homeToday ? 'Done · talk again' : 'Bonus · 3 min'}</small>`}</span></button>` : '';
   const game = invitePill() || `<button class="glass hpill" data-game="${rec}"><span class="tile sm ${GAME_INFO[rec].tile}">${icon(GAME_INFO[rec].icon, 'duotone')}</span>
-    <span><b>${GAME_INFO[rec].name}</b><small>Game · 2 min</small></span></button>`;
+    <span><b>${GAME_INFO[rec].name}</b>${he ? `<small class="khe" dir="rtl" lang="he">${heOf(GAME_INFO[rec].name)}</small>` : '<small>Game · 2 min</small>'}</span></button>`;
   return `<div class="hpills" id="hpills">${talk}${game}</div>`;
 }
 function invitePill(){
@@ -8893,7 +9241,7 @@ function missionCard(t){
     <div class="row-flex between"><span class="label" style="color:#3b3f55">Today's mission · ${t.day}</span>
       ${t.level ? `<span class="chip">${esc(t.level)}</span>` : ''}</div>
     <div class="row-flex mt-s" style="gap:10px">${tile(t.section)}<b>${esc(info[0])}</b></div>
-    <h2>${esc(t.title)}</h2>
+    <h2>${esc(kidTitle(t))}</h2>
     ${t.done ? `<div class="done-badge"><div class="big-check">${BIG_CHECK}</div>
         <div><b style="font-size:20px">${esc(scoreText(t))}</b><div class="sub" style="color:#3b3f55">+${esc(t.points)} points${t.seconds ? ' · ' + Math.max(1, Math.round(t.seconds / 60)) + ' min' : ''} · great job!</div></div></div>`
       : `<div class="sub" style="color:#3b3f55">About ${info[1]} minutes · ${t.mission.n} questions · your score saves by itself</div>
@@ -8902,18 +9250,23 @@ function missionCard(t){
   </div>`;
 }
 
-function taskRow(w){
+// The one missed day a kid is invited to catch up (night review, finding 8): the latest one, the rest stay quiet.
+function openMissed(d){
+  const m = d.week.filter(w => !w.done && !w.isToday && !w.isFuture && !w.beforeStart);
+  return m.length ? m[m.length - 1].date : null;
+}
+function taskRow(w, open){
   const state = w.done ? 'done' : w.isFuture ? 'future' : w.isToday ? 'today' : 'missed';
   const box = w.done ? CHECK : w.isFuture ? icon('lock-simple') : '';
   const end = w.done ? `<span class="chip purple">${esc(scoreText(w))}</span>`
-    : state === 'missed' ? ((dash && dash.stats && (dash.stats.saved || []).indexOf(w.date) >= 0) ? `<span class="chip teal" title="Saved by your Streak Shield">${icon('shield-check')} Saved</span>` : '') + '<span class="chip red">Catch up</span>'
+    : state === 'missed' ? ((dash && dash.stats && (dash.stats.saved || []).indexOf(w.date) >= 0) ? `<span class="chip teal" title="Saved by your Streak Shield">${icon('shield-check')} Saved</span>` : '') + (w.date === open ? '<span class="chip teal">Still open</span>' : '')
     : state === 'today' ? '<span class="chip teal">Today</span>' : '';
   const click = (state === 'missed' || state === 'today') ? (w.mission ? `data-mission="${w.date}"` : `data-log="${w.date}"`) : '';
   return `<div class="soft task ${state} ${click ? 'clickable' : ''}" ${click}>
     <div class="box">${box}</div>
     ${tile(w.section, true)}
     <div class="task-main"><div class="task-top">${w.day} · ${esc(w.label)}</div>
-      <div class="task-title">${w.title ? esc(w.title) : 'Coming soon'}</div></div>
+      <div class="task-title">${w.title ? esc(kidTitle(w)) : 'Coming soon'}</div></div>
     ${end}
   </div>`;
 }
@@ -8927,7 +9280,7 @@ function openSheet(w){
   ov.className = 'overlay';
   ov.innerHTML = `<div class="sheet glass">
     <div class="row-flex between"><span class="row-flex" style="gap:10px">${tile(w.section, true)}<span class="label">${isLevel ? esc(w.label) : w.day + ' ' + fmtDate(w.date) + ' · ' + esc(w.label)}</span></span>
-      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x" aria-label="Close">${icon('x')}</button></div>
     <h2 style="margin-top:8px;font-size:20px">${esc(w.title)}</h2>
     <a class="btn btn-teal btn-block mt" href="${esc(w.url)}" target="_blank" rel="noopener">Open exercise ${icon('arrow-up-right')}</a>
     <div class="label mt">${isLevel ? 'Which level did you get?' : 'Your score'}</div>
@@ -9234,7 +9587,7 @@ function renderParent(p, pin){
     <div class="row-flex between">
       <div><h1>${p.isAdmin ? 'Admin view' : 'אזור ההורים'}</h1><div class="sub">${p.isAdmin ? p.groups.length + ' groups · ' + fmtDate(p.today) : 'English with Chacho'}</div></div>
       <div class="row-flex" style="gap:8px">
-        <button class="btn btn-glass icon-btn" id="refresh">${icon('arrows-clockwise')}</button>
+        <button class="btn btn-glass icon-btn" id="refresh" aria-label="Refresh">${icon('arrows-clockwise')}</button>
         <button class="btn btn-glass icon-btn" id="logout" title="${T('Exit', 'יציאה')}">${icon('sign-out')}</button>
       </div>
     </div>

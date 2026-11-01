@@ -57,7 +57,7 @@ with the sheet as a nightly copy. Retention on Cloudflare: the audit trail 180 d
 (`retentionSweep`). A family's plan (tab `Plans`, empty in the pilot).
 
 - Kid: first name (English), age or grade (a Chacho's Nest kid: the real age, 2 to 7), level, PIN, color, pet and its name,
-  group. Optional email (older setups). The Nest's Say it step uses the microphone for loudness only, on the phone:
+  group, the Hebrew help choice (`Girls.Hebrew`: yes, no or empty = on for A1 and A2; set by the kid in Me or a parent). Optional email (older setups). The Nest's Say it step uses the microphone for loudness only, on the phone:
   nothing is recorded or sent. The Nest's "Chacho repeats you" (`docs/nest/echo.js`) holds the kid's few seconds of voice in
   the phone's memory only, plays it back once in a parrot's voice and drops it: never written to storage, never sent, no
   speech recognition, the microphone off before the replay.
@@ -75,8 +75,9 @@ with the sheet as a nightly copy. Retention on Cloudflare: the audit trail 180 d
   phone's previous open took to show its first screen ("1.4s saved"), a number and a word only (`specs/perf-phase2.md`).
 
 On the phone (local storage): the remembered kid and PIN, the group, the last dashboard, settings (sound, voice), the
-last parents' view of a parent who chose to be remembered (`eq_par`, deleted on sign-out), and how long the last open
-took (`eq_open_m`). Chacho's
+last parents' view of a parent who chose to be remembered (`eq_par`, deleted on sign-out), how long the last open
+took (`eq_open_m`), whether the last kid had Hebrew help on (`eq_he`, for the wait screen) and that a kid has seen the
+first-run tour (`eq_tour_<kid>`). Chacho's
 Nest also keeps, on the phone only: how many times each game was played (Chacho shows a new game first), the microphone
 choice, the kid's last 12 colored pictures (which colors went where; no drawing, photo or sound), and the sticker book
 (`docs/nest/stickers.js`): which stickers the kid has already seen pop (word ids, `eq_nest_stickers_<kid>`) and the

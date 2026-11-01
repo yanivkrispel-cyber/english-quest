@@ -31,6 +31,9 @@ Two kids at one table on one phone. The game itself runs on the phone; checking 
   own level (Match it and Spot it: quick taps, no sound).
 - A right answer pulls the knot one step toward the one who answered; a wrong answer freezes her for
   1.5 s. Five steps to her side wins; after 2 minutes the knot's side wins (in the middle: a draw).
+- Relaxed (night review 2026-11-01, finding 23): a switch on the Tug of War sheet, on by itself when the kid who opens it
+  is A1 or A2. No clock on screen (the game still ends after 5 minutes at most), and a wrong answer shows the right one
+  ("Look") for a moment (0.7 s locked, the next question after 1.2 s) instead of the freeze.
 - At the end the result is saved for both kids (`apiTugSave`): a Games row each (Game = `tug`, 2 XP per
   right answer, +10 together bonus for the first game together that day, inside the cap), missed items
   to review, duo rewards checked. It counts as practice for duo streaks.

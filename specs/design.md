@@ -6,7 +6,7 @@ screen is built from these pieces, not from new ones.
 
 ## The rules
 
-1. **Use the tokens and the classes.** Colors come from `:root` (`--ink`, `--muted`, `--faint`, `--primary`, `--primary-2`,
+1. **Use the tokens and the classes (rule 12 for the text colors).** Colors come from `:root` (`--ink`, `--muted`, `--faint`, `--primary`, `--primary-2`,
    `--teal`, `--teal-2`, `--orange`, `--danger`, `--glass`, `--glass-soft`, `--stroke`, `--shadow`, `--inner`, `--iri`)
    or from the tile gradients (`.t-*`). A new hex color needs a reason (a world's colors in `look()`, a pet's palette)
    and goes in a variable or a `.t-*` class, never scattered in inline styles.
@@ -26,9 +26,10 @@ screen is built from these pieces, not from new ones.
    tile gets a clay picture (a new row in `tools/ui-icons.json`), small controls (close, back, check, caret) stay Phosphor. **Never emoji in the UI** (founding rule; emoji only inside WhatsApp text).
 5. **Pictures:** original clay art (pets, Chacho, Nest stickers, items; `tools/PETS.md`, `tools/NEST-ART.md`). No clip art,
    no stock icons, no emoji standing in for a picture.
-6. **Type:** Plus Jakarta Sans (400 to 800). `h1` 30/800, `h2` 18/700, `.sub` 15 muted, `.label` 12/700 uppercase.
-   Nothing a kid must read under 13 px. Hebrew text (parents' area, hints) uses the system font, `direction:rtl`
-   (`.mhe`, `PHE` / `T()`).
+6. **Type:** Plus Jakarta Sans (400 to 800). `h1` 30/800, `h2` 18/700, `.sub` 15 muted, `.label` 13/700 uppercase.
+   Nothing a kid reads under 13 px (`.label`, the week dots, the tab labels and the shop's small labels were raised to 13 on
+   2026-11-01; on a phone under 660 px tall the mission's part names hide and only the colored bars stay). Hebrew text
+   (parents' area, hints, the kids' Hebrew help) uses the system font, `direction:rtl` (`.mhe`, `.khe`, `PHE` / `T()`).
 7. **Chips and status:** `.chip` with `.purple`, `.teal`, `.orange`, `.red`. Right/wrong: teal and `--danger`, the same as
    the games.
 8. **Background:** the body gradient with the four `.blob`s. A screen does not set its own page background (except the
@@ -40,7 +41,21 @@ screen is built from these pieces, not from new ones.
 10. **The Nest (ages 2 to 7)** uses the same glass and tokens, bigger: tap targets at least 88 px, pictures instead of
     words, no text the kid must read. A right answer is a moment, never just a colored border: use `nkCheer` (stars, the
     gold star into the progress row, Chacho hops, the tune) for every new Nest game.
-11. **Same thing, same look.** Before drawing a new card, list, header or empty state, find the closest existing one
+12. **Accessible for every kid (WCAG 2.2 AA, night review 2026-11-01):**
+    - Text colors pass 4.5:1 on the real surfaces (white, clay, the glass over the body gradient): `--ink`, `--muted`
+      (#4b5064) and `--faint` (#555a6e) are all text colors now; white text sits on `--clay-primary` (#5f63ea, 4.7:1) or the
+      `--primary-2` to `--primary` gradient (#6b6ff0 to #5558e0). No new light gray for text.
+    - Every icon-only button (`.icon-btn`) has an `aria-label` (or `title`); `node test/ui-check.js` fails without one.
+    - Sheets (`.overlay` > `.sheet`) are dialogs by themselves (`dialogOpen`: role, label, focus in and back, Tab stays
+      inside, Escape closes through the close button). Toasts and the answer bubble (`#fb`) speak (`announce`, `aria-live`).
+    - One keyboard focus ring for everything (`:focus-visible`, 3 px `--primary`).
+    - Reduced motion stops every loop and slide (the blobs too): one rule at the end of the main style.
+    - Hebrew help for A1 and A2 (`heLine(he)`, `heOf(en)` and the kids' dictionary `KHE` / `KHE_RX`, next to `toast`): a small
+      `.khe` line under a title, an instruction, a game rule, a message, an empty or error state. Never for the English being
+      learned. A new kid-facing instruction or message gets its Hebrew in `KHE` (plural imperative: הקישו, נסו; Chacho is a he),
+      and a prompt in a game or a mission uses `qPrompt(en)` (the English, Chacho's speaker, the Hebrew).
+    - A1 and A2 kids see no point or XP numbers (`lowKid()`): words and bars instead; parents still see the numbers.
+13. **Same thing, same look.** Before drawing a new card, list, header or empty state, find the closest existing one
     (home tabs, missions, shop, parent area) and reuse its classes. Two ways to show the same kind of thing is the bug
     this file exists to stop.
 

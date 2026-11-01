@@ -29,6 +29,8 @@ async function audit(f){
   const rows = [];
   for (const lv of ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1']) {
     await ev(`loadMissions(MS_FILES['${lv}'])`);
+    // Each level as its kids see it: Hebrew help (and no clock) for A1 and A2.
+    ev(`dash.girl.level = '${lv}'; dash.girl.he = ${lv === 'a1' || lv === 'a2'}`);
     for (const id of ev(`(window.EQ_MISSIONS[MS_FILES['${lv}']] || []).map(m => m.id)`)) {
       await ev(`previewMission('${id}', '')`);
       const n = ev('MS.S.length');

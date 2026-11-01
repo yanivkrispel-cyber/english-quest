@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v23';
+var SETUP_VERSION = 'v24d';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 // The kids' front end (Cloudflare, docs/). Until 2026-10 it was https://yanivkrispel-cyber.github.io/english-quest/.
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
@@ -48,7 +48,7 @@ var WORLDS = { a1: 'Sunny Meadow', a2: 'Whisper Woods', b1: 'Crystal Caves', 'b1
 // The sheet tab for kids is still called "Girls" (it predates groups).
 var HEADERS = {
   // Missions: "no" keeps her daily task on test-english.com (the old link); empty = Today's Mission in the app.
-  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince', 'Missions', 'NestPerDay', 'NestArcadeMin'],
+  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince', 'Missions', 'NestPerDay', 'NestArcadeMin', 'Hebrew'],
   Games: ['Timestamp', 'Girl', 'Date', 'Game', 'Level', 'Correct', 'Total', 'XP', 'Missed'],
   Review: ['Girl', 'Items'],
   Gates: ['Timestamp', 'Girl', 'Date', 'From', 'To', 'Correct', 'Total', 'Passed', 'Tasks', 'XP'],
@@ -135,7 +135,7 @@ function api() {
   apiAdminAddGroup: apiAdminAddGroup, apiAdminAddKid: apiAdminAddKid, apiAdminSettings: apiAdminSettings, apiAdminNestAll: apiAdminNestAll, apiAdminParentPin: apiAdminParentPin,
   apiPushSubscribe: apiPushSubscribe, apiPushMessage: apiPushMessage, apiAdminTestPush: apiAdminTestPush,
   apiParentPushSubscribe: apiParentPushSubscribe, apiParentPushPrefs: apiParentPushPrefs, apiParentPushTest: apiParentPushTest,
-  apiGameResult: apiGameResult, apiSetPet: apiSetPet, apiGateResult: apiGateResult,
+  apiGameResult: apiGameResult, apiSetPet: apiSetPet, apiKidHebrew: apiKidHebrew, apiParentKidHebrew: apiParentKidHebrew, apiGateResult: apiGateResult,
   apiDuelHome: apiDuelHome, apiDuelInvite: apiDuelInvite, apiDuelJoin: apiDuelJoin, apiDuelReply: apiDuelReply,
   apiDuelCancel: apiDuelCancel, apiDuelSolo: apiDuelSolo, apiDuelPoll: apiDuelPoll, apiDuelFinish: apiDuelFinish, apiDuelHelped: apiDuelHelped,
   apiDuoInvite: apiDuoInvite, apiDuoAnswer: apiDuoAnswer, apiDuoNudge: apiDuoNudge, apiDuoEnd: apiDuoEnd,
@@ -354,6 +354,21 @@ function apiSetPet(name, pin, petId, petName) {
   var fields = { Pet: petId, PetName: petName };
   if (!kid.PetSince) fields.PetSince = today();
   setGirlFields(kid.Name, fields);
+  return buildDashboard(findGirl(kid.Name));
+}
+
+// Hebrew help for young kids (night review, finding 10): a small Hebrew line under titles, instructions and messages.
+// Girls.Hebrew: 'yes' or 'no' once a parent (or the kid, in Me) chose; empty = on for A1 and A2. The Nest has its own way.
+function kidHebrew(kid) {
+  var v = String(kid.Hebrew || '').toLowerCase();
+  if (isNest(kid)) return false;
+  if (v === 'yes' || v === 'no') return v === 'yes';
+  return kid.Level === 'a1' || kid.Level === 'a2';
+}
+
+function apiKidHebrew(name, pin, on) {
+  var kid = auth(name, pin);
+  setGirlFields(kid.Name, { Hebrew: on ? 'yes' : 'no' });
   return buildDashboard(findGirl(kid.Name));
 }
 
@@ -754,7 +769,8 @@ function buildDashboard(kid) {
 
   return {
     // inApp: the level test is played in the app (Pilot.js); kids on the old link keep test-english.com's test.
-    girl: { name: kid.Name, level: kid.Level, levelLabel: LEVEL_LABEL[kid.Level] || kid.Level, color: kid.Color, inApp: missionsOn(kid), age: Number(kid.Age) || null },
+    girl: { name: kid.Name, level: kid.Level, levelLabel: LEVEL_LABEL[kid.Level] || kid.Level, color: kid.Color, inApp: missionsOn(kid), age: Number(kid.Age) || null,
+      he: kidHebrew(kid), heSet: String(kid.Hebrew || '') },
     today: t,
     week: week,
     stats: {
