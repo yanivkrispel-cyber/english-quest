@@ -362,7 +362,7 @@ var CATALOG = {"grammar":{"a1":[{"t":"Present simple forms of 'to be': am/is/are
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v23';
+var SETUP_VERSION = 'v24b';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 // The kids' front end (Cloudflare, docs/). Until 2026-10 it was https://yanivkrispel-cyber.github.io/english-quest/.
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
@@ -407,7 +407,10 @@ var WORLDS = { a1: 'Sunny Meadow', a2: 'Whisper Woods', b1: 'Crystal Caves', 'b1
 // The sheet tab for kids is still called "Girls" (it predates groups).
 var HEADERS = {
   // Missions: "no" keeps her daily task on test-english.com (the old link); empty = Today's Mission in the app.
-  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince', 'Missions', 'NestPerDay', 'NestArcadeMin'],
+  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince', 'Missions', 'NestPerDay', 'NestArcadeMin',
+    // Safety.js: Mic = yes when a parent turned the microphone on; RemindAt = the reminder hour ('off'; empty = the default);
+    // Seen = the last day she opened the app; Inactive = the day the admin was told she would be deleted for inactivity.
+    'Mic', 'RemindAt', 'Seen', 'Inactive'],
   Games: ['Timestamp', 'Girl', 'Date', 'Game', 'Level', 'Correct', 'Total', 'XP', 'Missed'],
   Review: ['Girl', 'Items'],
   Gates: ['Timestamp', 'Girl', 'Date', 'From', 'To', 'Correct', 'Total', 'Passed', 'Tasks', 'XP'],
@@ -417,8 +420,10 @@ var HEADERS = {
   Log: ['Timestamp', 'Girl', 'Date', 'DoneOn', 'Section', 'Level', 'Title', 'URL', 'Correct', 'Total', 'Percent', 'Points', 'Mission', 'Seconds', 'Detail'],
   Rewards: ['Points', 'Reward', 'Group'],
   Settings: ['Key', 'Value'],
-  // Parent, Joined, Consent: a family that joined on its own from the invite link (Pilot.js).
-  Groups: ['Id', 'Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email', 'Friends', 'Parent', 'Joined', 'Consent'],
+  // Parent, Joined, Consent: a family that joined on its own from the invite link (Pilot.js). ConsentV / ConsentAt: the version
+  // of the privacy notice the family agreed to and when (Safety.js). Friends = the admin's override (no / yes); FriendsOn = the
+  // parents' switch for playing with other families (off when empty).
+  Groups: ['Id', 'Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email', 'Friends', 'Parent', 'Joined', 'Consent', 'ConsentV', 'ConsentAt', 'FriendsOn'],
   Push: ['Girl', 'Endpoint', 'Created', 'Agent'],
   ParentPush: ['Who', 'Endpoint', 'Created', 'Agent', 'Instant'],
   // Play together (Duels.js): one row per duel or challenge.
@@ -442,7 +447,10 @@ var HEADERS = {
   // The audit trail (Audit.js): opens, wrong PINs, and what parents, the admin, the teacher and the owner changed.
   Audit: ['Timestamp', 'Date', 'Role', 'Who', 'Group', 'Action', 'Detail', 'Ok', 'Device'],
   // A family's plan (src/Privacy.js, entitlement): empty = the pilot, full access. Source: apple, google or manual.
-  Plans: ['Group', 'Plan', 'Source', 'Until', 'Ref', 'Updated']
+  Plans: ['Group', 'Plan', 'Source', 'Until', 'Ref', 'Updated'],
+  // Safety.js: a kid blocked another kid; a report (a block with a preset reason) for the admin and the kid's parents.
+  Blocks: ['Timestamp', 'Girl', 'Blocked', 'Date'],
+  Reports: ['Timestamp', 'Girl', 'About', 'Date', 'Reason', 'Group']
 };
 
 var WORDS = [
@@ -505,7 +513,9 @@ function api() {
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
   apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade,
   apiCfExport: apiCfExport, apiCfMode: apiCfMode, apiAdminData: apiAdminData, apiAdminEdit: apiAdminEdit,
-  apiDeleteData: apiDeleteData, apiExportData: apiExportData
+  apiDeleteData: apiDeleteData, apiExportData: apiExportData,
+  apiParentConsent: apiParentConsent, apiParentFriends: apiParentFriends, apiParentMic: apiParentMic, apiParentRemind: apiParentRemind,
+  apiKidBlock: apiKidBlock, apiParentUnblock: apiParentUnblock
   };
 }
 
@@ -932,7 +942,8 @@ function parentData(list, isAdmin, who) {
         total: kids.reduce(function (a, d) { return a + d.stats.earned; }, 0),
         reward: g.GoalReward || ''
       },
-      girls: kids
+      girls: kids,
+      safety: familySafety(g)
     };
   });
   return {
@@ -1003,18 +1014,16 @@ function apiAdminAddKid(pin, name, age, groupId, level, missions) {
   return data;
 }
 
-// Reminder times (hours, Asia/Jerusalem). An empty last call turns it off.
-function apiAdminSettings(pin, reminderHour, lastCallHour) {
+// The default reminder hour (Asia/Jerusalem), for kids whose parents did not pick one (Safety.js). The evening last call is
+// gone (2026-11-01, no pressure on kids): lastCallHour is ignored, old copies of the app still send it.
+function apiAdminSettings(pin, reminderHour) {
   ensureSetup();
   if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can change settings');
-  var r = Number(reminderHour), l = lastCallHour === '' || lastCallHour === null ? '' : Number(lastCallHour);
+  var r = Number(reminderHour);
   if (!(r >= 0 && r <= 23)) throw new Error('Choose a reminder hour');
-  if (l !== '' && !(l >= 0 && l <= 23)) throw new Error('Choose a last-call hour');
-  if (l !== '' && l <= r) throw new Error('Last call must be later than the daily reminder');
   setSetting('ReminderHour', String(r));
-  setSetting('LastCallHour', String(l));
-  installTriggers();
-  audit('admin', 'admin', '', 'reminder hours', r + ':00' + (l === '' ? ', no last call' : ', last call ' + l + ':00'));
+  setSetting('LastCallHour', '');
+  audit('admin', 'admin', '', 'reminder hours', 'default ' + r + ':00');
   return apiParent(pin);
 }
 
@@ -1133,6 +1142,8 @@ function buildDashboard(kid) {
     placement: placementInfo(kid),
     games: gameStats(kid, t, owned['word-saver']),
     chat: pending || nest ? null : chatInfo(kid, t),
+    // The parents' switches (Safety.js): speech recognition allowed, and the hour of her reminder (0 = none).
+    mic: kidMicOn(kid), remind: kidRemindHour(kid),
     coins: coinsOf(kid).balance,
     upgrades: upgradesOf(owned),
     polish: polishInfo(kid),
@@ -1267,20 +1278,22 @@ function nextExercise(section, level, used, missions) {
 
 // ---------- Reminders (time-driven triggers) ----------
 
-function dailyReminder() {
-  try { pushReminders(false); } catch (e) { console.error(e); }
+// Runs every hour (Apps Script) or once in each hour (Cloudflare, platformTick): the kids whose reminder hour it is.
+function dailyReminder(hour) {
+  var h = typeof hour === 'number' ? hour : Number(Utilities.formatDate(new Date(), TZ, 'H'));
+  try { kidReminders(h); } catch (e) { console.error(e); }
   var t = today();
   var logs = readTable('Log');
   readTable('Girls').forEach(function (k) {
-    if (!k.Email) return;
+    if (!k.Email || kidRemindHour(k) !== h) return;
     var done = logs.some(function (l) { return l.Girl === k.Name && l.Date === t; });
     if (done) return;
     var a = todayTask(k);
     MailApp.sendEmail({
       to: k.Email,
-      subject: k.Name + ', your 10 minutes of English are waiting!',
+      subject: k.Name + ', Chacho saved today\'s English for you',
       htmlBody: '<p>Hi ' + k.Name + ',</p><p>Today: <b>' + SECTIONS[a.section].label + '</b> — ' + a.title + '</p>' +
-        '<p><a href="' + groupLink(groupOf(k)) + '">Open English with Chacho</a> and keep your streak going.</p>'
+        '<p><a href="' + groupLink(groupOf(k)) + '">Open English with Chacho</a> whenever you are ready.</p>'
     });
   });
 }
@@ -1313,10 +1326,8 @@ function installTriggers() {
     var f = tr.getHandlerFunction();
     if (f === 'dailyReminder' || f === 'lastCallReminder' || f === 'parentSummary' || f === 'weeklySummary' || f === 'warmCache') ScriptApp.deleteTrigger(tr);
   });
-  var hour = Number(getSetting('ReminderHour')) || 17;
-  ScriptApp.newTrigger('dailyReminder').timeBased().everyDays(1).atHour(hour).inTimezone(TZ).create();
-  var last = Number(getSetting('LastCallHour'));
-  if (last) ScriptApp.newTrigger('lastCallReminder').timeBased().everyDays(1).atHour(last).inTimezone(TZ).create();
+  // Every hour: each kid's reminder comes at the hour her parents chose (Safety.js kidReminders); no evening last call.
+  ScriptApp.newTrigger('dailyReminder').timeBased().everyHours(1).create();
   var summary = Number(getSetting('ParentSummaryHour'));
   if (summary) ScriptApp.newTrigger('parentSummary').timeBased().everyDays(1).atHour(summary).inTimezone(TZ).create();
   ScriptApp.newTrigger('weeklySummary').timeBased().onWeekDay(ScriptApp.WeekDay.FRIDAY).atHour(12).inTimezone(TZ).create();
@@ -1370,12 +1381,15 @@ function ensureSetup() {
     if (stray && ss.getSheets().length > 1) ss.deleteSheet(stray);
     clearCache();
 
-    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: PUBLIC_URL, PilotFrom: today(), ShopOpens: SHOP.opens, ShopEarly: '',
+    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: PUBLIC_URL, PilotFrom: today(), ShopOpens: SHOP.opens, ShopEarly: '',
       InviteCode: Math.random().toString(36).slice(2, 8), InviteOpen: 'no', TeacherCode: String(100000 + Math.floor(Math.random() * 900000)) };
     Object.keys(defaults).forEach(function (k) { if (getSetting(k) === null) setSetting(k, defaults[k]); });
     if (getSetting('AppUrl') !== APP_URL) setSetting('AppUrl', APP_URL);
     // v18: the front end moved from GitHub Pages to its own address (the old one shows a "new home" screen).
     if (/github\.io/.test(String(getSetting('PublicUrl') || ''))) setSetting('PublicUrl', PUBLIC_URL);
+    // v24: feedback is deleted and exported by the family id (Safety.js); the evening "last call" is gone (no pressure on kids).
+    migrateFeedbackWho();
+    setSetting('LastCallHour', '');
     // v15: Today's Mission is every kid's daily task (Girls.Missions = no keeps the old link), so the pilot setting goes.
     var st = sheet('Settings'), sv = st.getDataRange().getValues();
     for (var si = sv.length - 1; si >= 1; si--) if (sv[si][0] === 'MissionPilot') st.deleteRow(si + 1);
@@ -1975,40 +1989,23 @@ function apiParentPushTest(pin, endpoint) {
   return deliver([endpoint], { title: 'Test notification', body: 'Parent notifications are working.' }, 'ParentPush');
 }
 
-function reminderMessage(kid, lastCall) {
-  var t = today();
+// A kid's reminder (store rule 8, night review 2026-11-01): one a day at the hour her parents chose, gentle words, no
+// countdown, no streak to lose and never another child's name. A duo buddy who already practiced is mentioned without a name.
+function reminderMessage(kid) {
   var a = todayTask(kid);
-  var logs = kidRows('Log', kid.Name);
   var label = SECTIONS[a.section].label;
-  // A duo partner who already practiced today is the best reason to come (Duos.js).
   var duo = null;
   try { duo = duoReminder(kid); } catch (e) { console.error(e); }
-  if (duo && lastCall) return { title: 'Last call, ' + kid.Name, body: duo.partner + ' practiced today. ' + (duo.days ? 'Save your ' + duo.days + '-day duo streak: ' : '') + label + ' — ' + a.title };
-  if (duo) return { title: duo.partner + ' is waiting for you', body: duo.partner + ' practiced today. ' + (duo.days ? 'Keep your ' + duo.days + '-day duo streak going! ' : '') + 'Today: ' + label };
-  if (lastCall) {
-    return { title: 'Last call, ' + kid.Name, body: '10 minutes before the day ends — ' + label + ': ' + a.title };
-  }
-  var s = streak(logs, t, hasShield(kid.Name));
   return {
-    title: kid.Name + ', time for English',
-    body: 'Today: ' + label + ' — ' + a.title + (s >= 2 ? ' · keep your ' + s + '-day streak going' : '')
+    title: 'Hi ' + kid.Name + '!',
+    body: (duo ? 'Your duo buddy practiced today. ' : '') + 'Today: ' + label + '. Chacho is ready whenever you are.'
   };
 }
 
-// Time-driven: push to kids who haven't practiced today.
-function pushReminders(lastCall) {
-  var t = today();
-  var logs = readTable('Log');
-  var withDevices = {};
-  readTable('Push').forEach(function (s) { withDevices[s.Girl] = true; });
-  readTable('Girls').forEach(function (k) {
-    if (!withDevices[k.Name]) return;
-    if (logs.some(function (l) { return l.Girl === k.Name && l.Date === t; })) return;
-    try { pushToKid(k.Name, reminderMessage(k, lastCall)); } catch (e) { console.error(e); }
-  });
-}
-
-function lastCallReminder() { pushReminders(true); }
+// Sent by triggers made before 2026-11-01 (the 20:00 "last call"): nothing any more. The hourly dailyReminder sends
+// each kid's one reminder (Safety.js kidReminders).
+function pushReminders() {}
+function lastCallReminder() {}
 
 // ---------- API ----------
 
@@ -2039,7 +2036,7 @@ function apiPushSubscribe(name, pin, endpoint, agent, welcome) {
   if (welcome) {
     res.sent = pushToKid(kid.Name, {
       title: 'Reminders are on',
-      body: 'We\'ll remind you at ' + (Number(getSetting('ReminderHour')) || 17) + ':00 on days you haven\'t practiced yet.'
+      body: kidRemindHour(kid) ? 'Chacho will say hi at ' + kidRemindHour(kid) + ':00 on days you haven\'t practiced yet.' : 'Your parents turned the daily reminder off. You can still play any time.'
     }).sent;
   }
   return res;
@@ -2109,8 +2106,9 @@ function apiDuelInvite(name, pin, guestName, mode) {
     guest = findGirl(guestName);
     if (!guest) throw new Error('Unknown player');
     if (guest.Name === kid.Name) throw new Error('Invite someone else');
-    if (!duelCanMeet(kid, guest)) throw new Error('Playing with other groups is switched off for this group');
+    if (!duelCanMeet(kid, guest)) throw new Error(DUEL_CLOSED);
     if (pendingLevelTest(guest)) throw new Error(guest.Name + ' takes the level test first');
+    contactLimit(kid);
   }
   var now = Date.now(), d, joined = false;
   var lock = LockService.getScriptLock();
@@ -2337,18 +2335,21 @@ function duelStart(d, kid, now) {
 }
 
 // Kids from different groups can play together unless either group switched it off (Groups.Friends = no).
+// Since 2026-11-01 only when both families' parents turned it on (Safety.js friendsState; the admin's Groups.Friends = no
+// still keeps a family out). A kid who blocked another kid (or was blocked) never meets her again.
 function duelGroupOpen(id) {
-  var g = findGroup(id);
-  return !(g && String(g.Friends || '').trim().toLowerCase() === 'no');
+  return friendsState(findGroup(id)).on;
 }
 function duelCanMeet(a, b) {
   // Chacho's Nest kids (ages 2 to 7) play alone: they never show up in Play together or duo lists.
   if (isNest(a) || isNest(b)) return false;
+  if (blockedPair(a.Name, b.Name)) return false;
   return groupOf(a) === groupOf(b) || (duelGroupOpen(groupOf(a)) && duelGroupOpen(groupOf(b)));
 }
+var DUEL_CLOSED = 'Playing with kids from other families is off. A grown-up can turn it on.';
 function duelCheckFriends(d, kid) {
   var host = findGirl(d.Host);
-  if (host && !duelCanMeet(host, kid)) throw new Error('Playing with other groups is switched off for this group');
+  if (host && !duelCanMeet(host, kid)) throw new Error(DUEL_CLOSED);
 }
 
 // Everyone this kid may play with: her group first, then the other groups (unless switched off).
@@ -2564,14 +2565,16 @@ function duelHome(kid) {
   var mates = duelPlayers(kid), mine = groupOf(kid);
   var online = duelOnline(mates.map(function (k) { return k.Name; }));
   var live = function (r) { return Number(r.Expires) > now; };
-  var withMe = rows.filter(function (r) { return r.Host === name || r.Guest === name; });
+  // Invites from a kid she may no longer meet (blocked, or a family switched off) are not shown.
+  var meet = {};
+  mates.forEach(function (k) { meet[k.Name] = 1; });
+  var withMe = rows.filter(function (r) { return r.Host === name || (r.Guest === name && meet[r.Host]); });
   return {
+    // A kid of another family shows only her first name and her pet (no family name, no level, no "online" light).
     friends: mates.map(function (k) {
-      var pet = petInfo(k);
-      var g = findGroup(groupOf(k));
-      return { name: k.Name, color: k.Color, level: LEVEL_LABEL[k.Level] || k.Level, ready: !pendingLevelTest(k), online: !!online[k.Name],
-        group: groupOf(k) === mine ? '' : (g ? String(g.Name) : ''),
-        pet: petBrief(pet) };
+      var own = groupOf(k) === mine;
+      return { name: k.Name, color: k.Color, level: own ? LEVEL_LABEL[k.Level] || k.Level : '', ready: !pendingLevelTest(k),
+        online: own && !!online[k.Name], group: '', other: !own, pet: petBrief(petInfo(k)) };
     }),
     incoming: withMe.filter(function (r) { return r.State === 'invited' && r.Guest === name && live(r); }).map(function (r) { return duelView(r, name); }),
     challenges: withMe.filter(function (r) { return r.State === 'challenge' && r.Guest === name && live(r); }).map(function (r) { return duelView(r, name); }),
@@ -2731,8 +2734,9 @@ function apiDuoInvite(name, pin, partnerName) {
   var kid = duelKid(name, pin), mate = findGirl(partnerName), note = null;
   if (!mate) throw new Error('Unknown player');
   if (mate.Name === kid.Name) throw new Error('Choose someone else');
-  if (!duelCanMeet(kid, mate)) throw new Error('Playing with other groups is switched off for this group');
+  if (!duelCanMeet(kid, mate)) throw new Error(DUEL_CLOSED);
   if (pendingLevelTest(mate)) throw new Error(mate.Name + ' takes the level test first');
+  contactLimit(kid);
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
@@ -2789,9 +2793,12 @@ function apiDuoNudge(name, pin, id) {
     d = duoFresh(id);
     if (!duoHas(d, kid.Name) || d.State !== 'active') throw new Error('This duo streak is not active');
     other = duoOther(d, kid.Name);
+    var mate = findGirl(other);
+    if (!mate || !duelCanMeet(kid, mate)) throw new Error(DUEL_CLOSED);
     if (practiceDays(other)[t]) throw new Error(other + ' already practiced today');
     var nudges = duoNudges(d);
     if (nudges[kid.Name] === t) throw new Error('You already nudged ' + other + ' today');
+    contactLimit(kid);
     nudges[kid.Name] = t;
     d.Nudges = Object.keys(nudges).map(function (k) { return k + ':' + nudges[k]; }).join(' ');
     duoSave(d);
@@ -2799,10 +2806,10 @@ function apiDuoNudge(name, pin, id) {
   } finally {
     lock.releaseLock();
   }
-  var did = !!practiceDays(kid.Name)[t];
+  // A wave, not a guilt trip (store rule 8): no streak to lose, no "waiting for you".
   try {
-    pushToKid(other, { title: kid.Name + ' is waiting for you', url: './', tag: 'eq-duo',
-      body: (did ? kid.Name + ' practiced today. ' : '') + (s.days ? 'Keep your ' + s.days + '-day duo streak going!' : 'Practice today, both of you, and start your duo streak!') });
+    pushToKid(other, { title: kid.Name + ' sent you a wave', url: './', tag: 'eq-duo',
+      body: 'Want to practice together today? Chacho is ready whenever you are.' });
   } catch (e) { console.error(e); }
   return duoHome(kid);
 }
@@ -2950,7 +2957,13 @@ function duoQuest(d, t) {
 
 function duoHome(kid) {
   var t = today(), name = kid.Name;
-  var rows = readTable('Duos').filter(function (r) { return duoHas(r, name); });
+  // A duo with a kid she may no longer meet (blocked, or a family switched playing with others off) is hidden, not ended:
+  // it comes back if the parents turn it on again.
+  var rows = readTable('Duos').filter(function (r) {
+    if (!duoHas(r, name)) return false;
+    var mate = findGirl(duoOther(r, name));
+    return !!mate && duelCanMeet(kid, mate);
+  });
   var urgent = function (v) { return v.todayMe && v.todayThem ? 2 : v.todayMe || v.todayThem ? 0 : 1; };
   return {
     incoming: rows.filter(function (r) { return r.State === 'invited' && r.B === name; }).map(function (r) { return { id: r.Id, partner: duoPlayer(r.A) }; }),
@@ -2979,15 +2992,15 @@ function duoPlayer(name) {
   return { name: name, color: k ? k.Color : '', level: k ? (LEVEL_LABEL[k.Level] || k.Level) : '', pet: petBrief(pet) };
 }
 
-// The 17:00 / 20:00 reminder of a kid who hasn't practiced: a partner who already did today.
+// The daily reminder of a kid who hasn't practiced: a partner who already did today (the reminder never says her name).
 function duoReminder(kid) {
   var t = today();
   if (practiceDays(kid.Name)[t]) return null;
   var best = null;
   readTable('Duos').forEach(function (d) {
     if (d.State !== 'active' || !duoHas(d, kid.Name)) return;
-    var other = duoOther(d, kid.Name);
-    if (!practiceDays(other)[t]) return;
+    var other = duoOther(d, kid.Name), mate = findGirl(other);
+    if (!practiceDays(other)[t] || !mate || !duelCanMeet(kid, mate)) return;
     var days = duoStreak(d, t).days;
     if (!best || days > best.days) best = { partner: other, days: days };
   });
@@ -3331,7 +3344,9 @@ function shopSeason(t) {
   return null;
 }
 
-function shopAvailable(it, t) { return !it.season || it.season === shopSeason(t); }
+// Seasonal items stay in the shop all year (night review 2026-11-01, store rule 8: no "gone soon" pressure on kids);
+// in their season they are shown first, as the Drop.
+function shopAvailable(it, t) { return true; }
 
 function ownedItems(name) {
   var owned = {};
@@ -4168,8 +4183,11 @@ function apiJoin(code, data) {
     while (gs.some(function (g) { return String(g.Name).toLowerCase() === name.toLowerCase(); })) name = family + ' ' + (n++);
     var ids = gs.map(function (g) { return String(g.Id); });
     do { id = Math.random().toString(36).slice(2, 8); } while (ids.indexOf(id) >= 0);
+    // The version of the privacy notice the parent agreed to (Safety.js NOTICE); an old copy of the app sends none: version 1,
+    // so the family sees the new notice once in the parents' area.
+    var at = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm'), cv = Number(data.consentV) === NOTICE.v ? NOTICE.v : 1;
     appendRow('Groups', { Id: id, Name: name, ParentPIN: parentPin, Goal: 1500, GoalReward: 'ערב פיצה משפחתי', Email: email,
-      Parent: parentName, Joined: Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm'), Consent: t });
+      Parent: parentName, Joined: at, Consent: t, ConsentV: cv, ConsentAt: at });
     var girls = readTableUncached('Girls'), taken = girls.map(function (k) { return String(k.Name).toLowerCase(); });
     kids.forEach(function (k, i) {
       // Names are unique across the app: a second Noa becomes "Noa K." (the family's initial), then a number.
@@ -4280,7 +4298,7 @@ function apiPilotStats(pin) {
         last7: days.filter(function (d) { return d > addDays(t, -7); }).length };
     });
     return { id: String(g.Id), name: g.Name, parent: g.Parent || '', joined: joined, before: before, day: Math.max(1, daysBetween(joined, t) + 1), kids: kids,
-      feedback: fb.filter(function (f) { return f.Who === String(g.Id); }).length };
+      feedback: fb.filter(function (f) { return f.Who === String(g.Id); }).length, consent: consentInfo(g).v, friends: friendsState(g).on };
   });
   var all = [].concat.apply([], fams.map(function (f) { return f.kids; }));
   return {
@@ -4289,6 +4307,7 @@ function apiPilotStats(pin) {
       firstMission: all.filter(function (k) { return k.missions > 0; }).length, active7: all.filter(function (k) { return k.last7 >= 4; }).length },
     feedback: fb.slice(-12).reverse().map(function (f) { return { group: f.Group, date: f.Date, score: f.Score, text: f.Text }; }),
     chat: chatBoard(t),
+    reports: reportsBoard(), notice: NOTICE.v,
     teacherFlags: flags.filter(function (f) { return f.Girl === 'Teacher'; }).length,
     teacherCode: String(getSetting('TeacherCode') || ''),
     base: String(getSetting('PublicUrl') || ''),
@@ -4370,7 +4389,9 @@ function dropUnplayedDays(name) {
 
 // ---- src/Chat.js ----
 // Talk to Chacho (specs/talk.md): short spoken talks with Chacho the parrot, scripted in docs/talk/<level>.js on GitHub Pages.
-// The phone listens and matches what the kid says to the script; no audio ever leaves the phone. The server keeps a
+// The phone listens (only when a parent turned the microphone on, Safety.js) and matches what the kid says to the script.
+// The listening is the browser's speech recognition: on the phone where the browser can (processLocally), otherwise the
+// browser's service hears the voice (Google on Chrome/Android, usually Apple on Safari). This server never gets audio. It keeps a
 // summary (how many turns were said aloud, how many with the tiles, and the words the phone heard) and gives a bonus:
 // coins and pet XP, never a score. A mission talk (id t<mission>) follows the mission's questions; a home scene
 // (id s<level><nn>) is played once a day from the home screen.
@@ -4393,6 +4414,8 @@ function apiChatResult(name, pin, id, turns, voice, tiles, mic, said, seconds) {
   if (seconds < CHAT.minSeconds) throw new Error('That was too quick to count.');
   said = (Array.isArray(said) ? said : []).map(function (s) { return String(s).replace(/[<>|=+@]/g, '').replace(/\s+/g, ' ').trim().slice(0, 160); })
     .filter(Boolean).slice(0, CHAT.maxTurns);
+  // Without the parents' yes nothing she said is kept (an old copy of the app may still listen).
+  if (!kidMicOn(kid)) said = [];
   var where = id.charAt(0) === 't' ? 'mission' : 'home';
   var t = today(), xp;
   var lock = LockService.getScriptLock();
@@ -4405,7 +4428,7 @@ function apiChatResult(name, pin, id, turns, voice, tiles, mic, said, seconds) {
     xp = again ? 0 : voice * CHAT.voiceXp + tiles * CHAT.tileXp + (voice === turns ? CHAT.allVoice : 0);
     xp = Math.max(0, Math.min(xp, CHAT.dayCap - used));
     appendRow('Chats', { Timestamp: new Date(), Girl: kid.Name, Date: t, Talk: id, Where: where, Level: kid.Level, Turns: turns, Voice: voice,
-      Tiles: tiles, Mic: mic ? 'yes' : 'no', XP: xp, Seconds: seconds, Said: said.join(' | ') });
+      Tiles: tiles, Mic: mic === 'local' ? 'local' : mic ? 'yes' : 'no', XP: xp, Seconds: seconds, Said: said.join(' | ') });
   } finally {
     lock.releaseLock();
   }
@@ -4448,7 +4471,7 @@ function chatBoard(t) {
     k.voice += Number(r.Voice) || 0;
     k.tiles += Number(r.Tiles) || 0;
     k.turns += Number(r.Turns) || 0;
-    if (r.Mic === 'yes') k.mic++;
+    if (r.Mic === 'yes' || r.Mic === 'local') k.mic++;
     if (Number(r.Voice) > 0 && d >= ws) k.days[d] = true;
     if (Number(r.Voice) > 0 && d >= last && d < ws) k.lastDays[d] = true;
     if (d >= k.last) { k.last = d; if (r.Said) k.said = String(r.Said).split(' | ').pop(); }
@@ -5166,8 +5189,17 @@ function apiAdminEdit(pin, table, key, changes) {
 // Columns that hold a kid's name, and columns that hold a family (group) id.
 var KID_COLS = { Girls: ['Name'], Games: ['Girl'], Review: ['Girl'], Gates: ['Girl'], Assignments: ['Girl'], Log: ['Girl'], Push: ['Girl'],
   Bonus: ['Girl'], Shop: ['Girl'], Wardrobe: ['Girl'], Words: ['Girl'], Flags: ['Girl'], Placements: ['Girl'], Chats: ['Girl'],
-  Duos: ['A', 'B'], Duels: ['Host', 'Guest'], Audit: ['Who'] };
-var GROUP_COLS = { Groups: ['Id'], Rewards: ['Group'], ParentPush: ['Who'], Feedback: ['Group'], Audit: ['Group'], Plans: ['Group'] };
+  Duos: ['A', 'B'], Duels: ['Host', 'Guest'], Audit: ['Who'], Blocks: ['Girl', 'Blocked'], Reports: ['Girl', 'About'] };
+// Feedback: Who is the family id ('admin' for the admin); its Group column is the family's name, for reading the tab.
+var GROUP_COLS = { Groups: ['Id'], Rewards: ['Group'], ParentPush: ['Who'], Feedback: ['Who'], Audit: ['Group'], Plans: ['Group'], Reports: ['Group'] };
+// Tabs with nothing about a kid or a family (test/sim.js checks that every other tab is in the lists above).
+var NO_PERSON_TABS = { Settings: 1 };
+
+// The audit trail's Detail names a kid now and then ("Noa: on"): a row whose Detail has a deleted kid's name as a word goes too.
+function namesIn(names) {
+  var list = Object.keys(names).map(function (n) { return n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); });
+  return list.length ? new RegExp('(^|[^A-Za-z])(' + list.join('|') + ')($|[^A-Za-z])') : null;
+}
 
 function privacyTarget(access, groupId, kidName) {
   var g = access.isAdmin ? groups().filter(function (x) { return String(x.Id) === String(groupId); })[0] : access.group;
@@ -5214,10 +5246,11 @@ function eraseRows(table, match) {
 function eraseFamily(t) {
   var names = {}, n = 0;
   t.kids.forEach(function (k) { names[k] = 1; });
-  var gid = String(t.group.Id);
+  var gid = String(t.group.Id), said = namesIn(names);
   Object.keys(KID_COLS).forEach(function (table) {
     n += eraseRows(table, function (o) {
       if (KID_COLS[table].some(function (c) { return names[String(o[c]).trim()]; })) return true;
+      if (table === 'Audit' && said && said.test(String(o.Detail || ''))) return true;
       return t.whole && GROUP_COLS[table] && GROUP_COLS[table].some(function (c) { return String(o[c]).trim() === gid; });
     });
   });
@@ -5268,8 +5301,9 @@ function apiExportData(pin, groupId) {
   return { app: 'English with Chacho', exported: new Date().toISOString(), family: String(t.group.Name), kids: t.kids, tables: out };
 }
 
-// Least data (specs/store-readiness.md): the audit trail keeps 180 days, the text of what a kid said to Chacho 90 days
-// (the counts stay). Runs at night on Cloudflare (platformTick). It removes the old audit rows only when there are a
+// Least data (specs/store-readiness.md): the audit trail keeps 180 days (opens only 30 days one by one, then as daily
+// totals), the text of what a kid said to Chacho 90 days (the counts stay), and a kid with no open and no practice for
+// 12 months is deleted (the admin hears about it a month before). Runs at night on Cloudflare (platformTick). It removes the old audit rows only when there are a
 // month's worth of them, so the table is rewritten about once a month, not every night.
 var KEEP = { auditDays: 180, saidDays: 90, batchDays: 30 };
 function retentionSweep() {
@@ -5287,6 +5321,9 @@ function retentionSweep() {
     }
     if (out.said) invalidate('Chats');
   }
+  // Opens older than 30 days become daily totals; kids inactive for 12 months are deleted after a notice (Safety.js).
+  try { out.opens = rollUpOpens(); } catch (e) { console.error(e); }
+  try { out.inactive = inactiveSweep(); } catch (e) { console.error(e); }
   return out;
 }
 
@@ -5296,6 +5333,289 @@ function entitlement(groupId) {
   var rows = readTable('Plans').filter(function (r) { return String(r.Group) === String(groupId); });
   var now = fmt(new Date()), live = rows.filter(function (r) { return !r.Until || String(r.Until) >= now; }).pop();
   return live ? { plan: String(live.Plan), source: String(live.Source), until: String(live.Until || ''), full: true } : { plan: 'pilot', source: '', until: '', full: true };
+}
+
+// ---- src/Safety.js ----
+// Privacy, consent and kids' safety (specs/store-readiness.md, night review 2026-11-01): the privacy notice a family
+// agreed to (its version and time), the parents' switches (the microphone per kid, playing with other families per
+// family, a kid's reminders and their hour), blocking and reporting another kid, the limit on invites and nudges, and
+// the retention sweep's second half (opens rolled up into daily totals, inactive kids deleted after a notice).
+// Only functions and literal constants here: files load in one global scope, so nothing at the top level may use
+// another file's names.
+
+// The privacy notice shown at sign-up (renderJoin) and in the re-consent card: its version lives here and in Index.html
+// (PRIVACY_V; test/sim.js checks they agree). 1 = the first pilot text (2026-10-26), which said things that were not true.
+var NOTICE = { v: 2 };
+var SAFETY = {
+  contactsPerHour: 8,         // named invites, duo requests and nudges one kid may send in an hour
+  reportsPerDay: 5,
+  remindHours: [14, 15, 16, 17, 18, 19, 20],   // the hours a parent may pick (daytime only, store rule 8)
+  rawOpenDays: 30,            // raw opens in the audit trail, then one total a day
+  rollBatchDays: 7,           // roll up once a week's worth is older than rawOpenDays (fewer rewrites on Cloudflare)
+  inactiveDays: 365,          // no open and no practice for this long: the kid's account is deleted
+  noticeDays: 30              // the admin hears about it this many days before
+};
+var REPORT_REASONS = { invites: 'Too many invites', unkind: 'Something felt unkind', stranger: 'I do not know this player', other: 'Something else' };
+
+// The parents' calls go through here (the parents' sign-in may change; this is the one place to follow it).
+function safetyParent(pin) { ensureSetup(); return parentAccess(pin); }
+function safetyKidOf(access, name) {
+  var kid = findGirl(name);
+  if (!kid || (!access.isAdmin && groupOf(kid) !== String(access.group.Id))) throw new Error('Unknown kid');
+  return kid;
+}
+function safetyBack(access) {
+  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
+}
+function safetyWho(access) { return access.isAdmin ? 'admin' : access.group.Name; }
+
+// ---------- Consent ----------
+
+// What the family agreed to: the version of the notice and when. A family the admin added before the sign-up link
+// has none; a family that signed up before 2026-11-01 has a date only (version 1).
+function consentInfo(g) {
+  var v = Number(g.ConsentV) || (String(g.Consent || '').trim() ? 1 : 0);
+  return { v: v, at: String(g.ConsentAt || g.Consent || ''), current: NOTICE.v, due: v < NOTICE.v };
+}
+
+function apiParentConsent(pin, v) {
+  var access = safetyParent(pin);
+  if (access.isAdmin) throw new Error('A family agrees from its own parents\' area');
+  if (Number(v) !== NOTICE.v) throw new Error('הנוסח התעדכן. רעננו את הדף וקראו שוב.');
+  var at = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm');
+  upsertRow('Groups', 'Id', String(access.group.Id), { ConsentV: NOTICE.v, ConsentAt: at, Consent: at.slice(0, 10) });
+  audit('parent', access.group.Name, String(access.group.Id), 'consent', 'privacy notice v' + NOTICE.v);
+  access.group = findGroup(access.group.Id);
+  return safetyBack(access);
+}
+
+// ---------- Playing with other families ----------
+
+// Off unless a parent turned it on (Groups.FriendsOn). The admin's Groups.Friends stays an override: 'no' keeps the
+// family out whatever the parent chose; 'yes' (set by the admin before 2026-11-01) counts as on until a parent says no.
+function friendsState(g) {
+  if (!g) return { on: false, admin: '' };
+  var admin = String(g.Friends || '').trim().toLowerCase(), parent = String(g.FriendsOn || '').trim().toLowerCase();
+  var on = admin !== 'no' && (parent === 'yes' || (parent !== 'no' && admin === 'yes'));
+  return { on: on, admin: admin === 'no' || admin === 'yes' ? admin : '', parent: parent };
+}
+
+function apiParentFriends(pin, on) {
+  var access = safetyParent(pin);
+  if (access.isAdmin) throw new Error('A family changes this from its own parents\' area');
+  var g = access.group;
+  if (friendsState(g).admin === 'no' && on) throw new Error('המשחק עם משפחות אחרות סגור למשפחה הזו. אפשר לבקש לפתוח דרך כפתור המשוב.');
+  upsertRow('Groups', 'Id', String(g.Id), { FriendsOn: on ? 'yes' : 'no' });
+  audit('parent', g.Name, String(g.Id), 'play with other families', on ? 'on' : 'off');
+  access.group = findGroup(g.Id);
+  return safetyBack(access);
+}
+
+// ---------- The microphone and reminders, per kid ----------
+
+// Talk with Chacho, Ask Chacho and the Studio use the browser's speech recognition, which sends the voice to Google
+// (Chrome, Android) or usually Apple (Safari) unless the browser can do it on the phone: off until a parent turns it on.
+// The Nest's microphone (loudness, the echo) never leaves the phone and does not depend on this.
+function kidMicOn(kid) { return String(kid.Mic || '').trim().toLowerCase() === 'yes'; }
+
+function apiParentMic(pin, name, on) {
+  var access = safetyParent(pin), kid = safetyKidOf(access, name);
+  setGirlFields(kid.Name, { Mic: on ? 'yes' : '' });
+  audit(access.isAdmin ? 'admin' : 'parent', safetyWho(access), groupOf(kid), 'microphone', kid.Name + ': ' + (on ? 'on' : 'off'));
+  return safetyBack(access);
+}
+
+// The hour of a kid's reminder, or 0 = no reminders. Empty = the app's default hour (Settings.ReminderHour).
+function kidRemindHour(kid) {
+  var v = String(kid.RemindAt || '').trim().toLowerCase();
+  if (v === 'off') return 0;
+  var h = Number(v);
+  if (v && h >= 0 && h <= 23) return h;
+  return Number(getSetting('ReminderHour')) || 17;
+}
+
+function apiParentRemind(pin, name, hour) {
+  var access = safetyParent(pin), kid = safetyKidOf(access, name);
+  var off = hour === 'off' || hour === 0 || hour === '0', h = Number(hour);
+  if (!off && SAFETY.remindHours.indexOf(h) < 0) throw new Error('בחרו שעה');
+  setGirlFields(kid.Name, { RemindAt: off ? 'off' : String(h) });
+  audit(access.isAdmin ? 'admin' : 'parent', safetyWho(access), groupOf(kid), 'reminders', kid.Name + ': ' + (off ? 'off' : h + ':00'));
+  return safetyBack(access);
+}
+
+// Every hour: the kids whose reminder hour it is and who have not practiced today get one gentle notification.
+function kidReminders(h) {
+  var t = today(), done = {}, withDevices = {};
+  readTable('Log').forEach(function (l) { if (l.Date === t) done[l.Girl] = true; });
+  readTable('Push').forEach(function (s) { withDevices[s.Girl] = true; });
+  readTable('Girls').forEach(function (k) {
+    if (!withDevices[k.Name] || done[k.Name] || kidRemindHour(k) !== h) return;
+    try { pushToKid(k.Name, reminderMessage(k)); } catch (e) { console.error(e); }
+  });
+}
+
+// ---------- Block and report ----------
+
+function blockedPair(a, b) {
+  return readTable('Blocks').some(function (r) { return (r.Girl === a && r.Blocked === b) || (r.Girl === b && r.Blocked === a); });
+}
+
+// A kid blocks another kid (and may say why, from a preset list): the other kid disappears from her lists, and
+// invites, duo requests and nudges stop both ways. With a reason it is also a report: the admin is told, and the
+// kid's parents see it in their area.
+function apiKidBlock(name, pin, other, reason) {
+  var kid = auth(name, pin), them = findGirl(other);
+  if (!them || them.Name === kid.Name) throw new Error('Unknown player');
+  reason = REPORT_REASONS[reason] ? reason : '';
+  var t = today(), reported = false;
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    var rows = readTableUncached('Blocks');
+    if (!rows.some(function (r) { return r.Girl === kid.Name && r.Blocked === them.Name; })) {
+      appendRow('Blocks', { Timestamp: new Date(), Girl: kid.Name, Blocked: them.Name, Date: t });
+    }
+    if (reason && readTableUncached('Reports').filter(function (r) { return r.Girl === kid.Name && r.Date === t; }).length < SAFETY.reportsPerDay) {
+      appendRow('Reports', { Timestamp: new Date(), Girl: kid.Name, About: them.Name, Date: t, Reason: reason, Group: groupOf(kid) });
+      reported = true;
+    }
+    // Invites waiting between the two are closed.
+    duelRows().forEach(function (d) {
+      var pair = (d.Host === kid.Name && d.Guest === them.Name) || (d.Host === them.Name && d.Guest === kid.Name);
+      if (pair && (d.State === 'invited' || d.State === 'challenge' || d.State === 'solo')) { d.State = 'cancelled'; d.Ended = new Date().toISOString(); duelSave(d); }
+    });
+    duoRows().forEach(function (d) {
+      if (duoHas(d, kid.Name) && duoHas(d, them.Name) && d.State === 'invited') { d.State = 'declined'; d.Ended = new Date().toISOString(); duoSave(d); }
+    });
+  } finally {
+    lock.releaseLock();
+  }
+  audit('kid', kid.Name, groupOf(kid), reported ? 'report' : 'block', reported ? REPORT_REASONS[reason] : '');
+  if (reported) {
+    try { notifyAdmin({ title: 'A kid reported another kid', body: kid.Name + ' about ' + them.Name + ': ' + REPORT_REASONS[reason] }); } catch (e) { console.error(e); }
+  }
+  return duelHome(findGirl(kid.Name));
+}
+
+// A parent lifts a block their kid made.
+function apiParentUnblock(pin, name, other) {
+  var access = safetyParent(pin), kid = safetyKidOf(access, name);
+  var gone = eraseRows('Blocks', function (o) { return o.Girl === kid.Name && o.Blocked === String(other); });
+  if (gone) audit(access.isAdmin ? 'admin' : 'parent', safetyWho(access), groupOf(kid), 'unblock', kid.Name);
+  return safetyBack(access);
+}
+
+// What a family's parents see: the switch, the notice they agreed to, and their kids' blocks and reports.
+function familySafety(g) {
+  var names = {};
+  kidsIn(String(g.Id)).forEach(function (k) { names[k.Name] = 1; });
+  return {
+    friends: friendsState(g),
+    consent: consentInfo(g),
+    blocks: readTable('Blocks').filter(function (r) { return names[r.Girl]; }).map(function (r) { return { kid: r.Girl, other: r.Blocked, date: String(r.Date) }; }),
+    reports: readTable('Reports').filter(function (r) { return names[r.Girl]; }).slice(-10).map(function (r) {
+      return { kid: r.Girl, other: r.About, date: String(r.Date), reason: String(r.Reason) };
+    })
+  };
+}
+
+// The admin's list (the Pilot card): the latest reports.
+function reportsBoard() {
+  return readTable('Reports').slice(-20).reverse().map(function (r) {
+    var g = findGroup(String(r.Group));
+    return { kid: r.Girl, other: r.About, date: String(r.Date), reason: REPORT_REASONS[r.Reason] || String(r.Reason), family: g ? g.Name : '' };
+  });
+}
+
+// ---------- The limit on invites and nudges ----------
+
+// Counts what a kid sends to another kid (a named invite, a duo request, a nudge) in the cache, per hour.
+function contactLimit(kid) {
+  var c = CacheService.getScriptCache(), h = Utilities.formatDate(new Date(), TZ, 'yyyyMMddHH');
+  var k = 'RL:' + String(kid.Name).toLowerCase() + ':' + h, n = Number(c.get(k)) || 0;
+  if (n >= SAFETY.contactsPerHour) throw new Error('That is a lot of invites! Take a break and try again later.');
+  c.put(k, String(n + 1), 3700);
+}
+
+// ---------- Setup (v24) ----------
+
+// Feedback rows are deleted and exported by the family id in Who. A row whose Who is not a family id (or 'admin') but
+// whose Group is a family's name gets that family's id.
+function migrateFeedbackWho() {
+  var sh = sheet('Feedback');
+  if (!sh || sh.getLastRow() < 2) return 0;
+  var v = sh.getDataRange().getValues(), h = v[0], wc = h.indexOf('Who'), gc = h.indexOf('Group'), byId = {}, byName = {}, n = 0;
+  groups().forEach(function (g) { byId[String(g.Id)] = 1; byName[String(g.Name).trim().toLowerCase()] = String(g.Id); });
+  for (var i = 1; i < v.length; i++) {
+    var who = String(v[i][wc]).trim(), id = byName[String(v[i][gc]).trim().toLowerCase()];
+    if (who === 'admin' || byId[who] || !id) continue;
+    sh.getRange(i + 1, wc + 1).setValue(id); n++;
+  }
+  if (n) invalidate('Feedback');
+  return n;
+}
+
+// ---------- Retention, second half (Privacy.js retentionSweep calls it) ----------
+
+// Opens older than SAFETY.rawOpenDays become one row a day per person and family ("3 opens"): no time, no device.
+function rollUpOpens() {
+  var limit = addDays(today(), -SAFETY.rawOpenDays), batch = addDays(today(), -(SAFETY.rawOpenDays + SAFETY.rollBatchDays));
+  var d = function (r) { return String(r.Date instanceof Date ? fmt(r.Date) : r.Date).slice(0, 10); };
+  var raw = readTable('Audit').filter(function (r) { return r.Action === 'open' && d(r) < limit; });
+  if (!raw.length || !raw.some(function (r) { return d(r) < batch; })) return 0;
+  var sums = {};
+  raw.forEach(function (r) {
+    var k = d(r) + '|' + r.Role + '|' + r.Who + '|' + r.Group;
+    (sums[k] = sums[k] || { Date: d(r), Role: r.Role, Who: r.Who, Group: r.Group, n: 0 }).n++;
+  });
+  eraseRows('Audit', function (o) { return o.Action === 'open' && d(o) < limit; });
+  Object.keys(sums).forEach(function (k) {
+    var s = sums[k];
+    appendRow('Audit', { Timestamp: new Date(s.Date + 'T23:59:00'), Date: s.Date, Role: s.Role, Who: s.Who, Group: s.Group, Action: 'opens',
+      Detail: s.n + (s.n === 1 ? ' open' : ' opens'), Ok: 'yes', Device: '' });
+  });
+  return raw.length;
+}
+
+// The last day a kid opened the app or practiced. Girls.Seen keeps the last open (copied from the audit trail every
+// night, since the trail keeps only 180 days); an empty Seen starts the clock today.
+function kidLastActive(kid, seen) {
+  var last = String(seen || '');
+  ['Log', 'Games', 'Chats', 'Placements', 'Gates', 'Shop'].forEach(function (t) {
+    kidRows(t, kid.Name).forEach(function (r) { var x = String(r.DoneOn || r.Date || '').slice(0, 10); if (x > last) last = x; });
+  });
+  return last;
+}
+
+function inactiveSweep() {
+  var t = today(), out = { seen: 0, noticed: 0, deleted: 0 }, opened = {};
+  readTable('Audit').forEach(function (r) {
+    if (r.Role !== 'kid' || (r.Action !== 'open' && r.Action !== 'opens')) return;
+    var x = String(r.Date instanceof Date ? fmt(r.Date) : r.Date).slice(0, 10);
+    if (!opened[r.Who] || x > opened[r.Who]) opened[r.Who] = x;
+  });
+  var noticeAt = addDays(t, -(SAFETY.inactiveDays - SAFETY.noticeDays)), deleteAt = addDays(t, -SAFETY.inactiveDays), soon = [];
+  readTable('Girls').forEach(function (k) {
+    var seen = String(k.Seen || '').slice(0, 10), o = opened[k.Name] || '';
+    var fresh = !seen ? t : o > seen ? o : '';
+    if (fresh) { setGirlFields(k.Name, { Seen: fresh }); seen = fresh; out.seen++; }
+    var last = kidLastActive(k, seen), notice = String(k.Inactive || '').slice(0, 10);
+    if (last > noticeAt) { if (notice) setGirlFields(k.Name, { Inactive: '' }); return; }
+    if (!notice) { setGirlFields(k.Name, { Inactive: t }); soon.push(k.Name); out.noticed++; return; }
+    if (last <= deleteAt && notice <= addDays(t, -SAFETY.noticeDays)) {
+      var g = findGroup(groupOf(k));
+      if (!g) return;
+      var whole = kidsIn(String(g.Id)).length === 1;
+      eraseFamily({ group: g, kids: [k.Name], whole: whole });
+      audit('owner', 'retention', '', 'delete', (whole ? 'a family' : 'a kid') + ' inactive for 12 months', true);
+      out.deleted++;
+    }
+  });
+  if (soon.length) {
+    try { notifyAdmin({ title: 'Inactive accounts', body: soon.length + ' kid' + (soon.length === 1 ? '' : 's') + ' will be deleted in ' + SAFETY.noticeDays + ' days: ' + soon.join(', ') }); } catch (e) { console.error(e); }
+    audit('owner', 'retention', '', 'inactive notice', soon.length + ' kid' + (soon.length === 1 ? '' : 's') + ', deleted in ' + SAFETY.noticeDays + ' days unless they come back');
+  }
+  return out;
 }
 
 // ---- platform/overrides.js ----
@@ -5400,8 +5720,8 @@ function platformTick() {
     try { fn(); ran.push(name); } catch (e) { console.error(name + ': ' + ((e && e.message) || e)); }
   }
   ensureSetup();
-  job('dailyReminder', Number(getSetting('ReminderHour')) || 17, dailyReminder);
-  job('lastCallReminder', Number(getSetting('LastCallHour')), lastCallReminder);
+  // Kids' reminders: every hour, for the kids whose parents chose that hour (Safety.js); hour 0 is midnight, never a reminder.
+  if (h) job('dailyReminder:' + h, h, function () { dailyReminder(h); });
   job('parentSummary', Number(getSetting('ParentSummaryHour')), parentSummary);
   job('retentionSweep', 3, retentionSweep);
   try { auditFlush(); } catch (e) { console.error('auditFlush: ' + ((e && e.message) || e)); }

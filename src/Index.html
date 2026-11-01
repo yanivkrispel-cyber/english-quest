@@ -2641,7 +2641,7 @@ function renderShop(){
       <div class="bubble" id="cocoline">${esc(v.open ? pick(COCO.hello) : fill(COCO.closed, { day: dayLong(v.opens) }))}</div>
     </div>
     ${v.season ? `<button class="glass seasonbar" id="culture"><img src="${itemSrc('jack-o-lantern')}" alt=""><span><b>${esc(v.season.name)}</b>
-      <span class="sub">Until ${dayLong(v.season.to)} · and a story: <b>Trick or treat?</b></span></span>${icon('caret-right')}</button>` : ''}
+      <span class="sub">Spooky-fun items, and a story: <b>Trick or treat?</b></span></span>${icon('caret-right')}</button>` : ''}
     <div class="seg" role="tablist"><button class="${shopTab === 'shop' ? 'on' : ''}" data-tab="shop">${icon('storefront')} Shop</button>
       <button class="${shopTab === 'studio' ? 'on' : ''}" data-tab="studio">${icon('magic-wand')} Studio</button>
       <button class="${shopTab === 'wardrobe' ? 'on' : ''}" data-tab="wardrobe">${icon('coat-hanger')} Wardrobe</button></div>
@@ -2682,7 +2682,7 @@ function shopGridHtml(){
       ${it.season ? `<span class="iseason">${icon('ghost', 'duotone')}</span>` : ''}${it.words ? `<span class="iwords" title="Made of words">${icon('book-open-text', 'duotone')}</span>` : ''}</button>`;
   };
   return `<div class="places">${PLACES.map(([k, label, ic]) => `<button class="chip ${shopPlace === k ? 'purple' : ''}" data-place="${k}">${icon(ic)} ${label}</button>`).join('')}</div>
-    ${season.length ? `<div class="label mt">${icon('ghost')} Halloween Drop · back next year</div><div class="igrid mt-s">${season.map(card).join('')}</div><div class="label mt">Chacho's collection</div>` : ''}
+    ${season.length ? `<div class="label mt">${icon('ghost')} Halloween Drop</div><div class="igrid mt-s">${season.map(card).join('')}</div><div class="label mt">Chacho's collection</div>` : ''}
     <div class="igrid mt-s">${rest.map(card).join('') || '<div class="sub">Nothing here yet.</div>'}</div>
     ${v.bought && v.bought.length ? `<div class="glass panel mt"><h2 style="font-size:16px">Your receipts</h2>${v.bought.map(b => `<div class="receipt"><span>"${esc(b.sentence)}"</span><b>${coin}${coinsTxt(b.paid)}</b></div>`).join('')}</div>` : ''}
     <div class="sub mt" style="font-size:12px;text-align:center">Every point and every XP is also a coin. Coins never touch your points for rewards.</div>`;
@@ -2782,7 +2782,7 @@ function itemSheet(it){
       ${voiceOn() ? `<button class="btn btn-glass icon-btn micbtn" id="cmic" title="Say it">${icon('microphone')}</button>` : ''}
       <button class="btn btn-primary" style="flex:1" id="cask">${icon('chat-circle-dots')} Ask Chacho</button></div>
     <div class="row-flex between mt-s"><button class="linkbtn" id="chow">${icon('lightbulb')} Show me how</button>
-      <button class="linkbtn" id="cvoice">${icon(voiceOn() ? 'microphone-slash' : 'microphone')} ${voiceOn() ? 'Voice off' : 'Say it aloud'}</button></div></div>`}
+      ${micAllowed() ? `<button class="linkbtn" id="cvoice">${icon(voiceOn() ? 'microphone-slash' : 'microphone')} ${voiceOn() ? 'Voice off' : 'Say it aloud'}</button>` : ''}</div></div>`}
   </div>`;
   document.body.appendChild(ov);
   const close = () => { ov.remove(); };
@@ -2847,7 +2847,7 @@ function itemSheet(it){
     paint();
     say('coco', 'Like this! For the best price, try Could or May, and end with Thank you!', 'thinking');
   };
-  ov.querySelector('#cvoice').onclick = () => { store.set('eq_voice', !voiceOn()); close(); itemSheet(it); };
+  const cv = ov.querySelector('#cvoice'); if (cv) cv.onclick = () => { store.set('eq_voice', !voiceOn()); close(); itemSheet(it); };
   const mic = ov.querySelector('#cmic');
   if (mic) mic.onclick = () => cocoListen(it, color, words => { built = words; paint(); say('me', words.join(' ').replace(/ ([.?])/g, '$1')); }, mic);
   ov.querySelector('#cask').onclick = async () => {
@@ -3012,12 +3012,41 @@ function bindWardrobe(){
   });
 }
 
+// ---- Speech recognition: only with the parents' yes (Girls.Mic, src/Safety.js) ----
+// Talk with Chacho, Ask Chacho and the Studio listen only when a parent turned the microphone on for this kid (dash.mic):
+// the browser's speech recognition sends the voice to its maker (Google on Chrome and Android, usually Apple on Safari)
+// unless it can recognize on the phone. New Chrome can (processLocally): then the app asks for it and the voice stays on
+// the phone. Without the parents' yes there is no microphone button anywhere: tiles and typing only. The Nest's
+// microphone (loudness, the echo) never leaves the phone and does not depend on this.
+const SR_API = () => window.SpeechRecognition || window.webkitSpeechRecognition;
+const micAllowed = () => !!SR_API() && !!(dash && (dash.mic || dash.preview));
+// srLocal: null = not checked yet; true = this browser recognizes English on the phone.
+let srLocal = null;
+function srCheckLocal(){
+  const SR = SR_API();
+  if (srLocal !== null) return;
+  srLocal = false;
+  if (!SR || typeof SR.available !== 'function') return;
+  const o = { langs: ['en-US'], processLocally: true };
+  try {
+    SR.available(o).then(st => {
+      if (st === 'available') srLocal = true;
+      else if (st === 'downloadable' && typeof SR.install === 'function') SR.install(o).then(ok => { if (ok) srLocal = true; }).catch(() => {});
+    }).catch(() => {});
+  } catch(e){}
+}
+function srNew(){
+  const r = new (SR_API())();
+  if (srLocal) { try { r.processLocally = true; } catch(e){} }
+  return r;
+}
+
 // ---- Voice (optional, off by default): the phone's own speech recognition, matched to the tiles ----
-const voiceOn = () => !!store.get('eq_voice') && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+const voiceOn = () => !!store.get('eq_voice') && micAllowed();
 function cocoListen(it, color, done, btn){
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) return toast('This phone cannot listen. Use the word tiles!', true);
-  const r = new SR();
+  if (!micAllowed()) return toast('Use the word tiles!', true);
+  srCheckLocal();
+  const r = srNew();
   r.lang = 'en-US'; r.interimResults = false; r.maxAlternatives = 3;
   if (btn) btn.classList.add('listening');
   r.onresult = e => {
@@ -3297,7 +3326,7 @@ function designSheet(b){
     <div class="dorder sub">Order: opinion → size → sparkle → color → material → <b>${esc(thing)}</b> → with + pattern</div>
     <button class="btn btn-primary btn-block mt-s" id="dmake"></button>
     <div class="row-flex between mt-s"><button class="linkbtn" id="dhow">${icon('lightbulb')} Show me how</button>
-      <button class="linkbtn" id="dvoice">${icon(voiceOn() ? 'microphone-slash' : 'microphone')} ${voiceOn() ? 'Voice off' : 'Say it aloud'}</button></div>
+      ${micAllowed() ? `<button class="linkbtn" id="dvoice">${icon(voiceOn() ? 'microphone-slash' : 'microphone')} ${voiceOn() ? 'Voice off' : 'Say it aloud'}</button>` : ''}</div>
   </div>`;
   document.body.appendChild(ov);
   const input = ov.querySelector('#dtext'), chat = ov.querySelector('#chat');
@@ -3334,7 +3363,7 @@ function designSheet(b){
     input.value = text; paint();
     say('coco', 'Like this! Size, then sparkle, then color, then material, then the ' + thing + '. A pattern comes after "with".', 'thinking');
   };
-  ov.querySelector('#dvoice').onclick = () => { store.set('eq_voice', !voiceOn()); close(); designSheet(b); };
+  const dv = ov.querySelector('#dvoice'); if (dv) dv.onclick = () => { store.set('eq_voice', !voiceOn()); close(); designSheet(b); };
   const mic = ov.querySelector('#dmic');
   if (mic) mic.onclick = () => studioListen(t => { text = t; input.value = t; paint(); say('me', t); }, mic);
   ov.querySelector('#dmake').onclick = async () => {
@@ -3367,9 +3396,9 @@ function designSheet(b){
 }
 // Voice: what she says goes into the box, as words.
 function studioListen(done, btn){
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) return toast('This phone cannot listen. Type it or tap the words!', true);
-  const r = new SR();
+  if (!micAllowed()) return toast('Type it or tap the words!', true);
+  srCheckLocal();
+  const r = srNew();
   r.lang = 'en-US'; r.interimResults = false; r.maxAlternatives = 1;
   if (btn) btn.classList.add('listening');
   r.onresult = e => { const t = String(e.results[0][0].transcript || '').toLowerCase().replace(/[^a-z' ]+/g, ' ').replace(/\s+/g, ' ').trim(); if (t) done(t); };
@@ -3506,7 +3535,7 @@ function cultureSheet(){
     <div class="label mt">Words to hear</div>
     <div class="stack mt-s" style="gap:8px">${words.map(([w, m]) => `<div class="lrow"><button class="btn btn-glass icon-btn tsay" data-word="${esc(w)}">${icon('speaker-high')}</button>
       <span class="lt"><b>${esc(w)}</b> · ${esc(m)}</span></div>`).join('')}</div>
-    <div class="sub mt" style="font-size:12px">Chacho's Halloween Drop is in the shop until November 7. It comes back next year.</div>
+    <div class="sub mt" style="font-size:12px">The Halloween items stay in Chacho's shop all year.</div>
   </div>`;
   document.body.appendChild(ov);
   ov.onclick = e => { if (e.target === ov) ov.remove(); };
@@ -4835,7 +4864,7 @@ const CHAT_BANK = {
 };
 let CT = null, ctAudio = null, ctRec = null;
 const chatLoads = {};
-const chatCanListen = () => !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+const chatCanListen = () => micAllowed();
 const chatPick = list => list[Math.floor(Math.random() * list.length)];
 
 function loadChat(file){
@@ -4866,7 +4895,8 @@ function chatScene(list, info){
 // opts: { where: 'mission' | 'home', level: file key, practice, preview, onDone(result) }
 function chatOpen(s, opts){
   chatStop();
-  CT = Object.assign({ s, i: 0, log: [], voice: 0, tiles: 0, said: [], tries: 0, more: false, tilesOn: false, he: false, mic: chatCanListen(),
+  srCheckLocal();
+  CT = Object.assign({ s, i: 0, log: [], voice: 0, tiles: 0, said: [], tries: 0, more: false, tilesOn: false, he: false, mic: chatCanListen(), noSr: !SR_API(),
     phase: 'coco', t0: Date.now(), heard: {}, pet: chatPick(CHAT_PET.start) }, opts);
   if (!CT.mic) CT.tilesOn = true;
   chatRender();
@@ -4886,12 +4916,12 @@ function chatRender(){
     : `<div class="cb me"><span>${esc(b.text)}${b.tile ? '' : ` ${icon('microphone')}`}</span></div>`;
   const tiles = !end && u && CT.tilesOn ? `<div class="cttiles">${u.t.map((t, k) => `<button class="opt" data-cttile="${k}"${busy ? ' disabled' : ''}>${esc(t)}</button>`).join('')}</div>` : '';
   const hint = !end && u && CT.he ? `<div class="mhe ct" dir="rtl" lang="he">${msHe(u.he)}</div>` : '';
-  const note = !end && !CT.mic ? `<div class="sub ctnote">${icon('microphone-slash')} This phone can't listen here. Tap an answer, and say it out loud too!</div>` : '';
+  const note = !end && !CT.mic ? `<div class="sub ctnote">${CT.noSr ? icon('microphone-slash') + " This phone can't listen here. " : ''}Tap an answer, and say it out loud too!</div>` : '';
   const slot = end ? `<button class="btn btn-primary btn-block" id="ctdone">${CT.where === 'mission' ? 'Continue' : 'Finish'} ${icon('arrow-right')}</button>`
     : `<div class="ctbar">
         <button class="btn btn-glass ctside${CT.he ? ' on' : ''}" id="cthe" title="A hint in Hebrew">עברית</button>
-        ${CT.mic ? `<button class="ctmic${listening ? ' listening' : ''}${CT.phase === 'ask' ? ' ready' : ''}" id="ctmic"${busy ? ' disabled' : ''} aria-label="Tap and speak">${icon(listening ? 'waveform' : 'microphone', 'bold')}</button>`
-          : `<span class="ctmic off">${icon('microphone-slash', 'bold')}</span>`}
+        ${CT.mic ? `<button class="ctmic${listening ? ' listening' : ''}${CT.phase === 'ask' ? ' ready' : ''}" id="ctmic"${busy ? ' disabled' : ''} aria-label="${srLocal ? 'Tap and speak (Chacho listens on this phone)' : 'Tap and speak'}" title="${srLocal ? 'Chacho listens on this phone' : ''}">${icon(listening ? 'waveform' : 'microphone', 'bold')}</button>`
+          : '<span aria-hidden="true"></span>'}
         <button class="btn btn-glass ctside${CT.tilesOn ? ' on' : ''}" id="ctideas" title="Ideas">${icon('lightbulb')} Ideas</button>
       </div>`;
   app.innerHTML = `<div class="gscreen mscreen gplay" id="ct">
@@ -4997,11 +5027,10 @@ function chatStop(){
 // The mic: the phone's speech recognition, English, a few guesses; the guess that fits the script wins.
 function chatListen(){
   if (!CT || CT.phase !== 'ask') return;
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { CT.mic = false; CT.tilesOn = true; return chatRender(); }
+  if (!micAllowed()) { CT.mic = false; CT.tilesOn = true; return chatRender(); }
   chatStopAudio();
   let got = false;
-  const r = ctRec = new SR();
+  const r = ctRec = srNew();
   r.lang = 'en-US'; r.interimResults = false; r.maxAlternatives = 4; r.continuous = false;
   CT.phase = 'listen'; CT.pet = chatPick(CHAT_PET.listen);
   chatRender();
@@ -5065,7 +5094,7 @@ function chatEnd(){
   chatRender();
   if (CT.voice === CT.s.turns.length) confetti();
   if (CT.practice) return;
-  chatSave([CT.s.id, CT.s.turns.length, CT.voice, CT.tiles, CT.mic, CT.said.slice(), Math.max(CT.seconds, 1)]);
+  chatSave([CT.s.id, CT.s.turns.length, CT.voice, CT.tiles, CT.mic ? (srLocal ? 'local' : true) : false, CT.said.slice(), Math.max(CT.seconds, 1)]);
 }
 async function chatSave(args){
   const status = html => { const el = document.getElementById('ctsave'); if (el) el.innerHTML = html; };
@@ -5180,15 +5209,16 @@ async function dcall(fn, ...args){
 // cards write "btn-main" and playStage() turns it into btn-primary on the first card and btn-glass on the rest.
 let playCard = null;
 
-// Online first, then the kids I played with lately, then my group, then the other groups.
+// Online first, then the kids I played with lately, then my family, then kids of other families (the server shows those
+// only with their first name and pet: no family name, level or online light, src/Duels.js duelHome).
 function playFriends(h){
   const recent = h.results.map(v => (duelThem(v) || {}).name);
-  const rank = f => (f.online && f.ready ? 0 : 4) + (recent.includes(f.name) ? 0 : 2) + (f.group ? 1 : 0);
+  const rank = f => (f.online && f.ready ? 0 : 4) + (recent.includes(f.name) ? 0 : 2) + (f.other || f.group ? 1 : 0);
   return h.friends.slice().sort((a, b) => rank(a) - rank(b));
 }
 const friendTile = f => `<button class="fr ${f.ready ? '' : 'off'}" data-friend="${esc(f.name)}">
     <span class="av">${petFace(f.pet, f.color, f.name)}${f.online ? '<i class="on"></i>' : ''}</span>
-    <b>${esc(f.name)}</b><small class="${f.online ? 'ok' : ''}">${!f.ready ? 'New' : f.online ? 'Online' : f.group ? esc(f.group) : 'Level ' + esc(f.level)}</small></button>`;
+    <b>${esc(f.name)}</b><small class="${f.online ? 'ok' : ''}">${!f.ready ? 'New' : f.online ? 'Online' : f.group ? esc(f.group) : f.level ? 'Level ' + esc(f.level) : 'Friend'}</small></button>`;
 
 function playHead(){
   const h = duelsHome, on = h ? h.friends.filter(f => f.online && f.ready).length : 0;
@@ -5412,6 +5442,7 @@ function inviteSheet(name){
       ${duoOption(name)}
     </div>
     <button class="btn btn-primary btn-block mt" id="go">${icon('paper-plane-tilt')} Send</button>
+    <button class="linkbtn mt-s" id="fblock" style="justify-self:center;display:block;margin-inline:auto">${icon('hand')} Not OK? Block or tell a grown-up</button>
   </div>`;
   document.body.appendChild(ov);
   const paint = () => ov.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('sel', b.dataset.mode === mode));
@@ -5420,6 +5451,7 @@ function inviteSheet(name){
   ov.onclick = e => { if (e.target === ov) close(); };
   ov.querySelector('#x').onclick = close;
   ov.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { mode = b.dataset.mode; paint(); });
+  ov.querySelector('#fblock').onclick = () => { close(); blockSheet(name); };
   ov.querySelector('#go').onclick = async e => {
     const btn = e.currentTarget;
     btn.disabled = true; btn.innerHTML = '<span class="mini-spin"></span>Sending…';
@@ -5431,6 +5463,37 @@ function inviteSheet(name){
     try { const v = await dcall('apiDuelInvite', name, mode); close(); routeDuel(v); }
     catch(err){ toast(err.message, true); btn.disabled = false; btn.innerHTML = icon('paper-plane-tilt') + ' Send'; }
   };
+}
+
+// Block, or block and tell a grown-up (src/Safety.js apiKidBlock): preset reasons only, no free text. The other kid
+// disappears from her lists and can send her nothing; a reason also goes to the admin and to her parents' area.
+function blockSheet(name){
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  const why = [['invites', 'Too many invites', 'bell-ringing'], ['unkind', 'Something felt unkind', 'smiley-sad'], ['stranger', 'I don\'t know this player', 'question'], ['other', 'Something else', 'chat-circle-dots']];
+  ov.innerHTML = `<div class="sheet glass">
+    <div class="row-flex between"><span class="label">${esc(name)}</span>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
+    <h2 class="mt-s">Is something not OK?</h2>
+    <div class="sub mt-s" style="font-size:13px">Pick one. ${esc(name)} won't see you or send you invites any more, and a grown-up will see what you picked.</div>
+    <div class="stack mt" style="gap:10px">${why.map(([k, l, ic]) => `<button class="mrow" data-why="${k}"><span class="tile t-read">${icon(ic, 'duotone')}</span><span class="drow-main"><b>${l}</b></span>${icon('caret-right')}</button>`).join('')}</div>
+    <button class="btn btn-glass btn-block mt" id="bonly">${icon('hand')} Just block, don't tell</button>
+  </div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  ov.onclick = e => { if (e.target === ov) close(); };
+  ov.querySelector('#x').onclick = close;
+  const send = async (btn, reason) => {
+    ov.querySelectorAll('button').forEach(b => { b.disabled = true; });
+    try {
+      duelsHome = await dcall('apiKidBlock', name, reason);
+      close();
+      refreshTogether();
+      toast(reason ? 'Thank you for telling us. ' + name + ' is blocked.' : name + ' is blocked.');
+    } catch(err){ ov.querySelectorAll('button').forEach(b => { b.disabled = false; }); toast(err.message, true); }
+  };
+  ov.querySelectorAll('[data-why]').forEach(b => b.onclick = () => send(b, b.dataset.why));
+  ov.querySelector('#bonly').onclick = e => send(e.currentTarget, '');
 }
 
 // The friend sheet's duo option: start one, or show the one that already exists.
@@ -7421,6 +7484,43 @@ function retestCard(d){
 const NEST_AGES = [['a2', 'גיל 2'], ['a3', 'גיל 3'], ['a4', 'גיל 4'], ['a5', 'גיל 5'], ['a6', 'כיתה א'], ['a7', 'כיתה ב']];
 const GRADES = [[3, 'ג'], [4, 'ד'], [5, 'ה'], [6, 'ו'], [7, 'ז'], [8, 'ח'], [9, 'ט'], [10, 'י'], [11, 'יא'], [12, 'יב']];
 let JOIN = null;
+
+// ---------- The privacy notice (night review 2026-11-01) ----------
+// Every line must be true: what is kept, where it goes, for how long, and who to ask. Shown at sign-up and, once, in the
+// parents' area to a family that agreed to an older version (or to none). PRIVACY_V is also NOTICE.v in src/Safety.js
+// (test/sim.js checks they agree); raise both when a line here changes, and say what changed in PRIVACY_CHANGES.
+// The full policy is docs/privacy.html (and docs/terms.html); keep them in step.
+const PRIVACY_V = 2;
+const B_ = s => `<bdi>${s}</bdi>`;
+const PRIVACY_SHORT = 'שומרים רק מה שצריך כדי ללמד: השם הפרטי של הילד, הכיתה וההתקדמות. אין פרסומות ואין מעקב. המיקרופון והמשחק עם ילדים ממשפחות אחרות כבויים עד שתדליקו אותם, ואפשר להוריד או למחוק הכול מתוך האפליקציה.';
+// OWNER: the operator's name and a contact line (an email) before the stores; until then the feedback button.
+const PRIVACY_OPERATOR = 'מפעיל האפליקציה <bdi>English with Chacho</bdi>';
+const PRIVACY_ITEMS = [
+  `<b>על הילד:</b> שם פרטי (באנגלית), גיל או כיתה, רמה, קוד כניסה, חיית המחמד ושמה, המשימות, המשחקים והתשובות, והקניות בחנות של צ׳אצ׳ו (במטבעות של המשחק, לא בכסף).`,
+  `<b>עליכם:</b> שם פרטי, שם משפחה, קוד הורה, מייל אם תבחרו, ומתי אישרתם את ההודעה הזו ובאיזה נוסח.`,
+  `<b>השיחה עם צ׳אצ׳ו:</b> המיקרופון כבוי עד שתדליקו אותו לכל ילד באזור ההורים. כשהוא דולק, שירות זיהוי הדיבור של הדפדפן הופך את הקול לטקסט: ב-${B_('Chrome')} ובאנדרואיד הקול נשלח ל-${B_('Google')}, ובאייפון ובאייפד בדרך כלל ל-${B_('Apple')}. בדפדפן שיודע לזהות דיבור בתוך המכשיר הקול לא יוצא ממנו. אנחנו לא מקבלים ולא שומרים הקלטות: נשמר רק הטקסט שהטלפון שמע, 90 יום, ואחר כך רק כמה תשובות היו בקול.`,
+  `<b>הקן של צ׳אצ׳ו (גילאי 2 עד 7):</b> המיקרופון מודד רק עוצמה, ו"צ׳אצ׳ו חוזר עליך" מחזיק את הקול בזיכרון הטלפון לכמה שניות, משמיע אותו פעם אחת ומוחק. שום דבר לא נשמר ולא נשלח.`,
+  `<b>מכשירים:</b> מתי נכנסו לאפליקציה ומאיזה סוג מכשיר (למשל אייפון או אנדרואיד). במכשיר שהפעילו בו התראות נשמרות גם כתובת ההתראות שלו ומחרוזת הדפדפן (${B_('user-agent')}).`,
+  `<b>משחק עם ילדים ממשפחות אחרות:</b> כבוי עד שתדליקו אותו באזור ההורים (ושני הצדדים צריכים להדליק). ילדים ממשפחה אחרת רואים רק את השם הפרטי ואת חיית המחמד, בלי שם משפחה ובלי "מחובר עכשיו". אין צ׳אט חופשי, רק הזמנות ותגובות קבועות. ילד יכול לחסום ולדווח, ואתם רואים את זה באזור ההורים.`,
+  `<b>התראות לילד:</b> רק אם הופעלו בטלפון שלו, פעם ביום בשעה שתבחרו (או בכלל לא), בנוסח נעים ובלי לחץ.`,
+  `<b>איפה זה נשמר:</b> השרת של האפליקציה ב-${B_('Cloudflare')}; עותק לילה בגיליון ${B_('Google')} של מפעיל האפליקציה; התראות עוברות דרך שירות ההתראות של הדפדפן (${B_('Google')}, ${B_('Apple')} או ${B_('Mozilla')}). אין פרסומות, אין כלי מעקב או ניתוח של חברות אחרות, ולא מוכרים ולא מעבירים מידע לאף אחד אחר.`,
+  `<b>כמה זמן:</b> הכניסות לאפליקציה 30 יום בפירוט ואחר כך רק סיכום יומי, כל היומן עד 180 יום; הטקסט מהשיחה עם צ׳אצ׳ו 90 יום; ילד שלא נכנס ולא תרגל 12 חודשים נמחק, אחרי הודעה למפעיל חודש קודם. כל השאר נשמר כל עוד החשבון פעיל.`,
+  `<b>הזכויות שלכם:</b> באזור ההורים, בכרטיס "הנתונים שלכם", מורידים עותק של כל המידע ומוחקים ילד או את כל המשפחה, מיד ולתמיד. אפשר גם לבקש תיקון.`,
+  `<b>התוכן:</b> נכתב בעזרת בינה מלאכותית ונבדק בהדרגה על ידי מורה לאנגלית; אפשר לדווח על טעות בכל שאלה.`,
+  `<b>מי מפעיל:</b> ${PRIVACY_OPERATOR}. פונים דרך כפתור המשוב באפליקציה (באזור ההורים, "ספרו לנו").`
+];
+// What changed since version 1 (the first pilot text), for the re-consent card.
+const PRIVACY_CHANGES = [
+  'המיקרופון בשיחה עם צ׳אצ׳ו כבוי עכשיו לכל ילד עד שתדליקו אותו, וכתבנו בדיוק לאן הקול הולך כשהוא דולק (בנוסח הקודם כתבנו בטעות שלא מעבירים מידע לאף אחד).',
+  'המשחק עם ילדים ממשפחות אחרות כבוי עד שתדליקו אותו. ילדים ממשפחה אחרת רואים רק שם פרטי וחיה, ונוספו חסימה ודיווח.',
+  'אתם בוחרים לכל ילד אם יש תזכורת ובאיזו שעה. אין יותר "הזדמנות אחרונה" בערב.',
+  'כתבנו מי מעבד את המידע ואיפה הוא נשמר, כמה זמן שומרים כל דבר, ושהתוכן נבדק בהדרגה.',
+  'הורדה ומחיקה של כל הנתונים נמצאות באזור ההורים, בלי לבקש מאף אחד.'
+];
+const privacyLinks = () => `<div class="row-flex" style="gap:14px;flex-wrap:wrap;font-size:13px"><a href="${ASSETS}privacy.html" target="_blank" rel="noopener">מדיניות הפרטיות המלאה</a><a href="${ASSETS}terms.html" target="_blank" rel="noopener">תנאי השימוש</a></div>`;
+const privacyDetails = () => `<details class="mt-s"><summary>כל הפרטים ▾</summary><ul class="helist">${PRIVACY_ITEMS.map(x => `<li>${x}</li>`).join('')}</ul>
+  <div class="mt-s">${privacyLinks()}</div></details>`;
+
 async function renderJoin(code){
   const fam = store.get('eq_family');
   if (fam && fam.groupId) return familyPage(fam);
@@ -7464,16 +7564,8 @@ function joinWelcome(){
     </div>
     <div class="glass panel">
       <h2>פרטיות</h2>
-      <div class="sub">שומרים רק את השם הפרטי של הילד, הכיתה וההתקדמות. אין פרסומות, לא שומרים הקלטות, ואפשר למחוק הכול בכל רגע.</div>
-      <details class="mt-s"><summary>כל הפרטים ▾</summary>
-        <ul class="helist">
-          <li>שומרים רק את השם הפרטי של הילד, הכיתה, התשובות וההתקדמות. מכם: שם, וכתובת מייל אם תבחרו.</li>
-          <li>נרשם גם מתי נכנסו לאפליקציה ומאיזה סוג מכשיר (למשל אייפון או אנדרואיד), כדי שנדע איך הפיילוט עובד.</li>
-          <li>אין פרסומות. לא שומרים הקלטות ולא מעבירים מידע לאף אחד. בקן של צ׳אצ׳ו, כשצ׳אצ׳ו חוזר על מה שהילד אומר, הקול נשאר בזיכרון של הטלפון לכמה שניות, מושמע פעם אחת ונמחק.</li>
-          <li>אפשר לבקש מחיקה מלאה של כל המידע בכל רגע, בהודעה למי ששלח לכם את הקישור.</li>
-          <li>הילדים יכולים לשחק עם ילדים ממשפחות אחרות בפיילוט. רואים רק שם פרטי, ואין צ'אט חופשי.</li>
-          <li>התוכן נכתב בעזרת בינה מלאכותית ונבדק על ידי מורה לאנגלית.</li>
-        </ul></details>
+      <div class="sub">${PRIVACY_SHORT}</div>
+      ${privacyDetails()}
       <label class="row-flex mt-s" style="gap:10px;align-items:flex-start;cursor:pointer">
         <input type="checkbox" id="jconsent" ${JOIN.consent ? 'checked' : ''} style="width:22px;height:22px;flex:none;margin-top:2px">
         <span>אני ההורה, קראתי ואני מסכים/ה לשימוש במידע כמו שכתוב כאן.</span></label>
@@ -7533,7 +7625,7 @@ function joinForm(){
     const b = document.getElementById('jsend'); b.disabled = true; b.innerHTML = '<span class="mini-spin"></span> פותחים…';
     try {
       const r = await call('apiJoin', JOIN.code, { family: JOIN.family, parent: JOIN.parent, parentPin: JOIN.parentPin, email: JOIN.email,
-        consent: true, kids: kids.map(k => /^a\d$/.test(k.grade) ? { name: k.name.trim(), age: Number(k.grade.slice(1)) } : { name: k.name.trim(), grade: Number(k.grade) }) });
+        consent: true, consentV: PRIVACY_V, kids: kids.map(k => /^a\d$/.test(k.grade) ? { name: k.name.trim(), age: Number(k.grade.slice(1)) } : { name: k.name.trim(), grade: Number(k.grade) }) });
       const fam = { groupId: r.groupId, family: r.family, link: r.link, parentPin: r.parentPin, kids: r.kids, code: JOIN.code };
       store.set('eq_family', fam); store.set('eq_group', r.groupId); store.del('eq_join');
       JOIN = null;
@@ -7601,6 +7693,80 @@ function familyPage(fam){
   };
 }
 
+// ---------- Consent and the parents' switches (src/Safety.js) ----------
+// A family that agreed to an older notice (or to none) sees this once at the top of its area, until it agrees.
+let consentLater = false;
+function consentCard(p){
+  const g = p.groups[0], c = g && g.safety && g.safety.consent;
+  if (p.isAdmin || !c || !c.due || consentLater) return '';
+  return `<div class="glass panel he" dir="rtl" lang="he" id="cscard" style="display:grid;gap:10px">
+    <div class="label">פרטיות</div>
+    <h2>${c.v ? 'עדכנו את הודעת הפרטיות' : 'הודעת הפרטיות'}</h2>
+    <div class="sub" style="font-size:13px">${c.v ? 'כתבנו מחדש את ההודעה שאישרתם בהרשמה, כדי שכל מה שכתוב בה יהיה מדויק. מה השתנה:' : 'עוד לא אישרתם את הודעת הפרטיות. כך נשמר המידע ולאן הוא הולך:'}</div>
+    ${c.v ? `<ul class="helist" style="font-size:14px">${PRIVACY_CHANGES.map(x => `<li>${x}</li>`).join('')}</ul>` : `<div class="sub" style="font-size:13px">${PRIVACY_SHORT}</div>`}
+    ${privacyDetails()}
+    <button class="btn btn-primary btn-block" id="csok">${icon('check')} קראתי ואני מסכים/ה</button>
+    <button class="btn btn-glass btn-block" id="cslater">אחר כך</button>
+    <div class="sub" style="font-size:12px">לא מסכימים? בכרטיס "הנתונים שלכם" בתחתית העמוד אפשר להוריד את הנתונים ולמחוק אותם.</div>
+  </div>`;
+}
+function bindConsent(p, pin){
+  const ok = document.getElementById('csok');
+  if (!ok) return;
+  ok.onclick = async () => {
+    ok.disabled = true;
+    try { renderParent(await call('apiParentConsent', pin, PRIVACY_V), pin); toast('תודה, נשמר'); }
+    catch(e){ ok.disabled = false; toast(e.message, true); }
+  };
+  document.getElementById('cslater').onclick = () => { consentLater = true; const c = document.getElementById('cscard'); if (c) c.remove(); };
+}
+
+const REPORT_HE = { invites: 'יותר מדי הזמנות', unkind: 'משהו לא נעים', stranger: 'לא מכירים את הילד', other: 'משהו אחר' };
+// Playing with kids of other families (off until the parents turn it on), and the kids' blocks and reports.
+function friendsCard(p){
+  const g = p.groups[0], s = g && g.safety;
+  if (p.isAdmin || !s) return '';
+  const f = s.friends, rows = [].concat(
+    s.reports.map(r => `<div class="soft" style="padding:8px 12px;border-radius:12px;font-size:13px"><b><bdi>${esc(r.kid)}</bdi></b> דיווח/ה על <bdi>${esc(r.other)}</bdi>: ${esc(REPORT_HE[r.reason] || r.reason)} · ${fmtDate(r.date)}</div>`),
+    s.blocks.map(b => `<div class="row-flex between soft" style="padding:8px 12px;border-radius:12px;font-size:13px;gap:8px"><span><b><bdi>${esc(b.kid)}</bdi></b> חסם/ה את <bdi>${esc(b.other)}</bdi> · ${fmtDate(b.date)}</span>
+      <button class="btn btn-glass btn-sm" data-unblock="${esc(b.kid)}" data-unother="${esc(b.other)}">ביטול החסימה</button></div>`));
+  return `<div class="glass panel he" dir="rtl" lang="he" id="frcard" style="display:grid;gap:10px">
+    <h2>משחק עם ילדים ממשפחות אחרות</h2>
+    <div class="sub" style="font-size:13px">כשזה דולק, הילדים יכולים להזמין למשחק ולקבל הזמנות מילדים במשפחות אחרות שגם הדליקו את זה. הם רואים רק את השם הפרטי ואת חיית המחמד, בלי שם משפחה ובלי "מחובר עכשיו", ואין צ׳אט חופשי: רק הזמנות ותגובות קבועות. בין האחים במשפחה המשחק תמיד פתוח.</div>
+    ${f.admin === 'no' ? `<span class="chip">${icon('lock-simple')} סגור למשפחה הזו</span>`
+      : `<div class="row-flex" style="gap:6px">${[[false, 'כבוי'], [true, 'דולק']].map(([on, l]) => `<button class="btn btn-sm ${f.on === on ? 'btn-primary' : 'btn-glass'}" data-friendson="${on ? 1 : 0}">${l}</button>`).join('')}</div>`}
+    <div class="sub" style="font-size:12px">ילד יכול לחסום ילד אחר ולדווח עליו. החסימות והדיווחים מופיעים כאן, והדיווח מגיע גם למפעיל האפליקציה.</div>
+    ${rows.length ? `<div class="stack" style="gap:6px">${rows.join('')}</div>` : ''}
+  </div>`;
+}
+// The kid card: the microphone (Talk with Chacho, Ask Chacho, the Studio) and the daily reminder.
+function micRow(g){
+  if (!PHE || g.nest || g.mic === undefined) return '';
+  return `<div class="mt-s he" dir="rtl" lang="he" style="display:grid;gap:6px">
+    <div class="row-flex" style="gap:6px;flex-wrap:wrap;align-items:center"><span class="sub" style="margin:0;font-size:13px">מיקרופון בשיחה עם צ׳אצ׳ו:</span>
+    ${[[false, 'כבוי'], [true, 'דולק']].map(([on, l]) => `<button class="btn btn-sm ${!!g.mic === on ? 'btn-primary' : 'btn-glass'}" data-mic="${on ? 1 : 0}" data-mickid="${esc(g.girl.name)}">${l}</button>`).join('')}</div>
+    <div class="sub" style="margin:0;font-size:12px">${g.mic ? 'דולק: ' : 'כבוי: עונים לצ׳אצ׳ו בכפתורים עם משפטים. כשדולק, '}שירות זיהוי הדיבור של הדפדפן הופך את הקול לטקסט (ב-<bdi>Chrome</bdi> ובאנדרואיד אצל <bdi>Google</bdi>, באייפון בדרך כלל אצל <bdi>Apple</bdi>), ובדפדפן שיודע לזהות בתוך המכשיר הקול לא יוצא ממנו. אצלנו נשמר רק הטקסט, 90 יום.</div></div>`;
+}
+const REMIND_HOURS = [14, 15, 16, 17, 18, 19, 20];
+function remindRow(g){
+  if (!PHE || g.remind === undefined) return '';
+  return `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:8px;flex-wrap:wrap;align-items:center">
+    <span class="sub" style="margin:0;font-size:13px">תזכורת יומית:</span>
+    <select class="input" data-remind="${esc(g.girl.name)}" style="width:120px;height:38px;padding:0 10px"><option value="off" ${!g.remind ? 'selected' : ''}>בלי תזכורת</option>${REMIND_HOURS.map(h => `<option value="${h}" ${g.remind === h ? 'selected' : ''}>${hourLabel(h)}</option>`).join('')}</select>
+    <span class="sub" style="margin:0;font-size:12px">רק בימים שעוד לא תרגל/ה, ורק בטלפון שהפעיל התראות.</span></div>`;
+}
+function bindSafety(p, pin){
+  const save = async (el, fn, ...args) => {
+    el.disabled = true;
+    try { renderParent(await call(fn, pin, ...args), pin); toast('נשמר'); }
+    catch(err){ toast(err.message, true); el.disabled = false; }
+  };
+  app.querySelectorAll('[data-friendson]').forEach(b => b.onclick = () => save(b, 'apiParentFriends', b.dataset.friendson === '1'));
+  app.querySelectorAll('[data-unblock]').forEach(b => b.onclick = () => save(b, 'apiParentUnblock', b.dataset.unblock, b.dataset.unother));
+  app.querySelectorAll('[data-mic]').forEach(b => b.onclick = () => save(b, 'apiParentMic', b.dataset.mickid, b.dataset.mic === '1'));
+  app.querySelectorAll('[data-remind]').forEach(s => s.onchange = () => save(s, 'apiParentRemind', s.dataset.remind, s.value === 'off' ? 'off' : Number(s.value)));
+}
+
 // ---------- Parents' feedback (Hebrew) ----------
 // The family's data (src/Privacy.js): a copy to download, and deleting a kid or the whole family, for good.
 function privacyCard(p){
@@ -7614,6 +7780,7 @@ function privacyCard(p){
     <select class="input" id="pvwho"><option value="">כל המשפחה</option>${g.girls.map(d => `<option value="${esc(d.girl.name)}">${esc(d.girl.name)}</option>`).join('')}</select>
     <input class="input" id="pvconfirm" placeholder="כדי למחוק, כתבו: מחיקה" autocomplete="off">
     <button class="btn btn-glass btn-block" id="pvdelete">${icon('trash')} מחיקה לתמיד</button>
+    ${privacyLinks()}
   </div>`;
 }
 function bindPrivacy(pin){
@@ -7709,6 +7876,7 @@ async function pilotLoad(pin, open, code){
     ${s.chat && s.chat.length ? `<div class="label mt">Talk with Chacho · ${s.chat.filter(k => k.week >= 3).length} of ${s.chat.length} talk aloud 3+ days this week</div>
     <div class="stack mt-s" style="gap:6px">${s.chat.map(k => `<div class="soft" style="padding:8px 12px;border-radius:12px;font-size:13px"><div class="row-flex between"><b>${esc(k.name)}</b>
       <span>${k.talks} talks · ${k.voicePct}% aloud · mic ${k.micPct}% · days ${k.week} (last week ${k.lastWeek})</span></div>${k.said ? `<div class="sub" style="font-size:12px">"${esc(k.said)}"</div>` : ''}</div>`).join('')}</div>` : ''}
+    ${s.reports && s.reports.length ? `<div class="label mt">Reports from kids · ${s.reports.length}</div><div class="stack mt-s" style="gap:6px">${s.reports.map(r => `<div class="soft" style="padding:8px 12px;border-radius:12px;font-size:13px"><b>${esc(r.kid)}</b> about <b>${esc(r.other)}</b>: ${esc(r.reason)} · ${fmtDate(r.date)}${r.family ? " · " + esc(r.family) : ""}</div>`).join("")}</div>` : ""}
     <div class="label mt">Teacher review · ${s.teacherFlags} notes</div>
     <div class="sub" style="font-size:12px;word-break:break-all" dir="ltr">${esc(tlink)}</div>
     <button class="btn btn-glass btn-sm mt-s" data-copy="${esc(tlink)}">${icon('copy')} Copy teacher link</button>
@@ -7716,7 +7884,7 @@ async function pilotLoad(pin, open, code){
     <button class="btn btn-glass btn-sm mt-s" data-copy="${esc(nlink)}">${icon('copy')} Copy Chacho's Nest teacher link</button>
     <div class="label mt">Families (days active in weeks 1 to 4)</div>
     <div class="stack mt-s" style="gap:8px">${s.families.length ? s.families.map(f => `<div class="soft" style="padding:10px 12px;border-radius:12px">
-      <div class="row-flex between"><b>${esc(f.name)}</b><span class="sub" style="font-size:12px">${f.before ? "before the link · " : ""}day ${f.day}${f.parent ? " · " + esc(f.parent) : ""}${f.feedback ? ' · ' + f.feedback + ' notes' : ''}</span></div>
+      <div class="row-flex between"><b>${esc(f.name)}</b><span class="sub" style="font-size:12px">${f.before ? "before the link · " : ""}day ${f.day}${f.parent ? " · " + esc(f.parent) : ""}${f.feedback ? ' · ' + f.feedback + ' notes' : ''}${f.consent != null ? ' · privacy v' + f.consent + (f.consent < s.notice ? ' (asked again)' : '') : ''}${f.friends ? ' · plays with other families' : ''}</span></div>
       ${f.kids.map(k => `<div class="row-flex between mt-s" style="font-size:13px"><span>${esc(k.name)} · ${esc(k.level)}${k.placed || f.before ? '' : ' · <b style="color:var(--orange,#f59e0b)">no test yet</b>'}${k.missions ? ' · ' + k.missions + ' missions' : ''}</span><span>${dots(k)}</span></div>`).join('')}
     </div>`).join('') : '<div class="sub">Nobody has joined yet.</div>'}</div>
     ${s.feedback.length ? `<div class="label mt">Feedback</div><div class="stack mt-s he" dir="rtl" lang="he" style="gap:6px">${s.feedback.map(f => `<div class="soft" style="padding:8px 12px;border-radius:12px;font-size:13px"><b>${esc(f.group)}</b> · ${fmtDate(f.date)}${f.score ? ' · ' + f.score + '/5' : ''}<div>${esc(f.text)}</div></div>`).join('')}</div>` : ''}`;
@@ -9185,14 +9353,12 @@ function settingsCard(p){
   const s = p.settings, hours = Array.from({ length: 17 }, (_, i) => i + 6);
   const opts = (sel, withOff) => (withOff ? `<option value="" ${!sel ? 'selected' : ''}>Off</option>` : '') +
     hours.map(h => `<option value="${h}" ${Number(sel) === h ? 'selected' : ''}>${hourLabel(h)}</option>`).join('');
-  const sub = `Daily at ${hourLabel(s.reminderHour)}` + (s.lastCallHour ? ` · last call ${hourLabel(s.lastCallHour)}` : ' · no last call');
+  const sub = `Default daily at ${hourLabel(s.reminderHour)}`;
   return accordion('settings', accOpen('settings', false), accHead('t-fire', 'bell-ringing', 'Reminders', sub), `
     <div class="glass panel">
-      <div class="label">Daily reminder</div>
+      <div class="label">Default daily reminder</div>
       <select class="input mt-s" id="st-rem">${opts(s.reminderHour, false)}</select>
-      <div class="label mt">Last call</div>
-      <select class="input mt-s" id="st-last">${opts(s.lastCallHour, true)}</select>
-      <div class="sub mt-s" style="font-size:12px">Phone notifications (and emails, where set) go only to kids who haven't practiced that day.</div>
+      <div class="sub mt-s" style="font-size:12px">One gentle notification a day, only to kids who haven't practiced. Parents choose each kid's hour, or none, in their area; this is the hour for kids whose parents did not choose. There is no evening last call any more.</div>
       <button class="btn btn-primary btn-block mt" id="st-save">${icon('check')} Save</button>
     </div>`);
 }
@@ -9238,15 +9404,17 @@ function renderParent(p, pin){
         <button class="btn btn-glass icon-btn" id="logout" title="${T('Exit', 'יציאה')}">${icon('sign-out')}</button>
       </div>
     </div>
-    ${createdCard(p.created)}
+    ${createdCard(p.created)}${consentCard(p)}
     ${p.groups.map((g, i) => groupBlock(g, p, i)).join('')}
     ${notifyCard(p)}
-    ${p.isAdmin ? pilotCard() + auditCard() + dataCard() + settingsCard(p) + manageCard(p) : feedbackCard() + privacyCard(p)}
+    ${p.isAdmin ? pilotCard() + auditCard() + dataCard() + settingsCard(p) + manageCard(p) : friendsCard(p) + feedbackCard() + privacyCard(p)}
   </div>`;
   app.querySelectorAll('details.acc').forEach(d => d.addEventListener('toggle', () => store.set('eq_acc_' + d.dataset.acc, d.open)));
   renderParentPush(p, pin);
   bindFeedback(pin);
   bindPrivacy(pin);
+  bindConsent(p, pin);
+  bindSafety(p, pin);
   nestFillParent(p);
   bindAgeRows(p, pin);
   app.querySelectorAll('[data-kidhere]').forEach(b => b.onclick = () => kidHere(b.dataset.kidgroup, b.dataset.kidhere, b.dataset.kidpin));
@@ -9275,7 +9443,7 @@ function renderParent(p, pin){
     const btn = e.currentTarget, label = btn.innerHTML;
     busy(btn, true, '<span class="mini-spin"></span>Saving…');
     try {
-      renderParent(await call('apiAdminSettings', pin, document.getElementById('st-rem').value, document.getElementById('st-last').value), pin);
+      renderParent(await call('apiAdminSettings', pin, document.getElementById('st-rem').value), pin);
       toast('Reminder times saved');
     } catch(err){ toast(err.message, true); busy(btn, false, label); }
   };
@@ -9325,7 +9493,7 @@ function girlCard(g, isAdmin, grp){
     ${placementLine(g)}
     ${nestParentCard(g)}
     ${ageRow(g)}
-    ${nestPerDayRow(g)}${nestArcadeRow(g)}
+    ${nestPerDayRow(g)}${nestArcadeRow(g)}${micRow(g)}${remindRow(g)}
     ${!isAdmin && g.pin && grp ? `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:8px;flex-wrap:wrap">
       <a class="btn btn-teal btn-sm" href="${esc(waLink(kidInvite(grp.link, { name: g.girl.name, pin: g.pin, nest: !!g.nest })))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} שליחת הקישור האישי</a>
       <button class="btn btn-glass btn-sm" data-kidhere="${esc(g.girl.name)}" data-kidpin="${esc(g.pin)}" data-kidgroup="${esc(grp.id)}">${icon('device-mobile')} משחק בטלפון הזה</button>

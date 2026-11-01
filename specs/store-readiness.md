@@ -19,13 +19,23 @@ commit.
    cannot pass (a question for adults, not a "tap and hold"). This includes new buttons, notifications that open a link,
    and content that links out.
 3. **Kids only meet kids through safe channels.** No free text, voice or pictures between kids. Kid-to-kid features use
-   preset messages and reactions, show only the first name and the pet, and a parent can turn them off (`Groups.Friends`
-   today). Anything new that lets kids find or contact each other needs a parent switch and a way to report or block.
+   preset messages and reactions, show only the first name and the pet, and are off between families until the parents of
+   both families turn them on (`Groups.FriendsOn`, the parents' area, 2026-11-01; the admin's `Groups.Friends = no` still
+   keeps a family out). Kids can block and report from a preset list (`apiKidBlock`, tabs Blocks and Reports; the admin and
+   the kid's parents see it), and named invites, duo requests and nudges are limited per kid per hour (`contactLimit`).
+   Anything new that lets kids find or contact each other goes through `duelCanMeet` (the switch and the blocks).
 4. **Collect the least data, and say what is kept.** A new field about a kid or a parent needs a reason. Every new piece
-   of stored data goes into the data list below and into the privacy text shown at sign-up (`renderJoin`). No voice,
-   photo, precise location, contacts or advertising id is stored. Speech is turned into text on the phone.
+   of stored data goes into the data list below, into the privacy notice (`PRIVACY_ITEMS` in Index.html, shown at sign-up
+   and in the parents' re-consent card; raise `PRIVACY_V` there and `NOTICE.v` in `src/Safety.js` and say what changed in
+   `PRIVACY_CHANGES`) and into `docs/privacy.html`. No voice, photo, precise location, contacts or advertising id is stored.
+   **Speech is not always turned into text on the phone** (this rule said so until 2026-11-01, wrongly): the browser's speech
+   recognition sends the voice to Google (Chrome, Android) or usually Apple (Safari), unless the browser can recognize on
+   the device (`processLocally`, which the app asks for where it exists). So every use of speech recognition needs the
+   parent's microphone switch (`Girls.Mic`, `micAllowed()` in Index.html), off by default, and the notice says where the voice
+   goes. Consent is kept with its version and time (`Groups.ConsentV`, `ConsentAt`).
 5. **Delete on request.** Whatever is stored must be removable per kid and per family (store rules require in-app
-   account deletion). A new tab or column must be covered by the deletion path once it exists (gap below).
+   account deletion). A new tab or a new column that names a kid or a family goes into `KID_COLS` / `GROUP_COLS` in
+   `src/Privacy.js` (or `NO_PERSON_TABS`); `test/sim.js` fails otherwise, and checks that nothing is left after a deletion.
 6. **Permissions in context, and the app works without them.** Ask for the microphone or notifications only at the moment
    they are used, with a sentence that says why; every feature needs a fallback when the answer is no (the tiles for Talk
    with Chacho, the reminders being optional). New permissions need the purpose strings for the native shell
@@ -38,7 +48,10 @@ commit.
    never bought, as long as this holds. No random rewards for coins or money (loot boxes); if a surprise box is ever
    added, it is free, or its odds are shown before the purchase.
 8. **No pressure on kids.** No purchase prompts aimed at kids, no countdowns or "only today" on things bought with money,
-   no guilt messages. Streak savers and reminders stay gentle; kid notifications only at the set daytime hours.
+   no guilt messages. Streak savers and reminders stay gentle; kid notifications only at the set daytime hours. A kid's
+   reminder comes once a day at the hour her parents chose (`Girls.RemindAt`, 14:00 to 20:00, or none), with no "last call",
+   no countdown, no streak to lose and never another child's name. Seasonal shop items stay after their season (no "back
+   next year").
 9. **Content fit for the age rating.** No violence, death, war, horror, romance, alcohol, drugs, gambling, politics or
    religion, and nothing scary for young kids, in missions, talks, games and items. Facts are checked, brand names are
    avoided. (This is why b2r03, b2v04, b2l07, bpl05 were replaced.)
@@ -53,20 +66,30 @@ commit.
 
 Kept by the app's own server: today the private Google Sheet (Apps Script, owner's Google account); after the move to
 Cloudflare (`specs/cloudflare.md`) a SQLite database inside the server's Durable Object (the owner's Cloudflare account),
-with the sheet as a nightly copy. Retention on Cloudflare: the audit trail 180 days, the text of what a kid said to Chacho 90 days
-(`retentionSweep`). A family's plan (tab `Plans`, empty in the pilot).
+with the sheet as a nightly copy. Retention (`retentionSweep`, every night at 03:00): opens in the audit trail 30 days one by
+one, then one total a day per person (`rollUpOpens`); the whole audit trail 180 days; the text of what a kid said to Chacho
+90 days; a kid with no open and no practice for 12 months is deleted (and her family if she was its only kid), after a push and
+an audit line to the admin 30 days before (`inactiveSweep`, `Girls.Seen` / `Girls.Inactive`). A family's plan (tab `Plans`,
+empty in the pilot). The public policy: `docs/privacy.html` (and `docs/terms.html`), linked from sign-up and the parents' area.
+Processors: Cloudflare (server, database, the site), Google (the nightly sheet copy, Chrome/Android push, Chrome's speech
+recognition when the parents turned the microphone on), Apple (push on iPhone/iPad/Safari, Safari's speech recognition when
+on), Mozilla (Firefox push).
 
 - Kid: first name (English), age or grade (a Chacho's Nest kid: the real age, 2 to 7), level, PIN, color, pet and its name,
-  group. Optional email (older setups). The Nest's Say it step uses the microphone for loudness only, on the phone:
+  group. Optional email (older setups). The parents' switches: the microphone (`Mic`) and the reminder hour (`RemindAt`); the
+  last day she opened the app (`Seen`) and, when it comes, the day the admin was told she would be deleted (`Inactive`).
+- Kids and kids: blocks (`Blocks`: who blocked whom, the day) and reports (`Reports`: who, about whom, a preset reason). The Nest's Say it step uses the microphone for loudness only, on the phone:
   nothing is recorded or sent. The Nest's "Chacho repeats you" (`docs/nest/echo.js`) holds the kid's few seconds of voice in
   the phone's memory only, plays it back once in a parrot's voice and drops it: never written to storage, never sent, no
   speech recognition, the microphone off before the replay.
-- Parent / family: family name, parent's first name, parent PIN, optional email, consent date.
+- Parent / family: family name, parent's first name, parent PIN, optional email, the notice version agreed to and when
+  (`Consent`, `ConsentV`, `ConsentAt`), the switch for playing with other families (`FriendsOn`).
 - Activity: tasks and missions with scores and time spent, game rounds, missed items for review, gate challenges,
   level tests, duels and their answers, duo streaks, shop purchases (coins), what the pet wears, saved words, bonus XP.
   Chacho's Nest: the day played and, for each word of the day, whether it was found on the first try (Log.Detail, for the
   review days); deleted with the kid's Log rows.
-- Talk with Chacho: the text the phone heard (no audio), counts of spoken and tapped answers.
+- Talk with Chacho: the text the phone heard (no audio reaches the server; only kept when the parents turned the microphone
+  on), counts of spoken and tapped answers, and whether the phone listened on the device (`Chats.Mic = local`).
 - Feedback and "Something wrong here?" notes.
 - Devices: push subscription endpoints and the browser's user-agent string.
 - Audit trail (tab Audit, `specs/audit.md`): when a kid, parent, admin or teacher opened the app (once per half hour),
@@ -91,15 +114,28 @@ loudness only; nothing is kept or sent.
 
 - In-app deletion is built (`src/Privacy.js`, the parents' area card "הנתונים שלכם", 2026-10-30): a kid or the whole family,
   every tab and the audit trail; also a download of the family's data. Left: the admin cannot delete from the Data card yet
-  (the admin can delete from a family's parents' code), and a deleted kid's name can stay inside another kid's Bonus `Ref`
-  text (duo rewards).
+  (the admin can delete from a family's parents' code). Closed 2026-11-01: feedback rows are now deleted and exported by the
+  family id (`Feedback.Who`; they were matched by the family name before, so a deleted family's feedback stayed), audit lines
+  whose detail names a deleted kid go too, and `test/sim.js` checks that every tab and reference column is covered.
+- Closed 2026-11-01: the sign-up notice said things that were not true (no data to anyone, only first names seen, all content
+  checked by a teacher). The new notice (version 2) is true, consent keeps its version and time, and families with an older
+  or no consent see a re-consent card once in the parents' area. Talk with Chacho's microphone is behind a parent switch,
+  off by default. Play together between families is off by default, with block, report and a limit per hour. Reminders
+  are the parents' choice per kid, without the "last call". Public privacy and terms pages exist (`docs/privacy.html`,
+  `docs/terms.html`).
+- Left: the operator's name, address and a contact email are placeholders on the privacy and terms pages and in the notice
+  (`PRIVACY_OPERATOR`): the owner fills them in. A lawyer should read both pages before the stores.
+- Left: COPPA's 2025 rule asks for a separate verifiable parental consent for sharing with third parties; the microphone
+  switch (speech to Google/Apple) is a separate parent choice in the parents' area, but the parent is not re-verified
+  (anyone with the parents' code can turn it on). The native shell should use on-device speech (iOS `SFSpeechRecognizer`
+  with `requiresOnDeviceRecognition`, Android `SpeechRecognizer` on-device) and say so.
 - Kids can share to WhatsApp (certificate, duel invite links) and a kid with `Girls.Missions = no` is sent to
-  test-english.com: both need a parental gate or must move to the parents' area.
-- Play together reaches kids in other groups by default (a group opts out with `Groups.Friends = no`); for the stores it
-  should be off by default and switched on by a parent, with report and block.
+  test-english.com: both need a parental gate or must move to the parents' area. A 4-letter duel code still lets a kid
+  play with a kid of another family whose parents turned playing with others on (the code is shared outside the app).
 - Fonts: Plus Jakarta Sans and the icon fonts are served from `docs/fonts/` (2026-10-30, `tools/fonts_local.js`); only the Apps
   Script copy for adults still loads Google Fonts and unpkg.
-- No public privacy policy page and no terms page (the stores need a URL): write them, in Hebrew and English.
+- The privacy and terms pages are written (Hebrew and English, 2026-11-01): https://coco.coachkrispel.com/privacy.html and
+  /terms.html are the store URLs once the placeholders are filled.
 - The data lives in the owner's personal Google account; the move to a proper database on Cloudflare is built
   (`specs/cloudflare.md`, not switched on yet). Still personal accounts (Cloudflare too): a business account and a data
   processing note are needed before selling.
