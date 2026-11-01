@@ -99,8 +99,8 @@ function platformTick() {
     try { fn(); ran.push(name); } catch (e) { console.error(name + ': ' + ((e && e.message) || e)); }
   }
   ensureSetup();
-  job('dailyReminder', Number(getSetting('ReminderHour')) || 17, dailyReminder);
-  job('lastCallReminder', Number(getSetting('LastCallHour')), lastCallReminder);
+  // Kids' reminders: every hour, for the kids whose parents chose that hour (Safety.js); hour 0 is midnight, never a reminder.
+  if (h) job('dailyReminder:' + h, h, function () { dailyReminder(h); });
   job('parentSummary', Number(getSetting('ParentSummaryHour')), parentSummary);
   job('retentionSweep', 3, retentionSweep);
   try { auditFlush(); } catch (e) { console.error('auditFlush: ' + ((e && e.message) || e)); }

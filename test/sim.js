@@ -40,7 +40,7 @@ const ctx = {
     base64EncodeWebSafe: v => (typeof v === 'string' ? Buffer.from(v, 'utf8') : Buffer.from(v.map(b => b & 255))).toString('base64').replace(/\+/g, '-').replace(/\//g, '_') },
   LockService: { getScriptLock: () => ({ waitLock(){}, tryLock(){ return true; }, releaseLock(){} }) },
   PropertiesService: { getScriptProperties: () => ({ p: {}, getProperty(k){ return this.p[k] || null; }, setProperty(k,v){ this.p[k]=v; }, setProperties(o){ Object.assign(this.p, o); }, getProperties(){ return Object.assign({}, this.p); }, deleteProperty(k){ delete this.p[k]; } }) },
-  ScriptApp: { getProjectTriggers: () => [], newTrigger: n => { trigLog.push(n); const t = { timeBased: () => t, everyDays: () => t, everyMinutes: () => t, atHour: () => t, inTimezone: () => t, onWeekDay: () => t, create: () => t }; return t; },
+  ScriptApp: { getProjectTriggers: () => [], newTrigger: n => { trigLog.push(n); const t = { timeBased: () => t, everyDays: () => t, everyMinutes: () => t, everyHours: () => t, atHour: () => t, inTimezone: () => t, onWeekDay: () => t, create: () => t }; return t; },
     WeekDay: {}, getService: () => ({ getUrl: () => 'APPURL' }) },
   CacheService: { getScriptCache: () => cacheMock },
   ContentService: { MimeType: { JSON: 'json' }, createTextOutput: t => ({ setMimeType() { return this; }, getContent: () => t }) },
@@ -66,11 +66,15 @@ if (PLATFORM_MODE) {
 }
 vm.createContext(ctx);
 const strict = PLATFORM_MODE ? '"use strict";' : '';
-for (const f of ['Catalog.js', 'Code.js', 'Auth.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Relay.js', 'Admin.js', 'Privacy.js']) if (f !== 'NestIndex.js' || fs.existsSync('src/' + f)) vm.runInContext(strict + fs.readFileSync('src/' + f, 'utf8'), ctx, { filename: f });
+for (const f of ['Catalog.js', 'Code.js', 'Auth.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Relay.js', 'Admin.js', 'Privacy.js', 'Safety.js']) if (f !== 'NestIndex.js' || fs.existsSync('src/' + f)) vm.runInContext(strict + fs.readFileSync('src/' + f, 'utf8'), ctx, { filename: f });
 if (PLATFORM_MODE) vm.runInContext(fs.readFileSync('platform/overrides.js', 'utf8'), ctx, { filename: 'overrides.js' });
 // Each call is a fresh request: per-request table memo resets, CacheService persists.
+// The scenarios send many invites in one real hour: the hourly limit on invites (Safety.js contactLimit) is reset before
+// each call, except in the test of the limit itself (keepLimits).
+let keepLimits = false;
 const run = s => {
   if (typeof ctx.TABLES === 'object') vm.runInContext('TABLES = {}', ctx);
+  if (!keepLimits) Object.keys(cacheStore).filter(k => k.startsWith('RL:')).forEach(k => delete cacheStore[k]);
   if (!PLATFORM_MODE) return vm.runInContext(s, ctx);
   G.markAll();   // the scenarios edit sheet rows directly between calls
   try { return vm.runInContext(s, ctx); } finally { G.flush(); }
@@ -160,11 +164,11 @@ console.log('JWT verifies:', crypto.verify('sha256', Buffer.from(h + '.' + pl), 
 // reminders: Ziv has not practiced on 10-15 -> both devices; one is gone (410)
 pushLog.length = 0;
 pushStatus = url => (url.includes('apple') ? 410 : 201);
-run('pushReminders(false)');
+run('kidReminders(17)');
 console.log('reminder pushes:', pushLog.length, '| rows left:', sheets.Push.rows.length - 1, '| msg:', JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/abc')")));
 run("apiSubmit('Ziv','4821','2026-10-19',9,10,null)");
-pushLog.length = 0; run('lastCallReminder()');
-console.log('last call after practicing:', pushLog.length, '(expect 0)');
+pushLog.length = 0; run('kidReminders(17)');
+console.log('reminder after practicing:', pushLog.length, '(expect 0)');
 console.log('admin test:', JSON.stringify(run("apiAdminTestPush('1234','Ziv')")));
 try { run("apiPushSubscribe('Ziv','0000','https://x.y/z','',false)"); } catch (e) { console.log('bad pin subscribe ok:', e.message); }
 
@@ -392,13 +396,18 @@ const fails = (label, f) => { try { f(); console.log('NOT REJECTED:', label); } 
 const track = (oks, step) => oks.map((o, i) => o + ':' + (i + 1) * step).join(',');
 const zivDevice = 'https://fcm.googleapis.com/fcm/send/abc';
 const gamesRows = who => sheets.Games.rows.filter(r => r[1] === who && r[3] === 'duel');
+// Playing with other families is off until the parents turn it on (2026-11-01): first the default, then both families on.
+console.log((duel('apiDuelHome', 'Aviv').friends.some(f => f.name === 'Noa') ? 'FAIL: ' : 'ok: ') + 'other families are off by default (Noa is not in the list of Aviv)');
+fails('a named invite to another family while off', () => duel('apiDuelInvite', 'Aviv', 'Noa', 'live'));
+const fOn = sheets.Groups.rows[0].indexOf('FriendsOn');
+sheets.Groups.rows.slice(1).forEach(r => { r[sheets.Groups.rows[0].indexOf('FriendsOn')] = 'yes'; }); run('clearCache()');
 let H = duel('apiDuelHome', 'Aviv');
 console.log('duel home:', H.friends.map(f => f.name + ':' + f.level + (f.online ? ':online' : '') + (f.ready ? '' : ':new') + (f.pet ? ':' + f.pet.id : '')).join(' '), '| incoming', H.incoming.length, '| helper', H.helper);
 console.log('dashboard carries duels:', !!run("apiDashboard('Aviv','2694')").duels, '| parent view does not:', run("apiParent('1234')").groups[0].girls.every(k => k.duels === undefined));
 fails('self invite', () => duel('apiDuelInvite', 'Aviv', 'Aviv', 'live'));
 fails('unknown player', () => duel('apiDuelInvite', 'Aviv', 'Nobody', 'live'));
 const cross = duel('apiDuelInvite', 'Aviv', 'Noa', 'live');
-console.log('invite across groups by name:', cross.state, cross.guest.name, '| Noa in the list with her group:', JSON.stringify(H.friends.filter(f => f.name === 'Noa').map(f => f.group)), '| own group has no label:', H.friends.filter(f => f.name === 'Ziv')[0].group === '');
+console.log('invite across groups by name:', cross.state, cross.guest.name, '| Noa in the list with no family name, level or online light:', JSON.stringify(H.friends.filter(f => f.name === 'Noa').map(f => [f.group, f.level, f.online, f.other])), '| own group has no label:', H.friends.filter(f => f.name === 'Ziv')[0].group === '');
 duel('apiDuelCancel', 'Aviv', cross.code);
 fails('bad mode', () => duel('apiDuelInvite', 'Aviv', 'Ziv', 'chess'));
 const gilPin = run("apiAdminAddKid('1234','Gil','9','" + famId + "','a1')").created.pin;
@@ -563,7 +572,6 @@ fails('nudge twice a day', () => duo('apiDuoNudge', 'Aviv', zid));
 const rid = with_('Ron', 'Aviv').id;
 fails('nudge a partner who practiced', () => duo('apiDuoNudge', 'Ron', rid));
 console.log('reminder:', JSON.stringify(run("reminderMessage(findGirl('Ziv'), false)")));
-console.log('last call:', JSON.stringify(run("reminderMessage(findGirl('Ziv'), true)")));
 console.log('no duo mention for Aviv (practiced):', JSON.stringify(run("reminderMessage(findGirl('Aviv'), false)")).indexOf('duo') < 0);
 play('Ziv', 'listen', 3);
 A = with_('Aviv', 'Ziv');
@@ -844,8 +852,9 @@ fails('two pleases', () => call_('apiShopBuy', 'Aviv', 'heart-locket', '', ['Cou
 fails('not enough coins', () => call_('apiShopBuy', 'Aviv', 'baby-dragon', '', ['May', 'I', 'have', 'the', 'Baby Dragon', '?', 'Thank you!']));
 fails('an unknown item', () => call_('apiShopBuy', 'Aviv', 'unicorn', '', ['Give me', 'the', 'Unicorn', '.']));
 ctx.__day = year + '-11-20';
-fails('Halloween is over', () => call_('apiShopBuy', 'Aviv', 'tiny-ghost', '', ['Give me', 'the', 'Tiny Ghost', '.']));
-check('the drop is back next year', call_('apiShop', 'Aviv').items.find(i => i.id === 'tiny-ghost').available === false);
+// Seasonal items stay in the shop after their season (2026-11-01, no "gone soon" pressure); the season only puts them first.
+const offSeason = call_('apiShop', 'Aviv');
+check('after Halloween the drop items stay in the shop, no season shown', offSeason.items.find(i => i.id === 'tiny-ghost').available === true && !offSeason.season);
 ctx.__day = year + '-10-25';
 B = call_('apiShopBuy', 'Aviv', 'tiny-ghost', '', ["I'd like", 'the', 'Tiny Ghost', 'please', '.', 'Thank you!']);
 check('12% for "I would like ..., please. Thank you!"', B.bought.paid === 132 && B.bought.n === 3, B.bought.sentence + ' ' + B.bought.paid);
@@ -1249,6 +1258,7 @@ const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label
 const fails = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + label); } catch (e) { console.log('ok: ' + label + ' is rejected: ' + e.message); } };
 const rows = name => sheets[name].rows.slice(1).map(r => Object.fromEntries(sheets[name].rows[0].map((h, i) => [h, r[i]])));
 const C = (id, turns, voice, tiles, said, sec) => run(`apiChatResult('Aviv', '2694', ${JSON.stringify(id)}, ${turns}, ${voice}, ${tiles}, true, ${JSON.stringify(said || [])}, ${sec || 60})`);
+run("setGirlFields('Aviv', { Mic: 'yes' })");   // the parents turned the microphone on (Safety.js); without it nothing said is kept
 const coins0 = run("coinsOf(findGirl('Aviv')).earned");
 fails('a talk with a made-up id', () => C('xa1g01', 4, 4, 0));
 fails('more answers than turns', () => C('ta1g01', 4, 4, 1));
@@ -1323,7 +1333,7 @@ const pf = run("apiAudit('1234', 7)").perf || [];
 check('the admin sees the server times', pf.some(p => p.fn === 'apiDashboard' && p.n > 0) && pf.some(p => p.fn === 'apiDashboard.build'), JSON.stringify(pf.slice(0, 3)));
 run("apiAdminSettings('1234', 17, 20)");
 const rh = rows().filter(r => r.Action === 'reminder hours').pop() || {};
-check('an admin change is kept', rh.Role === 'admin' && rh.Detail === '17:00, last call 20:00', rh.Detail);
+check('an admin change is kept', rh.Role === 'admin' && rh.Detail === 'default 17:00', rh.Detail);
 run("apiPilotInvite('1234', true, '')"); run("apiPilotInvite('1234', false, '')");
 check('opening and closing the invite link are kept', rows().slice(-2).map(r => r.Detail).join('|') === 'opened|closed');
 const nJ = rows().length; run("apiJoinCheck('nope')"); run("apiJoinCheck('nope')");
@@ -1422,6 +1432,7 @@ const day0 = ctx.__day; ctx.__day = run(`addDays('${day0}', 1)`);
 d = run(`apiDashboard('${TALI}', '${tali.PIN}')`);
 check('the next day brings the next unit not played yet (the extra lesson took the second)', units.length < 3 || d.nest.today === units[2][0], d.nest.today);
 ctx.__day = day0;
+sheets.Groups.rows.slice(1).forEach(r => { r[sheets.Groups.rows[0].indexOf('FriendsOn')] = 'yes'; }); run('clearCache()');
 check('Nest kids never meet other kids', run(`duelCanMeet(findGirl('${TALI}'), findGirl('${GAL}'))`) === false && run(`duelCanMeet(findGirl('${GAL}'), findGirl('Aviv'))`) === true);
 check('other kids do not see Nest kids in Play together', !run(`apiDashboard('Aviv', '2694')`).duels.friends.some(f => f.name === TALI || f.name === OMER));
 const fam = run("apiPilotStats('1234')").families.find(f => f.name === 'Nesty');
@@ -1532,9 +1543,10 @@ if (!PLATFORM_MODE) {
   const lv0 = kid('Ziv').Level, red0 = kid('Ziv').Redeemed;
   const after = run("apiAdminEdit('1234', 'Girls', 'Ziv', { Level: 'b2', Redeemed: '40' })");
   check3('data: a kid edit is saved and read back', kid('Ziv').Level === 'b2' && String(kid('Ziv').Redeemed) === '40' && after.Girls.rows.find(r => r.key === 'Ziv').values.Level === 'b2');
-  run("apiAdminEdit('1234', 'Girls', 'Ziv', { PIN: '4822' })");
+  const freePin = ['4822', '4823', '4824', '4825', '4826'].find(p => !sheets.Girls.rows.some(r => String(r[2]) === p));
+  run("apiAdminEdit('1234', 'Girls', 'Ziv', { PIN: '" + freePin + "' })");
   const aud = sheets.Audit.rows.filter(r => r[5] === 'edit').map(r => String(r[6]));
-  check3('data: edits are in the audit trail, PINs masked', aud.some(x => /Level = b2/.test(x)) && aud.some(x => /PIN \(changed\)/.test(x)) && !aud.some(x => /4822/.test(x)), aud.slice(-2).join(' / '));
+  check3('data: edits are in the audit trail, PINs masked', aud.some(x => /Level = b2/.test(x)) && aud.some(x => /PIN \(changed\)/.test(x)) && !aud.some(x => x.includes(freePin)), aud.slice(-2).join(' / '));
   run("apiAdminEdit('1234', 'Girls', 'Ziv', { PIN: '4821', Level: '" + lv0 + "', Redeemed: '" + red0 + "' })");
   check3('data: and back', kid('Ziv').PIN == '4821' && kid('Ziv').Level === lv0);
 }
@@ -1691,6 +1703,155 @@ if (!PLATFORM_MODE) {
   check6('no Math.random in the server for codes, PINs or ids', !/Math\.random\(\)\.toString\(36\)|Math\.random\(\) \* 9000/.test(['Code.js', 'Pilot.js', 'Duels.js', 'Duos.js', 'Auth.js'].map(f => fs.readFileSync('src/' + f, 'utf8')).join('\n')));
   check6('secrets compare in constant time', run("sameSecret('1234', ' 1234 ')") === true && run("sameSecret('1234', '1235')") === false && run("sameSecret('', '')") === false);
   clearLocks();
+}
+// Privacy, consent and kids' safety (src/Safety.js, night review 2026-11-01).
+{
+  const check6 = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+  const rej = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + label); } catch (e) { console.log('ok: ' + label + ' is rejected: ' + e.message); } };
+  const J = o => JSON.stringify(o);
+  const fresh = () => Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
+  const pinOf = n => String(sheets.Girls.rows.find(r => r[0] === n)[2]);
+  const rowsOf = t => sheets[t].rows.slice(1).filter(r => r.join('') !== '').map(r => Object.fromEntries(sheets[t].rows[0].map((h, i) => [h, r[i]])));
+  const grp = id => rowsOf('Groups').find(g => String(g.Id) === String(id));
+  fresh();
+  run("apiPilotInvite('1234', true, 'safecode')");
+  const A = run(`apiJoin('safecode', ${J({ family: 'Safe A', parent: 'Dana', parentPin: '5511', consent: true, consentV: 2, kids: [{ name: 'Ella', grade: 5 }, { name: 'Omri', grade: 6 }] })})`);
+  // an old copy of the app sends no notice version
+  const B = run(`apiJoin('safecode', ${J({ family: 'Safe B', parent: 'Ron', parentPin: '5522', consent: true, kids: [{ name: 'Yoni', grade: 5 }] })})`);
+  run("apiPilotInvite('1234', false, '')");
+  ['Ella', 'Omri', 'Yoni'].forEach(n => run(`apiPlacement('${n}', '${pinOf(n)}', 'A', 'a2', 14, 20, '')`));
+  setCode(A.groupId, '5511'); setCode(B.groupId, '5522');
+  const par = pin => run(`apiParent(__fc('${pin}'))`).groups[0];
+
+  // 1. Consent: the version and the time, and the re-consent of an older or empty one.
+  check6('consent: a sign-up keeps the notice version and the time', grp(A.groupId).ConsentV == 2 && /^\d{4}-\d\d-\d\d/.test(String(grp(A.groupId).ConsentAt)) && !par('5511').safety.consent.due, J(grp(A.groupId)));
+  const cb = par('5522').safety.consent;
+  check6('consent: an old app copy counts as version 1, and the family is asked again', cb.v === 1 && cb.due && cb.current === 2, J(cb));
+  check6('consent: the app and the server have the same notice version', /const PRIVACY_V = 2;/.test(fs.readFileSync('src/Index.html', 'utf8')));
+  rej('consent: an outdated version', () => run("apiParentConsent(__fc('5522'), 1)"));
+  fresh(); rej('consent: the admin', () => run("apiParentConsent('1234', 2)"));
+  fresh();
+  const cb2 = run("apiParentConsent(__fc('5522'), 2)").groups[0].safety.consent;
+  check6('consent: agreeing again records the new version, once', !cb2.due && cb2.v === 2 && rowsOf('Audit').some(r => r.Action === 'consent' && r.Group === B.groupId));
+  run("apiAdminAddGroup('1234', 'No consent family', '')");
+  check6('consent: a family the admin added has none, and is asked', run("JSON.stringify(consentInfo(findGroup(groups().filter(function (g) { return g.Name === 'No consent family'; })[0].Id)))").indexOf('"v":0') > 0);
+
+  // 2. Playing with other families: off by default, both parents must turn it on; the admin's "no" wins.
+  const friendsOf = n => run(`apiDuelHome('${n}', '${pinOf(n)}')`).friends;
+  check6('friends: off by default, a sibling is there', !friendsOf('Ella').some(f => f.name === 'Yoni') && friendsOf('Ella').some(f => f.name === 'Omri' && f.level && !f.other));
+  fresh(); run("apiParentFriends(__fc('5511'), true)");
+  check6('friends: one family on is not enough', !friendsOf('Ella').some(f => f.name === 'Yoni'));
+  fresh(); const pf = run("apiParentFriends(__fc('5522'), true)").groups[0].safety.friends;
+  const yoni = friendsOf('Ella').find(f => f.name === 'Yoni');
+  check6('friends: both on, another family shows only the first name and the pet', pf.on && yoni && yoni.other && yoni.group === '' && yoni.level === '' && yoni.online === false, J(yoni));
+  const gc = sheets.Groups.rows[0].indexOf('Friends'), bRow = sheets.Groups.rows.find(r => r[0] === B.groupId);
+  bRow[gc] = 'no'; run('clearCache()');
+  check6('friends: the admin\'s "no" keeps the family out', !friendsOf('Ella').some(f => f.name === 'Yoni'));
+  fresh(); rej('friends: a parent cannot turn it on against the admin', () => run("apiParentFriends(__fc('5522'), true)"));
+  bRow[gc] = ''; run('clearCache()');
+
+  // 3. Rate limit: named invites, duo requests and nudges, 8 an hour.
+  keepLimits = true;
+  Object.keys(cacheStore).filter(k => k.startsWith('RL:')).forEach(k => delete cacheStore[k]);
+  let sent = 0;
+  try { for (let i = 0; i < 12; i++) { const v = run(`apiDuelInvite('Ella', '${pinOf('Ella')}', 'Yoni', 'live')`); sent++; run(`apiDuelCancel('Ella', '${pinOf('Ella')}', '${v.code}')`); } } catch (e) {}
+  check6('limit: 8 invites an hour, then a friendly no', sent === 8, sent);
+  rej('limit: a duo request after that', () => run(`apiDuoInvite('Ella', '${pinOf('Ella')}', 'Yoni')`));
+  keepLimits = false;
+
+  // 4. Block and report.
+  const inv = run(`apiDuelInvite('Yoni', '${pinOf('Yoni')}', 'Ella', 'challenge')`);
+  run(`apiDuoInvite('Yoni', '${pinOf('Yoni')}', 'Ella')`);
+  const hb = run(`apiKidBlock('Ella', '${pinOf('Ella')}', 'Yoni', 'unkind')`);
+  check6('block: the other kid is gone from her list and his from hers', !hb.friends.some(f => f.name === 'Yoni') && !friendsOf('Yoni').some(f => f.name === 'Ella'));
+  check6('block: waiting invites and duo requests between them are closed', rowsOf('Duels').find(d => d.Id === inv.code).State === 'cancelled' &&
+    !rowsOf('Duos').some(d => d.A === 'Yoni' && d.B === 'Ella' && d.State === 'invited'));
+  rej('block: no invite to the kid who blocked', () => run(`apiDuelInvite('Yoni', '${pinOf('Yoni')}', 'Ella', 'live')`));
+  rej('block: no duo request either', () => run(`apiDuoInvite('Yoni', '${pinOf('Yoni')}', 'Ella')`));
+  check6('report: the admin has it (Reports tab, Pilot card)', rowsOf('Reports').some(r => r.Girl === 'Ella' && r.About === 'Yoni' && r.Reason === 'unkind') &&
+    run("apiPilotStats('1234')").reports.some(r => r.kid === 'Ella' && /unkind/.test(r.reason)));
+  fresh(); const sa = par('5511').safety;
+  check6('report: her parents see the block and the report', sa.blocks.some(b => b.kid === 'Ella' && b.other === 'Yoni') && sa.reports.some(r => r.kid === 'Ella' && r.reason === 'unkind'));
+  fresh(); check6('report: the other family does not', par('5522').safety.reports.length === 0 && par('5522').safety.blocks.length === 0);
+  check6('report: the audit trail names no kid in the detail', rowsOf('Audit').filter(r => r.Action === 'report').every(r => !/Yoni/.test(r.Detail)));
+  fresh(); rej('unblock: only her own parents', () => run("apiParentUnblock(__fc('5522'), 'Ella', 'Yoni')"));
+  fresh(); run("apiParentUnblock(__fc('5511'), 'Ella', 'Yoni')");
+  check6('unblock: they can meet again', friendsOf('Ella').some(f => f.name === 'Yoni'));
+
+  // 5. Reminders: the parent picks the hour or none; the server sends by the kid's own hour, gently.
+  const dayR = ctx.__day; ctx.__day = run(`addDays('${dayR}', 1)`);   // a day she has not practiced yet
+  const ep = 'https://fcm.googleapis.com/fcm/send/ella';
+  run(`apiPushSubscribe('Ella', '${pinOf('Ella')}', '${ep}', 'Android', false)`);
+  const msg = () => { const m = run(`apiPushMessage('${ep}')`); run(`CacheService.getScriptCache().remove(endpointKey('${ep}'))`); return m; };
+  msg();
+  check6('reminders: the default hour (Settings.ReminderHour)', run(`apiDashboard('Ella', '${pinOf('Ella')}')`).remind === 17);
+  fresh(); rej('reminders: a night hour', () => run("apiParentRemind(__fc('5511'), 'Ella', 3)"));
+  fresh(); const pr = run("apiParentRemind(__fc('5511'), 'Ella', 19)").groups[0].girls.find(g => g.girl.name === 'Ella');
+  run('kidReminders(17)');
+  const at17 = msg();
+  run('kidReminders(19)');
+  const at19 = msg();
+  check6('reminders: at her parents\' hour only', pr.remind === 19 && at17.title === 'English with Chacho' && /^Hi Ella/.test(at19.title), J([at17, at19]));
+  check6('reminders: gentle, no last call, no other kid\'s name', !/Last call|day ends|waiting for you|Omri|Yoni/.test(J(at19)), J(at19));
+  fresh(); run("apiParentRemind(__fc('5511'), 'Ella', 'off')");
+  run('kidReminders(19)'); run('kidReminders(17)');
+  check6('reminders: off means none', msg().title === 'English with Chacho');
+  fresh(); rej('reminders: a kid of another family', () => run("apiParentRemind(__fc('5522'), 'Ella', 18)"));
+  ctx.__day = dayR;
+
+  // 6. The microphone: off for every kid until a parent turns it on.
+  check6('mic: off by default', run(`apiDashboard('Omri', '${pinOf('Omri')}')`).mic === false && run(`apiDashboard('Aviv', '2694')`).mic === true);
+  fresh(); const pm = run("apiParentMic(__fc('5511'), 'Omri', true)").groups[0].girls.find(g => g.girl.name === 'Omri');
+  check6('mic: a parent turns it on for one kid', pm.mic === true && run(`apiDashboard('Ella', '${pinOf('Ella')}')`).mic === false);
+  run(`apiChatResult('Ella', '${pinOf('Ella')}', 'sa201', 3, 2, 1, true, ['I like cats', 'yes'], 60)`);
+  check6('mic: without the parents\' yes nothing said is kept', rowsOf('Chats').filter(r => r.Girl === 'Ella').every(r => r.Said === ''));
+
+  // 7. Deletion covers every tab and column with a kid or a family (and export shows them).
+  const H = run('HEADERS'), KC = run('KID_COLS'), GC = run('GROUP_COLS'), NP = run('NO_PERSON_TABS');
+  const uncovered = Object.keys(H).filter(t => !NP[t] && !KC[t] && !GC[t]);
+  const missing = [].concat(...Object.keys(KC).map(t => KC[t].filter(c => !(H[t] || []).includes(c)).map(c => t + '.' + c)),
+    ...Object.keys(GC).map(t => GC[t].filter(c => !(H[t] || []).includes(c)).map(c => t + '.' + c)));
+  check6('deletion: every tab is in the delete lists (or holds no person)', !uncovered.length && !missing.length, 'uncovered ' + uncovered.join(',') + ' missing ' + missing.join(','));
+  // A column that looks like a reference must be one of the delete keys, or be listed here with the reason it is safe.
+  const SAFE = { 'Girls.Group': 'the kid row goes by Name', 'Duels.Winner': 'the row goes by Host or Guest', 'Groups.Name': 'the family row goes by Id', 'Feedback.Group': 'the row goes by Who (the family id)',
+    'Reports.Group': 'in GROUP_COLS', 'Rewards.Group': 'in GROUP_COLS' };
+  const REF = /^(Girl|Name|Who|A|B|Host|Guest|Group|Blocked|About|Winner|Partner|Kid|Family)$/;
+  const loose = [].concat(...Object.keys(H).map(t => H[t].filter(c => REF.test(c) && !(KC[t] || []).includes(c) && !(GC[t] || []).includes(c) && !SAFE[t + '.' + c] && !(t === 'Settings')).map(c => t + '.' + c)));
+  check6('deletion: no reference column is left out', !loose.length, loose.join(','));
+  fresh(); run("apiFeedback(__fc('5511'), 'We love it', 5)");
+  sheets.Feedback.rows.push(['', 'Safe A', 'Safe A', run('today()'), 4, 'an old row with the family name in Who']);
+  check6('deletion: the v24 migration gives an old feedback row its family id', run('migrateFeedbackWho()') === 1 && rowsOf('Feedback').filter(r => r.Who === A.groupId).length === 2);
+  run(`apiKidBlock('Omri', '${pinOf('Omri')}', 'Yoni', 'stranger')`);
+  run(`audit('parent', 'Safe A', '${A.groupId}', 'microphone', 'Ella: on')`);
+  fresh(); const ex = run("apiExportData(__fc('5511'), '')");
+  check6('export: feedback, blocks and reports are in the family copy', ex.tables.Feedback && ex.tables.Feedback.length === 2 && ex.tables.Blocks && ex.tables.Reports, Object.keys(ex.tables).join(','));
+  fresh(); run("apiDeleteData(__fc('5511'), '', '', 'DELETE')");
+  const left = v => Object.keys(sheets).filter(t => sheets[t].rows.slice(1).some(r => r.some(c => String(c).trim() === v)));
+  const said = v => Object.keys(sheets).filter(t => sheets[t].rows.slice(1).some(r => r.some(c => new RegExp('(^|[^A-Za-z])' + v + '($|[^A-Za-z])').test(String(c)))));
+  check6('deletion: nothing of the family is left in any tab, the audit details too', !left('Ella').length && !left('Omri').length && !left(A.groupId).length && !left('Safe A').length &&
+    !said('Ella').length && !said('Omri').length, [left('Ella'), left('Omri'), left(A.groupId), left('Safe A'), said('Ella'), said('Omri')].map(x => x.join('/')).join(' | '));
+  check6('deletion: the other family keeps its report-free list', rowsOf('Girls').some(k => k.Name === 'Yoni'));
+
+  // 8. Retention: raw opens older than 30 days become daily totals; a kid inactive for 12 months is deleted after a notice.
+  const t0 = run('today()'), old = run(`addDays('${t0}', -40)`);
+  const ah = sheets.Audit.rows[0];
+  const open = (date, hh) => ah.map(h => (h === 'Date' ? date : h === 'Timestamp' ? new SimDate(date + 'T' + hh + ':00:00') : h === 'Action' ? 'open' : h === 'Role' ? 'kid' : h === 'Who' ? 'Yoni' : h === 'Group' ? B.groupId : h === 'Device' ? 'iPhone, app' : ''));
+  sheets.Audit.rows.push(open(old, '10'), open(old, '12'), open(old, '18'), open(t0, '09'));
+  run("invalidate('Audit')");
+  const sw = JSON.parse(run('JSON.stringify(retentionSweep())'));
+  const ya = rowsOf('Audit').filter(r => r.Who === 'Yoni');
+  check6('retention: three old opens became one daily total, today\'s open stays', ya.some(r => r.Action === 'opens' && r.Detail === '3 opens' && String(r.Date) === old && !r.Device) &&
+    !ya.some(r => r.Action === 'open' && String(r.Date) === old) && ya.some(r => r.Action === 'open' && String(r.Date) === t0), J(sw));
+  check6('retention: every kid gets a Seen day', rowsOf('Girls').every(k => String(k.Seen || '') !== ''));
+  const day0 = ctx.__day;
+  ctx.__day = run(`addDays('${t0}', 340)`);
+  run('retentionSweep()');
+  check6('inactive: after 11 months the admin is told first, nothing deleted', rowsOf('Girls').some(k => k.Name === 'Yoni' && String(k.Inactive) === ctx.__day) &&
+    rowsOf('Audit').some(r => r.Action === 'inactive notice' && !/Yoni/.test(r.Detail)));
+  ctx.__day = run(`addDays('${t0}', 372)`);
+  run('retentionSweep()');
+  check6('inactive: after 12 months and the notice, the kid (and a family left empty) is deleted', !left('Yoni').length && !left(B.groupId).length, left('Yoni').join(','));
+  ctx.__day = day0;
 }
 
 // Platform mode: the database holds exactly what the server has in memory.

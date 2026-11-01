@@ -52,8 +52,11 @@ function apiJoin(code, data) {
     var ids = gs.map(function (g) { return String(g.Id); });
     do { id = randomId(); } while (ids.indexOf(id) >= 0);
     parentPin = newParentCode();
+    // The version of the privacy notice the parent agreed to (Safety.js NOTICE); an old copy of the app sends none: version 1,
+    // so the family sees the new notice once in the parents' area.
+    var at = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm'), cv = Number(data.consentV) === NOTICE.v ? NOTICE.v : 1;
     appendRow('Groups', { Id: id, Name: name, ParentPIN: parentPin, Goal: 1500, GoalReward: 'ערב פיצה משפחתי', Email: email,
-      Parent: parentName, Joined: Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm'), Consent: t });
+      Parent: parentName, Joined: at, Consent: t, ConsentV: cv, ConsentAt: at });
     var girls = readTableUncached('Girls'), taken = girls.map(function (k) { return String(k.Name).toLowerCase(); });
     kids.forEach(function (k, i) {
       // Names are unique across the app: a second Noa becomes "Noa K." (the family's initial), then a number.
@@ -164,7 +167,7 @@ function apiPilotStats(pin) {
         last7: days.filter(function (d) { return d > addDays(t, -7); }).length };
     });
     return { id: String(g.Id), name: g.Name, parent: g.Parent || '', joined: joined, before: before, day: Math.max(1, daysBetween(joined, t) + 1), kids: kids,
-      feedback: fb.filter(function (f) { return f.Who === String(g.Id); }).length };
+      feedback: fb.filter(function (f) { return f.Who === String(g.Id); }).length, consent: consentInfo(g).v, friends: friendsState(g).on };
   });
   var all = [].concat.apply([], fams.map(function (f) { return f.kids; }));
   return {
@@ -174,6 +177,7 @@ function apiPilotStats(pin) {
     feedback: fb.slice(-12).reverse().map(function (f) { return { group: f.Group, date: f.Date, score: f.Score, text: f.Text }; }),
     chat: chatBoard(t),
     items: itemStats(12, 5),
+    reports: reportsBoard(), notice: NOTICE.v,
     teacherFlags: flags.filter(function (f) { return f.Girl === 'Teacher'; }).length,
     teacherCode: String(getSetting('TeacherCode') || ''),
     base: String(getSetting('PublicUrl') || ''),

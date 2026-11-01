@@ -39,8 +39,9 @@ function apiDuelInvite(name, pin, guestName, mode) {
     guest = findGirl(guestName);
     if (!guest) throw new Error('Unknown player');
     if (guest.Name === kid.Name) throw new Error('Invite someone else');
-    if (!duelCanMeet(kid, guest)) throw new Error('Playing with other groups is switched off for this group');
+    if (!duelCanMeet(kid, guest)) throw new Error(DUEL_CLOSED);
     if (pendingLevelTest(guest)) throw new Error(guest.Name + ' takes the level test first');
+    contactLimit(kid);
   }
   var now = Date.now(), d, joined = false;
   var lock = LockService.getScriptLock();
@@ -267,18 +268,21 @@ function duelStart(d, kid, now) {
 }
 
 // Kids from different groups can play together unless either group switched it off (Groups.Friends = no).
+// Since 2026-11-01 only when both families' parents turned it on (Safety.js friendsState; the admin's Groups.Friends = no
+// still keeps a family out). A kid who blocked another kid (or was blocked) never meets her again.
 function duelGroupOpen(id) {
-  var g = findGroup(id);
-  return !(g && String(g.Friends || '').trim().toLowerCase() === 'no');
+  return friendsState(findGroup(id)).on;
 }
 function duelCanMeet(a, b) {
   // Chacho's Nest kids (ages 2 to 7) play alone: they never show up in Play together or duo lists.
   if (isNest(a) || isNest(b)) return false;
+  if (blockedPair(a.Name, b.Name)) return false;
   return groupOf(a) === groupOf(b) || (duelGroupOpen(groupOf(a)) && duelGroupOpen(groupOf(b)));
 }
+var DUEL_CLOSED = 'Playing with kids from other families is off. A grown-up can turn it on.';
 function duelCheckFriends(d, kid) {
   var host = findGirl(d.Host);
-  if (host && !duelCanMeet(host, kid)) throw new Error('Playing with other groups is switched off for this group');
+  if (host && !duelCanMeet(host, kid)) throw new Error(DUEL_CLOSED);
 }
 
 // Everyone this kid may play with: her group first, then the other groups (unless switched off).
@@ -494,14 +498,16 @@ function duelHome(kid) {
   var mates = duelPlayers(kid), mine = groupOf(kid);
   var online = duelOnline(mates.map(function (k) { return k.Name; }));
   var live = function (r) { return Number(r.Expires) > now; };
-  var withMe = rows.filter(function (r) { return r.Host === name || r.Guest === name; });
+  // Invites from a kid she may no longer meet (blocked, or a family switched off) are not shown.
+  var meet = {};
+  mates.forEach(function (k) { meet[k.Name] = 1; });
+  var withMe = rows.filter(function (r) { return r.Host === name || (r.Guest === name && meet[r.Host]); });
   return {
+    // A kid of another family shows only her first name and her pet (no family name, no level, no "online" light).
     friends: mates.map(function (k) {
-      var pet = petInfo(k);
-      var g = findGroup(groupOf(k));
-      return { name: k.Name, color: k.Color, level: LEVEL_LABEL[k.Level] || k.Level, ready: !pendingLevelTest(k), online: !!online[k.Name],
-        group: groupOf(k) === mine ? '' : (g ? String(g.Name) : ''),
-        pet: petBrief(pet) };
+      var own = groupOf(k) === mine;
+      return { name: k.Name, color: k.Color, level: own ? LEVEL_LABEL[k.Level] || k.Level : '', ready: !pendingLevelTest(k),
+        online: own && !!online[k.Name], group: '', other: !own, pet: petBrief(petInfo(k)) };
     }),
     incoming: withMe.filter(function (r) { return r.State === 'invited' && r.Guest === name && live(r); }).map(function (r) { return duelView(r, name); }),
     challenges: withMe.filter(function (r) { return r.State === 'challenge' && r.Guest === name && live(r); }).map(function (r) { return duelView(r, name); }),

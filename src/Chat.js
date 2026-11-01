@@ -1,5 +1,7 @@
 // Talk to Chacho (specs/talk.md): short spoken talks with Chacho the parrot, scripted in docs/talk/<level>.js on GitHub Pages.
-// The phone listens and matches what the kid says to the script; no audio ever leaves the phone. The server keeps a
+// The phone listens (only when a parent turned the microphone on, Safety.js) and matches what the kid says to the script.
+// The listening is the browser's speech recognition: on the phone where the browser can (processLocally), otherwise the
+// browser's service hears the voice (Google on Chrome/Android, usually Apple on Safari). This server never gets audio. It keeps a
 // summary (how many turns were said aloud, how many with the tiles, and the words the phone heard) and gives a bonus:
 // coins and pet XP, never a score. A mission talk (id t<mission>) follows the mission's questions; a home scene
 // (id s<level><nn>) is played once a day from the home screen.
@@ -22,6 +24,8 @@ function apiChatResult(name, pin, id, turns, voice, tiles, mic, said, seconds) {
   if (seconds < CHAT.minSeconds) throw new Error('That was too quick to count.');
   said = (Array.isArray(said) ? said : []).map(function (s) { return String(s).replace(/[<>|=+@]/g, '').replace(/\s+/g, ' ').trim().slice(0, 160); })
     .filter(Boolean).slice(0, CHAT.maxTurns);
+  // Without the parents' yes nothing she said is kept (an old copy of the app may still listen).
+  if (!kidMicOn(kid)) said = [];
   var where = id.charAt(0) === 't' ? 'mission' : 'home';
   var t = today(), xp;
   var lock = LockService.getScriptLock();
@@ -34,7 +38,7 @@ function apiChatResult(name, pin, id, turns, voice, tiles, mic, said, seconds) {
     xp = again ? 0 : voice * CHAT.voiceXp + tiles * CHAT.tileXp + (voice === turns ? CHAT.allVoice : 0);
     xp = Math.max(0, Math.min(xp, CHAT.dayCap - used));
     appendRow('Chats', { Timestamp: new Date(), Girl: kid.Name, Date: t, Talk: id, Where: where, Level: kid.Level, Turns: turns, Voice: voice,
-      Tiles: tiles, Mic: mic ? 'yes' : 'no', XP: xp, Seconds: seconds, Said: said.join(' | ') });
+      Tiles: tiles, Mic: mic === 'local' ? 'local' : mic ? 'yes' : 'no', XP: xp, Seconds: seconds, Said: said.join(' | ') });
   } finally {
     lock.releaseLock();
   }
@@ -79,7 +83,7 @@ function chatBoard(t) {
     k.voice += Number(r.Voice) || 0;
     k.tiles += Number(r.Tiles) || 0;
     k.turns += Number(r.Turns) || 0;
-    if (r.Mic === 'yes') k.mic++;
+    if (r.Mic === 'yes' || r.Mic === 'local') k.mic++;
     if (Number(r.Voice) > 0 && d >= ws) k.days[d] = true;
     if (Number(r.Voice) > 0 && d >= last && d < ws) k.lastDays[d] = true;
     if (d >= k.last) { k.last = d; if (r.Said) k.said = String(r.Said).split(' | ').pop(); }

@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v24c';
+var SETUP_VERSION = 'v25';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 // The kids' front end (Cloudflare, docs/). Until 2026-10 it was https://yanivkrispel-cyber.github.io/english-quest/.
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
@@ -60,7 +60,10 @@ var WORLDS = { a1: 'Sunny Meadow', a2: 'Whisper Woods', b1: 'Crystal Caves', 'b1
 // The sheet tab for kids is still called "Girls" (it predates groups).
 var HEADERS = {
   // Missions: "no" keeps her daily task on test-english.com (the old link); empty = Today's Mission in the app.
-  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince', 'Missions', 'NestPerDay', 'NestArcadeMin'],
+  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince', 'Missions', 'NestPerDay', 'NestArcadeMin',
+    // Safety.js: Mic = yes when a parent turned the microphone on; RemindAt = the reminder hour ('off'; empty = the default);
+    // Seen = the last day she opened the app; Inactive = the day the admin was told she would be deleted for inactivity.
+    'Mic', 'RemindAt', 'Seen', 'Inactive'],
   Games: ['Timestamp', 'Girl', 'Date', 'Game', 'Level', 'Correct', 'Total', 'XP', 'Missed', 'Right'],
   Review: ['Girl', 'Items'],
   Gates: ['Timestamp', 'Girl', 'Date', 'From', 'To', 'Correct', 'Total', 'Passed', 'Tasks', 'XP', 'Missed', 'Right'],
@@ -70,8 +73,10 @@ var HEADERS = {
   Log: ['Timestamp', 'Girl', 'Date', 'DoneOn', 'Section', 'Level', 'Title', 'URL', 'Correct', 'Total', 'Percent', 'Points', 'Mission', 'Seconds', 'Detail'],
   Rewards: ['Points', 'Reward', 'Group'],
   Settings: ['Key', 'Value'],
-  // Parent, Joined, Consent: a family that joined on its own from the invite link (Pilot.js).
-  Groups: ['Id', 'Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email', 'Friends', 'Parent', 'Joined', 'Consent'],
+  // Parent, Joined, Consent: a family that joined on its own from the invite link (Pilot.js). ConsentV / ConsentAt: the version
+  // of the privacy notice the family agreed to and when (Safety.js). Friends = the admin's override (no / yes); FriendsOn = the
+  // parents' switch for playing with other families (off when empty).
+  Groups: ['Id', 'Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email', 'Friends', 'Parent', 'Joined', 'Consent', 'ConsentV', 'ConsentAt', 'FriendsOn'],
   Push: ['Girl', 'Endpoint', 'Created', 'Agent'],
   ParentPush: ['Who', 'Endpoint', 'Created', 'Agent', 'Instant'],
   // Play together (Duels.js): one row per duel or challenge.
@@ -95,7 +100,10 @@ var HEADERS = {
   // The audit trail (Audit.js): opens, wrong PINs, and what parents, the admin, the teacher and the owner changed.
   Audit: ['Timestamp', 'Date', 'Role', 'Who', 'Group', 'Action', 'Detail', 'Ok', 'Device'],
   // A family's plan (src/Privacy.js, entitlement): empty = the pilot, full access. Source: apple, google or manual.
-  Plans: ['Group', 'Plan', 'Source', 'Until', 'Ref', 'Updated']
+  Plans: ['Group', 'Plan', 'Source', 'Until', 'Ref', 'Updated'],
+  // Safety.js: a kid blocked another kid; a report (a block with a preset reason) for the admin and the kid's parents.
+  Blocks: ['Timestamp', 'Girl', 'Blocked', 'Date'],
+  Reports: ['Timestamp', 'Girl', 'About', 'Date', 'Reason', 'Group']
 };
 
 var WORDS = [
@@ -158,7 +166,9 @@ function api() {
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
   apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade,
   apiAdminData: apiAdminData, apiAdminEdit: apiAdminEdit,
-  apiDeleteData: apiDeleteData, apiExportData: apiExportData
+  apiDeleteData: apiDeleteData, apiExportData: apiExportData,
+  apiParentConsent: apiParentConsent, apiParentFriends: apiParentFriends, apiParentMic: apiParentMic, apiParentRemind: apiParentRemind,
+  apiKidBlock: apiKidBlock, apiParentUnblock: apiParentUnblock
   };
 }
 
@@ -637,7 +647,8 @@ function parentData(list, isAdmin, who, hide) {
         total: kids.reduce(function (a, d) { return a + d.stats.earned; }, 0),
         reward: g.GoalReward || ''
       },
-      girls: kids
+      girls: kids,
+      safety: familySafety(g)
     };
   });
   return {
@@ -709,18 +720,16 @@ function apiAdminAddKid(pin, name, age, groupId, level, missions) {
   return data;
 }
 
-// Reminder times (hours, Asia/Jerusalem). An empty last call turns it off.
-function apiAdminSettings(pin, reminderHour, lastCallHour) {
+// The default reminder hour (Asia/Jerusalem), for kids whose parents did not pick one (Safety.js). The evening last call is
+// gone (2026-11-01, no pressure on kids): lastCallHour is ignored, old copies of the app still send it.
+function apiAdminSettings(pin, reminderHour) {
   ensureSetup();
   if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can change settings');
-  var r = Number(reminderHour), l = lastCallHour === '' || lastCallHour === null ? '' : Number(lastCallHour);
+  var r = Number(reminderHour);
   if (!(r >= 0 && r <= 23)) throw new Error('Choose a reminder hour');
-  if (l !== '' && !(l >= 0 && l <= 23)) throw new Error('Choose a last-call hour');
-  if (l !== '' && l <= r) throw new Error('Last call must be later than the daily reminder');
   setSetting('ReminderHour', String(r));
-  setSetting('LastCallHour', String(l));
-  installTriggers();
-  audit('admin', 'admin', '', 'reminder hours', r + ':00' + (l === '' ? ', no last call' : ', last call ' + l + ':00'));
+  setSetting('LastCallHour', '');
+  audit('admin', 'admin', '', 'reminder hours', 'default ' + r + ':00');
   return apiParent(pin);
 }
 
@@ -832,6 +841,8 @@ function buildDashboard(kid) {
     placement: placementInfo(kid),
     games: gameStats(kid, t, owned['word-saver']),
     chat: pending || nest ? null : chatInfo(kid, t),
+    // The parents' switches (Safety.js): speech recognition allowed, and the hour of her reminder (0 = none).
+    mic: kidMicOn(kid), remind: kidRemindHour(kid),
     coins: coinsOf(kid).balance,
     upgrades: upgradesOf(owned),
     polish: polishInfo(kid),
@@ -966,20 +977,22 @@ function nextExercise(section, level, used, missions) {
 
 // ---------- Reminders (time-driven triggers) ----------
 
-function dailyReminder() {
-  try { pushReminders(false); } catch (e) { console.error(e); }
+// Runs every hour (Apps Script) or once in each hour (Cloudflare, platformTick): the kids whose reminder hour it is.
+function dailyReminder(hour) {
+  var h = typeof hour === 'number' ? hour : Number(Utilities.formatDate(new Date(), TZ, 'H'));
+  try { kidReminders(h); } catch (e) { console.error(e); }
   var t = today();
   var logs = readTable('Log');
   readTable('Girls').forEach(function (k) {
-    if (!k.Email) return;
+    if (!k.Email || kidRemindHour(k) !== h) return;
     var done = logs.some(function (l) { return l.Girl === k.Name && l.Date === t; });
     if (done) return;
     var a = todayTask(k);
     MailApp.sendEmail({
       to: k.Email,
-      subject: k.Name + ', your 10 minutes of English are waiting!',
+      subject: k.Name + ', Chacho saved today\'s English for you',
       htmlBody: '<p>Hi ' + k.Name + ',</p><p>Today: <b>' + SECTIONS[a.section].label + '</b> — ' + a.title + '</p>' +
-        '<p><a href="' + groupLink(groupOf(k)) + '">Open English with Chacho</a> and keep your streak going.</p>'
+        '<p><a href="' + groupLink(groupOf(k)) + '">Open English with Chacho</a> whenever you are ready.</p>'
     });
   });
 }
@@ -1012,10 +1025,8 @@ function installTriggers() {
     var f = tr.getHandlerFunction();
     if (f === 'dailyReminder' || f === 'lastCallReminder' || f === 'parentSummary' || f === 'weeklySummary' || f === 'warmCache') ScriptApp.deleteTrigger(tr);
   });
-  var hour = Number(getSetting('ReminderHour')) || 17;
-  ScriptApp.newTrigger('dailyReminder').timeBased().everyDays(1).atHour(hour).inTimezone(TZ).create();
-  var last = Number(getSetting('LastCallHour'));
-  if (last) ScriptApp.newTrigger('lastCallReminder').timeBased().everyDays(1).atHour(last).inTimezone(TZ).create();
+  // Every hour: each kid's reminder comes at the hour her parents chose (Safety.js kidReminders); no evening last call.
+  ScriptApp.newTrigger('dailyReminder').timeBased().everyHours(1).create();
   var summary = Number(getSetting('ParentSummaryHour'));
   if (summary) ScriptApp.newTrigger('parentSummary').timeBased().everyDays(1).atHour(summary).inTimezone(TZ).create();
   ScriptApp.newTrigger('weeklySummary').timeBased().onWeekDay(ScriptApp.WeekDay.FRIDAY).atHour(12).inTimezone(TZ).create();
@@ -1069,12 +1080,15 @@ function ensureSetup() {
     if (stray && ss.getSheets().length > 1) ss.deleteSheet(stray);
     clearCache();
 
-    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: PUBLIC_URL, PilotFrom: today(), ShopOpens: SHOP.opens, ShopEarly: '',
+    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: PUBLIC_URL, PilotFrom: today(), ShopOpens: SHOP.opens, ShopEarly: '',
       InviteCode: randomId(), InviteOpen: 'no', TeacherCode: newTeacherCode() };
     Object.keys(defaults).forEach(function (k) { if (getSetting(k) === null) setSetting(k, defaults[k]); });
     if (getSetting('AppUrl') !== APP_URL) setSetting('AppUrl', APP_URL);
     // v18: the front end moved from GitHub Pages to its own address (the old one shows a "new home" screen).
     if (/github\.io/.test(String(getSetting('PublicUrl') || ''))) setSetting('PublicUrl', PUBLIC_URL);
+    // v24: feedback is deleted and exported by the family id (Safety.js); the evening "last call" is gone (no pressure on kids).
+    migrateFeedbackWho();
+    setSetting('LastCallHour', '');
     // v15: Today's Mission is every kid's daily task (Girls.Missions = no keeps the old link), so the pilot setting goes.
     var st = sheet('Settings'), sv = st.getDataRange().getValues();
     for (var si = sv.length - 1; si >= 1; si--) if (sv[si][0] === 'MissionPilot') st.deleteRow(si + 1);

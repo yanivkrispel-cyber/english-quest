@@ -70,7 +70,7 @@ notifications, and reward points.
   now, the other within 24 hours against her "ghost"; an invite nobody answered can be sent as a challenge. A 4-letter
   code (or a WhatsApp link) invites anyone. The result screen ("Learn together") lists the missed questions with the
   answers; the stronger player gets a Helper star for explaining one. XP: 2 per right answer, +5 for the winner, +10
-  for the first duel of the day, inside the daily 60 XP cap. A group can opt out of playing with other groups.
+  for the first duel of the day, inside the daily 60 XP cap. Kids of other families meet only when both families' parents turned it on (parents' area), and see only first names and pets.
 - **Duo Streak and Team Quest** (spec: `specs/duo-streak.md`): two kids (any groups) agree on a duo streak that grows on
   every day both practiced (a task, a game or a game together); the first missed day of a week is saved, badges at 7/30/100 days
   (+20/+60/+150 XP each), a Nudge button, and reminders that mention a partner who already practiced. Every duo gets a
@@ -105,8 +105,12 @@ notifications, and reward points.
   collects before buying; it shines while she remembers them (spaced review) and a 20-second polish brings it back.
   Upgrades: **Second Chance** (a hint and one more try after a mistake, half XP) and **Word Saver** (her own deck,
   "My words", with practice rounds).
-- Installable app (PWA) on Android / iOS; **phone reminders** at 17:00 and a last call at 20:00
-  on days she hasn't practiced.
+- Installable app (PWA) on Android / iOS; **phone reminders**: one gentle notification a day at the hour her parents chose
+  (or none; Settings.ReminderHour when they did not choose), on days she hasn't practiced. No evening last call (2026-11-01).
+- **Privacy and safety** (src/Safety.js, specs/store-readiness.md): the privacy notice keeps its version and time (re-consent card
+  in the parents' area), the microphone (speech recognition) is off per kid until a parent turns it on, playing with other
+  families is off until both families' parents turn it on, kids can block and report (preset reasons), invites are limited per
+  hour, and retention deletes old opens and kids inactive for 12 months. Public pages: docs/privacy.html, docs/terms.html.
 
 **The friends' pilot** (spec: `specs/pilot.md`): families join on their own from the owner's invite link (`?join=<code>`, Hebrew screens
 and a privacy consent), new kids take an adaptive level test inside the app (and a progress check after four weeks), parents see their
@@ -167,11 +171,11 @@ Phone / browser                     GitHub Pages (docs/)            Google
 
 | Tab | Columns | Notes |
 |---|---|---|
-| Girls | Name, Age, PIN, Level, Email, Redeemed, Color, Group, Pet, PetName, PetSince, Missions | One row per kid (name kept for history). Names must be unique. `Redeemed` = points spent on rewards. Pet = pet id; task points count toward its growth from PetSince on. `Missions` = no keeps her daily task on test-english.com (empty = Today's Mission). |
+| Girls | Name, Age, PIN, Level, Email, Redeemed, Color, Group, Pet, PetName, PetSince, Missions, NestPerDay, NestArcadeMin, Mic, RemindAt, Seen, Inactive | One row per kid (name kept for history). Names must be unique. `Redeemed` = points spent on rewards. Pet = pet id; task points count toward its growth from PetSince on. `Missions` = no keeps her daily task on test-english.com (empty = Today's Mission). `Mic` = yes: a parent allowed speech recognition; `RemindAt` = her reminder hour (`off`, empty = default); `Seen` / `Inactive` = last open / the day the admin was told of a deletion for inactivity. |
 | Games | Timestamp, Girl, Date, Game, Level, Correct, Total, XP, Missed, Right | One row per finished mini-game round (Right since SETUP v24). |
 | Review | Girl, Items | Spaced review: `itemId\|box\|due` entries: boxes 1 to 4 for items she missed, 11 to 13 the slow track for items answered right. |
 | Gates | Timestamp, Girl, Date, From, To, Correct, Total, Passed, Tasks, XP, Missed, Right | One row per gate challenge (Missed/Right: item ids, since SETUP v24). `Tasks` = tasks the kid had logged by then; the stations of her current world are the tasks after the last passed gate. |
-| Groups | Id, Name, ParentPIN, Goal, GoalReward, Email, Friends | First row is the default group (link without `?g=`). Empty ParentPIN = admin only. `Friends` = `no` keeps the group's kids out of play with other groups. |
+| Groups | Id, Name, ParentPIN, Goal, GoalReward, Email, Friends, Parent, Joined, Consent, ConsentV, ConsentAt, FriendsOn | First row is the default group (link without `?g=`). Empty ParentPIN = admin only. `Friends` = the admin's override (`no` keeps the family out, `yes` = on); `FriendsOn` = the parents' switch (off when empty). `ConsentV`/`ConsentAt` = the privacy notice version agreed to and when. |
 | Duos | Id, Created, A, B, State, Since, Ended, Nudges, Milestones, QuestDone | One row per duo streak (`invited` / `active` / `declined` / `ended`). The streak and the quest are computed from Log and Games; only nudges, reached badges and rewarded weeks are stored. |
 | Shop | Timestamp, Girl, Date, Item, Color, Price, Paid, Manners, Sentence, Words | One row per purchase. Coins = points + XP minus `Paid`. `Manners` = politeness chips lit (0-4), `Sentence` = what she asked. `Words` = the words an item made of words was bought with. A Studio design's `Item` is its token (`~cape..big.sparkly.purple.velvet.tiny..gold.stars.p`), `Sentence` = the design. |
 | Wardrobe | Girl, Wear, Move, Updated | What the pet wears (`item`, `item:color` or a design token, one per place) and its victory move. |
@@ -186,7 +190,9 @@ Phone / browser                     GitHub Pages (docs/)            Google
 | Push | Girl, Endpoint, Created, Agent | Kids' devices for reminders. |
 | ParentPush | Who, Endpoint, Created, Agent, Instant | Who = `admin` or a group id; Instant = yes/no. |
 | Audit | Timestamp, Date, Role, Who, Group, Action, Detail, Ok, Device | The audit trail (`specs/audit.md`): opens (once per half hour), wrong PINs, grown-ups' changes, hand edits in the sheet. Device = a coarse label sent by the app. |
-| Settings | Key, Value | AdminPIN, ReminderHour (17), LastCallHour (20), ParentSummaryHour (21), PublicUrl, AppUrl, FamilyGoal/FamilyReward (legacy). |
+| Blocks | Timestamp, Girl, Blocked, Date | A kid blocked another kid (src/Safety.js). |
+| Reports | Timestamp, Girl, About, Date, Reason, Group | A block with a preset reason, for the admin (Pilot card) and the kid's parents. |
+| Settings | Key, Value | AdminPIN, ReminderHour (17, the default kid reminder), LastCallHour (unused since 2026-11-01), ParentSummaryHour (21), PublicUrl, AppUrl, FamilyGoal/FamilyReward (legacy). |
 
 Manual edits in the sheet clear the server cache automatically (`onEdit`).
 

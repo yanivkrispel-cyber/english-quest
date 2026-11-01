@@ -287,7 +287,9 @@ function shopSeason(t) {
   return null;
 }
 
-function shopAvailable(it, t) { return !it.season || it.season === shopSeason(t); }
+// Seasonal items stay in the shop all year (night review 2026-11-01, store rule 8: no "gone soon" pressure on kids);
+// in their season they are shown first, as the Drop.
+function shopAvailable(it, t) { return true; }
 
 function ownedItems(name) {
   var owned = {};
