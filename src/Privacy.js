@@ -6,7 +6,7 @@
 // Columns that hold a kid's name, and columns that hold a family (group) id.
 var KID_COLS = { Girls: ['Name'], Games: ['Girl'], Review: ['Girl'], Gates: ['Girl'], Assignments: ['Girl'], Log: ['Girl'], Push: ['Girl'],
   Bonus: ['Girl'], Shop: ['Girl'], Wardrobe: ['Girl'], Words: ['Girl'], Flags: ['Girl'], Placements: ['Girl'], Chats: ['Girl'],
-  Duos: ['A', 'B'], Duels: ['Host', 'Guest'], Audit: ['Who'] };
+  Duos: ['A', 'B'], Duels: ['Host', 'Guest'], Audit: ['Who'], Usage: ['Girl'], Errors: ['Girl'] };
 var GROUP_COLS = { Groups: ['Id'], Rewards: ['Group'], ParentPush: ['Who'], Feedback: ['Group'], Audit: ['Group'], Plans: ['Group'] };
 
 function privacyTarget(access, groupId, kidName) {
@@ -108,10 +108,10 @@ function apiExportData(pin, groupId) {
   return { app: 'English with Chacho', exported: new Date().toISOString(), family: String(t.group.Name), kids: t.kids, tables: out };
 }
 
-// Least data (specs/store-readiness.md): the audit trail keeps 180 days, the text of what a kid said to Chacho 90 days
-// (the counts stay). Runs at night on Cloudflare (platformTick). It removes the old audit rows only when there are a
+// Least data (specs/store-readiness.md): the audit trail keeps 30 days (night review 2026-11-01, finding 23; the per-day
+// counts stay in Usage and the practice tabs), the text of what a kid said to Chacho 90 days (the counts stay). Runs at night on Cloudflare (platformTick). It removes the old audit rows only when there are a
 // month's worth of them, so the table is rewritten about once a month, not every night.
-var KEEP = { auditDays: 180, saidDays: 90, batchDays: 30 };
+var KEEP = { auditDays: 30, saidDays: 90, batchDays: 30 };
 function retentionSweep() {
   var now = Date.now(), day = 86400000, out = { audit: 0, said: 0 };
   var limit = fmt(new Date(now - KEEP.auditDays * day)), batch = fmt(new Date(now - (KEEP.auditDays + KEEP.batchDays) * day));

@@ -172,6 +172,7 @@ function apiPilotStats(pin) {
       firstMission: all.filter(function (k) { return k.missions > 0; }).length, active7: all.filter(function (k) { return k.last7 >= 4; }).length },
     feedback: fb.slice(-12).reverse().map(function (f) { return { group: f.Group, date: f.Date, score: f.Score, text: f.Text }; }),
     chat: chatBoard(t),
+    measure: pilotMeasure(),
     teacherFlags: flags.filter(function (f) { return f.Girl === 'Teacher'; }).length,
     teacherCode: String(getSetting('TeacherCode') || ''),
     base: String(getSetting('PublicUrl') || ''),

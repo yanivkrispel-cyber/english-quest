@@ -5,6 +5,7 @@ import crypto from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import * as S from '../worker/api/server.js';
 import { vapidJwt, sendOutbox } from '../worker/api/push.js';
+import { backupSave, backupList, backupLoad, gzipJson, gunzipJson, exportCounts, BACKUP } from '../worker/api/backup.js';
 
 let bad = 0;
 const check = (label, ok, extra) => { if (!ok) bad++; console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra)); };
@@ -80,6 +81,36 @@ check('base64EncodeWebSafe of a string and of signed bytes', U.base64EncodeWebSa
   check('the outbox is sent after the request: two posts, VAPID header, TTL', calls.length === 2 && /^vapid t=.+, k=/.test(calls[0].o.headers.Authorization) && calls[0].o.headers.TTL === '21600');
   check('a gone subscription comes back for removal', JSON.stringify(gone) === JSON.stringify({ Push: ['https://push.example/gone'] }));
   check('the message waits in the cache for the service worker', !!G.services.CacheService.getScriptCache().get(P.eval("endpointKey('https://push.example/a')")));
+}
+// ---- the nightly backups (worker/api/backup.js): gzip, chunks, the 14-day ring, a restore drill ----
+{
+  const { sql } = newDb();
+  const G = S.createGas({ store: S.sqliteStore(sql), crypto });
+  const sh = G.services.SpreadsheetApp.getActive().insertSheet('Girls');
+  sh.getRange(1, 1, 1, 3).setValues([['Name', 'PIN', 'Joined']]);
+  for (let i = 0; i < 300; i++) sh.appendRow(['Kid ' + i, String(1000 + i), new Date(Date.UTC(2026, 9, 1 + (i % 28)))]);
+  G.flush();
+  const exportAll = () => {
+    const names = sql('SELECT name FROM sheets ORDER BY ord').map(r => r.name), sheets = {};
+    names.forEach(n => { sheets[n] = sql('SELECT v FROM rows WHERE sheet = ? ORDER BY i', n).map(r => JSON.parse(r.v)); });
+    return { names, sheets, props: {} };
+  };
+  const data = exportAll(), gz = await gzipJson(data);
+  const r = backupSave(sql, '2026-11-01', gz);
+  const back = await gunzipJson(backupLoad(sql, '2026-11-01'));
+  check('a backup is gzipped and comes back the same', JSON.stringify(back) === JSON.stringify(data) && gz.length < JSON.stringify(data).length / 3, gz.length + ' bytes');
+  check('the restore drill counts rows per sheet', exportCounts(back).Girls === 300);
+  // a big export goes in parts of a megabyte
+  const big = new Uint8Array(BACKUP.part * 2 + 10).map((_, i) => i % 251);
+  const rb = backupSave(sql, '2026-11-02', big);
+  const lb = backupLoad(sql, '2026-11-02');
+  check('a big backup is cut in parts and put together again', rb.parts === 3 && lb.length === big.length && lb[BACKUP.part + 5] === big[BACKUP.part + 5]);
+  // the ring keeps the newest 14 days; the same day twice is replaced
+  for (let d = 3; d <= 20; d++) backupSave(sql, '2026-11-' + String(d).padStart(2, '0'), gz);
+  backupSave(sql, '2026-11-20', gz);
+  const list = backupList(sql);
+  check('the ring keeps the newest 14 days', list.length === 14 && list[0].day === '2026-11-20' && list[13].day === '2026-11-07' && !backupLoad(sql, '2026-11-01'), list.map(x => x.day).join(','));
+  check('the same day saved twice is one backup', list.filter(x => x.day === '2026-11-20').length === 1 && list[0].parts === 1);
 }
 console.log(bad ? bad + ' FAILED' : 'all ok');
 process.exit(bad ? 1 : 0);

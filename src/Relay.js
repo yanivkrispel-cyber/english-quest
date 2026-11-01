@@ -94,7 +94,7 @@ function cfWriteSheets(data) {
     var rows = data.sheets[n] || [], sh = ss.getSheetByName(n) || ss.insertSheet(n);
     var w = rows.reduce(function (m, r) { return Math.max(m, r.length); }, 1);
     var values = rows.map(function (r) {
-      var line = r.map(function (v) { return v && typeof v === 'object' && v.$d !== undefined ? new Date(v.$d) : v; });
+      var line = r.map(function (v) { return v && typeof v === 'object' && v.$d !== undefined ? new Date(v.$d) : sheetSafe(v); });
       while (line.length < w) line.push('');
       return line;
     });

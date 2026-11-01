@@ -31,6 +31,12 @@ Below the Pilot card: today / 7 / 30 days, visits of kids and parents, wrong PIN
 device: the installed-app share and iPhone against Android matter for the store decision), each family's last visit,
 visits and active kid-days, and the timeline with filters (visits, grown-ups, practice, problems) and a family picker.
 
+## Kept 30 days (night review 2026-11-01)
+
+The trail keeps 30 days (`KEEP.auditDays` in `src/Privacy.js`, `retentionSweep` at night; the rows go in monthly batches). What the
+pilot measures over a longer time does not need it: practice is in the practice tabs, and which parts a kid opened is counted
+per day in the tab Usage (`src/Ops.js`, no device, no time of day).
+
 ## Store rules
 
 Our own sheet only (rule 1). The open times and device kind are in the data list of `specs/store-readiness.md` and in

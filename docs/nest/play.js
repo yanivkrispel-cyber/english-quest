@@ -544,6 +544,7 @@ function nkCompose(u, day, only){
 // ---------- A session ----------
 // id: a day id (or a unit id: its first day). preview: the teacher's page (nothing is saved). only: one activity.
 function nestStart(id, preview, only){
+  if (!preview && typeof useNote === 'function') useNote('nest');
   const d = nkDay(id), u = d && nestUnit(d.unit);
   if (!u) return;
   const n = dash.nest;

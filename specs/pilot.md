@@ -52,6 +52,37 @@ Pilot card shows the teacher link and the number of notes.
 `apiPilotStats`: families that joined from the link, per kid: level test done, missions done, days active in weeks 1 to
 4 since joining, active days in the last 7; totals, latest feedback, teacher notes, the invite link (open/close).
 
+## Measuring the pilot (night review 2026-11-01, finding 16)
+
+The pilot answers one question: do kids come back to practise on their own? Comparing the level test before and after four
+weeks is not proof of learning, so the decision rests on habit and the parents' word.
+
+- **North star: practice days a week per kid, target at least 4 of 7.** A practice day is a day with a task or mission (Log),
+  a game round (Games) or a talk with Chacho (Chats). The Pilot card shows the average over the last 7 days, how many kids
+  reached 4, and the last six weeks (Sunday to Saturday).
+- **Retention by sign-up week.** A kid's first day is her family's `Joined` day (families from before the link: `Settings.PilotFrom`).
+  D1 = practised the next day, D7 = on one of days 7 to 13, D30 = on one of days 30 to 36. A kid counts once her days are over.
+- **Feature use.** The phone counts which parts a kid opened (missions, games, talks, the tabs, duels, the shop, the Nest...,
+  `USE_IDS` in Index.html, `USE_FEATURES` in `src/Ops.js`) and sends the counts with her next call that checks her PIN: no
+  call of its own and nothing third party. The server keeps one row per kid, day and part (tab Usage: Date, Girl, Feature,
+  Opens), written in batches by `auditFlush` (a few hundred rows a day for 100 kids, inside the free plan). The card lists
+  every part with the kids who opened it and how often, for 7 and 28 days, so unused parts stand out.
+
+## The pilot gate (written 2026-11-01)
+
+Checked in the window **23.11.2026 to 27.11.2026** (four weeks after the families joined; `PILOT_GATE` in `src/Ops.js`). The pilot
+passes when both hold:
+
+1. **At least 60% of the kids are still practising in week 4**: practice on 2 or more days in their fourth week (days 22 to 28, the first day being day 1)
+   (kids who have had four full weeks).
+2. **The parents' NPS is at least 30.** From the stars in "ספרו לנו" (Feedback), each family's latest: 5 stars = promoter,
+   4 = passive, 1 to 3 = detractor; NPS = % promoters minus % detractors. Before the window, ask every family for their stars once.
+
+The Pilot card shows both numbers all along and "passed / not passed" from 23.11. Passed: go on to the store plan
+(`specs/store-readiness.md`). Not passed: no new features; find out with the families why kids stopped (the feature table and the
+retention weeks show where), fix that, and run the gate again four weeks later. The north star (4 of 7 days) is the aim, not a
+condition of the gate.
+
 ## Content for four weeks
 
 Missions grew from 59 to 183 (2026-10-26): per level grammar 1 to 9 (C1 to 10), vocabulary 1 to 5, listening 1 to 9,

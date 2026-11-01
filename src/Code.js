@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v23';
+var SETUP_VERSION = 'v24f';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 // The kids' front end (Cloudflare, docs/). Until 2026-10 it was https://yanivkrispel-cyber.github.io/english-quest/.
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
@@ -83,7 +83,11 @@ var HEADERS = {
   // The audit trail (Audit.js): opens, wrong PINs, and what parents, the admin, the teacher and the owner changed.
   Audit: ['Timestamp', 'Date', 'Role', 'Who', 'Group', 'Action', 'Detail', 'Ok', 'Device'],
   // A family's plan (src/Privacy.js, entitlement): empty = the pilot, full access. Source: apple, google or manual.
-  Plans: ['Group', 'Plan', 'Source', 'Until', 'Ref', 'Updated']
+  Plans: ['Group', 'Plan', 'Source', 'Until', 'Ref', 'Updated'],
+  // Feature use (Ops.js): one row per kid, day and part of the app she opened, with how many times (written in batches).
+  Usage: ['Date', 'Girl', 'Feature', 'Opens'],
+  // The phones' error reports (Ops.js), kept 30 days. Girl: only when the call that carried the report was hers.
+  Errors: ['Timestamp', 'Date', 'Girl', 'Where', 'Message', 'Device', 'App']
 };
 
 var WORDS = [
@@ -146,7 +150,7 @@ function api() {
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
   apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade,
   apiCfExport: apiCfExport, apiCfMode: apiCfMode, apiAdminData: apiAdminData, apiAdminEdit: apiAdminEdit,
-  apiDeleteData: apiDeleteData, apiExportData: apiExportData
+  apiDeleteData: apiDeleteData, apiExportData: apiExportData, apiHealth: apiHealth
   };
 }
 
@@ -172,6 +176,8 @@ function doPost(e) {
   } catch (err) {
     out = { ok: false, error: String((err && err.message) || err) };
   }
+  // The feature counts and error reports the phone sent along (Ops.js); never breaks the answer.
+  try { opsNote(req, out.ok); } catch (err) { console.error(err); }
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }
 

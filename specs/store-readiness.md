@@ -53,8 +53,11 @@ commit.
 
 Kept by the app's own server: today the private Google Sheet (Apps Script, owner's Google account); after the move to
 Cloudflare (`specs/cloudflare.md`) a SQLite database inside the server's Durable Object (the owner's Cloudflare account),
-with the sheet as a nightly copy. Retention on Cloudflare: the audit trail 180 days, the text of what a kid said to Chacho 90 days
-(`retentionSweep`). A family's plan (tab `Plans`, empty in the pilot).
+with the sheet as a nightly copy. Retention on Cloudflare: the audit trail 30 days (was 180 until 2026-11-01), the text of what a
+kid said to Chacho 90 days (`retentionSweep`), the phones' error reports 30 days (`opsSweep`). A family's plan (tab `Plans`, empty
+in the pilot). Backups (`specs/cloudflare.md`): the whole export, gzipped, every night, 14 days, inside the same Durable Object;
+Cloudflare's own point-in-time history of the database, 30 days. A deleted family stays in those copies until they age out (at most
+30 days); say so in the privacy text.
 
 - Kid: first name (English), age or grade (a Chacho's Nest kid: the real age, 2 to 7), level, PIN, color, pet and its name,
   group. Optional email (older setups). The Nest's Say it step uses the microphone for loudness only, on the phone:
@@ -73,10 +76,17 @@ with the sheet as a nightly copy. Retention on Cloudflare: the audit trail 180 d
   wrong PIN attempts (not the PIN), grown-ups' changes, hand edits in the sheet (not PIN values), and a coarse device
   label (iPhone / Android phone / Computer..., app or browser). A kid's or parent's open also carries how long that
   phone's previous open took to show its first screen ("1.4s saved"), a number and a word only (`specs/perf-phase2.md`).
+- Feature use (tab Usage, `src/Ops.js`, 2026-11-01): per kid and day, which parts of the app she opened and how many times
+  (missions, games, talks, the home tabs, duels, the shop, the Nest...). No time of day, device or content. For the pilot's measures
+  (`specs/pilot.md`); deleted with the kid (`KID_COLS`).
+- Error reports from phones (tab Errors, `src/Ops.js`, 2026-11-01): the error message and where in the app, the device label, the app
+  version, and the kid's first name when the call that carried it was hers. Addresses lose their query and #part, anything like an
+  email is cut. Kept 30 days, deleted with the kid.
+- Server use per day (script properties `use:<day>`, 8 days): numbers of calls, rows written, pushes and failed calls, no person.
 
 On the phone (local storage): the remembered kid and PIN, the group, the last dashboard, settings (sound, voice), the
 last parents' view of a parent who chose to be remembered (`eq_par`, deleted on sign-out), and how long the last open
-took (`eq_open_m`). Chacho's
+took (`eq_open_m`), today's feature counts and up to 5 error reports waiting to be sent with the next call (`eq_use`, `eq_err`). Chacho's
 Nest also keeps, on the phone only: how many times each game was played (Chacho shows a new game first), the microphone
 choice, the kid's last 12 colored pictures (which colors went where; no drawing, photo or sound), and the sticker book
 (`docs/nest/stickers.js`): which stickers the kid has already seen pop (word ids, `eq_nest_stickers_<kid>`) and the
