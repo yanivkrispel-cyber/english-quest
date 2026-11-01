@@ -277,6 +277,20 @@ function pilotMeasure() {
   };
 }
 
+// ---------- Random codes ----------
+
+// A random number in [0, 1) from the platform's random UUID (crypto on both servers), for PINs, codes and ids that must not
+// be guessable (night review 2026-11-01, finding 23: Math.random is predictable). Math.random stays for game seeds.
+function secureRandom() {
+  var h = Utilities.getUuid().replace(/-/g, '');
+  return parseInt(h.slice(0, 12), 16) / 281474976710656;
+}
+function secureCode(n) {
+  var s = '';
+  while (s.length < n) s += Math.floor(secureRandom() * 36).toString(36);
+  return s;
+}
+
 // ---------- The sheet ----------
 
 // Text copied into the Google Sheet (the nightly copy, cfWriteSheets in Relay.js) that starts with = + - @ or a tab or

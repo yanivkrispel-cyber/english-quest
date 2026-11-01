@@ -4255,6 +4255,8 @@ function msClock(){
     el.innerHTML = msClockText();
   }, 1000);
 }
+// The running clock in the mission's header is for B1 and up: younger kids (A1, A2) play without a clock (night review
+// 2026-11-01, finding 23: no time pressure on young kids). The time is still measured (MS.active, Log.Seconds).
 function msClockText(){
   const s = Math.floor((MS.active + Math.min(Date.now() - MS.last, 120000)) / 1000);
   return icon('timer') + ' ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
@@ -4299,7 +4301,7 @@ function msRender(){
   app.innerHTML = `<div class="gscreen mscreen gplay" id="ms">
     <div class="gtop"><button class="btn btn-glass icon-btn" id="msquit" title="Stop">${icon('x')}</button>
       <div style="flex:1;min-width:0"><h2>${esc(m.title)}</h2><div class="sub" style="font-size:12px;margin:0">${sub}</div></div>
-      ${soundBtn()}<span class="chip" id="msclock">${msClockText()}</span></div>
+      ${soundBtn()}${/^a[12]/.test(MS.id || '') ? '' : `<span class="chip" id="msclock">${msClockText()}</span>`}</div>
     ${parts}
     <div class="gstage${same ? '' : ' enter'}">${body}</div>
     <div class="gdock">

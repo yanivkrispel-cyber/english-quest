@@ -557,7 +557,7 @@ function duelCode(rows) {
   rows.forEach(function (r) { used[r.Id] = true; });
   for (var tries = 0; tries < 200; tries++) {
     var c = '';
-    for (var i = 0; i < 4; i++) c += DUEL_LETTERS[Math.floor(Math.random() * DUEL_LETTERS.length)];
+    for (var i = 0; i < 4; i++) c += DUEL_LETTERS[Math.floor(secureRandom() * DUEL_LETTERS.length)];
     if (!used[c]) return c;
   }
   throw new Error('Could not create a code, try again');

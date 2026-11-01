@@ -50,7 +50,7 @@ function apiJoin(code, data) {
     var name = family, n = 2;
     while (gs.some(function (g) { return String(g.Name).toLowerCase() === name.toLowerCase(); })) name = family + ' ' + (n++);
     var ids = gs.map(function (g) { return String(g.Id); });
-    do { id = Math.random().toString(36).slice(2, 8); } while (ids.indexOf(id) >= 0);
+    do { id = secureCode(6); } while (ids.indexOf(id) >= 0);
     appendRow('Groups', { Id: id, Name: name, ParentPIN: parentPin, Goal: 1500, GoalReward: 'ערב פיצה משפחתי', Email: email,
       Parent: parentName, Joined: Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm'), Consent: t });
     var girls = readTableUncached('Girls'), taken = girls.map(function (k) { return String(k.Name).toLowerCase(); });
@@ -186,7 +186,7 @@ function apiPilotInvite(pin, open, code) {
   if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can change this');
   code = String(code || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 24);
   if (code) setSetting('InviteCode', code);
-  if (!getSetting('InviteCode')) setSetting('InviteCode', Math.random().toString(36).slice(2, 8));
+  if (!getSetting('InviteCode')) setSetting('InviteCode', secureCode(6));
   setSetting('InviteOpen', open ? 'yes' : 'no');
   audit('admin', 'admin', '', 'invite link', (open ? 'opened' : 'closed') + (code ? ', new code' : ''));
   return apiPilotStats(pin);

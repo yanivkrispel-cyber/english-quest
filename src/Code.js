@@ -613,7 +613,7 @@ function apiAdminAddGroup(pin, name, email) {
   var id, parentPin;
   try {
     var ids = groups().map(function (g) { return String(g.Id); });
-    do { id = Math.random().toString(36).slice(2, 8); } while (ids.indexOf(id) >= 0);
+    do { id = secureCode(6); } while (ids.indexOf(id) >= 0);
     parentPin = uniqueParentPin();
     appendRow('Groups', { Id: id, Name: name, ParentPIN: parentPin, Goal: 1500, GoalReward: 'Pizza party for the group', Email: String(email || '').trim() });
   } finally {
@@ -1018,7 +1018,7 @@ function ensureSetup() {
     clearCache();
 
     var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: PUBLIC_URL, PilotFrom: today(), ShopOpens: SHOP.opens, ShopEarly: '',
-      InviteCode: Math.random().toString(36).slice(2, 8), InviteOpen: 'no', TeacherCode: String(100000 + Math.floor(Math.random() * 900000)) };
+      InviteCode: secureCode(6), InviteOpen: 'no', TeacherCode: String(100000 + Math.floor(secureRandom() * 900000)) };
     Object.keys(defaults).forEach(function (k) { if (getSetting(k) === null) setSetting(k, defaults[k]); });
     if (getSetting('AppUrl') !== APP_URL) setSetting('AppUrl', APP_URL);
     // v18: the front end moved from GitHub Pages to its own address (the old one shows a "new home" screen).
@@ -1257,7 +1257,7 @@ function auth(name, pin) {
   return g;
 }
 
-function randomPin() { return String(1000 + Math.floor(Math.random() * 9000)); }
+function randomPin() { return String(1000 + Math.floor(secureRandom() * 9000)); }
 
 // ---------- Date helpers (yyyy-MM-dd strings, Asia/Jerusalem) ----------
 
