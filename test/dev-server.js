@@ -44,10 +44,10 @@ for (let k = 1; k <= 13; k++) {
 }
 // Chacho's Nest (specs/nest.md): Mia, 4, in the same family, with no pet yet (PIN 5151).
 run("appendRow('Girls', { Name: 'Mia', Age: 4, PIN: '5151', Level: 'nest', Redeemed: 0, Color: '#f472b6', Group: defaultGroupId() })");
-// Privacy and safety (src/Safety.js): the family's parents' code 1111 (the Hebrew parents' area) with the first, older notice,
+// Privacy and safety (src/Safety.js): the family's parents' code 246810 (the Hebrew parents' area) with the first, older notice,
 // so the re-consent card shows; a second family, Levi (code 2222), with Noa (6262). Both families play with other families,
 // so Noa is in Aviv's Play tab (first name and pet only); Ron blocked and reported Noa (his parents see it in their area).
-run("upsertRow('Groups', 'Id', defaultGroupId(), { ParentPIN: '1111', Consent: addDays(today(), -6), FriendsOn: 'yes' })");
+run("upsertRow('Groups', 'Id', defaultGroupId(), { Consent: addDays(today(), -6), FriendsOn: 'yes' })");
 run("apiAdminAddGroup('1234', 'Levi', '')");
 const LEVI = run("groups().filter(function (g) { return g.Name === 'Levi'; })[0].Id");
 run("upsertRow('Groups', 'Id', '" + LEVI + "', { ParentPIN: '2222', FriendsOn: 'yes', ConsentV: 2, ConsentAt: today() })");

@@ -45,13 +45,13 @@ async function show(f){
   else if (screen === 'parent-name') ev("pub = null; parentSignIn(null)");
   else if (screen === 'admin-signin') ev("adminSignIn(() => {})");
   else if (screen === 'parent-family') await ev("parent('g::246810', false, false)");
-  else if (screen.startsWith('parent-') && screen !== 'parent-family') await ev("(async () => { const p = await call('apiParent', 'g::246810'); renderParent(await call('apiParent', p.token), p.token); if (" + (screen === 'parent-again') + ") askCode(p.token); })()");
+  else if (screen.startsWith('parent-') && screen !== 'parent-family' && screen !== 'parent-he') await ev("(async () => { const p = await call('apiParent', 'g::246810'); renderParent(await call('apiParent', p.token), p.token); if (" + (screen === 'parent-again') + ") askCode(p.token); })()");
   // Privacy and safety (specs/store-readiness.md): join = the sign-up notice (details open); family = the Hebrew parents' area
-  // (dev family code 1111: the re-consent card, then &to=<element id> scrolls to frcard, pvcard or a kid's card).
+  // (dev family code 246810: the re-consent card, then &to=<element id> scrolls to frcard, pvcard or a kid's card).
   else if (screen === 'join') { ev("renderJoin('friends')"); await new Promise(r => setTimeout(r, 2500)); ev("document.querySelectorAll('details').forEach(x => x.open = true)"); }
-  else if (screen === 'family') { await ev("parent('1111', false, false)"); const to = new URLSearchParams(location.search).get('to'); await new Promise(r => setTimeout(r, 1500)); if (to) ev("(document.getElementById('" + to + "') || document.querySelector('" + to + "')).scrollIntoView()"); }
+  else if (screen === 'family') { await ev("parent('g::246810', false, false)"); const to = new URLSearchParams(location.search).get('to'); await new Promise(r => setTimeout(r, 1500)); if (to) ev("(document.getElementById('" + to + "') || document.querySelector('" + to + "')).scrollIntoView()"); }
   // parent-he: the family's parents' area in Hebrew (the family code set to 4455 by the admin first).
-  else if (screen === 'parent-he') await ev("(async () => { const p = await call('apiParent', '1234'); await call('apiAdminParentPin', '1234', p.groups[0].id, '4455').catch(() => {}); await parent('4455', false, false); })()");
+  else if (screen === 'parent-he') await ev("parent('g::246810', false, false)");
   // picker: the kids of the family with "Not your family? Switch"; signin: the screen that button opens.
   else if (screen === 'picker') await ev("(async () => { pub = await call('apiPublic', ''); home(); })()");
   else if (screen === 'signin') await ev("(async () => { pub = await call('apiPublic', ''); home(); document.getElementById('swfam').click(); })()");
