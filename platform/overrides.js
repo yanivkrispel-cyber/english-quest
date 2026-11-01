@@ -103,6 +103,8 @@ function platformTick() {
   if (h) job('dailyReminder:' + h, h, function () { dailyReminder(h); });
   job('parentSummary', Number(getSetting('ParentSummaryHour')), parentSummary);
   job('retentionSweep', 3, retentionSweep);
+  job('opsSweep', 3, opsSweep);
+  job('healthCheck', 10, healthCheck);
   try { auditFlush(); } catch (e) { console.error('auditFlush: ' + ((e && e.message) || e)); }
   return ran;
 }

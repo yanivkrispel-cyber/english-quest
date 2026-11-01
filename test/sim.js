@@ -66,7 +66,7 @@ if (PLATFORM_MODE) {
 }
 vm.createContext(ctx);
 const strict = PLATFORM_MODE ? '"use strict";' : '';
-for (const f of ['Catalog.js', 'Code.js', 'Auth.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Relay.js', 'Admin.js', 'Privacy.js', 'Safety.js']) if (f !== 'NestIndex.js' || fs.existsSync('src/' + f)) vm.runInContext(strict + fs.readFileSync('src/' + f, 'utf8'), ctx, { filename: f });
+for (const f of ['Catalog.js', 'Code.js', 'Auth.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Relay.js', 'Admin.js', 'Privacy.js', 'Safety.js', 'Ops.js']) if (f !== 'NestIndex.js' || fs.existsSync('src/' + f)) vm.runInContext(strict + fs.readFileSync('src/' + f, 'utf8'), ctx, { filename: f });
 if (PLATFORM_MODE) vm.runInContext(fs.readFileSync('platform/overrides.js', 'utf8'), ctx, { filename: 'overrides.js' });
 // Each call is a fresh request: per-request table memo resets, CacheService persists.
 // The scenarios send many invites in one real hour: the hourly limit on invites (Safety.js contactLimit) is reset before
@@ -1604,7 +1604,7 @@ if (!PLATFORM_MODE) {
   sheets.Chats.rows.push(crow('2025-01-01', 'my old words'), crow(run('today()'), 'new words'));
   const sw = run('JSON.stringify(retentionSweep())');
   const live = () => sheets.Audit.rows.slice(1).filter(r => r.join('') !== '');
-  check5('retention: audit rows older than 180 days go, the newer ones stay', !live().some(r => String(r[1]) < '2025-06-01') && live().length === n0 - 1 + 2 - JSON.parse(sw).audit && live().length > 0, sw + ' n0 ' + n0 + ' live ' + live().length + ' old ' + live().filter(r => String(r[1]) < '2025-06-01').length);
+  check5('retention: audit rows older than 30 days go, the newer ones stay', !live().some(r => String(r[1]) < '2025-06-01') && live().length === n0 - 1 + 2 - JSON.parse(sw).audit && live().length > 0, sw + ' n0 ' + n0 + ' live ' + live().length + ' old ' + live().filter(r => String(r[1]) < '2025-06-01').length);
   const saidCol = ch.indexOf('Said');
   check5('retention: an old talk keeps its counts but not its text', sheets.Chats.rows.some(r => r[1] === 'Ziv' && r[saidCol] === '' && r[2] === '2025-01-01') && sheets.Chats.rows.some(r => r[saidCol] === 'new words'));
   sheets.Chats.rows = sheets.Chats.rows.filter(r => r[2] !== '2025-01-01' && r[saidCol] !== 'new words');
@@ -1703,6 +1703,78 @@ if (!PLATFORM_MODE) {
   check6('no Math.random in the server for codes, PINs or ids', !/Math\.random\(\)\.toString\(36\)|Math\.random\(\) \* 9000/.test(['Code.js', 'Pilot.js', 'Duels.js', 'Duos.js', 'Auth.js'].map(f => fs.readFileSync('src/' + f, 'utf8')).join('\n')));
   check6('secrets compare in constant time', run("sameSecret('1234', ' 1234 ')") === true && run("sameSecret('1234', '1235')") === false && run("sameSecret('', '')") === false);
   clearLocks();
+}
+// Operations (src/Ops.js): feature counts, the phones' error reports, health, the pilot's measures, the sheet guard.
+{
+  const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+  const post = body => JSON.parse(run('doPost(' + JSON.stringify({ postData: { contents: JSON.stringify(body) } }) + ').getContent()'));
+  const t = run('today()'), y = run("addDays(today(), -1)");
+  const tab = n => sheets[n].rows.slice(1).filter(r => r.join('') !== '').map(r => Object.fromEntries(sheets[n].rows[0].map((h, i) => [h, r[i]])));
+  const u0 = tab('Usage').length, e0 = tab('Errors').length;
+  post({ fn: 'apiDashboard', args: ['Aviv', '2694'], dev: 'iPhone, app', use: { [t]: { game: 3, mission: 1, hack: 9 }, [y]: { talk: 2 }, '2020-01-01': { game: 5 } } });
+  post({ fn: 'apiDashboard', args: ['Aviv', '2694'], use: { [t]: { game: 2 } } });
+  check('feature counts wait in the cache, not the sheet', tab('Usage').length === u0 && !!cacheStore.AQU);
+  post({ fn: 'apiDashboard', args: ['Aviv', '0000'], use: { [t]: { shop: 4 } } });
+  post({ fn: 'apiPublic', args: [''], use: { [t]: { shop: 4 } } });
+  run('auditFlush()');
+  const us = tab('Usage').slice(u0);
+  const g = us.find(r => r.Girl === 'Aviv' && r.Feature === 'game' && r.Date === t);
+  check('the flush writes one row per kid, day and feature, added up', g && Number(g.Opens) === 5 && us.some(r => r.Feature === 'talk' && r.Date === y) && us.length === 3, JSON.stringify(us));
+  check('unknown features, old days, a wrong PIN and calls without a kid add nothing', !us.some(r => r.Feature === 'hack' || r.Date === '2020-01-01' || r.Feature === 'shop'));
+  // error reports
+  post({ fn: 'apiDashboard', args: ['Aviv', '2694'], dev: 'Android phone, app', v: '2026.11.01', err: [{ msg: "TypeError: x is null at https://coco.coachkrispel.com/?g=fam#hi=QXZpdi4yNjk0 @812:5", where: 'renderDash', at: Date.now() }, { msg: 'mail me at a@b.co', where: 'x' }] });
+  post({ fn: 'apiPublic', args: [''], err: [{ msg: 'boom', where: 'start' }] });
+  run('auditFlush()');
+  const es = tab('Errors').slice(e0);
+  check('error reports are kept with the kid of the call and the device', es.length === 3 && es[0].Girl === 'Aviv' && es[0].Device === 'Android phone, app' && es[0].App === '2026.11.01' && es[2].Girl === '', JSON.stringify(es));
+  check('an error keeps no link query, #part or email', !JSON.stringify(es).includes('hi=') && !JSON.stringify(es).includes('?g=') && !JSON.stringify(es).includes('a@b.co') && es[0].Message.includes('@812:5'), es[0].Message + ' / ' + es[1].Message);
+  const a = run("apiAudit('1234', 7)");
+  check('the Audit card gets the errors and the health', a.errors.total >= 3 && a.errors.list[0].n >= 1 && a.health && Array.isArray(a.health.warn), JSON.stringify(a.errors.list[0]));
+  const old = sheets.Errors.rows[0].map(h => (h === 'Date' ? '2025-01-01' : h === 'Message' ? 'old' : h === 'Timestamp' ? new SimDate('2025-01-01T10:00:00') : ''));
+  sheets.Errors.rows.splice(1, 0, old);
+  run("invalidate('Errors')");
+  const swept = run('opsSweep()');
+  check('error reports older than 30 days go', swept === 1 && !tab('Errors').some(r => r.Message === 'old'), swept);
+  // the daily cap
+  run("CacheService.getScriptCache().put('EC:' + today(), '300', 600)");
+  post({ fn: 'apiPublic', args: [''], err: [{ msg: 'one too many', where: 'x' }] });
+  run('auditFlush()');
+  check('no more than 300 error rows a day', !tab('Errors').some(r => r.Message === 'one too many'));
+  run("CacheService.getScriptCache().remove('EC:' + today())");
+  // health
+  const h0 = run('JSON.stringify(healthInfo())');
+  run("PropertiesService.getScriptProperties().setProperty('use:' + new Date().toISOString().slice(0, 10), JSON.stringify({ api: 65000, rows: 10000, limits: { api: 100000, rows: 100000 } }))");
+  run("PropertiesService.getScriptProperties().setProperty('backup:last', JSON.stringify({ day: '2026-10-01', at: Date.now() - 40 * 3600000, bytes: 1000, rows: 10 }))");
+  run("PropertiesService.getScriptProperties().setProperty('export:last', new Date(Date.now() - 2 * 3600000).toISOString())");
+  const h = JSON.parse(run('JSON.stringify(healthInfo())'));
+  if (PLATFORM_MODE) {
+    check('health: calls at 65% warn, rows at 10% do not', h.use.callsPct === 65 && h.warn.some(w => /calls are at 65%/.test(w)) && !h.warn.some(w => /rows written/.test(w)), JSON.stringify(h.warn));
+    check('health: a backup 40 hours old warns, a copy 2 hours old does not', h.warn.some(w => /backup is 40 hours/.test(w)) && !h.warn.some(w => /sheet copy/.test(w)) && h.copy.hours === 2, JSON.stringify(h));
+    const pushes = pushLog.length, out = G.outbox.length;
+    check('health: the morning check pushes the admin about the late backup', run('healthCheck()') === 1);
+  } else {
+    check('health on Apps Script: no Cloudflare warnings', JSON.parse(h0).server === 'apps script' && JSON.parse(h0).warn.length === 0, h0);
+  }
+  ['use:' + new Date().toISOString().slice(0, 10), 'backup:last', 'export:last'].forEach(k => run("PropertiesService.getScriptProperties().deleteProperty ? PropertiesService.getScriptProperties().deleteProperty('" + k + "') : PropertiesService.getScriptProperties().setProperty('" + k + "', '')"));
+  // the pilot's measures
+  const m = run("apiPilotStats('1234')").measure;
+  check('the Pilot card gets the north star, cohorts, features and the gate', m && m.northStar.target === 4 && Array.isArray(m.northStar.weeks) && m.cohorts.length >= 1 && m.features.length === Object.keys(run('USE_FEATURES')).length && m.gate.from === '2026-11-23' && m.gate.to === '2026-11-27',
+    JSON.stringify(m && m.gate));
+  const games = m.features.find(f => f.id === 'game');
+  check('feature use counts kids and opens', games.kids28 >= 1 && games.opens28 >= 5, JSON.stringify(games));
+  check('every cohort counts kids only after their window', m.cohorts.every(c => c.d1[0] <= c.d1[1] && c.d1[1] <= c.kids && c.d30[1] <= c.d7[1]), JSON.stringify(m.cohorts));
+  // NPS: the latest stars of each family (5 = promoter, 1-3 = detractor)
+  const fb = sheets.Feedback.rows[0].map(h => h), frow = (who, score) => fb.map(x => (x === 'Who' ? who : x === 'Score' ? score : x === 'Date' ? t : x === 'Group' ? who : x === 'Timestamp' ? new SimDate() : ''));
+  const nfb = sheets.Feedback.rows.length;
+  sheets.Feedback.rows.push(frow('g1', 2), frow('g1', 5), frow('g2', 5), frow('g3', 3), frow('admin', 1));
+  run("invalidate('Feedback')");
+  const gate = run("apiPilotStats('1234')").measure.gate;
+  check('NPS from each family\'s latest stars, the admin left out', gate.answers >= 3 && gate.nps !== null, JSON.stringify(gate));
+  sheets.Feedback.rows.splice(nfb);
+  run("invalidate('Feedback')");
+  // the sheet guard and deletion
+  check('sheetSafe: formulas become text, the rest stays', run("sheetSafe('=HYPERLINK(1)')") === "'=HYPERLINK(1)" && run("sheetSafe('+1')") === "'+1" && run("sheetSafe('@x')") === "'@x" && run("sheetSafe('Noa')") === 'Noa' && run('sheetSafe(5)') === 5 && run("sheetSafe('-')") === "'-");
+  check('a kid\'s usage and error rows are deleted with her data', run('KID_COLS.Usage[0]') === 'Girl' && run('KID_COLS.Errors[0]') === 'Girl');
 }
 // Privacy, consent and kids' safety (src/Safety.js, night review 2026-11-01).
 {

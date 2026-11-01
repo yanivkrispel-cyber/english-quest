@@ -136,6 +136,13 @@ first. Tablets get the phone layout scaled (`tabletFit`); never add width breakp
 }
 ` doubled the whole page.
 - Only the **bold** and **duotone** Phosphor weights are loaded: `icon(name, 'fill')` draws nothing.
+- **The icon fonts are cut to the icons the app names** (`tools/icon_subset.js`, 2026-11-01): a Phosphor icon used for the first
+  time draws nothing on the phones until `node tools/icon_subset.js` and `node build-pages.js` ran (`node test/ui-check.js`
+  fails until then). Write icon names out whole (never `'caret-' + dir`): the tool finds them as words in strings.
+- **Nothing leaves the kids' side without the grown-ups' gate** (store rule 2): a kid-side link to another site or app gets
+  `data-gate="1"`, code calls `grownUp(then)`. The parents' area needs none.
+- **A new part of the app is counted** (feature use, `src/Ops.js`, the Pilot card): add its id to `USE_IDS` in Index.html and
+  `USE_FEATURES` in Ops.js and call `useNote('<id>')` where it opens. The counts ride on the kid's next call; never add a call for them.
 - A Studio base (`docs/items/base-*.webp`) is a gray picture the app colors (`designSvg`): Gemini draws it white, without
   an outline, on a saturated background, and `tools/cut_items.py --white` levels its shading; the outline is drawn in code.
 - Gemini sometimes adds labels or draws grid cells behind a sheet: ask it to edit (remove the words / one flat gray

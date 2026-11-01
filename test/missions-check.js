@@ -21,6 +21,16 @@ function appCount() {
   return new vm.Script(grab('msQuestions') + grab('msCount') + '; ({ msQuestions, msCount })').runInNewContext({});
 }
 
+// The catalog topic of a mission id (<level><section><nn>, nn = the topic's place in CATALOG): { t, u } or undefined.
+// The server keys missions by the topic's address (src/MissionIndex.js); the mission files the phones get carry no address
+// (night review 2026-11-01, finding 21: tools/missions-index.js strips url: from them).
+function topicOf(id) {
+  const mm = /^(a1|a2|b1|bp|b2|c1)([gvlruw])(\d\d)$/.exec(id || '');
+  if (!mm) return undefined;
+  const CATALOG = new Function(fs.readFileSync(path.join(ROOT, 'src/Catalog.js'), 'utf8') + ';return CATALOG;')();
+  return ((CATALOG[SECTION_OF[mm[2]]] || {})[LEVEL_OF[mm[1]]] || [])[Number(mm[3]) - 1];
+}
+
 function load() {
   const window = {};
   FILES.forEach(f => {
@@ -50,7 +60,8 @@ function check() {
       if (seen.has(m.id)) err('duplicate id'); seen.add(m.id);
       const level = LEVEL_OF[mm[1]], section = SECTION_OF[mm[2]], entry = ((CATALOG[section] || {})[level] || [])[Number(mm[3]) - 1];
       if (!entry) err('no catalog topic ' + section + ' ' + level + ' #' + mm[3]);
-      else if (entry.u !== m.url) err('url is not catalog topic #' + mm[3] + ' (' + entry.u + ')');
+      else if (m.url !== undefined && entry.u !== m.url) err('url is not catalog topic #' + mm[3] + ' (' + entry.u + ')');
+      if (m.url !== undefined) warn('url: in a mission file (node tools/missions-index.js removes it; the phones do not need it)');
       if (m.type !== section) err('type should be ' + section);
       if (!m.title || m.title.length > 40) err('title missing or too long');
       if (!m.dinner || !/\?$/.test(m.dinner)) err('dinner question missing (ends with ?)');
@@ -147,4 +158,4 @@ if (require.main === module) {
     (ests.length ? ', about ' + (Math.round(ests.reduce((a, b) => a + b, 0) / ests.length / 6) / 10) + ' minutes on average (max ' + Math.round(Math.max(...ests) / 6) / 10 + ')' : ''));
   process.exit(r.errors.length ? 1 : 0);
 }
-module.exports = { load, check };
+module.exports = { load, check, topicOf };

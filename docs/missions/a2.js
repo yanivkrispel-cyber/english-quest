@@ -3,7 +3,7 @@
 window.EQ_MISSIONS = window.EQ_MISSIONS || {};
 window.EQ_MISSIONS.a2 = [
 {
-  id: 'a2g01', url: 'https://test-english.com/grammar-points/a2/asking-questions-in-english/', type: 'grammar',
+  id: 'a2g01', type: 'grammar',
   title: 'Asking questions', dinner: 'What questions can you ask me about my day, in English?',
   hook: { q: 'In the game "20 Questions" you can only ask yes/no questions. How many different things can 20 yes/no questions tell apart?',
     o: ['About 1,000', 'About 1 million', 'About 1 billion'], a: 1,
@@ -40,7 +40,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2g02', url: 'https://test-english.com/grammar-points/a2/subject-questions-questions-preposition/', type: 'grammar',
+  id: 'a2g02', type: 'grammar',
   title: 'Who did it?', dinner: 'Who did you sit next to at school today?',
   hook: { q: 'Who invented the telephone?', o: ['Alexander Graham Bell', 'Thomas Edison', 'Albert Einstein'], a: 0,
     reveal: '*Alexander Graham Bell* got the patent in 1876. And look at the question: *Who invented* the telephone? No did! When who is the subject, we don\'t use do or did.' },
@@ -76,7 +76,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2g03', url: 'https://test-english.com/grammar-points/a2/present-simple-continuous/', type: 'grammar',
+  id: 'a2g03', type: 'grammar',
   title: 'Every day or right now?', dinner: 'What are you doing right now, and what do you usually do after dinner?',
   hook: { q: 'How many hours a day does a koala sleep?', o: ['About 8', 'About 14', 'About 20'], a: 2,
     reveal: 'About *20 hours*! A koala *sleeps* most of the day (a habit: present simple). Right now it *is* probably *sleeping* (now: present continuous).' },
@@ -113,7 +113,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2v01', url: 'https://test-english.com/vocabulary/a2/words-with-prepositions-a2-english-vocabulary/', type: 'vocabulary',
+  id: 'a2v01', type: 'vocabulary',
   title: 'Words with prepositions', dinner: 'What are you good at, and what are you afraid of?',
   hook: { q: 'Arachnophobia is a big fear of…', o: ['spiders', 'heights', 'water'], a: 0,
     reveal: '*Spiders*! People with arachnophobia are very afraid *of* spiders. In English it is always afraid *of*, never afraid from.' },
@@ -159,7 +159,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2v02', url: 'https://test-english.com/vocabulary/a2/describing-peoples-appearance-a2-english-vocabulary/', type: 'vocabulary',
+  id: 'a2v02', type: 'vocabulary',
   title: 'What does she look like?', dinner: 'What does your best friend look like?',
   hook: { q: 'What is the most common natural hair colour in the world?', o: ['Blond', 'Black', 'Red'], a: 1,
     reveal: '*Black*! Most people in the world have black or dark brown hair. Natural red hair is the rarest: only about 1 or 2 people in 100.' },
@@ -206,7 +206,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2l01', url: 'https://test-english.com/listening/a2/what-are-your-roommates-like-a2-english-listening-test/', type: 'listening',
+  id: 'a2l01', type: 'listening',
   title: 'Roommates at camp', dinner: 'What is your best friend like?',
   hook: { q: 'Astronauts on the International Space Station live together for months. How many people usually live there at the same time?',
     o: ['1 or 2', 'About 7', 'About 20'], a: 1,
@@ -260,7 +260,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2l02', url: 'https://test-english.com/listening/a2/checking-into-a-hotel-a2-english-listening-test/', type: 'listening',
+  id: 'a2l02', type: 'listening',
   title: 'Checking into a hotel', dinner: 'If we stay in a hotel, what will you ask at reception?',
   hook: { q: 'One of the biggest hotels in the world is in Malaysia. About how many rooms does it have?', o: ['About 700', 'About 7,000', 'About 70,000'], a: 1,
     reveal: 'About *7,000*! The First World Hotel in Malaysia has more than 7,000 rooms. Imagine the queue at reception!' },
@@ -312,7 +312,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2l03', url: 'https://test-english.com/listening/a2/giving-directions-a2-english-listening-test/', type: 'listening',
+  id: 'a2l03', type: 'listening',
   title: 'Giving directions', dinner: 'How do you get from our home to your school?',
   hook: { q: 'London taxi drivers must pass a test called "The Knowledge". About how many streets do they learn?', o: ['About 250', 'About 2,500', 'About 25,000'], a: 2,
     reveal: 'About *25,000*! London taxi drivers study for three or four years to learn every street. No map needed!' },
@@ -365,7 +365,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2r01', url: 'https://test-english.com/reading/a2/should-i-tell-my-neighbour-a2-english-reading-test/', type: 'reading',
+  id: 'a2r01', type: 'reading',
   title: 'Ask Dr Kind', dinner: 'Do you think Tamar should talk to Mrs Hill? Why?',
   hook: { q: 'About how many words does an average dog understand?', o: ['About 10', 'About 90', 'About 900'], a: 1,
     reveal: 'About *90*! Scientists in Canada found that dogs understand about 89 words, like sit, walk and… treat!' },
@@ -402,7 +402,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2u02', url: 'https://test-english.com/use-of-english/a2/a2-english-test-2-multiple-choice-questions/', type: 'use-of-english',
+  id: 'a2u02', type: 'use-of-english',
   title: 'The dog who takes the bus', dinner: 'Where would you go if you could take a bus anywhere on your own?',
   hook: { q: 'In Seattle, a dog called Eclipse became famous for…', o: ['riding the bus alone', 'driving a car', 'painting pictures'], a: 0,
     reveal: '*Riding the bus alone*! Eclipse took the bus to the dog park. Today\'s story is made up, but Eclipse was real.' },
@@ -435,7 +435,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2g04', url: 'https://test-english.com/grammar-points/a2/past-simple-form-use/', type: 'grammar',
+  id: 'a2g04', type: 'grammar',
   title: 'What happened?', dinner: 'What was the best thing that happened to you yesterday?',
   hook: { q: 'In which year did people first walk on the Moon?', o: ['1959', '1969', '1979'], a: 1,
     reveal: 'In *1969*! Neil Armstrong and Buzz Aldrin *landed* on the Moon and *walked* on it. landed, walked: the past simple, for things that finished in the past.' },
@@ -473,7 +473,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2g05', url: 'https://test-english.com/grammar-points/a2/past-continuous-past-simple/', type: 'grammar',
+  id: 'a2g05', type: 'grammar',
   title: 'What were you doing?', dinner: 'What were you doing at four o\'clock this afternoon?',
   hook: { q: 'In 1928 Alexander Fleming found penicillin, the first antibiotic, by accident. Where was he just before that?', o: ['On holiday', 'At a football match', 'In hospital'], a: 0,
     reveal: '*On holiday*! While he *was relaxing* far away, some mould *grew* on a dish in his lab. When he *came* back, he *saw* that the mould killed bacteria.' },
@@ -510,7 +510,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2g06', url: 'https://test-english.com/grammar-points/a2/purpose-to-for/', type: 'grammar',
+  id: 'a2g06', type: 'grammar',
   title: 'Why? To… or for…', dinner: 'What did you use your phone or computer for today?',
   hook: { q: 'What does a camel keep in its hump?', o: ['Fat', 'Water', 'Food for its babies'], a: 0,
     reveal: '*Fat*, not water! A camel uses its hump *to store* fat, and the fat is there *for* hard days in the desert, with no food.' },
@@ -548,7 +548,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2g07', url: 'https://test-english.com/grammar-points/a2/however-although-time-connectors/', type: 'grammar',
+  id: 'a2g07', type: 'grammar',
   title: 'Linking words', dinner: 'What did you do after school today, and what did you do after that?',
   hook: { q: 'Penguins are birds, although they can\'t fly. Which bird can fly backwards?', o: ['The hummingbird', 'The eagle', 'The ostrich'], a: 0,
     reveal: 'The *hummingbird*! It can fly backwards *because* it moves its tiny wings in a special way. Ostriches can\'t fly at all. *However*, they run very fast.' },
@@ -587,7 +587,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2g08', url: 'https://test-english.com/grammar-points/a2/will-vs-be-going-to/', type: 'grammar',
+  id: 'a2g08', type: 'grammar',
   title: 'Will or going to?', dinner: 'What are you going to do this weekend?',
   hook: { q: 'Halley\'s Comet comes back about every 76 years. When can we see it next?', o: ['In 2031', 'In 2061', 'In 2099'], a: 1,
     reveal: 'In *2061*! Scientists know its path, so it *is going to* come back then. How old *will* you be? Maybe you *will* see it!' },
@@ -625,7 +625,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2g09', url: 'https://test-english.com/grammar-points/a2/present-continuous-future-arrangements/', type: 'grammar',
+  id: 'a2g09', type: 'grammar',
   title: 'My plans this week', dinner: 'What are you doing tomorrow after school?',
   hook: { q: 'Astronauts on the International Space Station plan every day. How many times a day does the station go around the Earth?', o: ['About 2', 'About 16', 'About 50'], a: 1,
     reveal: 'About *16*! It goes around the Earth every 90 minutes. Its days are planned: "Tomorrow we *are doing* an experiment."' },
@@ -663,7 +663,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2u01', url: 'https://test-english.com/use-of-english/a2/a2-english-test-1-text-multiple-choice-gaps/', type: 'use-of-english',
+  id: 'a2u01', type: 'use-of-english',
   title: 'A new student with hooves', dinner: 'Which animal would you like to see at your school for a day?',
   hook: { q: 'Which of these animals can sleep standing up?', o: ['Horses', 'Cats', 'Rabbits'], a: 0,
     reveal: '*Horses*! They can lock their legs and sleep standing up. Today\'s story is about a pony, a small horse. The story is made up!' },
@@ -696,7 +696,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2u03', url: 'https://test-english.com/use-of-english/a2/a2-english-test-3-text-with-multiple-choice-gaps/', type: 'use-of-english',
+  id: 'a2u03', type: 'use-of-english',
   title: 'The match in the rain', dinner: 'What was the best idea you had this week?',
   hook: { q: 'How long is a normal football match, without the break?', o: ['60 minutes', '90 minutes', '120 minutes'], a: 1,
     reveal: '*90 minutes*: two halves of 45 minutes. Today\'s story is about a very wet match. The story is made up!' },
@@ -729,7 +729,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2u04', url: 'https://test-english.com/use-of-english/a2/a2-english-test-4-multiple-choice-questions/', type: 'use-of-english',
+  id: 'a2u04', type: 'use-of-english',
   title: 'Bees on the roof', dinner: 'What unusual hobby would you like to try?',
   hook: { q: 'Bees make honey from…', o: ['nectar, the sweet juice in flowers', 'green leaves', 'rain water'], a: 0,
     reveal: '*Nectar*, the sweet juice inside flowers! Today\'s story is made up, but bees really do this.' },
@@ -762,7 +762,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2v03', url: 'https://test-english.com/vocabulary/a2/describing-peoples-personality-a2-english-vocabulary/', type: 'vocabulary',
+  id: 'a2v03', type: 'vocabulary',
   title: 'What is she like?', dinner: 'Which three words describe your personality best?',
   hook: { q: 'Scientists watched octopuses in an aquarium for many days. What did they find?',
     o: ['Each octopus has its own personality.', 'All octopuses act the same.', 'Octopuses sleep all day.'], a: 0,
@@ -812,7 +812,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2v04', url: 'https://test-english.com/vocabulary/a2/shops-and-shopping-a2-english-vocabulary/', type: 'vocabulary',
+  id: 'a2v04', type: 'vocabulary',
   title: 'Shops and shopping', dinner: 'What is your favourite shop, and what do you buy there?',
   hook: { q: 'Before 1937, shoppers carried baskets. What did Sylvan Goldman invent for his shops in 1937?',
     o: ['the shopping trolley', 'the credit card', 'the shopping centre'], a: 0,
@@ -861,7 +861,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2v05', url: 'https://test-english.com/vocabulary/a2/clothes-a2-english-vocabulary/', type: 'vocabulary',
+  id: 'a2v05', type: 'vocabulary',
   title: 'What are you wearing?', dinner: 'What clothes do you wear on a cold winter day?',
   hook: { q: 'The first blue jeans were made in 1873. Who were they for?', o: ['workers, like miners', 'rock stars', 'schoolchildren'], a: 0,
     reveal: '*Workers!* Levi Strauss and Jacob Davis made strong trousers for people who did hard work, like miners. Today almost everybody has a pair of jeans.' },
@@ -911,7 +911,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2l04', url: 'https://test-english.com/listening/a2/do-your-kids-help-with-household-chores-a2-english-listening-test/', type: 'listening',
+  id: 'a2l04', type: 'listening',
   title: 'Who does the chores?', dinner: 'Which chore at home do you like most, and which one do you hate?',
   hook: { q: 'Josephine Cochrane made the first dishwasher that really worked, in 1886. Why?', o: ['People broke her best plates.', 'She was a famous cook.', 'She wanted to be rich.'], a: 0,
     reveal: '*People broke her best plates* when they washed them by hand, so she built a machine to do it. Today millions of kids *load the dishwasher* every night!' },
@@ -967,7 +967,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2l05', url: 'https://test-english.com/listening/a2/what-do-you-have-to-do-at-home-a2-english-listening-test/', type: 'listening',
+  id: 'a2l05', type: 'listening',
   title: 'House rules', dinner: 'Which house rule do you think is the most important?',
   hook: { q: 'In Japan, what do people almost always do at the door of a home?', o: ['take off their shoes', 'ring the bell twice', 'take a photo'], a: 0,
     reveal: 'They *take off their shoes*! In Japan it is a house rule almost everywhere, and guests often get slippers to wear inside.' },
@@ -1021,7 +1021,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2l06', url: 'https://test-english.com/listening/a2/renting-a-car-a2-english-listening-test/', type: 'listening',
+  id: 'a2l06', type: 'listening',
   title: 'Renting bikes', dinner: 'Would you like to ride bikes together in a new city? Which one?',
   hook: { q: 'In which country are there more bicycles than people?', o: ['the Netherlands', 'Australia', 'Brazil'], a: 0,
     reveal: '*The Netherlands!* About 18 million people live there, and they have about 23 million bikes. Many kids ride their bikes to school every day.' },
@@ -1076,7 +1076,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2l07', url: 'https://test-english.com/listening/a2/party-experiences-a2-english-listening-test/', type: 'listening',
+  id: 'a2l07', type: 'listening',
   title: 'The surprise party', dinner: 'What is the best party you have ever been to?',
   hook: { q: 'Where does the tune of "Happy Birthday to You" come from?', o: ['a song for a school class', 'a pop song on the radio', 'a football song'], a: 0,
     reveal: 'From a *song for a school class*! Two American sisters, Mildred and Patty Hill, wrote "Good Morning to All" for young children in 1893. Later people sang "Happy Birthday" to the same tune.' },
@@ -1132,7 +1132,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2l08', url: 'https://test-english.com/listening/a2/what-are-your-hobbies-a2-listening-test/', type: 'listening',
+  id: 'a2l08', type: 'listening',
   title: 'What are your hobbies?', dinner: 'What hobby would you like to try one day?',
   hook: { q: 'Chess is a hobby for millions of people. Are there more possible games of chess or atoms in the universe?', o: ['more games of chess', 'more atoms', 'about the same'], a: 0,
     reveal: '*More games of chess!* Scientists think there are more possible chess games than atoms in the whole universe. You will never run out of new games.' },
@@ -1187,7 +1187,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2l09', url: 'https://test-english.com/listening/a2/have-you-ever-experiences-a2-english-listening-test/', type: 'listening',
+  id: 'a2l09', type: 'listening',
   title: 'Have you ever…?', dinner: 'Have you ever done something really brave? What was it?',
   hook: { q: 'Have you ever seen a blue lobster? About how many lobsters are blue?', o: ['1 in 100', '1 in 2 million', '1 in a billion'], a: 1,
     reveal: 'About *1 in 2 million*! Most lobsters are brown or green, so most people have *never seen* a blue one.' },
@@ -1239,7 +1239,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2r02', url: 'https://test-english.com/reading/a2/the-girl-who-saved-100-lives-a2-english-reading-test/', type: 'reading',
+  id: 'a2r02', type: 'reading',
   title: 'Tilly and the giant wave', dinner: 'What is something useful you learned at school this year?',
   hook: { q: 'In the deep ocean, a tsunami wave can travel as fast as…', o: ['a bike', 'a car', 'a plane'], a: 2,
     reveal: 'As fast as *a plane*: up to about 800 km an hour! Near the beach it slows down and gets much taller.' },
@@ -1275,7 +1275,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2r03', url: 'https://test-english.com/reading/a2/living-in-a-small-town-vs-a-big-city-a2-english-reading-test/', type: 'reading',
+  id: 'a2r03', type: 'reading',
   title: 'Small town or big city?', dinner: 'Would you like to live in a big city or a small town? Why?',
   hook: { q: 'Today more than half of the people in the world live in cities. In 1950, how many lived in cities?', o: ['about 3 in 10', 'about 5 in 10', 'about 9 in 10'], a: 0,
     reveal: 'About *3 in 10*! In 1950 most people lived in villages and small towns. Today it is more than half, and the cities keep growing.' },
@@ -1310,7 +1310,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2r04', url: 'https://test-english.com/reading/a2/what-rainbows-mean-around-the-world-a2-english-reading-test/', type: 'reading',
+  id: 'a2r04', type: 'reading',
   title: 'The secrets of the rainbow', dinner: 'Which colour of the rainbow do you like best, and why?',
   hook: { q: 'From a plane, a rainbow can sometimes look like…', o: ['a full circle', 'a square', 'a straight line'], a: 0,
     reveal: 'A *full circle*! From the ground, the land hides the bottom half, so we only see an arch.' },

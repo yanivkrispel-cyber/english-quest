@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v25';
+var SETUP_VERSION = 'v26';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 // The kids' front end (Cloudflare, docs/). Until 2026-10 it was https://yanivkrispel-cyber.github.io/english-quest/.
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
@@ -103,7 +103,11 @@ var HEADERS = {
   Plans: ['Group', 'Plan', 'Source', 'Until', 'Ref', 'Updated'],
   // Safety.js: a kid blocked another kid; a report (a block with a preset reason) for the admin and the kid's parents.
   Blocks: ['Timestamp', 'Girl', 'Blocked', 'Date'],
-  Reports: ['Timestamp', 'Girl', 'About', 'Date', 'Reason', 'Group']
+  Reports: ['Timestamp', 'Girl', 'About', 'Date', 'Reason', 'Group'],
+  // Feature use (Ops.js): one row per kid, day and part of the app she opened, with how many times (written in batches).
+  Usage: ['Date', 'Girl', 'Feature', 'Opens'],
+  // The phones' error reports (Ops.js), kept 30 days. Girl: only when the call that carried the report was hers.
+  Errors: ['Timestamp', 'Date', 'Girl', 'Where', 'Message', 'Device', 'App']
 };
 
 var WORDS = [
@@ -168,7 +172,7 @@ function api() {
   apiAdminData: apiAdminData, apiAdminEdit: apiAdminEdit,
   apiDeleteData: apiDeleteData, apiExportData: apiExportData,
   apiParentConsent: apiParentConsent, apiParentFriends: apiParentFriends, apiParentMic: apiParentMic, apiParentRemind: apiParentRemind,
-  apiKidBlock: apiKidBlock, apiParentUnblock: apiParentUnblock
+  apiKidBlock: apiKidBlock, apiParentUnblock: apiParentUnblock, apiHealth: apiHealth
   };
 }
 
@@ -196,6 +200,8 @@ function doPost(e) {
     // update: an old copy of the app is asked to load the new one (Auth.js LEGACY_PARENT).
     out = { ok: false, error: String((err && err.message) || err), update: err && err.update ? true : undefined };
   }
+  // The feature counts and error reports the phone sent along (Ops.js); never breaks the answer.
+  try { opsNote(req, out.ok); } catch (err) { console.error(err); }
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }
 

@@ -178,6 +178,7 @@ function apiPilotStats(pin) {
     chat: chatBoard(t),
     items: itemStats(12, 5),
     reports: reportsBoard(), notice: NOTICE.v,
+    measure: pilotMeasure(),
     teacherFlags: flags.filter(function (f) { return f.Girl === 'Teacher'; }).length,
     teacherCode: String(getSetting('TeacherCode') || ''),
     base: String(getSetting('PublicUrl') || ''),

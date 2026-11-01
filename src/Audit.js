@@ -45,6 +45,7 @@ function auditOpen(role, who, group) {
 
 // Writes the opens and the wrong PINs waiting in the cache to the Audit tab, in one write.
 function auditFlush() {
+  opsFlush();   // the feature counts and the phones' error reports (Ops.js) wait the same way
   var lock = LockService.getScriptLock(), q;
   try {
     if (!lock.tryLock(5000)) return;
@@ -219,7 +220,7 @@ function apiAudit(pin, days) {
   var split = {};
   Object.keys(devices).forEach(function (k) { split[devices[k]] = (split[devices[k]] || 0) + 1; });
   return {
-    days: days, from: from, today: t, perf: perfSummary(),
+    days: days, from: from, today: t, perf: perfSummary(), health: healthInfo(), errors: errSummary(days),
     events: ev.slice(0, AUDIT.max).map(function (e) { e.family = gname[e.group] || ''; return e; }),
     more: Math.max(0, ev.length - AUDIT.max),
     families: Object.keys(fams).map(function (id) {

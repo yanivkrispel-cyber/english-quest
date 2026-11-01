@@ -1714,6 +1714,47 @@ const API_URL = /github.io$/.test(location.hostname) ? 'https:' + '/' + '/script
 const CALL_MS = 15000, CALL_SHORT = { apiDuelPoll: 8000, apiDuelHome: 10000, apiWarm: 10000 };
 const CALL_TWICE = { apiPublic: 1, apiDashboard: 1, apiParent: 1, apiTugCheck: 1 };
 const OPEN_CALLS = { apiDashboard: 1, apiParent: 1 };
+// Feature use (src/Ops.js, specs/pilot.md): which parts of the app the kid opened today, counted on the phone and sent with
+// her next call that checks her PIN (no call of its own, nothing third party). eq_use = { k: name, d: { day: { feature: n } } }.
+const USE_CALLS = { apiDashboard: 1, apiGameResult: 1, apiMissionResult: 1, apiChatResult: 1, apiNestResult: 1, apiShop: 1 };
+const USE_IDS = 'mission review game talk duel boss talktap tug shop studio words journey play pet me test gate nest playground'.split(' ');
+const dayIL = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jerusalem' });
+function useNote(f){
+  if (!session || !session.name || !USE_IDS.includes(f)) return;
+  const u = store.get('eq_use') || {}, d = dayIL();
+  if (u.k !== session.name || !u.d) { u.k = session.name; u.d = {}; }
+  Object.keys(u.d).sort().slice(0, -3).forEach(x => delete u.d[x]);
+  const day = u.d[d] = u.d[d] || {};
+  day[f] = Math.min(50, (day[f] || 0) + 1);
+  store.set('eq_use', u);
+}
+// The phone's own errors (src/Ops.js): the message and where, at most 5 waiting and 10 a day, sent with the next call and
+// shown on the admin's Audit card. Addresses lose their query and #part here and on the server (a kid's link holds her PIN).
+function errNote(msg, where){
+  try {
+    const q = store.get('eq_err') || {}, d = dayIL();
+    if (q.day !== d) { q.day = d; q.n = 0; q.list = q.list || []; }
+    msg = String(msg || '').replace(/https?:\/\/[^\s)'"]+/g, u => u.replace(/[?#].*$/, '')).slice(0, 200);
+    if (!msg || q.n >= 10 || q.list.length >= 5 || q.list.some(e => e.msg === msg)) return;
+    q.n++; q.list.push({ msg, where: String(where || '').slice(0, 60), at: Date.now() });
+    store.set('eq_err', q);
+  } catch(e){}
+}
+window.addEventListener('error', e => errNote(e.message || (e.error && e.error.message), (e.filename ? String(e.filename).split(/[?#]/)[0].split('/').pop() : '') + (e.lineno ? ':' + e.lineno + ':' + (e.colno || 0) : '')));
+window.addEventListener('unhandledrejection', e => { const r = e.reason || {}; if (r.net || r.app) return; errNote('Unhandled: ' + (r.message || r), (String(r.stack || '').split('\n')[1] || '').trim()); });
+// What rides on this call: the counts (only for a call of the same kid) and the waiting errors; put back if it never left.
+function opsTake(fn, args){
+  const x = {};
+  const u = store.get('eq_use');
+  if (USE_CALLS[fn] && u && u.k && u.k === args[0] && u.d && Object.keys(u.d).length) { x.use = u.d; store.set('eq_use', { k: u.k, d: {} }); }
+  const q = store.get('eq_err');
+  if (q && q.list && q.list.length) { x.err = q.list; q.list = []; store.set('eq_err', q); }
+  return x;
+}
+function opsBack(x){
+  if (x.use) { const u = store.get('eq_use') || {}; if (!u.d || u.k !== (session && session.name)) return; Object.keys(x.use).forEach(d => Object.keys(x.use[d]).forEach(f => { const day = u.d[d] = u.d[d] || {}; day[f] = Math.min(50, (day[f] || 0) + x.use[d][f]); })); store.set('eq_use', u); }
+  if (x.err) { const q = store.get('eq_err') || {}; q.list = (q.list || []).concat(x.err).slice(-5); store.set('eq_err', q); }
+}
 const INFRA = /Service|Exception|lock|too many times|timed out|unavailable|internal error|quota|rate limit/i;
 const netError = kind => Object.assign(new Error(kind === 'timeout' ? 'The server is taking too long. Try again in a moment.'
   : kind === 'offline' ? 'No internet connection. Check it and try again.' : 'The server is busy right now. Try again in a moment.'), { net: kind });
@@ -1748,9 +1789,9 @@ function callOnce(fn, args, ms){
         .withFailureHandler(e => { clearTimeout(t); rej(serverError(e && e.message || e)); })[fn](...args);
     });
   }
-  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), ms);
-  return fetch(API_URL, { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args, v: APP_V, dev: DEVICE, open: OPEN_CALLS[fn] ? store.get('eq_open_m') || undefined : undefined }), signal: ctl.signal })
-    .then(r => r.text(), () => { throw netError(ctl.signal.aborted ? 'timeout' : 'offline'); })
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), ms), ops = opsTake(fn, args);
+  return fetch(API_URL, { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args, v: APP_V, dev: DEVICE, open: OPEN_CALLS[fn] ? store.get('eq_open_m') || undefined : undefined, use: ops.use, err: ops.err }), signal: ctl.signal })
+    .then(r => r.text(), () => { opsBack(ops); throw netError(ctl.signal.aborted ? 'timeout' : 'offline'); })
     .then(text => {
       let r;
       try { r = JSON.parse(text); } catch(e){ throw netError('busy'); }
@@ -1944,7 +1985,7 @@ function petCard(d){
       <div class="bar mt-s" style="height:10px"><i style="width:${Math.max(3, pct)}%"></i></div>
       <div class="xp-row"><span>${p.to ? (p.xp - p.from) + ' / ' + span + ' XP' : p.xp + ' XP'}</span><span>${p.to ? 'to ' + STAGES[p.stage] : 'Fully grown!'}</span></div>
     </div>
-    ${lt ? `<a class="btn btn-teal btn-block" href="${esc(lt.url)}" target="_blank" rel="noopener" style="grid-column:1 / -1">${icon('target')} Start the level test</a>`
+    ${lt ? `<a class="btn btn-teal btn-block" href="${esc(lt.url)}" target="_blank" rel="noopener" data-gate="1" style="grid-column:1 / -1">${icon('target')} Start the level test</a>`
       : `<button class="btn btn-primary btn-block" data-game="${rec}" style="grid-column:1 / -1">${icon('play')} Play ${GAME_INFO[rec].name}</button>`}
   </div>`;
 }
@@ -1993,7 +2034,7 @@ function renderOnboarding(d){
       <div class="row-flex mt-s" style="gap:10px">${tile('level')}<b>${esc(lt.title)}</b></div>
       <h2>Let's find your English level</h2>
       <div class="sub" style="color:#3b3f55">Answer the questions on test-english.com. At the end you will see your level (A1, A2, B1…). Come back here and tap <b>I got my level</b>.</div>
-      <div class="btns"><a class="btn btn-teal" href="${esc(lt.url)}" target="_blank" rel="noopener">Start ${icon('arrow-up-right')}</a>
+      <div class="btns"><a class="btn btn-teal" href="${esc(lt.url)}" target="_blank" rel="noopener" data-gate="1">Start ${icon('arrow-up-right')}</a>
         <button class="btn btn-primary" id="gotlevel">I got my level ${icon('check')}</button></div>
     </div>`}
     <div class="glass panel">
@@ -2591,6 +2632,7 @@ function shopCard(d){
 // ---- The shop screen ----
 async function openShop(tab, itemId){
   if (!dash || !dash.pet) return toast('Adopt a pet first', true);
+  useNote(tab === 'studio' ? 'studio' : 'shop');
   G = null; speechStop(); stopDuel();
   shopTab = tab || 'shop';
   if (SHOP && SHOP.who !== session.name) SHOP = null;
@@ -2651,7 +2693,7 @@ function renderShop(){
     <div id="shopbody">${shopTab === 'wardrobe' ? wardrobeHtml() : shopTab === 'studio' ? studioHtml() : shopGridHtml()}</div>
   </div>`;
   document.getElementById('shopback').onclick = () => { renderDash(); };
-  app.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { shopTab = b.dataset.tab; renderShop(); });
+  app.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { shopTab = b.dataset.tab; if (shopTab === 'studio') useNote('studio'); renderShop(); });
   const cu = document.getElementById('culture');
   if (cu) cu.onclick = cultureSheet;
   if (shopTab === 'wardrobe') bindWardrobe(); else if (shopTab === 'studio') bindStudio(); else bindShopGrid();
@@ -3665,6 +3707,7 @@ const fixedSentence = it => it.tokens.map((w, k) => k === it.wrong ? fixedWord(i
 
 async function startGame(game){
   if (!dash) return;
+  useNote('game');
   if (dash.levelTest) { toast('Do the level test first, then the games open', true); return renderDash(); }
   if (!dash.games) dash.games = Object.assign({}, GAMES_DEFAULT);
   app.innerHTML = '<div class="spinner"></div>';
@@ -4016,6 +4059,7 @@ function savedView(x){
 }
 async function openMyWords(){
   if (!dash) return;
+  useNote('words');
   G = null; speechStop(); stopDuel();
   app.innerHTML = '<div class="spinner"></div>';
   let B;
@@ -4286,6 +4330,7 @@ const msMinutes = w => (MS_TYPES[w.section] || MS_TYPES.grammar)[1];
 
 async function startMission(date, practice){
   if (!dash) return;
+  useNote('mission');
   const w = dash.week.find(x => x.date === date);
   if (!w || !w.mission) return;
   if (w.done && !practice) return;
@@ -4320,6 +4365,8 @@ function msClock(){
     el.innerHTML = msClockText();
   }, 1000);
 }
+// The running clock in the mission's header is for B1 and up: younger kids (A1, A2) play without a clock (night review
+// 2026-11-01, finding 23: no time pressure on young kids). The time is still measured (MS.active, Log.Seconds).
 function msClockText(){
   const s = Math.floor((MS.active + Math.min(Date.now() - MS.last, 120000)) / 1000);
   return icon('timer') + ' ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
@@ -4364,7 +4411,7 @@ function msRender(){
   app.innerHTML = `<div class="gscreen mscreen gplay" id="ms">
     <div class="gtop"><button class="btn btn-glass icon-btn" id="msquit" title="Stop">${icon('x')}</button>
       <div style="flex:1;min-width:0"><h2>${esc(m.title)}</h2><div class="sub" style="font-size:12px;margin:0">${sub}</div></div>
-      ${soundBtn()}<span class="chip" id="msclock">${msClockText()}</span></div>
+      ${soundBtn()}${/^a[12]/.test(MS.id || '') ? '' : `<span class="chip" id="msclock">${msClockText()}</span>`}</div>
     ${parts}
     <div class="gstage${same ? '' : ' enter'}">${body}</div>
     <div class="gdock">
@@ -4850,6 +4897,7 @@ const msDue = d => ((d.games && d.games.review) || []).filter(id => /^x:/.test(i
 async function startMissionReview(){
   const ids = msDue(dash).slice(0, 5);
   if (!ids.length) return;
+  useNote('review');
   app.innerHTML = '<div class="spinner"></div>';
   const S = [];
   try {
@@ -4988,6 +5036,7 @@ function chatScene(list, info){
 function chatOpen(s, opts){
   chatStop();
   srCheckLocal();
+  useNote('talk');
   CT = Object.assign({ s, i: 0, log: [], voice: 0, tiles: 0, said: [], tries: 0, more: false, tilesOn: false, he: false, mic: chatCanListen(), noSr: !SR_API(),
     phase: 'coco', t0: Date.now(), heard: {}, pet: chatPick(CHAT_PET.start), saying: null, got: '',
     recast: !(dash && dash.chat && dash.chat.recast === false) }, opts);
@@ -5885,7 +5934,7 @@ function codeShare(v){
     <div class="label">Send this code to your friend</div>
     <div class="codebig">${esc(v.code)}</div>
     <div class="row-flex" style="justify-content:center;gap:8px;flex-wrap:wrap">
-      <a class="btn btn-teal btn-sm" target="_blank" rel="noopener" href="${esc(waLink(text))}">${icon('whatsapp-logo')} WhatsApp</a>
+      <a class="btn btn-teal btn-sm" target="_blank" rel="noopener" data-gate="1" href="${esc(waLink(text))}">${icon('whatsapp-logo')} WhatsApp</a>
       <button class="btn btn-glass btn-sm" data-copy="${esc(text)}">${icon('copy')} Copy</button></div>
     <div class="sub mt-s" style="font-size:12px">${v.mode === 'challenge' ? 'Your friend has 24 hours to play it.' : 'The code is open for ' + duelLeft(v, true) + '.'}</div>
   </div>`;
@@ -5966,6 +6015,7 @@ function duelIntro(v){
 // ---- Playing: the game screens of the mini-games, plus the race, a timer and reactions ----
 async function startDuelPlay(v){
   const me = duelMe(v);
+  useNote(v.mode === 'boss' ? 'boss' : v.mode === 'talk' ? 'talktap' : 'duel');
   app.innerHTML = '<div class="spinner"></div>';
   let B;
   try { B = await loadBank(); }
@@ -6747,6 +6797,7 @@ function tugNext(B, p){
 }
 
 async function tugStart(mate, cred){
+  useNote('tug');
   app.innerHTML = '<div class="spinner"></div>';
   let B;
   try { B = await loadBank(); } catch(e){ toast(e.message, true); return renderDash(); }
@@ -7274,6 +7325,7 @@ function gateQuestions(B, levels){
 async function startGate(){
   const j = dash && dash.journey;
   if (!j || j.gate.state !== 'open') return renderMap();
+  useNote('gate');
   app.innerHTML = '<div class="spinner"></div>';
   let B;
   try { B = await loadBank(); }
@@ -7358,7 +7410,7 @@ function levelUp(r){
    }],
    [1850, () => ov.querySelectorAll('.reveal').forEach(x => x.classList.remove('hide'))],
    [2300, () => { if (pi && p && p.move) playMove(pi, p.move); }]].forEach(([ms, f]) => setTimeout(f, ms));
-  ov.querySelector('#lv-share').onclick = shareLevel;
+  ov.querySelector('#lv-share').onclick = () => grownUp(shareLevel);
   ov.querySelector('#lv-ok').onclick = () => { ov.remove(); renderMap(); };
 }
 
@@ -7571,6 +7623,7 @@ function placeIntro(form){
   document.getElementById('pstart').onclick = () => startPlacement(form);
 }
 async function startPlacement(form){
+  useNote('test');
   app.innerHTML = '<div class="spinner"></div>';
   let B;
   try { B = await loadBank(); } catch(e){ toast(e.message, true); return renderDash(); }
@@ -8069,11 +8122,12 @@ async function pilotLoad(pin, open, code){
   // The public app address from Settings; the page's own address when testing locally.
   const base = /^https?:/.test(s.base || '') && !/^(localhost|127.)/.test(location.hostname) ? s.base : location.origin + location.pathname;
   const link = base + '?join=' + encodeURIComponent(s.invite.code), tlink = base + '?missions&t=' + encodeURIComponent(s.teacherCode), nlink = base + '?nest&t=' + encodeURIComponent(s.teacherCode);
-  const T = s.totals, dots = k => k.weeks.map(n => `<i style="display:inline-block;width:22px;text-align:center;font-weight:800;color:${n >= 4 ? 'var(--teal,#14b8a6)' : n ? 'var(--ink)' : 'var(--muted)'}">${n}</i>`).join('');
+  const T = s.totals, M = s.measure, dots = k => k.weeks.map(n => `<i style="display:inline-block;width:22px;text-align:center;font-weight:800;color:${n >= 4 ? 'var(--teal,#14b8a6)' : n ? 'var(--ink)' : 'var(--muted)'}">${n}</i>`).join('');
   card.innerHTML = `<div class="row-flex between"><h2>Pilot</h2><button class="btn btn-glass icon-btn" id="pilotref">${icon('arrows-clockwise')}</button></div>
     <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">
       <span class="chip purple">${T.families} families</span><span class="chip">${T.kids} kids</span><span class="chip">${T.placed} level tests</span>
       <span class="chip">${T.firstMission} first mission</span><span class="chip teal">${T.active7} active 4+ of 7 days</span></div>
+    ${M ? pilotMeasureHtml(M) : ''}
     <div class="label mt">Invite link · ${s.invite.open ? 'open' : 'closed'}</div>
     <div class="sub" style="font-size:12px;word-break:break-all" dir="ltr">${esc(link)}</div>
     <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">
@@ -8103,10 +8157,66 @@ async function pilotLoad(pin, open, code){
   document.getElementById('pilotopen').onclick = () => pilotLoad(pin, !s.invite.open);
 }
 
+// The pilot's measures (src/Ops.js pilotMeasure, specs/pilot.md "Measuring the pilot"): the north star, retention by
+// sign-up week, the gate and feature use.
+const pct = (a, b) => b ? Math.round(100 * a / b) + '%' : '-';
+function pilotMeasureHtml(M){
+  const N = M.northStar, G = M.gate, row = 'soft row-flex between" style="padding:6px 12px;border-radius:12px;font-size:13px;gap:10px';
+  const ret = x => x[1] ? `<b>${pct(x[0], x[1])}</b> <span class="sub" style="font-size:11px">${x[0]}/${x[1]}</span>` : '<span class="sub">-</span>';
+  const gateChip = G.state === 'before' ? `<span class="chip">Checked ${fmtDate(G.from)} to ${fmtDate(G.to)}</span>`
+    : `<span class="chip ${G.pass ? 'teal' : 'orange'}">${G.state === 'open' ? 'Now' : 'Result'}: ${G.pass ? 'passed' : 'not passed'}</span>`;
+  return `<div class="label mt">North star · practice days a week (target ${N.target} of 7)</div>
+    <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">
+      <span class="chip teal">${N.avg == null ? '-' : N.avg} days a kid, last 7 days</span><span class="chip">${N.atTarget} of ${N.kids} kids at ${N.target}+</span></div>
+    <div class="stack mt-s" style="gap:4px">${N.weeks.map(w => `<div class="${row}"><span>Week of ${fmtDate(w.from)}${w.partial ? ' (so far)' : ''}</span>
+      <span><b>${w.avg}</b> days · ${w.atTarget} of ${w.kids} at ${N.target}+</span></div>`).join('')}</div>
+    <div class="label mt">Retention by sign-up week</div>
+    <div class="sub" style="font-size:11px">D1: practised the next day. D7: on a day 7 to 13. D30: on a day 30 to 36. Counted once the days are over.</div>
+    <div class="stack mt-s" style="gap:4px">${M.cohorts.map(c => `<div class="${row}"><span>${fmtDate(c.week)} · ${c.kids} kids</span>
+      <span>D1 ${ret(c.d1)} · D7 ${ret(c.d7)} · D30 ${ret(c.d30)}</span></div>`).join('')}</div>
+    <div class="label mt">Pilot gate (specs/pilot.md)</div>
+    <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">${gateChip}</div>
+    <div class="stack mt-s" style="gap:4px">
+      <div class="${row}"><span>Still practising in week 4 (${G.week4Days}+ days)</span><span><b>${G.share == null ? '-' : G.share + '%'}</b> · ${G.still} of ${G.kids} · target ${G.target}%</span></div>
+      <div class="${row}"><span>Parents' NPS (latest stars of each family)</span><span><b>${G.nps == null ? '-' : G.nps}</b> · ${G.answers} families · target ${G.npsTarget}</span></div></div>
+    <div class="label mt">Feature use · kids (opens)</div>
+    <div class="stack mt-s" style="gap:4px"><div class="row-flex between sub" style="font-size:11px;padding:0 12px"><span>Part of the app</span><span>7 days · 28 days</span></div>
+      ${M.features.map(f => `<div class="${row}"><span>${esc(f.label)}</span><span><b>${f.kids7}</b> (${f.opens7}) · <b>${f.kids28}</b> (${f.opens28})</span></div>`).join('')}</div>`;
+}
+
 // ---------- The admin's audit trail (Audit.js) ----------
 function auditCard(){
   return `<div class="glass panel" id="auditcard"><div class="row-flex between"><h2>Audit</h2><button class="btn btn-glass btn-sm" id="auditload">${icon('clipboard-text')} Show</button></div>
-    <div class="sub mt-s" style="font-size:13px">Who came in and when, on which kind of device, wrong PINs, what parents and the admin changed, hand edits in the sheet, and every task, game and talk.</div></div>`;
+    <div class="sub mt-s" style="font-size:13px">Who came in and when, on which kind of device, wrong PINs, what parents and the admin changed, hand edits in the sheet, and every task, game and talk.</div>
+    <div id="healthline"></div></div>`;
+}
+// The admin's light health check when the admin view opens (src/Ops.js apiHealth): a line on the Audit card when a backup
+// or the sheet copy is late, today's use passed 60% of a free limit, or phones reported errors today.
+async function healthLine(pin){
+  let h;
+  try { h = await call('apiHealth', pin); } catch(e){ return; }
+  const el = document.getElementById('healthline');
+  if (!el || (!h.warn.length && !h.errors)) return;
+  el.innerHTML = `<div class="stack mt-s" style="gap:4px">${h.warn.map(w => `<div class="row-flex" style="gap:8px;font-size:13px;color:#b45309">${icon('warning')}<span>${esc(w)}</span></div>`).join('')}
+    ${h.errors ? `<div class="row-flex" style="gap:8px;font-size:13px;color:#b45309">${icon('bug')}<span>${h.errors} error reports from phones today</span></div>` : ''}</div>`;
+}
+function audHealth(a){
+  const h = a.health || {}, b = h.backup, c = h.copy, u = h.use, late = x => !x || x.hours > (h.hours || 30);
+  const ago = x => x.hours < 1 ? 'under an hour ago' : Math.round(x.hours) + ' hours ago';
+  const E = a.errors || { total: 0, list: [] };
+  return `<div class="label mt">Server health</div>
+    <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">${h.server === 'cloudflare' ? `
+      <span class="chip ${late(b) ? 'orange' : 'teal'}">${b ? 'Backup ' + ago(b) + ' · 14 days kept' : 'No backup yet'}</span>
+      <span class="chip ${late(c) ? 'orange' : 'teal'}">${c ? 'Sheet copy ' + ago(c) : 'No sheet copy yet'}</span>
+      ${u ? `<span class="chip ${u.callsPct >= 60 ? 'orange' : ''}">${u.calls} calls today · ${u.callsPct}% of free</span>
+      <span class="chip ${u.rowsPct >= 60 ? 'orange' : ''}">${u.rows} rows written · ${u.rowsPct}% of free</span>` : ''}`
+      : `<span class="chip">${esc(h.server || 'server')}${c ? ' · sheet copy ' + ago(c) : ''}</span>`}</div>
+    ${(h.warn || []).length ? `<div class="stack mt-s" style="gap:4px">${h.warn.map(w => `<div class="row-flex" style="gap:8px;font-size:13px;color:#b45309">${icon('warning')}<span>${esc(w)}</span></div>`).join('')}</div>` : ''}
+    <div class="label mt">Errors on phones · ${E.total}</div>
+    <div class="stack mt-s" style="gap:4px">${E.list.length ? E.list.map(e => `<div class="soft" style="padding:6px 10px;border-radius:10px;font-size:12px">
+      <div class="row-flex between" style="gap:8px"><b style="min-width:0;overflow-wrap:anywhere">${esc(e.msg)}</b><span class="chip" style="flex:none">${e.n}x</span></div>
+      <div class="sub" style="font-size:11px">${e.where ? esc(e.where) + ' · ' : ''}last ${fmtDate(e.last)}${e.app ? ' · app ' + esc(e.app) : ''} · ${e.kids} kids${e.devices.length ? ' · ' + e.devices.map(esc).join(', ') : ''}</div></div>`).join('')
+      : '<div class="sub" style="font-size:13px">No errors reported in these days.</div>'}</div>`;
 }
 // The admin's Data card (src/Admin.js): what used to be edited by hand in the sheet, kids, families and settings.
 function dataCard(){
@@ -8236,6 +8346,7 @@ function auditRender(pin){
       <span class="chip ${wrong ? 'orange' : ''}">${wrong} wrong PINs or links</span></div>
     <div class="label mt">Devices (people on each)</div>
     <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap">${dev.length ? dev.map(d => `<span class="chip">${esc(d)} · ${a.devices[d]}</span>`).join('') : '<span class="sub">Nobody yet in these days (the label starts with this version).</span>'}</div>
+    ${audHealth(a)}
     ${audSpeed(a)}
     <div class="label mt">Families · last seen</div>
     <div class="stack mt-s" style="gap:6px">${a.families.map(f => `<div class="soft" style="padding:8px 12px;border-radius:12px;font-size:13px">
@@ -8418,6 +8529,7 @@ function nestDays(u){
 
 // The playground (specs/nest.md): every game on the words the kid has met, as often as she likes; nothing is saved.
 function nestPlayground(){
+  useNote('playground');
   // Chacho's arcade (docs/nest/arcade.js): the playground with two shelves, for the arcade kids.
   if (window.EQ_NEST && typeof nkArcade === 'function' && nkArcOn()) return nkArcade();
   const games = dash && dash.nest && window.EQ_NEST ? nkPlayGames() : [];
@@ -9054,6 +9166,7 @@ function bindTabs(){
 function goTab(t){
   if (t === dashTab && t !== 'journey') return window.scrollTo({ top: 0, behavior: 'smooth' });
   dashTab = t;
+  useNote(t);
   renderDash();
 }
 function dashBody(d){
@@ -9260,7 +9373,7 @@ function todayCard(t){
     ${t.section === 'level' ? '<div class="sub" style="color:#3b3f55">Takes about 20–30 minutes. At the end you will see your level — remember it!</div>' : ''}
     ${t.done ? `<div class="done-badge"><div class="big-check">${BIG_CHECK}</div>
         <div><b style="font-size:20px">${esc(scoreText(t))}</b><div class="sub" style="color:#3b3f55">+${esc(t.points)} points · great job!</div></div></div>`
-      : `<div class="btns"><a class="btn btn-teal" href="${esc(t.url)}" target="_blank" rel="noopener">Open ${icon('arrow-up-right')}</a>
+      : `<div class="btns"><a class="btn btn-teal" href="${esc(t.url)}" target="_blank" rel="noopener" data-gate="1">Open ${icon('arrow-up-right')}</a>
          <button class="btn btn-primary" data-log="${t.date}">I'm done ${icon('check')}</button></div>`}
   </div>`;
 }
@@ -9309,7 +9422,7 @@ function openSheet(w){
     <div class="row-flex between"><span class="row-flex" style="gap:10px">${tile(w.section, true)}<span class="label">${isLevel ? esc(w.label) : w.day + ' ' + fmtDate(w.date) + ' · ' + esc(w.label)}</span></span>
       <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
     <h2 style="margin-top:8px;font-size:20px">${esc(w.title)}</h2>
-    <a class="btn btn-teal btn-block mt" href="${esc(w.url)}" target="_blank" rel="noopener">Open exercise ${icon('arrow-up-right')}</a>
+    <a class="btn btn-teal btn-block mt" href="${esc(w.url)}" target="_blank" rel="noopener" data-gate="1">Open exercise ${icon('arrow-up-right')}</a>
     <div class="label mt">${isLevel ? 'Which level did you get?' : 'Your score'}</div>
     ${isLevel ? `<div class="levels">${LEVELS.map(([k,l]) => `<button class="btn btn-glass" data-lv="${k}">${l}</button>`).join('')}</div>`
       : `<div class="score-grid">
@@ -9611,6 +9724,51 @@ async function copyText(text){
   toast('Copied');
 }
 const waLink = text => 'https:' + '/' + '/api.whatsapp.com/send?text=' + encodeURIComponent(text);
+// The grown-ups' gate (specs/store-readiness.md rule 2, night review 2026-11-01): nothing on the kids' side opens another
+// site or app (test-english.com, WhatsApp, the share sheet) until a grown-up answers a sum written in Hebrew words. A link
+// marked data-gate="1" goes through it (one listener for the whole page); code calls grownUp(then). Passed once, it stays
+// open for 10 minutes on this phone (sessionStorage). The parents' area needs no gate (it is behind the parents' code).
+const GATE_NUM = { 6: 'שש', 7: 'שבע', 8: 'שמונה', 9: 'תשע' };
+function grownUp(then){
+  try { if (Number(sessionStorage.getItem('eq_gate')) > Date.now()) return then(); } catch(e){}
+  const a = 6 + Math.floor(Math.random() * 4), b = 6 + Math.floor(Math.random() * 4);
+  let tries = 0;
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="sheet glass" role="dialog" aria-modal="true" aria-labelledby="gate-h">
+    <div class="row-flex between"><span class="row-flex" style="gap:10px"><span class="tile sm t-level">${icon('lock-simple', 'duotone')}</span><h2 id="gate-h" style="margin:0">Ask a grown-up</h2></span>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="gate-x" aria-label="Back">${icon('x')}</button></div>
+    <div class="sub mt-s">This opens a website or another app. A grown-up can open it for you.</div>
+    <div class="soft mt he" dir="rtl" lang="he" style="padding:12px 14px;border-radius:14px">
+      <div class="label" style="text-align:right">להורים</div>
+      <div style="font-size:15px">כדי להמשיך מחוץ לאפליקציה, כתבו את התשובה בספרות: כמה זה <b>${GATE_NUM[a]} כפול ${GATE_NUM[b]}</b>?</div>
+      <input class="input mt-s" id="gate-a" inputmode="numeric" maxlength="3" autocomplete="off" dir="ltr" style="text-align:right" aria-label="התשובה">
+      <div class="sub mt-s" id="gate-msg" style="font-size:13px;min-height:18px" aria-live="polite"></div>
+    </div>
+    <div class="row-flex mt" style="gap:8px"><button class="btn btn-glass" style="flex:1" id="gate-back">Back</button><button class="btn btn-primary" style="flex:1" id="gate-ok">${icon('check')} Continue</button></div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove(), input = ov.querySelector('#gate-a');
+  ov.onclick = e => { if (e.target === ov) close(); };
+  ov.querySelector('#gate-x').onclick = close;
+  ov.querySelector('#gate-back').onclick = close;
+  const ok = () => {
+    if (Number(input.value.trim()) === a * b) {
+      try { sessionStorage.setItem('eq_gate', String(Date.now() + 600000)); } catch(e){}
+      close(); then();
+    } else if (++tries >= 3) close();
+    else { input.value = ''; ov.querySelector('#gate-msg').textContent = 'לא נכון, נסו שוב'; input.focus(); }
+  };
+  ov.querySelector('#gate-ok').onclick = ok;
+  input.onkeydown = e => { if (e.key === 'Enter') ok(); };
+  setTimeout(() => input.focus(), 50);
+}
+document.addEventListener('click', e => {
+  const a = e.target.closest && e.target.closest('a[data-gate]');
+  if (!a) return;
+  e.preventDefault();
+  grownUp(() => window.open(a.href, '_blank', 'noopener'));
+}, true);
 
 function groupMessage(g, word){
   if (PHE) return `בוקר טוב! ☀️ המשימה של היום מחכה 💜\n10 דקות ביום: פותחים את הקישור, בוחרים שם, ועושים את המשימה של היום.\n\n🔗 ${g.link}\n\n📝 המילה של היום: ${word.word} (${word.meaning})\n` +
@@ -9825,7 +9983,7 @@ function renderParent(p, pin){
   bindAgeRows(p, pin);
   app.querySelectorAll('[data-kidhere]').forEach(b => b.onclick = () => kidHere(b.dataset.kidgroup, b.dataset.kidhere, b.dataset.kidpin));
   const pl = document.getElementById('pilotload'); if (pl) pl.onclick = () => pilotLoad(pin);
-  const al = document.getElementById('auditload'); if (al) al.onclick = () => auditLoad(pin);
+  const al = document.getElementById('auditload'); if (al) { al.onclick = () => auditLoad(pin); healthLine(pin); }
   const dl = document.getElementById('dataload'); if (dl) dl.onclick = () => dataLoad(pin);
   document.getElementById('refresh').onclick = () => parentFresh(pin, true);
   document.getElementById('logout').onclick = () => { store.del('eq_admin'); store.del('eq_par'); parTyped = null; parCur = null; loadHome(); };

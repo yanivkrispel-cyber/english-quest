@@ -6,7 +6,7 @@
 // Columns that hold a kid's name, and columns that hold a family (group) id.
 var KID_COLS = { Girls: ['Name'], Games: ['Girl'], Review: ['Girl'], Gates: ['Girl'], Assignments: ['Girl'], Log: ['Girl'], Push: ['Girl'],
   Bonus: ['Girl'], Shop: ['Girl'], Wardrobe: ['Girl'], Words: ['Girl'], Flags: ['Girl'], Placements: ['Girl'], Chats: ['Girl'],
-  Duos: ['A', 'B'], Duels: ['Host', 'Guest'], Audit: ['Who'], Blocks: ['Girl', 'Blocked'], Reports: ['Girl', 'About'] };
+  Duos: ['A', 'B'], Duels: ['Host', 'Guest'], Audit: ['Who'], Blocks: ['Girl', 'Blocked'], Reports: ['Girl', 'About'], Usage: ['Girl'], Errors: ['Girl'] };
 // Feedback: Who is the family id ('admin' for the admin); its Group column is the family's name, for reading the tab.
 var GROUP_COLS = { Groups: ['Id'], Rewards: ['Group'], ParentPush: ['Who'], Feedback: ['Who'], Audit: ['Group'], Plans: ['Group'], Reports: ['Group'] };
 // Tabs with nothing about a kid or a family (test/sim.js checks that every other tab is in the lists above).

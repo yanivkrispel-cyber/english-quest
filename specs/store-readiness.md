@@ -74,6 +74,9 @@ empty in the pilot). The public policy: `docs/privacy.html` (and `docs/terms.htm
 Processors: Cloudflare (server, database, the site), Google (the nightly sheet copy, Chrome/Android push, Chrome's speech
 recognition when the parents turned the microphone on), Apple (push on iPhone/iPad/Safari, Safari's speech recognition when
 on), Mozilla (Firefox push).
+Backups (`specs/cloudflare.md`): the whole export, gzipped, every night, 14 days, inside the same Durable Object;
+Cloudflare's own point-in-time history of the database, 30 days. A deleted family stays in those copies until they age out (at most
+30 days); the privacy text says so. The phones' error reports are kept 30 days (`opsSweep`).
 
 - Kid: first name (English), age or grade (a Chacho's Nest kid: the real age, 2 to 7), level, PIN, color, pet and its name,
   group. Optional email (older setups). The parents' switches: the microphone (`Mic`) and the reminder hour (`RemindAt`); the
@@ -99,11 +102,18 @@ on), Mozilla (Firefox push).
   wrong PIN attempts for names that exist (not the PIN; one line per name and flush, made-up names leave nothing), grown-ups' changes, hand edits in the sheet (not PIN values), and a coarse device
   label (iPhone / Android phone / Computer..., app or browser). A kid's or parent's open also carries how long that
   phone's previous open took to show its first screen ("1.4s saved"), a number and a word only (`specs/perf-phase2.md`).
+- Feature use (tab Usage, `src/Ops.js`, 2026-11-01): per kid and day, which parts of the app she opened and how many times
+  (missions, games, talks, the home tabs, duels, the shop, the Nest...). No time of day, device or content. For the pilot's measures
+  (`specs/pilot.md`); deleted with the kid (`KID_COLS`).
+- Error reports from phones (tab Errors, `src/Ops.js`, 2026-11-01): the error message and where in the app, the device label, the app
+  version, and the kid's first name when the call that carried it was hers. Addresses lose their query and #part, anything like an
+  email is cut. Kept 30 days, deleted with the kid.
+- Server use per day (script properties `use:<day>`, 8 days): numbers of calls, rows written, pushes and failed calls, no person.
 
 On the phone (local storage): the remembered kid and PIN, the group, the last dashboard, settings (sound, voice), a
 remembered parent's signed session (`eq_admin`, 30 days, never the code; void once the family code changes) and their last
 parents' view without the kids' codes (`eq_par`; both deleted on sign-out), and how long the last open
-took (`eq_open_m`). Chacho's
+took (`eq_open_m`), today's feature counts and up to 5 error reports waiting to be sent with the next call (`eq_use`, `eq_err`). Chacho's
 Nest also keeps, on the phone only: how many times each game was played (Chacho shows a new game first), the microphone
 choice, the kid's last 12 colored pictures (which colors went where; no drawing, photo or sound), and the sticker book
 (`docs/nest/stickers.js`): which stickers the kid has already seen pop (word ids, `eq_nest_stickers_<kid>`) and the
@@ -138,9 +148,12 @@ loudness only; nothing is kept or sent.
   switch (speech to Google/Apple) is a separate parent choice in the parents' area, but the parent is not re-verified
   (anyone with the parents' code can turn it on). The native shell should use on-device speech (iOS `SFSpeechRecognizer`
   with `requiresOnDeviceRecognition`, Android `SpeechRecognizer` on-device) and say so.
-- Kids can share to WhatsApp (certificate, duel invite links) and a kid with `Girls.Missions = no` is sent to
-  test-english.com: both need a parental gate or must move to the parents' area. A 4-letter duel code still lets a kid
-  play with a kid of another family whose parents turned playing with others on (the code is shared outside the app).
+- Done 2026-11-01: a kid's WhatsApp share (the duel invite link), the certificate's share sheet and every link to
+  test-english.com (`Girls.Missions = no`, the old level test, the run-out fallback) go through the grown-ups' gate
+  (`grownUp()` in Index.html: a multiplication in Hebrew words, open for 10 minutes once passed). The mission files carry no
+  test-english addresses any more. Left: the link itself, until the own curriculum map (`specs/curriculum.md`) retires it.
+- Left: a 4-letter duel code still lets a kid play with a kid of another family whose parents turned playing with others
+  on (the code is shared outside the app).
 - Fonts: Plus Jakarta Sans and the icon fonts are served from `docs/fonts/` (2026-10-30, `tools/fonts_local.js`); only the Apps
   Script copy for adults still loads Google Fonts and unpkg.
 - The privacy and terms pages are written (Hebrew and English, 2026-11-01): https://coco.coachkrispel.com/privacy.html and
@@ -149,9 +162,32 @@ loudness only; nothing is kept or sent.
   (`specs/cloudflare.md`, not switched on yet). Still personal accounts (Cloudflare too): a business account and a data
   processing note are needed before selling.
 - No `assetlinks.json` / native shell yet; no store listing, age rating questionnaire or data safety form yet.
-- The app name and Chacho: trademark check in Israel not done.
+- The app name and Chacho: trademark check and filing in Israel (classes 9 and 41) not done; the steps are in the owner's
+  checklist (`EnglishLessons-work/night-review/owner-actions.md`).
+- Third-party licenses: listed in `NOTICES.md` (2026-11-01); the list must also be shown in the app (parents' area) before a
+  submission.
+- Cost: the free Cloudflare plan's daily limits (100,000 calls, 100,000 rows written) hold roughly 300 to 1,000 active kids a
+  day. The admin's Audit card turns orange from 60% of either; Workers Paid (5 USD a month) is the owner's decision before a
+  store launch.
 - The Nest's microphone: a parent who said "no" (or a phone that refused) cannot turn the microphone back on in the app
   (`eq_nest_mic` has no switch in the parents' area yet).
 - Chacho's Nest (ages 2 to 7, `specs/nest.md`) puts kids under 5 in the same app as teenagers. Apple's Kids Category takes
   one age band an app (5 and under, 6 to 8, 9 to 11): choose a band, ship the Nest as its own app, or stay out of the
-  Kids Category. Google Families allows several age groups, with stricter rules for "5 and under".
+  Kids Category. Google Families allows several age groups, with stricter rules for "5 and under". The recommendation is below.
+
+## The store route and the Nest (recommendation, night review 2026-11-01, finding 22)
+
+1. **Google Play first, ages 6 to 12.** A Trusted Web Activity of https://coco.coachkrispel.com (`assetlinks.json` on the site,
+   a small Android project made with Bubblewrap), in the Families program with the target ages 6 to 8 and 9 to 12. A new
+   personal developer account must run a **closed test with at least 12 testers for 14 days** before it may publish: the pilot
+   families are the testers (each needs a Google account on an Android phone, opted in from the test link). A business
+   (organisation) account skips that rule but needs a D-U-N-S number.
+2. **The Nest stays out of the first store app.** In the store build, the sign-up offers grades only (no ages 2 to 7) and a
+   Nest kid who signs in sees a parents' note pointing to the web app; the pilot families keep the Nest on the web as now.
+   Later, the Nest ships as **its own app** ("Chacho's Nest", ages 2 to 5 band at Apple, "5 and under" at Google), with the
+   stricter rules for the youngest (no links out at all, a grown-ups' gate before the parents' area, screen-time caps).
+3. **Apple after the Google numbers.** Decide with the data from Play (installs, the pilot gate in `specs/pilot.md`): a thin
+   website wrapper is usually rejected (guideline 4.2), so the App Store needs a native shell with native features (local
+   reminders, offline packs, Sign in with Apple for parents) and one age band (6 to 8 or 9 to 11). Not before Play works.
+4. Before any of it: the trademark, a business entity and business accounts, the public privacy policy and terms pages, a
+   support address, and `NOTICES.md` shown in the app (the owner's checklist).
