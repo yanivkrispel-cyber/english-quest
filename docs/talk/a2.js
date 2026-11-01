@@ -3176,6 +3176,206 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
       }
     ],
     end: "Thank you! Now I am going to read the news. Bye bye!"
+  },
+  {
+    id: 'ta2w01', title: "Chacho's picnic",
+    he: 'מזמינים לפיקניק, עם Would you like to...? ו-on Friday at five',
+    turns: [
+      {
+        c: "I am having a picnic in the park! Would you like to come?",
+        he: 'רוצים לבוא לפיקניק? למשל: Yes, I would love to! או Sorry, I am busy.',
+        a: [
+          { k: ['no not sorry busy'], n: 'know', r: "That is okay. Maybe next time! I will save you a cracker." },
+          { k: ['yes love like sure please okay ok'], r: "Yay! It is going to be so much fun." }
+        ],
+        o: "Thank you! I hope you can come.",
+        t: ["Yes, I would love to!", "Sorry, I am busy."],
+        m: "Yes, I would love to come!",
+        x: [["yes", 1], ["i would like to come", 1], ["sorry i can't", 0], ["no i am busy", 0], ["what food", -1]]
+      },
+      {
+        c: "When is a good day and time for a picnic?",
+        he: "מתי כדאי לעשות את הפיקניק? יום ושעה. למשל: On Friday at five o'clock.",
+        a: [],
+        o: "Perfect! I will write it in my diary.",
+        t: ["On Friday at five o'clock.", "On Saturday at ten.", "On Sunday afternoon."],
+        m: "It is on Friday at five o'clock.",
+        x: [["friday in 5", -1], ["at saturday morning", -1]]
+      },
+      {
+        c: "What food would you like to bring to the picnic?",
+        he: 'איזה אוכל תביאו לפיקניק? למשל: I would like to bring sandwiches.',
+        a: [],
+        o: "Yum! Everybody is going to love that.",
+        t: ["I would like to bring sandwiches.", "Some fruit and cookies.", "Some watermelon!"],
+        m: "I would like to bring sandwiches.",
+        x: [["i bring cake", -1], ["chips and juice", -1]]
+      },
+      {
+        c: "Now you invite me! Ask me to something with Would you like to...?",
+        he: 'עכשיו אתם מזמינים את צ׳אצ׳ו. למשל: Would you like to come to my party?',
+        a: [
+          { k: ['would'], r: "Yes, I would love to! Thank you for asking me." },
+          { k: ['want come'], r: "Would I like to come? Yes, I would love to!" }
+        ],
+        o: "Thank you! I would love to come.",
+        t: ["Would you like to come to my party?", "Would you like to play with me?", "Do you want to come to the beach?"],
+        m: "Would you like to come to my party?",
+        x: [["would you like to come to the beach", 0], ["you want come to my house", 1], ["come to my party", 1], ["hello", -1]]
+      }
+    ],
+    end: "See you at the picnic! I will bring the crackers. Bye bye!"
+  },
+  {
+    id: 'ta2w02', title: "Chacho's holiday",
+    he: 'מספרים לצ׳אצ׳ו על חופשה או טיול, בעבר: went, swam, saw',
+    turns: [
+      {
+        c: "Last summer I flew to Eilat and swam with fish! Did you go on a trip this year?",
+        he: "יצאתם לטיול השנה? למשל: Yes, we went to the north. או No, we didn't.",
+        a: [
+          { k: ['no not'], n: 'know', r: "That is okay. Days at home are fun too!" },
+          { k: ['yes went go visit travel trip'], r: "You went on a trip? Fabulous! I love trips." }
+        ],
+        o: "Thank you for telling me!",
+        t: ["Yes, we went to the north.", "No, we didn't."],
+        m: "Yes, we went to the north.",
+        x: [["yes", 1], ["we go to eilat", 1], ["no", 0], ["we didn't go", 0], ["summer", -1]]
+      },
+      {
+        c: "Think of a fun trip or holiday. Where did you go?",
+        he: 'חשבו על טיול או חופשה כיפית. לאן נסעתם? למשל: We went to the beach.',
+        a: [],
+        o: "Ooh, that sounds lovely! I want to fly there.",
+        t: ["We went to the beach.", "I went to Eilat.", "We went to the Galilee."],
+        m: "We went to the beach in Eilat.",
+        x: [["i go to tel aviv", -1], ["the north", -1]]
+      },
+      {
+        c: "What did you do there? Did you swim, eat or see something new?",
+        he: 'מה עשיתם שם? בעבר: swam, ate, saw. למשל: We swam in the sea.',
+        a: [
+          { k: ['swim swam swimming sea pool'], r: "You swam! Lucky you. I only swim in my bath." },
+          { k: ['eat ate food ice_cream pizza'], r: "You ate yummy food! Holidays are for eating." },
+          { k: ['see saw seen look'], r: "You saw something new! That is the best part." }
+        ],
+        o: "That sounds like a great time!",
+        t: ["We swam in the sea.", "We ate ice cream every day.", "I saw lots of fish."],
+        m: "We swam in the sea every day.",
+        x: [["we swim in the sea", 0], ["i eat pizza", 1], ["we see a castle", 2], ["we played games", -1], ["we sleep", -1]]
+      },
+      {
+        c: "How was it? Was it great, fun or a bit boring?",
+        he: 'איך היה? בעבר: It was. למשל: It was great! או It was a bit boring.',
+        a: [
+          { k: ['boring bad not'], n: 'not_bad', r: "Oh, it was boring? Not every trip is perfect." },
+          { k: ['great fun good amazing cool nice wonderful best'], r: "It was great? Fabulous! I am so happy for you." }
+        ],
+        o: "Thank you for telling me about it!",
+        t: ["It was great!", "It was a bit boring."],
+        m: "It was great! I loved it.",
+        x: [["it is great", 1], ["was so fun", 1], ["boring", 0], ["not good", 0], ["hot", -1], ["not bad", -1]]
+      }
+    ],
+    end: "Thank you! Now I am going to plan my next trip. Bye bye!"
+  },
+  {
+    id: 'ta2w03', title: "Chacho's cool job",
+    he: 'מדברים על עבודות מעניינות, עם A vet helps animals',
+    turns: [
+      {
+        c: "I have a cool job. I sell clothes in my shop! What job do you think is cool?",
+        he: 'איזו עבודה נראית לכם מגניבה? למשל: I think a vet has a cool job.',
+        a: [
+          { k: ['vet animal animals'], r: "A vet! A vet helps animals. Parrots too!" },
+          { k: ['doctor nurse'], r: "A doctor helps sick people. That is a great job." },
+          { k: ['chef cook'], r: "A chef works in a kitchen. Yum!" },
+          { k: ['pilot plane'], r: "A pilot flies a plane. Just like me! Ha!" }
+        ],
+        o: "Ooh, that is an interesting job!",
+        t: ["I think a vet has a cool job.", "A chef!", "A pilot is cool."],
+        m: "I think a vet has a cool job.",
+        x: [["vet", 0], ["a doctor", 1], ["chef", 2], ["pilot", 3], ["football player", -1], ["teacher", -1]]
+      },
+      {
+        c: "What does a person in that job do every day?",
+        he: 'מה עושים בעבודה הזאת? זוכרים s בסוף. למשל: A vet helps sick animals.',
+        a: [],
+        o: "Wow, that is a busy day at work!",
+        t: ["A vet helps sick animals.", "A chef cooks food.", "A pilot flies planes."],
+        x: [["he help animals", -1], ["cook food", -1]]
+      },
+      {
+        c: "Which job would you like to try for one day? Why?",
+        he: 'איזו עבודה הייתם רוצים לנסות ליום אחד, ולמה? למשל: I would like to be a vet.',
+        a: [],
+        o: "What a fun idea! One day is a great start.",
+        t: ["I would like to be a vet.", "A chef, because I love cooking.", "A pilot, because I love planes."],
+        m: "I would like to be a vet for one day.",
+        x: [["i want be a doctor", -1], ["firefighter because it is exciting", -1]]
+      },
+      {
+        c: "Do you think a firefighter has an exciting job or a boring job?",
+        he: 'עבודה של כבאי מרגשת או משעממת? למשל: I think it is exciting.',
+        a: [
+          { k: ['boring'], r: "Boring? Maybe on a quiet day! But it is very important." },
+          { k: ['exciting excited interesting cool fun scary dangerous hard'], r: "I think so too! A firefighter helps people every day." }
+        ],
+        o: "Firefighters are very brave people!",
+        t: ["I think it is exciting.", "I think it is a bit boring."],
+        m: "I think it is an exciting job.",
+        x: [["exciting", 1], ["is very interesting", 1], ["boring", 0], ["i don't know", -1], ["scary", 1]]
+      }
+    ],
+    end: "Thank you! Now I am going back to my job. I sell the best hats! Bye bye!"
+  },
+  {
+    id: 'ta2w04', title: 'A postcard from Chacho',
+    he: "מדברים על גלויה מטיול: We're in..., It's beautiful, See you soon!",
+    turns: [
+      {
+        c: "Hi! I am in the Galilee, and it is beautiful! Where would you like to send a postcard from?",
+        he: 'מאיזה מקום הייתם רוצים לשלוח גלויה? למשל: From the beach in Eilat.',
+        a: [],
+        o: "Ooh, what a great place for a postcard!",
+        t: ["From the beach in Eilat.", "From Paris!", "From a big city."],
+        m: "I would like to send one from Eilat.",
+        x: [["from london", -1], ["the north", -1]]
+      },
+      {
+        c: "What is the weather like there, do you think?",
+        he: "איך מזג האוויר שם? למשל: It's sunny and hot. או It's cold and rainy.",
+        a: [
+          { k: ['sun sunny hot warm'], r: "Sunny and hot! Do not forget your hat." },
+          { k: ['rain rainy cold snow snowy wind windy'], r: "Brr! Take a warm coat and an umbrella." }
+        ],
+        o: "Thank you! I will pack the right clothes.",
+        t: ["It is sunny and hot.", "It is cold and rainy."],
+        m: "It's sunny and beautiful.",
+        x: [["is sunny", 0], ["very hot", 0], ["it snow", 1], ["cold", 1], ["nice", -1]]
+      },
+      {
+        c: "On your trip, real or made up, what did you do?",
+        he: 'מה עשיתם בטיול, אמיתי או מדומיין? בעבר. למשל: We took a boat trip.',
+        a: [],
+        o: "Wow, what a fun day!",
+        t: ["We took a boat trip.", "I swam in the sea.", "We went to a museum."],
+        m: "Yesterday we took a boat trip.",
+        x: [["we go swim", -1], ["eat falafel", -1]]
+      },
+      {
+        c: "How do you like to end a postcard to a friend?",
+        he: 'איך אתם אוהבים לסיים גלויה לחבר? למשל: See you soon! או Love, from me.',
+        a: [
+          { k: ['see_you soon bye love miss'], r: "Lovely! See you soon is warm and friendly." }
+        ],
+        o: "Thank you! A short, warm goodbye is the best.",
+        t: ["See you soon!", "Love, from me.", "Bye for now!"],
+        m: "See you soon!",
+        x: [["see you soon", 0], ["bye bye", 0], ["i miss you", 0], ["the end", -1], ["thank you", -1]]
+      }
+    ],
+    end: "I am going to write my postcards now. See you soon, my friend!"
   }
 ]);
 

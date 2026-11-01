@@ -1426,6 +1426,251 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
       }
     ],
     end: "Thanks for a really grown-up conversation. Your opinions are worth sharing. Take care!"
+  },
+  {
+    id: "tc1w01", title: "Problems and solutions",
+    he: "מדברים על בעיה ופתרון, עם One major problem is ו-One effective solution would be",
+    turns: [
+      {
+        c: "My shop throws away loads of plastic packaging every week, and it bothers me. What do you think is one major problem with all the plastic we use?",
+        he: "מה הבעיה הגדולה עם כל הפלסטיק? למשל: One major problem is that a lot of it ends up in the ocean.",
+        a: [
+          { k: ["sea ocean oceans fish turtle turtles animal animals"], r: "Absolutely. A lot of it ends up in the sea, and the animals there pay the price." },
+          { k: ["rubbish trash garbage waste landfill dump"], r: "True. The rubbish piles up, and plastic can take hundreds of years to break down." },
+          { k: ["recycle"], r: "Good point. Only a small part of it actually gets recycled." }
+        ],
+        o: "Thanks! Plastic causes quite a few problems, so there's plenty to discuss.",
+        t: ["One major problem is that a lot of it ends up in the ocean.", "It creates huge amounts of rubbish that never really disappears.", "Most of it is never recycled."],
+        m: "One major problem is that a lot of it ends up in the ocean.",
+        x: [["the fishes eat the plastic", 0], ["it go to the sea", 0], ["too much trash", 1], ["people don't recycle", 2], ["it is ugly", -1], ["it costs money", -1]]
+      },
+      {
+        c: "And what does that lead to? Could you describe the effect, starting with This leads to, or As a result?",
+        he: "מה התוצאה? עם This leads to או As a result. למשל: This leads to dirty beaches and sick sea animals.",
+        a: [],
+        o: "Thanks! Linking cause and effect makes an argument much clearer.",
+        t: ["This leads to dirty beaches and sick sea animals.", "As a result, our cities have more and more rubbish.", "This leads to plastic in the food we eat."],
+        m: "This leads to dirty beaches and sick sea animals.",
+        x: [["the animals get sick from it", -1], ["beaches are dirty and nobody can swim", -1]]
+      },
+      {
+        c: "Now let's solve it. What would be one effective solution, either for families or for shops like mine?",
+        he: "מה יכול להיות פתרון טוב? למשל: One effective solution would be to use reusable bags.",
+        a: [
+          { k: ["bag bags reusable cloth"], r: "A smart idea. Reusable bags alone could save hundreds of plastic bags a year." },
+          { k: ["recycle bin bins sort"], r: "Sensible. If recycling were easier, far more people would do it." },
+          { k: ["charge pay tax price money cost"], r: "Interesting! Charging for plastic really does change people's habits." },
+          { k: ["ban stop forbid"], r: "A ban is a bold solution. Some countries have already tried it." }
+        ],
+        o: "Thanks! I'll consider that for my shop, along with a few other ideas.",
+        t: ["One effective solution would be to use reusable bags.", "One effective solution would be to make recycling easier.", "Shops could charge for every plastic item they give out."],
+        m: "One effective solution would be to use reusable bags.",
+        x: [["use bags from cloth", 0], ["make people pay for bags", 0], ["more recycle bins in the street", 1], ["shops should charge money", 2], ["ban plastic", 3], ["use less", -1], ["teach kids about it", -1]]
+      },
+      {
+        c: "Here's a different problem: many households throw away food that nobody ever eats. Why do you think that happens so often?",
+        he: "למה זורקים כל כך הרבה אוכל? למשל: Because people buy more than they need.",
+        a: [],
+        o: "Interesting. It's often a mix of habits and busy lives.",
+        t: ["Because people buy more than they need when they're hungry.", "People are busy, so food goes off before anyone eats it.", "People forget what's at the back of the fridge."],
+        m: "Because people buy more than they need when they're hungry.",
+        x: [["they buy too much at supermarket", -1], ["because the food get old in the fridge", -1]]
+      },
+      {
+        c: "And what would be one effective solution to food waste, something any household could actually do?",
+        he: "מה כל בית יכול לעשות נגד בזבוז אוכל? למשל: One effective solution would be to plan meals for the week.",
+        a: [],
+        o: "Thanks! Small habits like that really add up over a year.",
+        t: ["One effective solution would be to plan meals for the whole week.", "People could freeze leftovers instead of throwing them away.", "We could write a shopping list and stick to it."],
+        m: "One effective solution would be to plan meals for the whole week.",
+        x: [["make a list before shopping", -1], ["eat the leftovers the next day", -1]]
+      }
+    ],
+    end: "One major problem is that our chat is over. One effective solution would be to come back tomorrow! Bye!"
+  },
+  {
+    id: "tc1w02", title: "Chacho's survey results",
+    he: "מתארים תוצאות של סקר, עם The majority, twice as many as ו-far more popular than",
+    turns: [
+      {
+        c: "I asked a hundred customers about their favourite colour. Sixty said green, and only five said grey. How would you describe those results?",
+        he: "תארו את תוצאות הסקר. למשל: The majority of customers chose green. או Only a small minority chose grey.",
+        a: [
+          { k: ["majority most popular"], r: "Yes, the majority chose green, and grey was by far the least popular." },
+          { k: ["minority few least"], r: "Yes, only a small minority chose grey, while green was far more popular." }
+        ],
+        o: "Thanks! It always helps to start with the biggest group and then compare.",
+        t: ["The majority of customers chose green.", "Only a small minority chose grey.", "Green was far more popular than grey."],
+        m: "The majority of customers chose green as their favourite colour.",
+        x: [["most people like green", 0], ["green is more popular", 0], ["only few people chose grey", 1], ["the minority like grey", 1], ["green is nice", -1], ["sixty and five", -1]]
+      },
+      {
+        c: "Green got sixty votes and blue got thirty. Can you compare them, using twice as many as?",
+        he: "השוו בין ירוק לכחול עם twice as many as. למשל: Twice as many customers chose green as blue.",
+        a: [
+          { k: ["twice double two_times"], r: "Exactly. Twice as many customers chose green as blue." },
+          { k: ["half"], r: "True, blue got half as many votes. In other words, twice as many chose green as blue." }
+        ],
+        o: "Thanks! Another way to put it: twice as many customers chose green as blue.",
+        t: ["Twice as many customers chose green as blue.", "Blue got half as many votes as green."],
+        m: "Twice as many customers chose green as blue.",
+        x: [["green is two times more than blue", 0], ["twice as many people choose green", 0], ["blue is half of green", 1], ["green is more", -1], ["thirty", -1]]
+      },
+      {
+        c: "Here's a question for you. What do you think most kids do in their free time these days?",
+        he: "מה רוב הילדים עושים בזמן הפנוי? למשל: I think the majority of kids spend their free time on screens.",
+        a: [],
+        o: "Interesting. It would be fascinating to run a real survey on that.",
+        t: ["I think the majority of kids spend most of their free time on screens.", "Most kids probably play sports or meet friends.", "I'd guess only a small minority read for fun."],
+        m: "I think the majority of kids spend most of their free time on screens.",
+        x: [["most of the kids play on the phone", -1], ["they watch youtube and play games", -1]]
+      },
+      {
+        c: "If you could run a survey in your class, what question would you ask, and what do you think the results would show?",
+        he: "איזו שאלה הייתם שואלים בסקר בכיתה, ומה התוצאות היו מראות? למשל: I would ask about pets, and I think dogs would win.",
+        a: [],
+        o: "Ooh, I'd love to see those results. Surveys often surprise us.",
+        t: ["I'd ask about favourite subjects, and I think maths would be the least popular.", "I'd ask how people get to school, and I think most would walk.", "I would ask about pets, and I think dogs would win easily."],
+        m: "I would ask about pets, and I think dogs would win easily.",
+        x: [["what is your favourite food probably pizza", -1], ["i would ask about sport and football will win", -1]]
+      },
+      {
+        c: "Numbers can also be misleading. Why should we be careful when we read a chart or a survey online?",
+        he: "למה צריך להיזהר עם גרפים וסקרים ברשת? למשל: Because a survey of only ten people doesn't tell us much.",
+        a: [],
+        o: "Thanks! It's always worth asking who made the chart, and why.",
+        t: ["Because a survey of only ten people doesn't tell us much.", "The person who made it might want to sell us something.", "Charts can make a small difference look huge."],
+        m: "Because a survey of only ten people doesn't tell us much.",
+        x: [["because maybe they lie about it", -1], ["the numbers can be fake", -1]]
+      }
+    ],
+    end: "The survey shows that a hundred percent of parrots enjoyed this chat. Bye for now!"
+  },
+  {
+    id: "tc1w03", title: "Should museums be free?",
+    he: "בונים טיעון חזק, עם It is often argued that, Not only... but also ו-Consequently",
+    turns: [
+      {
+        c: "It is often argued that museums should be free for everyone. Do you enjoy visiting museums, and what kind do you like best?",
+        he: "אתם אוהבים מוזיאונים? איזה סוג? למשל: Yes, I love science museums because you can try things.",
+        a: [
+          { k: ["not no boring never"], n: "know not_only", r: "Fair enough. Some museums can feel slow, but interactive ones are a different story." },
+          { k: ["science technology space"], r: "Science museums are brilliant. You can actually touch and try things." },
+          { k: ["art paint painting"], r: "Art museums! I could stare at colourful paintings all day." },
+          { k: ["history ancient dinosaur dinosaurs"], r: "History museums are like time machines. I love the ancient objects." }
+        ],
+        o: "Thanks! Every museum has something surprising if you look closely.",
+        t: ["Yes, I love science museums because you can try things.", "I enjoy history museums, especially ones with ancient objects.", "Not really, I usually find them a bit boring."],
+        m: "Yes, I love science museums because you can try things.",
+        x: [["yes the science museum is the best", 1], ["i like art", 2], ["history museum", 3], ["dinosaurs", 3], ["no they are boring", 0], ["i went to one in jerusalem", -1]]
+      },
+      {
+        c: "Let's build the argument for free entry. Can you give me one strong reason, maybe with Not only, but also?",
+        he: "תנו סיבה חזקה לכניסה חינם, עם Not only... but also. למשל: Not only do free museums help kids learn, but they also...",
+        a: [],
+        o: "Thanks! That's a reason people often give in this debate.",
+        t: ["Not only do free museums help kids learn, but they also bring families together.", "Free entry means everyone can visit, not just people with money.", "Not only are they educational, but they're also fun."],
+        m: "Not only do free museums help kids learn, but they also bring families together.",
+        x: [["because everyone can learn not only rich", -1], ["not only learn but also fun", -1]]
+      },
+      {
+        c: "If museums were free, what would happen next? Could you start your answer with Consequently?",
+        he: "מה היה קורה אילו מוזיאונים היו בחינם? מתחילים ב-Consequently. למשל: Consequently, many more families would visit.",
+        a: [],
+        o: "Interesting. A change like that would affect a lot of people.",
+        t: ["Consequently, many more families would visit.", "Consequently, more kids would become interested in history.", "Consequently, museums might need more money from the town."],
+        m: "Consequently, many more families would visit.",
+        x: [["consequently more people come", -1], ["it will be very crowded there", -1]]
+      },
+      {
+        c: "A strong argument looks at the other side too. Why might some people say museums shouldn't be free?",
+        he: "למה יש מי שחושבים שמוזיאונים לא צריכים להיות בחינם? למשל: Because museums need money to pay their staff.",
+        a: [
+          { k: ["money pay cost expensive afford salary salaries staff worker"], r: "That's the main counterargument: museums cost a lot to run, and someone has to pay." },
+          { k: ["crowd busy full noisy many"], r: "True. Free entry could make them crowded, and then it's harder to enjoy them." },
+          { k: ["value respect care"], r: "Interesting point. People sometimes value things more when they pay for them." }
+        ],
+        o: "Thanks! Thinking about the other side makes any argument stronger.",
+        t: ["Because museums need money to pay their staff and look after everything.", "They might get too crowded, so nobody could enjoy the exhibits.", "People might value them less if they were free."],
+        m: "Because museums need money to pay their staff and look after everything.",
+        x: [["they need money for workers", 0], ["because it cost a lot", 0], ["too many people will come", 1], ["people don't respect free things", 2], ["i don't know", -1], ["because of the rules", -1]]
+      },
+      {
+        c: "Weighing everything up, what's your conclusion? Should entrance be free for everyone, only for young people, or not free at all?",
+        he: "מה המסקנה שלכם? חינם לכולם, רק לצעירים, או בכלל לא? למשל: Therefore, I believe entrance should be free for young people.",
+        a: [
+          { k: ["young kids children students teenagers"], r: "A sensible middle way. Young people learn for free, and adults help keep museums running." },
+          { k: ["not_free not_be_free should_pay must_pay have_to_pay"], r: "A fair conclusion. Therefore, the money keeps the museums in great shape." },
+          { k: ["everyone everybody all free"], r: "Free for all! Consequently, nobody would miss out on culture." }
+        ],
+        o: "Thanks! It's a tricky question, and people really do disagree about it.",
+        t: ["Therefore, I believe entrance should be free for young people.", "I think it should be free for everyone, because culture belongs to all of us.", "Consequently, I think visitors should pay, but tickets should be cheap."],
+        m: "Therefore, I believe entrance should be free for young people.",
+        x: [["free for kids only", 0], ["for children and students", 0], ["it should not be free", 1], ["people should pay a little", 1], ["free for all people", 2], ["everyone", 2], ["i'm not sure", -1]]
+      }
+    ],
+    end: "It is often argued that parrots talk too much. Consequently, I'll stop here. Bye for now!"
+  },
+  {
+    id: "tc1w04", title: "Chacho's proposal",
+    he: "כותבים הצעה, עם The aim of this proposal is to, I propose that ו-This would",
+    turns: [
+      {
+        c: "I'm writing a proposal to a town council: a free fashion workshop for teenagers! If you could add one thing for young people in a town, what would it be?",
+        he: "מה הייתם מוסיפים לצעירים בעיר? למשל: I would add a skate park with ramps for beginners.",
+        a: [
+          { k: ["skate skatepark skateboard bike bikes"], r: "A skate park! Somewhere safe to ride and practise sounds fantastic." },
+          { k: ["library reading books study"], r: "A quiet place to read or study. That's always needed, especially before exams." },
+          { k: ["pool sport sports court field football basketball gym"], r: "More sports facilities! Staying active is good for everyone." },
+          { k: ["music studio art theatre theater drama"], r: "A creative space! Young people need somewhere to make music and art." }
+        ],
+        o: "Ooh, interesting! That's the kind of idea a council should hear.",
+        t: ["I would add a skate park with ramps for beginners.", "A quiet place to study after class.", "A music studio where teenagers can record songs."],
+        m: "I would add a skate park with ramps for beginners.",
+        x: [["a skatepark", 0], ["a big library", 1], ["a basketball court", 2], ["a place for music", 3], ["a mall", -1], ["more parks", -1]]
+      },
+      {
+        c: "A proposal starts with its aim. Could you tell me yours, starting with The aim of this proposal is to?",
+        he: "מה מטרת ההצעה שלכם? למשל: The aim of this proposal is to suggest a new skate park.",
+        a: [],
+        o: "Thanks! A clear aim tells the council exactly what to expect.",
+        t: ["The aim of this proposal is to suggest a new skate park.", "The aim of this proposal is to create a quiet study room for teenagers.", "The aim is to give young people a place to play music."],
+        m: "The aim of this proposal is to suggest a new skate park.",
+        x: [["the aim is a new library", -1], ["to build skate park for kids", -1]]
+      },
+      {
+        c: "Now the details. What exactly would you propose, using I propose that, or I recommend?",
+        he: "מה בדיוק אתם מציעים? עם I propose that או I recommend. למשל: I propose that it should have ramps and benches.",
+        a: [],
+        o: "Thanks! Details like that make a proposal much easier to say yes to.",
+        t: ["I propose that it should have ramps for beginners and benches.", "I recommend opening it every afternoon until eight.", "I propose that local artists run free workshops there."],
+        m: "I propose that it should have ramps for beginners and benches.",
+        x: [["i recommend to put lights and benches", -1], ["it should open in the evening", -1]]
+      },
+      {
+        c: "Councils care about benefits. How would your idea help young people? Could you start with This would?",
+        he: "איך הרעיון יעזור לצעירים? מתחילים ב-This would. למשל: This would give young people a safe place to meet.",
+        a: [],
+        o: "Thanks! That's the kind of benefit a council wants to hear about.",
+        t: ["This would give young people a safe place to meet.", "This would help teenagers stay active and make new friends.", "This would keep kids busy in a positive way."],
+        m: "This would give young people a safe place to meet.",
+        x: [["this will help kids be healthy", -1], ["kids will have fun and meet friends", -1]]
+      },
+      {
+        c: "Every proposal faces objections. What might the council say against your idea, and how would you answer them?",
+        he: "מה המועצה עלולה לטעון נגד, ומה תענו? למשל: They might say it costs too much, but...",
+        a: [
+          { k: ["money cost expensive budget pay afford"], r: "Cost is the usual objection. You could suggest local businesses help pay for it." },
+          { k: ["noise noisy loud neighbour neighbor"], r: "Noise is a fair worry. Sensible opening hours could solve it." },
+          { k: ["space room place land"], r: "Space is tricky. Maybe an old building could be used instead of a new one." }
+        ],
+        o: "Thanks! Answering objections in advance makes a proposal much stronger.",
+        t: ["They might say it costs too much, but it would keep young people busy and safe.", "They could worry about noise, so I'd suggest closing it at eight.", "They might say there's no space, but we could use an empty car park."],
+        m: "They might say it costs too much, but it would keep young people busy and safe.",
+        x: [["it is too expensive", 0], ["they say no money", 0], ["neighbours complain about noise", 1], ["there is not enough place", 2], ["they say kids will be bored", -1], ["i don't know", -1]]
+      }
+    ],
+    end: "The aim of this chat was to have fun, and I propose we do it again tomorrow. Bye!"
   }
 ]);
 

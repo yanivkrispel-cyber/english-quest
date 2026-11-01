@@ -2919,6 +2919,205 @@ window.EQ_TALK.a1 = (window.EQ_TALK.a1 || []).concat([
       }
     ],
     end: "Thank you! Now I am going to eat a big piece of watermelon. Bye bye!"
+  },
+  {
+    id: 'ta1w01', title: "Chacho's family",
+    he: 'מדברים עם צ׳אצ׳ו על מישהו מהמשפחה, עם He is ו-She likes',
+    turns: [
+      {
+        c: "I have a big family of parrots! Who in your family makes you laugh?",
+        he: 'מי במשפחה מצחיק אתכם? בלי שמות. למשל: My brother. או My grandma.',
+        a: [],
+        o: "Ha! Laughing together is the best.",
+        t: ["My brother.", "My grandma.", "My cousin."],
+        m: "My big brother makes me laugh.",
+        x: [["my sister", -1], ["grandpa", -1], ["my dad is funny", -1]]
+      },
+      {
+        c: "Tell me more! Is this person funny, kind or tall?",
+        he: 'איך האדם הזה? למשל: He is very funny. או She is kind.',
+        a: [
+          { k: ['funny silly crazy'], r: "Funny people are the best! My grandpa is funny too." },
+          { k: ['kind nice good sweet lovely'], r: "Kind people make everyone happy!" },
+          { k: ['tall big strong'], r: "Tall! Taller than a parrot, I am sure. Ha!" }
+        ],
+        o: "Thank you for telling me!",
+        t: ["He is very funny.", "She is kind.", "She is tall."],
+        m: "She is very kind and funny.",
+        x: [["he is funny", 0], ["she very kind", 1], ["he tall", 2], ["she is old", -1], ["clever", -1]]
+      },
+      {
+        c: "What does this person like? Football, cats, music?",
+        he: 'מה האדם הזה אוהב? זוכרים s בסוף. למשל: She likes cats. או He likes football.',
+        a: [
+          { k: ['she', 'like love'], n: 'likes loves', r: "Oh, she likes that! How lovely." },
+          { k: ['he', 'like love'], n: 'likes loves', r: "Oh, he likes that! Cool." },
+          { k: ['football basketball ball sport sports swim swimming'], r: "Sport! Great for running and jumping." },
+          { k: ['like love likes loves'], r: "Fabulous! Everyone needs something they love." }
+        ],
+        o: "Ooh, that sounds fun!",
+        t: ["She likes cats.", "He likes football.", "She loves music."],
+        m: "She likes cats and music.",
+        x: [["she like cats", 0], ["he like football", 1], ["he likes football", 2], ["she loves cats", 3], ["music", -1], ["pizza", -1]]
+      },
+      {
+        c: "What do you and your family like to do together?",
+        he: 'מה אתם אוהבים לעשות יחד? למשל: We like to cook. או We go to the beach.',
+        a: [],
+        o: "That sounds like a lovely time together!",
+        t: ["We like to cook.", "We go to the beach.", "We watch films."],
+        m: "We like to go to the beach.",
+        x: [["we play games", -1], ["eat pizza", -1]]
+      }
+    ],
+    end: "Thank you! Now I am going to visit my grandpa parrot. Bye bye!"
+  },
+  {
+    id: 'ta1w02', title: "Chacho's busy day",
+    he: 'מדברים על היום שלכם לפי הסדר, עם First, Then ו-at seven',
+    turns: [
+      {
+        c: "I get up at six and sing! What time do you get up?",
+        he: "באיזו שעה אתם קמים? למשל: At seven o'clock. או I get up at six.",
+        a: [
+          { k: ['four five six seven'], r: "Early, like me! The early bird gets the cracker." },
+          { k: ['eight nine ten eleven twelve'], r: "Lucky you! A little more sleep." }
+        ],
+        o: "Thank you! Every morning is different.",
+        t: ["At seven o'clock.", "I get up at six.", "At eight."],
+        m: "I get up at seven o'clock.",
+        x: [["at 7", 0], ["i get up in six", 0], ["8", 1], ["late", -1], ["at half past", -1]]
+      },
+      {
+        c: "What do you do first in the morning?",
+        he: 'מה אתם עושים קודם בבוקר? למשל: First, I wash my face. או I get dressed.',
+        a: [],
+        o: "Thank you! My first job is cleaning my feathers.",
+        t: ["First, I wash my face.", "First, I have breakfast.", "I get dressed."],
+        m: "First, I wash my face.",
+        x: [["i brush teeth", -1], ["eat", -1]]
+      },
+      {
+        c: "Do you have breakfast every morning?",
+        he: "אתם אוכלים ארוחת בוקר כל בוקר? למשל: Yes, I have breakfast. או No, I don't.",
+        a: [
+          { k: ['no not never'], n: 'know', r: "That is okay. Some people are not hungry in the morning." },
+          { k: ['yes have eat sometimes'], r: "Yum! Breakfast is my favourite. Crackers and seeds!" }
+        ],
+        o: "Thank you for telling me!",
+        t: ["Yes, I have breakfast.", "No, I don't."],
+        m: "Yes, I have breakfast every morning.",
+        x: [["yes", 1], ["i eat cornflakes", 1], ["no", 0], ["not every day", 0], ["chocolate", -1]]
+      },
+      {
+        c: "What do you do in the evening?",
+        he: 'מה אתם עושים בערב? למשל: I read a book. או I play with my friends.',
+        a: [],
+        o: "Ooh, that sounds like a nice evening!",
+        t: ["I read a book.", "I play with my friends.", "I watch TV."],
+        m: "In the evening, I read a book.",
+        x: [["play games", -1], ["i go sleep at nine", -1]]
+      }
+    ],
+    end: "Thank you! First I eat my crackers, then I go to bed. Good night!"
+  },
+  {
+    id: 'ta1w03', title: "Chacho's hobby",
+    he: 'מדברים על תחביבים, עם I like + ing ו-because',
+    turns: [
+      {
+        c: "My hobby is singing! What is your hobby?",
+        he: 'מה התחביב שלכם? למשל: I like swimming. או My hobby is drawing.',
+        a: [
+          { k: ['swim swimming'], r: "Swimming! I love swimming too, but my feathers get wet." },
+          { k: ['draw paint'], r: "Drawing and painting! I love colours." },
+          { k: ['dance sing music'], r: "Dancing and singing! Just like me!" },
+          { k: ['football basketball ball sport'], r: "Playing ball games is great fun!" }
+        ],
+        o: "Ooh, what a fun hobby!",
+        t: ["I like swimming.", "My hobby is drawing.", "I love dancing."],
+        m: "My hobby is drawing pictures.",
+        x: [["i like swim", 0], ["draw", 1], ["i love dance", 2], ["play football", 3], ["reading books", -1], ["cooking", -1]]
+      },
+      {
+        c: "When do you do your hobby? After school, on Fridays?",
+        he: 'מתי אתם עושים את התחביב? למשל: After school. או On Fridays.',
+        a: [],
+        o: "That is a great time for it!",
+        t: ["After school.", "On Fridays.", "Every day."],
+        m: "I do it every day after school.",
+        x: [["on saturday", -1], ["every day", -1]]
+      },
+      {
+        c: "Why do you like it?",
+        he: 'למה אתם אוהבים את זה? עם because. למשל: Because it is fun.',
+        a: [],
+        o: "Thank you! Hobbies make us happy.",
+        t: ["Because it is fun.", "Because I can relax.", "Because I love it."],
+        m: "I like it because it is fun.",
+        x: [["because fun", -1], ["is fun", -1]]
+      },
+      {
+        c: "What hobby do you want to try one day?",
+        he: 'איזה תחביב הייתם רוצים לנסות? למשל: I want to try skating.',
+        a: [],
+        o: "Ooh, good idea! I want to try surfing.",
+        t: ["I want to try skating.", "Cooking!", "I want to play the guitar."],
+        m: "I want to try skating one day.",
+        x: [["horse riding", -1], ["surf", -1]]
+      }
+    ],
+    end: "Thank you! Now I am going to practise singing. La la la! Bye bye!"
+  },
+  {
+    id: 'ta1w04', title: "Near Chacho's shop",
+    he: 'מדברים על מה יש ליד הבית, עם There is ו-There are',
+    turns: [
+      {
+        c: "There is a big tree next to my shop! Is there a park near your home?",
+        he: "יש פארק ליד הבית? למשל: Yes, there is a park. או No, there isn't.",
+        a: [
+          { k: ['no not'], n: 'know', r: "That is okay. There are lots of other fun places." },
+          { k: ['yes park playground there'], r: "Fabulous! Parks are great for playing." }
+        ],
+        o: "Thank you for telling me!",
+        t: ["Yes, there is a park.", "No, there isn't."],
+        m: "Yes, there is a big park.",
+        x: [["yes", 1], ["there is a park", 1], ["no", 0], ["there isn't", 0], ["a beach", -1]]
+      },
+      {
+        c: "What else is there near your home? A shop, a beach, a playground?",
+        he: 'מה עוד יש ליד הבית? בלי שמות של מקומות. למשל: There is a beach. או There are two shops.',
+        a: [
+          { k: ['beach sea'], r: "A beach! Sand, sun and sea. Lucky you!" },
+          { k: ['shop store supermarket market'], r: "A shop! Great for buying snacks." },
+          { k: ['playground slide swing'], r: "A playground! Slides and swings are so much fun." }
+        ],
+        o: "Ooh, that sounds like a nice place!",
+        t: ["There is a beach.", "There are two shops.", "There is a playground."],
+        m: "There is a big shop near my home.",
+        x: [["there are a beach", 0], ["supermarket", 1], ["there is playground", 2], ["a school", -1], ["trees", -1]]
+      },
+      {
+        c: "Which place do you like best? Why do you like it?",
+        he: 'איזה מקום אתם הכי אוהבים, ולמה? למשל: I like the park because it is fun.',
+        a: [],
+        o: "Thank you! Everyone needs a happy place.",
+        t: ["I like the park because it is fun.", "The beach, because I swim there.", "I play there with my friends."],
+        m: "I like the park because I play there.",
+        x: [["i play football there", -1], ["the beach is fun", -1]]
+      },
+      {
+        c: "What do you want near your home? A pool, a zoo, a cake shop?",
+        he: 'מה הייתם רוצים שיהיה ליד הבית? למשל: A pool! או I want a zoo.',
+        a: [],
+        o: "Ooh, I want that too! Great idea.",
+        t: ["A pool!", "I want a zoo.", "A big cake shop."],
+        m: "I want a pool near my home.",
+        x: [["ice cream shop", -1], ["a cinema", -1]]
+      }
+    ],
+    end: "Thank you! Now I am going to sit in my big tree. Bye bye!"
   }
 ]);
 

@@ -1412,6 +1412,253 @@ window.EQ_TALK.b1 = (window.EQ_TALK.b1 || []).concat([
       }
     ],
     end: "Remember: keep your torch off on the beach at night! Bye for now!"
+  },
+  {
+    id: 'tb1w01', title: 'Chacho wants your opinion',
+    he: 'אומרים לצ׳אצ׳ו מה דעתכם, עם In my opinion, because ו-For example',
+    turns: [
+      {
+        c: "I've just read about Finland, where kids get very little homework. Should kids have homework at the weekend? What do you think?",
+        he: "צריך שיעורי בית בסוף שבוע? למשל: In my opinion, kids shouldn't have homework at the weekend.",
+        a: [
+          { k: ['no not'], n: 'know', r: "So you think the weekend is for rest. Lots of people agree with you." },
+          { k: ['yes should little some bit'], r: "So you think a little homework is a good idea. That's fair." }
+        ],
+        o: "Interesting! It's a big question, and people have different opinions.",
+        t: ["In my opinion, kids shouldn't have homework at the weekend.", "I think a little homework is okay."],
+        m: "In my opinion, kids should not have weekend homework.",
+        x: [["no because we are tired", 0], ["i think no", 0], ["yes a little", 1], ["i think we should", 1], ["maybe", -1], ["it depends", -1]]
+      },
+      {
+        c: "Every good opinion needs a reason. Why do you think that?",
+        he: 'למה אתם חושבים כך? מתחילים ב-because. למשל: Because kids need time to rest and play.',
+        a: [],
+        o: "Thanks for explaining. A reason makes an opinion much stronger.",
+        t: ["Because kids need time to rest and play.", "Because we forget things if we don't practise.", "Because the week is already very busy."],
+        m: "Because kids need time to rest and play.",
+        x: [["because we are tired from school", -1], ["we need to play", -1]]
+      },
+      {
+        c: "Now give me an example. What can kids do on a free weekend instead of homework?",
+        he: 'תנו דוגמה עם For example. למשל: For example, they can play sports.',
+        a: [],
+        o: "Ooh, that sounds like a lovely weekend.",
+        t: ["For example, they can play sports.", "For example, they can visit their family.", "They can go to the beach."],
+        m: "For example, they can play sports outside.",
+        x: [["play football with friends", -1], ["sleep a lot", -1]]
+      },
+      {
+        c: "Here's a new question! In your opinion, which is better, a long summer holiday or more short holidays?",
+        he: 'מה עדיף לדעתכם, חופש גדול ארוך או כמה חופשות קצרות? למשל: In my opinion, a long summer holiday is better.',
+        a: [
+          { k: ['short shorter small more_holidays several'], r: "More short holidays! Then you never wait too long for a break." },
+          { k: ['long summer'], r: "A long summer holiday! Lots of time for beaches and adventures." }
+        ],
+        o: "Interesting! Both have good points, I think.",
+        t: ["In my opinion, a long summer holiday is better.", "I think more short holidays are better."],
+        m: "In my opinion, a long summer holiday is better.",
+        x: [["long summer", 1], ["the summer one because it is long", 1], ["short holidays", 0], ["more small holidays", 0], ["i don't know", -1]]
+      },
+      {
+        c: "Can you give me one reason and one example for your answer?",
+        he: 'סיבה אחת ודוגמה אחת. למשל: Because we can relax. For example, we can travel.',
+        a: [],
+        o: "Thank you! Now I understand your opinion much better.",
+        t: ["Because it's hot in summer. For example, we can swim every day.", "Because we get tired. For example, a week off in winter helps."],
+        m: "Because we can relax. For example, we can travel.",
+        x: [["because i love the beach", -1], ["we can go to the sea", -1]]
+      }
+    ],
+    end: "Thanks for sharing your opinions! In my opinion, talking is the best way to learn. Bye for now!"
+  },
+  {
+    id: 'tb1w02', title: 'Guess what? Big news!',
+    he: 'משתפים חדשות טובות, עם Guess what? ו-I have just...',
+    turns: [
+      {
+        c: "Guess what? I've just got a new box of rainbow hats for my shop! Have you had any good news this week?",
+        he: "היו לכם חדשות טובות השבוע? למשל: Yes, I've just finished a big project.",
+        a: [
+          { k: ['no not nothing'], n: 'know', r: "That's okay. Some weeks are just quiet. Maybe next week!" },
+          { k: ['yes got won win have finished passed new'], r: "Fabulous! Good news makes the whole week better." }
+        ],
+        o: "Thanks for telling me! Every week has something good in it.",
+        t: ["Yes, I've just finished a big project.", "Not really, it's been a quiet week."],
+        m: "Yes! I've just won a football game.",
+        x: [["yes i got a good grade", 1], ["i won a game", 1], ["no", 0], ["nothing special", 0], ["my birthday", -1]]
+      },
+      {
+        c: "Imagine you're writing to a friend with big news. Start with Guess what! What have you just done?",
+        he: "מה עשיתם הרגע? עם I've just. למשל: Guess what? I've just got a puppy!",
+        a: [
+          { k: ['puppy dog cat kitten pet hamster rabbit'], r: "You've just got a pet? That's the best news ever!" },
+          { k: ['won win prize cup medal'], r: "You've just won? Fabulous! Congratulations!" },
+          { k: ['join club'], r: "You've just joined a club? How exciting! New friends!" }
+        ],
+        o: "Wow, what news! Your friend is going to be so happy.",
+        t: ["Guess what? I've just got a puppy!", "Guess what? Our team has just won the cup!", "Guess what? I've just joined a drama club!"],
+        m: "Guess what? I've just got a puppy!",
+        x: [["guess what i just got a dog", 0], ["we win the cup", 1], ["i joined the basketball team", 2], ["i have just finished my book", -1], ["i go to the beach", -1]]
+      },
+      {
+        c: "Good news is even better with a detail. What is one more detail about your news?",
+        he: 'עוד פרט אחד על החדשות. למשל: She is small, brown and very funny.',
+        a: [],
+        o: "Thank you! A detail makes news much more fun to read.",
+        t: ["She is small, brown and very funny.", "We played really well, and I scored a goal.", "The club meets every Tuesday after class."],
+        m: "She is small, brown and very funny.",
+        x: [["it is black and white", -1], ["i score two goals", -1]]
+      },
+      {
+        c: "How do you like to share good news: a message, a call, or telling someone face to face?",
+        he: 'איך אתם אוהבים לשתף חדשות טובות? למשל: I usually send a message.',
+        a: [
+          { k: ['message text write email'], r: "A message! Quick, easy, and you can read it again later." },
+          { k: ['call phone'], r: "A call! Then you can hear how happy they are." },
+          { k: ['face person tell see'], r: "Face to face! Then you can see the big smile." }
+        ],
+        o: "That's a nice way to share it.",
+        t: ["I usually send a message.", "I like to call my friend.", "I prefer to tell people face to face."],
+        m: "I usually send a message to my friend.",
+        x: [["text message", 0], ["i call", 1], ["i tell them in person", 2], ["i shout it", -1], ["all of them", -1]]
+      },
+      {
+        c: "Let's dream! What's some big news you'd love to write to a friend one day?",
+        he: "על אילו חדשות הייתם רוצים לכתוב יום אחד? למשל: Guess what? I've just been to Japan!",
+        a: [],
+        o: "Ooh, I hope that happens! Write back soon and tell me.",
+        t: ["I've just scored the winning goal in the final!", "Guess what? I've just been to Japan!", "I've just finished my first book!"],
+        m: "Guess what? I've just been to Japan!",
+        x: [["i won the world cup", -1], ["i have a horse", -1]]
+      }
+    ],
+    end: "Guess what? I've just had a fabulous chat with you! Write back soon. Bye!"
+  },
+  {
+    id: 'tb1w03', title: "Chacho's story time",
+    he: 'ממשיכים סיפור בעבר, עם Suddenly ו-In the end',
+    turns: [
+      {
+        c: "Story time! When I opened my shop this morning, I couldn't believe my eyes. What do you think I saw?",
+        he: 'מה צ׳אצ׳ו ראה כשפתח את החנות? למשל: Maybe you saw a cat in the shop.',
+        a: [
+          { k: ['hat hats clothes dress shoes shirt'], r: "Yes! Hundreds of hats were all over the floor!" },
+          { k: ['cat dog animal animals monkey mouse elephant'], r: "Good guess! A big orange cat was sleeping in my hat box." },
+          { k: ['cake surprise party gift present balloons'], r: "A surprise! My friends were there with a huge cracker cake." }
+        ],
+        o: "What an idea! Actually, I saw a cat asleep in my hat box.",
+        t: ["I think you saw a huge pile of hats.", "Maybe you saw a cat in the shop.", "I think there was a surprise party."],
+        m: "Maybe you saw a cat in the shop.",
+        x: [["you see a monkey", 1], ["a cat", 1], ["a lot of hats", 0], ["surprise party for you", 2], ["a ghost", -1], ["nothing", -1]]
+      },
+      {
+        c: "Now you tell the story. Suddenly, something surprising happened! What happened?",
+        he: 'מה קרה פתאום? בעבר, עם Suddenly. למשל: Suddenly, the lights went out.',
+        a: [],
+        o: "Ooh, I didn't expect that! What a twist.",
+        t: ["Suddenly, the lights went out.", "Suddenly, my dog jumped on the cake.", "Suddenly, it started to rain."],
+        m: "Suddenly, a big wind blew all the hats away.",
+        x: [["suddenly the door close", -1], ["a bird come in", -1]]
+      },
+      {
+        c: "How did you feel at that moment? Surprised, scared or happy?",
+        he: 'איך הרגשתם באותו רגע? למשל: I was really surprised. או I felt a bit scared.',
+        a: [
+          { k: ['scared afraid frightened nervous worried scary'], r: "Scared! Me too. My feathers stood up!" },
+          { k: ['surprise shocked shock'], r: "Surprised! That's the best feeling in a story." },
+          { k: ['happy excited glad laugh funny'], r: "Happy! I love a story with a smile in it." }
+        ],
+        o: "That makes sense. Stories are full of big feelings.",
+        t: ["I felt a bit scared.", "I was really surprised.", "I was happy and excited."],
+        m: "I was really surprised.",
+        x: [["i am scared", 0], ["i was surprise", 1], ["happy", 2], ["angry", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Every story needs an ending. What happened in the end?",
+        he: 'איך הסיפור נגמר? עם In the end או Finally. למשל: In the end, we all laughed.',
+        a: [],
+        o: "Thank you! Every story is better with a good ending.",
+        t: ["In the end, we all laughed.", "In the end, it was only my cat!", "Finally, everyone ate the cake."],
+        m: "In the end, we all laughed together.",
+        x: [["in the end we laugh", -1], ["everybody was happy", -1]]
+      },
+      {
+        c: "Last question! What's the funniest thing that happened to you this year?",
+        he: 'מה הדבר הכי מצחיק שקרה לכם השנה? למשל: I wore two different shoes to school!',
+        a: [],
+        o: "Ha! Thanks for telling me. That made my feathers shake.",
+        t: ["I wore two different shoes to school!", "My friend and I got lost in a mall.", "Our teacher sang a song in class."],
+        m: "I wore two different shoes to school!",
+        x: [["my dog eat my homework", -1], ["i fall in the pool", -1]]
+      }
+    ],
+    end: "In the end, we told a great story together. Bye for now!"
+  },
+  {
+    id: 'tb1w04', title: "Chacho's review corner",
+    he: 'כותבים ביקורת, עם The best thing was, The only problem was ו-I would recommend it',
+    turns: [
+      {
+        c: "I've just stayed in a treehouse hotel for birds! Have you ever stayed in a hotel, a tent or a guest house?",
+        he: "ישנתם פעם במלון, באוהל או בצימר? למשל: Yes, I've stayed in a hotel. או No, I haven't.",
+        a: [
+          { k: ['no not never'], n: 'know', r: "That's okay. A museum or a park can have a review too!" },
+          { k: ['yes hotel tent camping campsite guest zimmer stay'], r: "Fabulous! Sleeping somewhere new is always an adventure." }
+        ],
+        o: "Thanks! There are so many fun places to stay.",
+        t: ["Yes, I've stayed in a hotel.", "We went camping once.", "No, I haven't."],
+        m: "Yes, I've stayed in a hotel in Eilat.",
+        x: [["yes in eilat", 1], ["we sleep in a tent", 1], ["no never", 0], ["i haven't", 0], ["my house", -1]]
+      },
+      {
+        c: "Think of a place you stayed at or visited, like a hotel or a museum. What was the best thing about it?",
+        he: 'מה היה הדבר הכי טוב במקום? למשל: The best thing was the pool.',
+        a: [],
+        o: "Thanks! That's exactly how a good review starts.",
+        t: ["The best thing was the pool.", "The best thing was the breakfast.", "The best thing was the view of the sea."],
+        m: "The best thing was the big pool.",
+        x: [["the pool was amazing", -1], ["breakfast", -1]]
+      },
+      {
+        c: "A fair review says one problem too. Was there anything you didn't like?",
+        he: 'היה משהו שלא אהבתם? למשל: The only problem was the noise. או No, it was perfect!',
+        a: [
+          { k: ['mosquito mosquitoes bug bugs insect insects'], r: "Mosquitoes! The only problem with summer nights." },
+          { k: ['noise noisy loud'], r: "Noise! It's hard to sleep when it's loud." },
+          { k: ['food breakfast small dirty expensive crowded busy queue hot'], r: "I see. A fair review says that too." },
+          { k: ['no nothing perfect'], r: "No problems at all? Then it sounds like a perfect place!" }
+        ],
+        o: "Thanks! Being fair makes a review more helpful.",
+        t: ["The only problem was the noise.", "The only problem was the mosquitoes.", "No, it was perfect!"],
+        m: "The only problem was the noise at night.",
+        x: [["mosquitos", 0], ["it was very noisy", 1], ["the food was not good", 2], ["the room was small", 2], ["no it was perfect", 3], ["the pool was cold", -1]]
+      },
+      {
+        c: "Would you recommend it? Who would you recommend it to?",
+        he: 'הייתם ממליצים על המקום? למי? למשל: I would recommend it to families.',
+        a: [
+          { k: ['no not'], n: 'know', r: "That's fair. Not every place is for everyone." },
+          { k: ['yes recommend family families friends kids everyone everybody'], r: "Fabulous! Your review will help other people choose." }
+        ],
+        o: "Thanks! Now other people can choose well.",
+        t: ["I would recommend it to families.", "Yes, to all my friends.", "No, I wouldn't recommend it."],
+        m: "I would recommend it to families with kids.",
+        x: [["yes to families", 1], ["i recommend to my friends", 1], ["no", 0], ["i wouldn't", 0], ["maybe", -1]]
+      },
+      {
+        c: "Now review my treehouse hotel! It had free crackers but very loud neighbours. Would you recommend it?",
+        he: 'הייתם ממליצים על מלון העצים של צ׳אצ׳ו? למשל: Yes, because the crackers were free!',
+        a: [
+          { k: ['no not'], n: 'know', r: "Ha! Fair enough. The neighbours were very loud parrots." },
+          { k: ['yes recommend crackers'], r: "Thank you! Free crackers are worth a little noise." }
+        ],
+        o: "Ha! I'll put that on my review board.",
+        t: ["Yes, because the crackers were free!", "No, the only problem was the noise."],
+        m: "I would recommend it, because of the free crackers.",
+        x: [["yes", 1], ["yes for the crackers", 1], ["no it is too loud", 0], ["not for me", 0], ["i like birds", -1]]
+      }
+    ],
+    end: "Thanks for your reviews! I'd give this chat five stars. Bye for now!"
   }
 ]);
 
