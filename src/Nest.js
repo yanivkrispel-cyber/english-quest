@@ -81,7 +81,7 @@ function apiParentNestPerDay(pin, name, n) {
   if (!(n >= 0 && n <= 9)) throw new Error('בחרו כמה שיעורים ביום');
   setGirlFields(kid.Name, { NestPerDay: n });
   audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest lessons a day', kid.Name + ': ' + (n || 'no limit'));
-  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
+  return parentView(access);
 }
 
 // Minutes a day in Chacho's arcade (Girls.NestArcadeMin, set by the parent): 15 when empty, 0 = no limit.
@@ -101,7 +101,7 @@ function apiParentNestArcade(pin, name, n) {
   if (!(n >= 0 && n <= 60)) throw new Error('בחרו כמה דקות ביום');
   setGirlFields(kid.Name, { NestArcadeMin: n });
   audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest arcade minutes', kid.Name + ': ' + (n || 'no limit'));
-  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
+  return parentView(access);
 }
 
 // Settings.NestAll: the names (comma separated, or 'all') whose Nest home shows every unit and day now, as free play.

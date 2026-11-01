@@ -72,7 +72,7 @@ function eraseFamily(t) {
 function apiDeleteData(pin, groupId, kidName, confirm) {
   ensureSetup();
   if (['DELETE', 'מחיקה'].indexOf(String(confirm || '').trim()) < 0) throw new Error('Type the word to confirm');
-  var access = parentAccess(pin);
+  var access = parentAccess(pin, { typed: true });   // a remembered phone types the code again (finding 9)
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);
   var t, rows;
@@ -90,7 +90,7 @@ function apiDeleteData(pin, groupId, kidName, confirm) {
 // Everything kept about the family, as readable rows per tab (the parent's own copy).
 function apiExportData(pin, groupId) {
   ensureSetup();
-  var access = parentAccess(pin), t = privacyTarget(access, groupId, '');
+  var access = parentAccess(pin, { typed: true }), t = privacyTarget(access, groupId, '');
   var names = {}, gid = String(t.group.Id), out = {};
   t.kids.forEach(function (k) { names[k] = 1; });
   Object.keys(HEADERS).forEach(function (table) {

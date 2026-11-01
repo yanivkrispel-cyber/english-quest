@@ -18,17 +18,16 @@ function apiJoinCheck(code) {
   return { ok: ok };
 }
 
-// data: { family, parent, parentPin, email, consent, kids: [{ name, grade }] }
+// data: { family, parent, email, consent, kids: [{ name, grade }] }. The parents' code (6 digits) is made here; a
+// parentPin an old copy of the app still sends is ignored (it used to be the parent's choice, and "taken" told codes apart).
 function apiJoin(code, data) {
   ensureSetup();
   if (!inviteOk(code)) throw new Error('הקישור הזה כבר לא פעיל. בקשו קישור חדש ממי ששלח לכם.');
   data = data || {};
   var clean = function (s, max) { return String(s || '').replace(/[<>"]/g, '').replace(/\s+/g, ' ').trim().slice(0, max); };
   var family = clean(data.family, 40), parentName = clean(data.parent, 40), email = clean(data.email, 80);
-  var parentPin = String(data.parentPin || '').trim();
   if (!family) throw new Error('כתבו שם משפחה');
   if (!parentName) throw new Error('כתבו את השם שלכם');
-  if (!/^\d{4}$/.test(parentPin)) throw new Error('קוד ההורה צריך להיות 4 ספרות');
   if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error('כתובת המייל לא נראית תקינה');
   if (data.consent !== true) throw new Error('צריך לאשר את תנאי הפרטיות כדי להמשיך');
   // A school kid sends a grade (3 to 12); a Chacho's Nest kid (Nest.js) sends her age (2 to 7) instead.
@@ -42,15 +41,15 @@ function apiJoin(code, data) {
 
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
-  var id, out = [];
+  var id, out = [], parentPin;
   try {
     var gs = readTableUncached('Groups'), t = today();
     if (gs.filter(function (g) { return String(g.Joined || '').slice(0, 10) === t; }).length >= PILOT.joinsPerDay) throw new Error('הגענו למכסת ההרשמות להיום. נסו שוב מחר.');
-    if (String(parentPin) === String(getSetting('AdminPIN')) || gs.some(function (g) { return String(g.ParentPIN) === parentPin; })) throw new Error('הקוד הזה תפוס. בחרו 4 ספרות אחרות.');
     var name = family, n = 2;
     while (gs.some(function (g) { return String(g.Name).toLowerCase() === name.toLowerCase(); })) name = family + ' ' + (n++);
     var ids = gs.map(function (g) { return String(g.Id); });
-    do { id = Math.random().toString(36).slice(2, 8); } while (ids.indexOf(id) >= 0);
+    do { id = randomId(); } while (ids.indexOf(id) >= 0);
+    parentPin = newParentCode();
     appendRow('Groups', { Id: id, Name: name, ParentPIN: parentPin, Goal: 1500, GoalReward: 'ערב פיצה משפחתי', Email: email,
       Parent: parentName, Joined: Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm'), Consent: t });
     var girls = readTableUncached('Girls'), taken = girls.map(function (k) { return String(k.Name).toLowerCase(); });
@@ -120,7 +119,7 @@ function apiFeedback(pin, text, score) {
 function apiTeacherFlag(code, missionId, itemId, note) {
   ensureSetup();
   var want = String(getSetting('TeacherCode') || '').trim();
-  checkPin('teacher', !!want && String(code || '').trim() === want);
+  checkPin('teacher', !!want && sameSecret(code, want));
   missionId = String(missionId || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 12);
   itemId = cleanIds([itemId], 1)[0] || '';
   note = String(note || '').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 500);
@@ -134,7 +133,7 @@ function apiTeacherFlag(code, missionId, itemId, note) {
 function apiTeacherCheck(code) {
   ensureSetup();
   var want = String(getSetting('TeacherCode') || '').trim();
-  checkPin('teacher', !!want && String(code || '').trim() === want);
+  checkPin('teacher', !!want && sameSecret(code, want));
   auditOpen('teacher', 'teacher', '');
   return { ok: true };
 }
@@ -185,7 +184,7 @@ function apiPilotInvite(pin, open, code) {
   if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can change this');
   code = String(code || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 24);
   if (code) setSetting('InviteCode', code);
-  if (!getSetting('InviteCode')) setSetting('InviteCode', Math.random().toString(36).slice(2, 8));
+  if (!getSetting('InviteCode')) setSetting('InviteCode', randomId());
   setSetting('InviteOpen', open ? 'yes' : 'no');
   audit('admin', 'admin', '', 'invite link', (open ? 'opened' : 'closed') + (code ? ', new code' : ''));
   return apiPilotStats(pin);
@@ -234,7 +233,7 @@ function apiParentSetAge(pin, name, choice) {
     lock.releaseLock();
   }
   audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'kid age', kid.Name + ': ' + label);
-  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
+  return parentView(access);
 }
 
 // Deletes a kid's assignments for days she did not play (a played day keeps its row, so the history stays).

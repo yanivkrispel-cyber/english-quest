@@ -39,7 +39,7 @@ const ctx = {
     computeHmacSha256Signature: (value, key) => toSigned(crypto.createHmac('sha256', key).update(value, 'utf8').digest()),
     base64EncodeWebSafe: v => (typeof v === 'string' ? Buffer.from(v, 'utf8') : Buffer.from(v.map(b => b & 255))).toString('base64').replace(/\+/g, '-').replace(/\//g, '_') },
   LockService: { getScriptLock: () => ({ waitLock(){}, tryLock(){ return true; }, releaseLock(){} }) },
-  PropertiesService: { getScriptProperties: () => ({ p: {}, getProperty(k){ return this.p[k] || null; }, setProperty(k,v){ this.p[k]=v; }, setProperties(o){ Object.assign(this.p, o); }, getProperties(){ return Object.assign({}, this.p); } }) },
+  PropertiesService: { getScriptProperties: () => ({ p: {}, getProperty(k){ return this.p[k] || null; }, setProperty(k,v){ this.p[k]=v; }, setProperties(o){ Object.assign(this.p, o); }, getProperties(){ return Object.assign({}, this.p); }, deleteProperty(k){ delete this.p[k]; } }) },
   ScriptApp: { getProjectTriggers: () => [], newTrigger: n => { trigLog.push(n); const t = { timeBased: () => t, everyDays: () => t, everyMinutes: () => t, atHour: () => t, inTimezone: () => t, onWeekDay: () => t, create: () => t }; return t; },
     WeekDay: {}, getService: () => ({ getUrl: () => 'APPURL' }) },
   CacheService: { getScriptCache: () => cacheMock },
@@ -66,7 +66,7 @@ if (PLATFORM_MODE) {
 }
 vm.createContext(ctx);
 const strict = PLATFORM_MODE ? '"use strict";' : '';
-for (const f of ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Relay.js', 'Admin.js', 'Privacy.js']) if (f !== 'NestIndex.js' || fs.existsSync('src/' + f)) vm.runInContext(strict + fs.readFileSync('src/' + f, 'utf8'), ctx, { filename: f });
+for (const f of ['Catalog.js', 'Code.js', 'Auth.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Relay.js', 'Admin.js', 'Privacy.js']) if (f !== 'NestIndex.js' || fs.existsSync('src/' + f)) vm.runInContext(strict + fs.readFileSync('src/' + f, 'utf8'), ctx, { filename: f });
 if (PLATFORM_MODE) vm.runInContext(fs.readFileSync('platform/overrides.js', 'utf8'), ctx, { filename: 'overrides.js' });
 // Each call is a fresh request: per-request table memo resets, CacheService persists.
 const run = s => {
@@ -75,6 +75,11 @@ const run = s => {
   G.markAll();   // the scenarios edit sheet rows directly between calls
   try { return vm.runInContext(s, ctx); } finally { G.flush(); }
 };
+// A parent's credential (src/Auth.js): the family and its code. famCred('5566') finds the family by its code in the sheet
+// (no family has it: 'g:nope:<code>'); scripts call it as __fc('5566'). setCode puts a known code on a family made by apiJoin.
+const famCred = code => { const h = sheets.Groups.rows[0], r = sheets.Groups.rows.find(x => String(x[h.indexOf('ParentPIN')]) === String(code)); return 'g:' + (r ? r[h.indexOf('Id')] : 'nope') + ':' + code; };
+const setCode = (gid, code) => { const h = sheets.Groups.rows[0]; sheets.Groups.rows.find(x => String(x[h.indexOf('Id')]) === String(gid))[h.indexOf('ParentPIN')] = code; run("invalidate('Groups')"); };
+ctx.__fc = famCred;
 let day = '2026-10-08';
 run('today = function(){ return __day; }'); ctx.__day = day;
 const pins = { Ziv: '4821', Ron: '7356', Aviv: '2694' };
@@ -130,7 +135,7 @@ ctx.__day = '2026-10-15';
 D = run(`apiDashboard('Noa', '${noaPin}')`);
 console.log('Noa next day:', D.week.filter(w => !w.beforeStart && !w.isFuture).map(w => w.day + ':' + w.section + ':' + w.level).join(' '));
 const gp = run(`apiParent('1234')`).groups.find(g => g.id === gid).parentPin;
-P = run(`apiParent('${gp}')`);
+P = run(`apiParent('${famCred(gp)}')`);
 console.log('group parent:', P.isAdmin, P.groups.length, P.groups[0].name, P.groups[0].girls.map(k => k.girl.name), 'pins hidden:', P.groups[0].girls.every(k => k.pin === undefined), 'sheet hidden:', P.sheetUrl === null);
 console.log('public group:', JSON.stringify(run(`apiPublic('${gid}')`).girls.map(k => k.name)), 'default:', JSON.stringify(run(`apiPublic('')`).girls.map(k => k.name)));
 try { run(`apiPublic('nope')`); } catch (e) { console.log('bad link ok:', e.message); }
@@ -168,13 +173,13 @@ let S = run("apiParent('1234')");
 console.log('settings:', JSON.stringify(S.settings));
 S = run("apiAdminSettings('1234','16','')"); console.log('after save:', JSON.stringify(S.settings));
 try { run("apiAdminSettings('1234','18','17')"); } catch (e) { console.log('order check ok:', e.message); }
-try { run("apiAdminSettings('" + run("apiParent('1234')").groups[1].parentPin + "','18','')"); } catch (e) { console.log('non-admin ok:', e.message); }
+try { run("apiAdminSettings('" + famCred(run("apiParent('1234')").groups[1].parentPin) + "','18','')"); } catch (e) { console.log('non-admin ok:', e.message); }
 console.log('AppUrl fixed:', run("getSetting('AppUrl')").includes('AKfycbzN95'));
 
 // ---- parent notifications ----
 ctx.__day = '2026-10-20';
 pushStatus = () => 201;
-const gartId = run("apiParent('1234')").groups[1].id, gartPin = run("apiParent('1234')").groups[1].parentPin;
+const gartId = run("apiParent('1234')").groups[1].id, gartPin = 'g:' + gartId + ':' + run("apiParent('1234')").groups[1].parentPin;
 let pp = run("apiParentPushSubscribe('1234','https://fcm.googleapis.com/fcm/send/dad','Android',true)");
 console.log('admin subscribe:', JSON.stringify(pp), JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/dad')")));
 run("apiParentPushSubscribe('" + gartPin + "','https://web.push.apple.com/mom','iPhone',false)");
@@ -1146,16 +1151,16 @@ fails('joining on a closed link', () => J('friends', fam));
 run("setSetting('InviteOpen', 'yes')");
 fails('joining with a wrong code', () => J('nope', fam));
 fails('joining without consent', () => J('friends', Object.assign({}, fam, { consent: false })));
-fails('joining with a 3-digit parent code', () => J('friends', Object.assign({}, fam, { parentPin: '123' })));
-fails('joining with the admin PIN as parent code', () => J('friends', Object.assign({}, fam, { parentPin: '1234' })));
 const r = JSON.parse(J('friends', fam));
 const g = rows('Groups').find(x => x.Id === r.groupId);
-check('a family joins: group with its parent code, consent and join time', g && g.ParentPIN === '5566' && g.Consent && g.Joined && g.Parent === 'Dana', JSON.stringify(g));
+check('a family joins: group with its parent code, consent and join time', g && g.ParentPIN === r.parentPin && g.Consent && g.Joined && g.Parent === 'Dana', JSON.stringify(g));
+check('the parents code is made by the server: 6 digits, not the one an old app sent', /^\d{6}$/.test(r.parentPin) && r.parentPin !== '5566', r.parentPin);
+setCode(r.groupId, '5566');
 check('a taken kid name gets the family initial', r.kids[1].name === 'Tali L.' && r.kids[0].name === 'Shira', JSON.stringify(r.kids));
 const noa = rows('Girls').find(x => x.Name === 'Shira');
 check('the grade sets the starting level', noa.Level === 'a2' && rows('Girls').find(x => x.Name === 'Tali L.').Level === 'b1-b2');
-fails('a second family with the same parent code', () => J('friends', Object.assign({}, fam, { family: 'Cohen', kids: [{ name: 'Yael', grade: 4 }] })));
-const pp = run("apiParent('5566')").groups[0].girls;
+check('a sign-up never compares codes (no "taken" answer to learn codes from)', !/תפוס|getSetting\('AdminPIN'\)|ParentPIN\) ===/.test(run('apiJoin.toString()')));
+const pp = run("apiParent(__fc('5566'))").groups[0].girls;
 check('a parent sees each kid\'s code, to send her link again', pp.length === 2 && pp.every(k => /^\d{4}$/.test(k.pin)) && pp.find(k => k.girl.name === 'Shira').pin === r.kids[0].pin);
 const nd = run(`apiDashboard('Shira', '${r.kids[0].pin}')`);
 check('a new kid starts with the in-app level test', !!nd.levelTest && nd.girl.inApp === true);
@@ -1168,7 +1173,7 @@ check('the retest is due after four weeks', run(`apiDashboard('Shira', '${r.kids
 const rd = run(`apiPlacement('Shira', '${r.kids[0].pin}', 'B', 'b1-b2', 17, 20, '{}')`);
 check('the retest is kept and does not change the level', rd.placement.b.label === 'B1+' && rd.girl.level === 'b1' && !rd.placement.due);
 ctx.__day = day0;
-run(`apiFeedback('5566', 'The kids love the duel', 5)`);
+run(`apiFeedback(__fc('5566'), 'The kids love the duel', 5)`);
 check('a parent\'s feedback is kept', rows('Feedback').some(f => f.Who === r.groupId && f.Score === 5 && /duel/.test(f.Text)));
 fails('feedback with a wrong parent code', () => run(`apiFeedback('9999', 'hi', 3)`));
 run("setSetting('TeacherCode', '424242')");
@@ -1184,7 +1189,7 @@ check('the families from before the link are on the board too', old && old.joine
 check('the public link is the new address', run('publicUrl()') === 'https://coco.coachkrispel.com/');
 run("setSetting('PublicUrl', 'https://yanivkrispel-cyber.github.io/english-quest/'); PropertiesService.getScriptProperties().setProperty('setup', 'v17'); CacheService.getScriptCache().put('SETUP', 'v17', 60); ensureSetup()");
 check('the v18 setup moves an old GitHub Pages link to the new address', run("getSetting('PublicUrl')") === 'https://coco.coachkrispel.com/');
-fails('the board for a parent', () => run(`apiPilotStats('5566')`));
+fails('the board for a parent', () => run(`apiPilotStats(__fc('5566'))`));
 check('the admin closes the invite link', run(`apiPilotInvite('1234', false, '')`).invite.open === false);
 // Writing Fridays: a kid with missions gets a mission (Use of English or grammar), not a link.
 const w = run("JSON.stringify(nextExercise('writing', 'a2', {}, true))");
@@ -1241,17 +1246,23 @@ post('apiDashboard', ['Ron', '7356'], 'Mozilla/5.0 (X11; Linux) something long')
 check('a made-up device label is not kept', rows().slice(-1)[0].Who === 'Ron' && rows().slice(-1)[0].Device === '');
 post('apiDashboard', ['Ron', '0000'], 'Computer, browser');
 const w = rows().slice(-1)[0];
-check('a wrong PIN is kept, without the PIN', w.Action === 'wrong PIN' && w.Who === 'Ron' && w.Ok === 'no' && w.Detail === 'attempt 1' && !JSON.stringify(w).includes('0000'), JSON.stringify(w));
+check('a wrong PIN is kept, without the PIN', w.Action === 'wrong PIN' && w.Who === 'Ron' && w.Ok === 'no' && w.Detail === '1 try' && !JSON.stringify(w).includes('0000'), JSON.stringify(w));
+const nW = sheets.Audit.rows.length;
 for (let i = 0; i < 7; i++) post('apiDashboard', ['Ron', '0000'], 'Computer, browser');
-check('the eighth wrong PIN says the lock', rows().slice(-1)[0].Detail === 'locked for 15 minutes', rows().slice(-1)[0].Detail);
+check('wrong PINs are not written during the call', sheets.Audit.rows.length === nW);
+check('the next seven are one line that says the lock', rows().slice(-1)[0].Detail === '7 tries, then locked for 15 minutes' && rows().length === nW, rows().slice(-1)[0].Detail);
+const nU = rows().length, fU = Object.keys(cacheStore).filter(k => k.startsWith('F:')).length;
+for (let i = 0; i < 12; i++) post('apiDashboard', ['Nobody' + i, '1111'], 'Computer, browser');
+check('names that do not exist keep nothing: no audit line, no lockout key', rows().length === nU && Object.keys(cacheStore).filter(k => k.startsWith('F:')).length === fU &&
+  /Wrong PIN/.test(post('apiDashboard', ['Nobody', '1111']).error));
 const before = rows().length;
 post('apiDashboard', ['Ron', '0000'], 'Computer, browser');
 check('tries while locked add nothing', rows().length === before);
 Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
-post('apiParent', ['5566'], 'Computer, browser');
+post('apiParent', [famCred('5566').replace(/5566$/, '9999')], 'Computer, browser');
 post('apiParent', ['1234'], 'Android phone, app');
 run("REQ_DEV = ''");
-check('wrong parent PIN and the admin open are kept', rows().some(r => r.Role === 'parent' && r.Action === 'wrong PIN') && rows().slice(-1)[0].Role === 'admin' && rows().slice(-1)[0].Action === 'open');
+check('wrong parent code and the admin open are kept', rows().some(r => r.Role === 'parent' && r.Action === 'wrong code' && r.Who === 'Levi') && rows().slice(-2).some(r => r.Role === 'admin' && r.Action === 'open'));
 // perf phase 2: an open waits in the cache (no sheet write in the call), carries the phone's last open, and calls are timed.
 Object.keys(cacheStore).filter(k => k.startsWith('AO:')).forEach(k => delete cacheStore[k]);
 const nRaw = sheets.Audit.rows.length;
@@ -1282,7 +1293,7 @@ ctx.__e = cell('Girls', 2, 4, 'b1'); run('onEdit(__e)');
 check('a hand edit of a level keeps the value', rows().slice(-1)[0].Detail === 'Girls!D2 (Level) = b1', rows().slice(-1)[0].Detail);
 ctx.__e = cell('Audit', 2, 4, 'x'); const nA = rows().length; run('onEdit(__e)');
 check('edits in the Audit tab itself are not kept', rows().length === nA);
-fails('the audit for a parent', () => run("apiAudit('5566', 7)"));
+fails('the audit for a parent', () => run("apiAudit(__fc('5566'), 7)"));
 const a = run("apiAudit('1234', 30)");
 check('the timeline is newest first', a.events.every((e, i) => !i || a.events[i - 1].at >= e.at));
 check('it merges practice with the trail', a.events.some(e => e.action === 'game') && a.events.some(e => e.action === 'open') && a.events.some(e => e.action === 'talk with Chacho'),
@@ -1300,6 +1311,7 @@ const fails = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + la
 const units = run('JSON.stringify(nestUnits())') ? JSON.parse(run('JSON.stringify(nestUnits())')) : [];
 run("apiPilotInvite('1234', true, 'nestcode')");
 const j = run(`apiJoin('nestcode', ${JSON.stringify({ family: 'Nesty', parent: 'Mia', parentPin: '7788', consent: true, kids: [{ name: 'Tali', age: 4 }, { name: 'Omer', age: 7 }, { name: 'Gal', grade: 5 }] })})`);
+setCode(j.groupId, '7788');
 check('a family joins with two Nest kids and a school kid', j.kids.length === 3 && j.kids[0].nest && j.kids[0].age === 4 && !j.kids[2].nest, JSON.stringify(j.kids.map(k => k.name + ':' + k.nest)));
 fails('an age outside 2 to 7 with no grade', () => run(`apiJoin('nestcode', ${JSON.stringify({ family: 'Baby', parent: 'Rui', parentPin: '7789', consent: true, kids: [{ name: 'Tiny', age: 1 }] })})`));
 const girl = n => run(`JSON.stringify(findGirl('${n}'))`) && JSON.parse(run(`JSON.stringify(findGirl('${n}'))`));
@@ -1329,8 +1341,8 @@ check('the same unit again is free play', d.free === true && sheets.Log.rows.fil
 check('one lesson a day by default: no next lesson', d.nest.perDay === 1 && d.nest.next === null, JSON.stringify([d.nest.perDay, d.nest.next]));
 d = run(`apiNestResult('${TALI}', '${tali.PIN}', '${today}', '${units[1][0]}', 6, 8, 200)`);
 check('the next day of the program today is free play while the parent allows one', d.free === true && sheets.Log.rows.filter(r => r[1] === TALI).length === 1);
-fails('lessons a day from another family', () => run(`apiParentNestPerDay('0000', '${TALI}', 2)`));
-run(`apiParentNestPerDay('7788', '${TALI}', 2)`);
+fails('lessons a day from another family', () => run(`apiParentNestPerDay(__fc('0000'), '${TALI}', 2)`));
+run(`apiParentNestPerDay(__fc('7788'), '${TALI}', 2)`);
 d = run(`apiDashboard('${TALI}', '${tali.PIN}')`);
 check('the parent allows two: the next day of the program is offered', d.nest.perDay === 2 && d.nest.next === units[1][0], JSON.stringify([d.nest.perDay, d.nest.next]));
 fails('a day further ahead as the extra lesson', () => { const r = run(`apiNestResult('${TALI}', '${tali.PIN}', '${today}', '${units[2][0]}', 6, 8, 200)`); if (r.free) throw new Error('free'); });
@@ -1338,31 +1350,29 @@ d = run(`apiNestResult('${TALI}', '${tali.PIN}', '${today}', '${units[1][0]}', 6
 check('one more lesson is logged, the program moves on, and the week still shows the day\'s own lesson',
   d.justEarned === 15 && sheets.Log.rows.filter(r => r[1] === TALI).length === 2 && d.nest.played.includes(units[1][0]) && d.nest.next === null
   && d.week.find(w => w.isToday).percent === Math.round(3 / 8 * 100), JSON.stringify([d.justEarned, d.nest.next, d.week.find(w => w.isToday).percent]));
-run(`apiParentNestPerDay('7788', '${TALI}', 1)`);
+run(`apiParentNestPerDay(__fc('7788'), '${TALI}', 1)`);
 // Chacho's arcade (specs/nest.md, stage C): 15 minutes a day by default; the parent sets 0 (no limit) to 60, audited.
 check('the arcade has 15 minutes a day by default', d.nest.arcadeMin === 15, JSON.stringify(d.nest.arcadeMin));
-fails('arcade minutes from another family', () => run(`apiParentNestArcade('0000', '${TALI}', 30)`));
-fails('arcade minutes out of range', () => run(`apiParentNestArcade('7788', '${TALI}', 90)`));
-run(`apiParentNestArcade('7788', '${TALI}', 0)`);
+fails('arcade minutes from another family', () => run(`apiParentNestArcade(__fc('0000'), '${TALI}', 30)`));
+fails('arcade minutes out of range', () => run(`apiParentNestArcade(__fc('7788'), '${TALI}', 90)`));
+run(`apiParentNestArcade(__fc('7788'), '${TALI}', 0)`);
 check('the parent turns the arcade limit off', run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.arcadeMin === 0);
-run(`apiParentNestArcade('7788', '${TALI}', 30)`);
+run(`apiParentNestArcade(__fc('7788'), '${TALI}', 30)`);
 check('half an hour, and it is in the audit trail', run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.arcadeMin === 30
   && sheets.Audit.rows.some(r => r.join('|').includes('nest arcade minutes') && r.join('|').includes(TALI + ': 30')));
-run(`apiParentNestArcade('7788', '${TALI}', 15)`);
+run(`apiParentNestArcade(__fc('7788'), '${TALI}', 15)`);
 // The living home and the arcade (specs/nest-home.md, nest.md): on for every Nest kid since 2026-10-29; 'off' closes them.
 check('the living home and the arcade are on for every Nest kid, and the days played count distinct dates', d.nest.home === true && d.nest.arcade === true && d.nest.days === 1, JSON.stringify([d.nest.home, d.nest.arcade, d.nest.days]));
 run("setSetting('NestHome', 'off'); setSetting('NestArcade', 'off')");
 check('NestHome / NestArcade off closes them for everyone', run(`apiDashboard('${OMER}', '${omer.PIN}')`).nest.home === false && run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.arcade === false);
 run("setSetting('NestHome', ''); setSetting('NestArcade', '')");
 const nestyId = run("JSON.stringify(groups().filter(function (g) { return g.Name === 'Nesty'; })[0].Id)").replace(/"/g, '');
-fails('a parents code from a parent', () => run(`apiAdminParentPin('7788', '${nestyId}', '3434')`));
-const otherPin = run("JSON.stringify(groups().filter(function (g) { return g.Name !== 'Nesty' && g.ParentPIN; })[0].ParentPIN)").replace(/"/g, '');
-fails('a parents code that another family has', () => run(`apiAdminParentPin('1234', '${nestyId}', '${otherPin}')`));
-fails('a parents code of 3 digits', () => run(`apiAdminParentPin('1234', '${nestyId}', '343')`));
-run(`apiAdminParentPin('1234', '${nestyId}', '3434')`);
+fails('a parents code from a parent', () => run(`apiAdminParentPin(__fc('7788'), '${nestyId}', '343434')`));
+fails('a parents code of 4 digits (new codes have 6)', () => run(`apiAdminParentPin('1234', '${nestyId}', '3434')`));
+run(`apiAdminParentPin('1234', '${nestyId}', '343434')`);
 check('the admin sets a family\'s parents code: the new one opens the family, the old one does not',
-  run("apiParent('3434')").groups.length === 1 && (() => { try { run("apiParent('7788')"); return false; } catch (e) { return true; } })());
-run(`apiAdminParentPin('1234', '${nestyId}', '7788')`);
+  run(`apiParent('g:${nestyId}:343434')`).groups.length === 1 && (() => { try { run(`apiParent('g:${nestyId}:7788')`); return false; } catch (e) { return true; } })());
+setCode(nestyId, '7788');
 const day0 = ctx.__day; ctx.__day = run(`addDays('${day0}', 1)`);
 d = run(`apiDashboard('${TALI}', '${tali.PIN}')`);
 check('the next day brings the next unit not played yet (the extra lesson took the second)', units.length < 3 || d.nest.today === units[2][0], d.nest.today);
@@ -1382,58 +1392,81 @@ const fails = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + la
 const kid = n => JSON.parse(run(`JSON.stringify(findGirl(${JSON.stringify(n)}))`));
 run("apiPilotInvite('1234', true, 'agecode')");
 const j = run(`apiJoin('agecode', ${JSON.stringify({ family: 'Erezish', parent: 'Gil', parentPin: '6611', consent: true, kids: [{ name: 'Lilo', grade: 3 }, { name: 'Tomer', grade: 6 }] })})`);
+setCode(j.groupId, '6611');
 const LILO = j.kids[0].name, TOMER = j.kids[1].name;
 let d = run(`apiDashboard(${JSON.stringify(LILO)}, '${kid(LILO).PIN}')`);
 check('a grade 3 kid starts with the level test', !!d.levelTest && !d.nest);
-fails('a parent of another group', () => run(`apiParentSetAge('7788', ${JSON.stringify(LILO)}, { age: 5 })`));
-fails('an age of 9', () => run(`apiParentSetAge('6611', ${JSON.stringify(LILO)}, { age: 9 })`));
-const p = run(`apiParentSetAge('6611', ${JSON.stringify(LILO)}, { age: 5 })`);
+fails('a parent of another group', () => run(`apiParentSetAge(__fc('7788'), ${JSON.stringify(LILO)}, { age: 5 })`));
+fails('an age of 9', () => run(`apiParentSetAge(__fc('6611'), ${JSON.stringify(LILO)}, { age: 9 })`));
+const p = run(`apiParentSetAge(__fc('6611'), ${JSON.stringify(LILO)}, { age: 5 })`);
 check('the parent view comes back', p.groups.length === 1 && p.groups[0].girls.some(g => g.girl.name === LILO && g.nest));
 d = run(`apiDashboard(${JSON.stringify(LILO)}, '${kid(LILO).PIN}')`);
 check('age 5 moves her into the Nest, the pending level test is gone', kid(LILO).Level === 'nest' && Number(kid(LILO).Age) === 5 && !d.levelTest && d.nest && d.nest.today, JSON.stringify({ lv: kid(LILO).Level, lt: d.levelTest, nest: d.nest }));
 const aud = sheets.Audit.rows.slice(-1)[0];
 check('the change is in the audit trail', aud.includes('kid age') && aud.join('|').includes("Chacho's Nest, age 5"), aud.join('|'));
 run(`apiPlacement(${JSON.stringify(TOMER)}, '${kid(TOMER).PIN}', 'A', 'b1', 15, 20, '')`);
-run(`apiParentSetAge('6611', ${JSON.stringify(TOMER)}, { grade: 4 })`);
+run(`apiParentSetAge(__fc('6611'), ${JSON.stringify(TOMER)}, { grade: 4 })`);
 check('a class change keeps a tested level', kid(TOMER).Level === 'b1' && Number(kid(TOMER).Age) === 10, kid(TOMER).Level);
-run(`apiParentSetAge('6611', ${JSON.stringify(LILO)}, { grade: 3 })`);
+run(`apiParentSetAge(__fc('6611'), ${JSON.stringify(LILO)}, { grade: 3 })`);
 d = run(`apiDashboard(${JSON.stringify(LILO)}, '${kid(LILO).PIN}')`);
 check('back from the Nest with no test: the class level and the level test', kid(LILO).Level === 'a1' && !d.nest && !!d.levelTest, JSON.stringify({ lv: kid(LILO).Level, lt: !!d.levelTest }));
 run("apiPilotInvite('1234', false, '')");
 }
 
-// The move to Cloudflare (src/Relay.js): inert by default, freeze, relay, export, and the admin's calls in every mode.
+// The move to Cloudflare (src/Relay.js): inert by default, freeze, relay, export. Since the night review (2026-11-01) the
+// mode and the export are run from the Apps Script editor only, and the relay and the nightly copy talk to the app's own
+// server only (a token is never kept for another address).
 if (!PLATFORM_MODE) {
   const relayLog = [];
-  ctx.UrlFetchApp.fetch = (url, o) => { relayLog.push({ url, body: o.payload }); return { getResponseCode: () => 200, getContentText: () => JSON.stringify({ ok: true, data: 'from cloudflare' }) }; };
+  ctx.UrlFetchApp.fetch = (url, o) => { relayLog.push({ url, body: o.payload, headers: o.headers || {} }); return { getResponseCode: () => 200, getContentText: () => JSON.stringify({ ok: true, data: 'from cloudflare' }) }; };
   const post = (fn, args) => JSON.parse(run('doPost(' + JSON.stringify({ postData: { contents: JSON.stringify({ fn, args }) } }) + ').getContent()'));
   const check2 = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+  const throws = (s, re) => { try { run(s); return false; } catch (e) { return re.test(e.message); } };
   check2('relay: inert while CF_MODE is empty', post('apiPublic', ['']).data.group && relayLog.length === 0);
-  check2('relay: only the admin may change the mode', post('apiCfMode', ['9999', 'freeze', '']).ok === false);
-  Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
-  check2('relay: no export unless frozen (it holds every PIN and the push key)', /Freeze first/.test(post('apiCfExport', ['1234']).error));
-  Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
-  check2('relay: freeze refuses other calls', post('apiCfMode', ['1234', 'freeze', '']).ok && /moving/.test(post('apiPublic', ['']).error));
-  const ex = post('apiCfExport', ['1234']);
-  check2('relay: the export has every sheet and the script properties, Dates as $d', ex.ok && ex.data.names.indexOf('Girls') >= 0 && ex.data.sheets.Girls.length > 1 &&
-    JSON.stringify(ex.data.sheets.Log).indexOf('$d') > 0 && typeof ex.data.props === 'object', ex.ok ? ex.data.names.length + ' sheets' : ex.error);
-  check2('relay: a relay needs the /api address', post('apiCfMode', ['1234', 'relay', 'https://x.example/']).ok === false);
+  check2('relay: the mode and the export are no web calls any more', /Unknown call/.test(post('apiCfMode', ['1234', 'relay', 'https://evil.example/api', 'x']).error) &&
+    /Unknown call/.test(post('apiCfExport', ['1234']).error) && !/apiCf/.test(run('Object.keys(api()).join()')));
+  check2('relay: no export unless frozen (it holds every PIN and the push key)', throws('cfExport()', /Freeze first/));
+  run("cfSetMode('freeze')");
+  check2('relay: freeze refuses other calls', /moving/.test(post('apiPublic', ['']).error));
+  const ex = { ok: true, data: JSON.parse(run('JSON.stringify(cfExport())')) };
+  check2('relay: the export has every sheet and the script properties, Dates as $d', ex.data.names.indexOf('Girls') >= 0 && ex.data.sheets.Girls.length > 1 &&
+    JSON.stringify(ex.data.sheets.Log).indexOf('$d') > 0 && typeof ex.data.props === 'object', ex.data.names.length + ' sheets');
+  check2('relay: a relay needs the /api address', throws("cfSetMode('relay', 'https://coco.coachkrispel.com/')", /\/api address/));
+  check2('relay: never to another server', throws("cfSetMode('relay', 'https://evil.example/api', 'x')", /own server/) && props.getProperty('CF_MODE') === 'freeze');
   trigLog.length = 0;
-  post('apiCfMode', ['1234', 'relay', 'https://coco.example/api', 't0k']);
+  props.setProperty('CF_RELAY_KEY', 'rk1');
+  run("cfSetMode('relay', 'https://coco.coachkrispel.com/api', 't0k')");
   check2('relay: the move stops the reminders here and starts the nightly copy', trigLog.join() === 'cfMirror', trigLog.join());
   const r = post('apiDashboard', ['Aviv', '2694']);
-  check2('relay: calls go to the new server and its answer comes back', r.data === 'from cloudflare' && relayLog.length === 1 && relayLog[0].url === 'https://coco.example/api' && JSON.parse(relayLog[0].body).fn === 'apiDashboard');
+  check2('relay: calls go to the new server with the relay key, and its answer comes back', r.data === 'from cloudflare' && relayLog.length === 1 &&
+    relayLog[0].url === 'https://coco.coachkrispel.com/api' && JSON.parse(relayLog[0].body).fn === 'apiDashboard' && relayLog[0].headers['X-Coco-Relay'] === 'rk1');
   // the nightly copy: the new server's export is written into the sheets
   const exp = JSON.parse(JSON.stringify(ex.data));
   exp.sheets.Girls[1][0] = 'Copied';
   ctx.UrlFetchApp.fetch = (url, o) => { relayLog.push({ url, token: o.headers && o.headers['X-Admin-Token'] }); return { getResponseCode: () => 200, getContentText: () => JSON.stringify({ ok: true, data: exp }) }; };
   const before = sheets.Log.rows.length;
   run('cfMirror()');
-  check2('relay: the nightly copy writes the new server data into the sheet', relayLog[relayLog.length - 1].url === 'https://coco.example/admin/export' && relayLog[relayLog.length - 1].token === 't0k' &&
+  check2('relay: the nightly copy writes the new server data into the sheet', relayLog[relayLog.length - 1].url === 'https://coco.coachkrispel.com/admin/export' && relayLog[relayLog.length - 1].token === 't0k' &&
     sheets.Girls.rows[1][0] === 'Copied' && sheets.Log.rows.length === before && sheets.Log.rows[1][0] instanceof SimDate, sheets.Girls.rows[1][0]);
   sheets.Girls.rows[1][0] = ex.data.sheets.Girls[1][0];
+  // An address that is not the app's own (put there by hand or by an old version): nothing goes there, the token least of all.
+  props.setProperty('CF_URL', 'https://evil.example/api'); cacheMock.remove('CFMODE');
+  const nLog = relayLog.length;
+  check2('relay: the nightly copy refuses another address', throws('cfMirror()', /own server/) && relayLog.length === nLog);
+  check2('relay: calls are not relayed to another address', /busy/.test(post('apiDashboard', ['Aviv', '2694']).error) && relayLog.length === nLog);
+  run("cfSetMode('relay', 'https://coco.coachkrispel.com/api')");
+  check2('relay: a new address drops the token', props.getProperty('CF_TOKEN') === null);
+  props.setProperty('CF_HOSTS', 'coco-api.owner.workers.dev');
+  run("cfSetMode('relay', 'https://coco-api.owner.workers.dev/api', 't2')");
+  run('cfModeRelay()');
+  check2('relay: a host in CF_HOSTS is allowed; moving back to the app address drops its token', props.getProperty('CF_TOKEN') === null && props.getProperty('CF_URL') === 'https://coco.coachkrispel.com/api');
+  run("cfSetMode('relay', 'https://coco-api.owner.workers.dev/api', 't2')");
+  run("cfSetMode('relay', 'https://coco-api.owner.workers.dev/api')");
+  check2('relay: setting the same address again keeps the token', props.getProperty('CF_TOKEN') === 't2');
+  props.deleteProperty('CF_HOSTS'); props.deleteProperty('CF_RELAY_KEY');
   trigLog.length = 0;
-  check2('relay: back to normal from outside, reminders back', post('apiCfMode', ['1234', '', '']).ok && post('apiPublic', ['']).data.group && trigLog.indexOf('dailyReminder') >= 0 && trigLog.indexOf('cfMirror') < 0);
+  run('cfModeNormal()');
+  check2('relay: back to normal from the editor, reminders back, token gone', post('apiPublic', ['']).data.group && trigLog.indexOf('dailyReminder') >= 0 && trigLog.indexOf('cfMirror') < 0 && props.getProperty('CF_TOKEN') === null);
 }
 
 // The admin's Data card (src/Admin.js): edits that used to be made by hand in the sheet.
@@ -1474,18 +1507,19 @@ if (!PLATFORM_MODE) {
   ['Eraseme', 'Keepme'].forEach(n => run("apiPlacement('" + n + "', '" + pinOf(n) + "', 'A', 'a2', 14, 20, JSON.stringify({ start: 'a2', blocks: [] }))"));
   run("apiGameResult('Eraseme', '" + pinOf('Eraseme') + "', 'match', 'a2', 4, 5, [], [], 0)");
   run("apiGameResult('Keepme', '" + pinOf('Keepme') + "', 'match', 'a2', 3, 5, [], [], 0)");
-  const ex = run("apiExportData('" + made.pin + "', '')");
+  const madeCred = 'g:' + gid + ':' + made.pin;
+  const ex = run("apiExportData('" + madeCred + "', '')");
   check4('privacy: the parent downloads the family data', ex.family === 'Erase family' && ex.kids.length === 2 && ex.tables.Games.length >= 2 && ex.tables.Girls.length === 2);
-  rej('privacy: deleting without the word', () => run("apiDeleteData('" + made.pin + "', '', 'Eraseme', 'yes')"));
-  rej('privacy: a kid of another family', () => run("apiDeleteData('" + made.pin + "', '', 'Ziv', 'DELETE')"));
+  rej('privacy: deleting without the word', () => run("apiDeleteData('" + madeCred + "', '', 'Eraseme', 'yes')"));
+  rej('privacy: a kid of another family', () => run("apiDeleteData('" + madeCred + "', '', 'Ziv', 'DELETE')"));
   const has = n => Object.keys(sheets).filter(t => sheets[t].rows.slice(1).some(r => r.some(c => String(c).trim() === n)));
   check4('privacy: the kid is in the tabs before', has('Eraseme').length >= 3, has('Eraseme').join(','));
-  const r1 = run("apiDeleteData('" + made.pin + "', '', 'Eraseme', 'מחיקה')");
+  const r1 = run("apiDeleteData('" + madeCred + "', '', 'Eraseme', 'מחיקה')");
   check4('privacy: one kid deleted, nothing of her left, her sister kept', r1.deleted === 'kid' && has('Eraseme').length === 0 && has('Keepme').length >= 2, 'left in: ' + has('Eraseme').join(','));
-  const r2 = run("apiDeleteData('" + made.pin + "', '', '', 'DELETE')");
+  const r2 = run("apiDeleteData('" + madeCred + "', '', '', 'DELETE')");
   check4('privacy: the whole family deleted, the family id is nowhere', r2.deleted === 'family' && has('Keepme').length === 0 && has(String(gid)).length === 0, 'left in: ' + has('Keepme').concat(has(String(gid))).join(','));
   Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
-  rej('privacy: the deleted family code no longer opens anything', () => run("apiParent('" + made.pin + "')"));
+  rej('privacy: the deleted family code no longer opens anything', () => run("apiParent('" + madeCred + "')"));
   check4('privacy: the audit trail says a family was deleted, without names', sheets.Audit.rows.some(r => r[5] === 'delete' && /a family/.test(r[6]) && !/Erase|Keep/.test(r.join('|'))));
   // the admin deletes from the Data card: a family by its id
   run("apiAdminAddGroup('1234', 'Admin erase', '')");
@@ -1523,6 +1557,95 @@ if (!PLATFORM_MODE) {
   const e2 = JSON.parse(run("JSON.stringify(entitlement('family'))"));
   check5('plans: a plan row is read', e2.plan === 'family-yearly' && e2.source === 'apple');
   sheets.Plans.rows.pop();
+}
+
+// Signing in (src/Auth.js, the night review of 2026-11-01): a family and its code, lockouts per family and per address,
+// nothing kept for made-up names, the admin's passphrase, remembered phones with a signed session, randomness.
+{
+  const check6 = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+  const err = f => { try { f(); return ''; } catch (e) { return e.message; } };
+  const post = (fn, args, ip) => JSON.parse(run('doPost(' + JSON.stringify({ postData: { contents: JSON.stringify({ fn, args }) }, ip }) + ').getContent()'));
+  const clearLocks = () => Object.keys(cacheStore).filter(k => /^(F:|IP:|IPA:|AW)/.test(k)).forEach(k => delete cacheStore[k]);
+  clearLocks();
+  const fams = run("JSON.stringify(groups().filter(function (g) { return String(g.ParentPIN || '').trim(); }).map(function (g) { return { id: String(g.Id), name: g.Name, code: String(g.ParentPIN) }; }))");
+  const [A, B] = JSON.parse(fams);
+  // the family and its code
+  check6('a family code opens its own family only', run(`apiParent('g:${A.id}:${A.code}')`).groups.map(g => g.id).join() === A.id);
+  check6('a family code with another family is wrong', /Wrong PIN/.test(err(() => run(`apiParent('g:${B.id}:${A.code}')`))));
+  check6('a bare code (an old copy of the app) opens nothing and asks to update', post('apiParent', [A.code]).update === true && !post('apiParent', [A.code]).ok);
+  check6('the family by its name, any case, with "משפחת"', run(`apiParent(${JSON.stringify('n:משפחת ' + A.name.toUpperCase() + ':' + A.code)})`).groups[0].id === A.id);
+  check6('a family name nobody has: the same answer', /Wrong PIN/.test(err(() => run(`apiParent('n:No such family:${A.code}')`))));
+  clearLocks();
+  for (let i = 0; i < 8; i++) err(() => run(`apiParent('g:${A.id}:000000')`));
+  check6('eight wrong codes lock that family only', /Too many/.test(err(() => run(`apiParent('g:${A.id}:${A.code}')`))) && run(`apiParent('g:${B.id}:${B.code}')`).groups[0].id === B.id);
+  check6('the admin is not locked by a family', run("apiParent('1234')").isAdmin === true);
+  run('auditFlush()');
+  clearLocks();
+  // per address: many names, one address
+  const nAudit = sheets.Audit.rows.length, nF = Object.keys(cacheStore).filter(k => k.startsWith('F:')).length;
+  for (let i = 0; i < 50; i++) post('apiDashboard', ['Ghost' + i, '1111'], '203.0.113.9');
+  run('auditFlush()');
+  check6('50 made-up names wrote nothing: no audit line, no lockout key', sheets.Audit.rows.length === nAudit && Object.keys(cacheStore).filter(k => k.startsWith('F:')).length === nF);
+  const blocked = post('apiDashboard', ['Aviv', '2694'], '203.0.113.9');
+  check6('an address with 50 wrong PINs over any names is blocked, even with a right PIN', !blocked.ok && /Too many attempts/.test(blocked.error), blocked.error);
+  check6('another address still signs in', post('apiDashboard', ['Aviv', '2694'], '198.51.100.7').ok === true);
+  check6('a wrong family code from a blocked address is not even checked', /Too many/.test(post('apiParent', ['g:' + A.id + ':000000'], '203.0.113.9').error) && !cacheStore['F:parent:' + A.id]);
+  for (let i = 0; i < 60; i++) post('apiDashboard', ['Ghost' + i, '1111'], 'relay');
+  check6('relayed calls (old copies, all from Google) have their own bigger bucket', post('apiDashboard', ['Aviv', '2694'], 'relay').ok === true);
+  check6('an address the Worker did not give is not used', run("cleanIp('1.2.3.4; DROP')") === '' && run("cleanIp('2001:db8::1')") === '2001:db8::1');
+  if (PLATFORM_MODE) {
+    run('auditFlush()');
+    check6('per-address counters stay in memory, never in the database', ctx.__sqlStore("SELECT k FROM kv WHERE k LIKE 'IP%' OR k = 'AW'").length === 0);
+  }
+  run("REQ_IP = ''"); clearLocks();
+  // remembered phones: a signed session instead of the code
+  const P1 = run(`apiParent('g:${A.id}:${A.code}')`), tok = P1.token;
+  check6('a sign-in with the code gives a session token, and the code view has the kids\' codes', /^pt\./.test(tok) && !P1.locked && P1.groups[0].girls.every(k => /^\d{4}$/.test(k.pin)), tok && tok.slice(0, 12));
+  const P2 = run(`apiParent('${tok}')`);
+  check6('the token opens the family, without kids\' codes, family code or a new token', P2.groups[0].id === A.id && P2.locked === true && P2.groups[0].girls.every(k => k.pin === undefined) && !P2.token);
+  check6('deleting and downloading need the code typed again', /Type the code again/.test(err(() => run(`apiExportData('${tok}', '')`))) && /Type the code again/.test(err(() => run(`apiDeleteData('${tok}', '', '', 'DELETE')`))));
+  check6('a changed token is refused', /Wrong PIN/.test(err(() => run(`apiParent('${tok.slice(0, -2) + (tok.slice(-2) === 'AA' ? 'BB' : 'AA')}')`))));
+  check6('a token for another family id is refused', /Wrong PIN/.test(err(() => run(`apiParent('${tok.replace('pt.' + A.id + '.', 'pt.' + B.id + '.')}')`))));
+  clockShift += 31 * 86400000;
+  check6('a token is good for 30 days', /Wrong PIN/.test(err(() => run(`apiParent('${tok}')`))));
+  clockShift -= 31 * 86400000;
+  setCode(A.id, '246810');
+  check6('changing the family code ends its sessions', /Wrong PIN/.test(err(() => run(`apiParent('${tok}')`))));
+  setCode(A.id, A.code);
+  check6('and the old code works again with its token', run(`apiParent('${tok}')`).groups[0].id === A.id);
+  const adm = run("apiParent('1234')").token;
+  check6('the admin\'s token sees the admin view but not the Data card', run(`apiParent('${adm}')`).isAdmin === true && /Type the code again/.test(err(() => run(`apiAdminData('${adm}')`))));
+  // the admin's passphrase (tools/admin-passphrase.js makes the hash)
+  const tool = require('../tools/admin-passphrase.js');
+  const phrase = 'apple banana orange lemon grapes tomato carrot';
+  const rec = tool.passRecord(phrase, 50);
+  check6('the tool and the server hash the same way', run(`passOk(${JSON.stringify(phrase)}, ${JSON.stringify(rec)})`) === true && run(`passOk('apple banana', ${JSON.stringify(rec)})`) === false);
+  check6('a hash in the wrong form is refused', /Not a passphrase/.test(err(() => run("adminPassSet('v1$1$x$y')"))));
+  run(`adminPassSet(${JSON.stringify(rec)})`);
+  check6('with a passphrase set, the old AdminPIN opens nothing', /Service update/.test(err(() => run("apiParent('1234')"))) && post('apiParent', ['1234']).update === true);
+  check6('the old admin token ends too', /Wrong PIN/.test(err(() => run(`apiParent('${adm}')`))));
+  check6('the passphrase opens the admin view, typed loosely on a phone', run(`apiParent(${JSON.stringify('Apple-Banana orange  LEMON grapes tomato carrot')})`).isAdmin === true);
+  for (let i = 0; i < 5; i++) post('apiParent', ['wrong words here today'], '192.0.2.5');
+  check6('five wrong passphrases block that address for the admin', /Too many/.test(post('apiParent', [phrase], '192.0.2.5').error) && post('apiParent', [phrase], '192.0.2.6').ok === true);
+  run("REQ_IP = ''");
+  run('auditFlush()');
+  check6('a wrong passphrase is in the audit trail, the words are not', sheets.Audit.rows.some(r => r.includes('wrong passphrase')) && !sheets.Audit.rows.some(r => r.join('|').includes('wrong words')));
+  check6('setting the passphrase is in the audit trail', sheets.Audit.rows.some(r => r.includes('admin passphrase')));
+  delete props.p.ADMIN_PASS;
+  run("PropertiesService.getScriptProperties().deleteProperty('ADMIN_PASS')");
+  clearLocks();
+  check6('back to the AdminPIN for the rest of the tests', run("apiParent('1234')").isAdmin === true);
+  // the teacher, and randomness
+  const tc = run("getSetting('TeacherCode')");
+  check6('the teacher code is checked with a lockout', run(`apiTeacherCheck('${tc}')`).ok === true && /Wrong PIN/.test(err(() => run("apiTeacherCheck('nope')"))));
+  check6('a new install makes a long teacher code', /^[a-z2-9]{12}$/.test(run('newTeacherCode()')));
+  const pins = Array.from({ length: 300 }, () => run('randomPin()')), codes = Array.from({ length: 50 }, () => run('newParentCode()'));
+  check6('kid PINs: 4 digits, spread out', pins.every(p => /^[1-9]\d{3}$/.test(p)) && new Set(pins).size > 270, new Set(pins).size);
+  check6('family codes: 6 digits', codes.every(c => /^[1-9]\d{5}$/.test(c)) && new Set(codes).size === 50);
+  check6('ids: 6 letters and digits', /^[a-z0-9]{6}$/.test(run('randomId()')) && run('randomId()') !== run('randomId()'));
+  check6('no Math.random in the server for codes, PINs or ids', !/Math\.random\(\)\.toString\(36\)|Math\.random\(\) \* 9000/.test(['Code.js', 'Pilot.js', 'Duels.js', 'Duos.js', 'Auth.js'].map(f => fs.readFileSync('src/' + f, 'utf8')).join('\n')));
+  check6('secrets compare in constant time', run("sameSecret('1234', ' 1234 ')") === true && run("sameSecret('1234', '1235')") === false && run("sameSecret('', '')") === false);
+  clearLocks();
 }
 
 // Platform mode: the database holds exactly what the server has in memory.
