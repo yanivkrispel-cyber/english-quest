@@ -4111,7 +4111,7 @@ function chatMatch(turn, text){
   return { b: n ? (turn.a || []).findIndex(x => chatFits(said, x)) : -1, n };
 }
 
-const MISSIONS_V = 4, MS_PARTS = ['Hook', 'Learn', 'Practice', 'Use it', 'Finish'];
+const MISSIONS_V = 5, MS_PARTS = ['Hook', 'Learn', 'Practice', 'Use it', 'Finish'];
 const MS_TYPES = { grammar: ['Grammar Lab', 7], vocabulary: ['Word Pack', 7], listening: ['Radio Show', 8], reading: ['Story Cards', 8],
   'use-of-english': ['Newsroom', 7], writing: ['Writer\'s Desk', 9] };
 let MS = null, msTick = null, msAudio = null;
@@ -4819,7 +4819,7 @@ async function previewMission(id, label){
 // Chacho says each line (a recording, or the phone's voice without one), the kid answers aloud with the mic button
 // (the phone's own speech recognition; nothing is recorded or sent but the words it heard), or with a tile. Every answer
 // moves the talk on; there is no wrong answer. A mission talk comes after Use it; a home scene once a day from home.
-const TALK_V = 6;
+const TALK_V = 7;
 const CHAT_PET = {
   start: ['Your turn soon! Tap the mic and talk.', 'Talk to Chacho! I am right here.', 'Speak English with Chacho. You can do it!'],
   voice: ['You said it!', 'Wow, great English!', 'Chacho understood you!', 'So cool! Keep going!', 'Yes! Out loud!'],

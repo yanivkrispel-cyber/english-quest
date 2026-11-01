@@ -236,7 +236,7 @@ Ideas not built yet: per-group reminder times, rewards redemption from the app (
 The friends' pilot (built 2026-10-26, spec `specs/pilot.md`, server `Pilot.js`, SETUP v16): self-signup from `?join=<code>`
 (Settings.InviteCode / InviteOpen, closed by default), the in-app level test (forms A and B, tab Placements), Hebrew parent area
 (`PHE` / `T()`; the admin stays English), feedback (tab Feedback), teacher review (`?missions&t=<Settings.TeacherCode>`), the
-admin Pilot card. 183 missions. Writing days give a mission instead of a link. Shown name: English with Chacho. Mission
+admin Pilot card. 239 missions (A1 and A2 have 59 each since 2026-11-01, the other levels 31). Writing days give a mission instead of a link. Shown name: English with Chacho. Mission
 writers can check a staging file alone: `MISSIONS_ONLY=<file> MISSIONS_FILE=<path> node test/missions-check.js`.
 
 Talk with Chacho (built 2026-10-26 overnight, spec `specs/talk.md`, server `src/Chat.js`, SETUP v17): scripted spoken talks,
