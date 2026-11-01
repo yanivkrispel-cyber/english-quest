@@ -47,7 +47,7 @@ function main(){
   Object.entries(G.spot || {}).forEach(([lv, list]) => list.forEach(x => add(String(x[0]).replace(/\*(.*?)\*/, x[1] || ''), null, lv)));
   Object.entries(G.talk || {}).forEach(([lv, topics]) => Object.values(topics).forEach(list => list.forEach(x => add(x[0], null, lv))));
 
-  const { missions } = require(path.join(APP, 'test', 'missions-check.js')).load();
+  const { missions, count } = require(path.join(APP, 'test', 'missions-check.js')).load();
   Object.entries(missions).forEach(([lv, list]) => list.forEach(m => {
     const walk = x => {
       if (Array.isArray(x)) return x.forEach(walk);
@@ -58,6 +58,8 @@ function main(){
       Object.values(x).forEach(walk);
     };
     walk(m);
+    // Say it again (specs/missions.md): the sentence she reads twice, with Listen first.
+    const again = count.msSayText(m); if (again) add(again, null, lv);
     if (m.story) m.story.chunks.forEach(c => add(c.text.split(/\s+/).join(' '), 'story', lv));
   }));
   say.forEach(v => out.push(v));

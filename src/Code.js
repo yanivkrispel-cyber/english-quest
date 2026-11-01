@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v23';
+var SETUP_VERSION = 'v24g';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 // The kids' front end (Cloudflare, docs/). Until 2026-10 it was https://yanivkrispel-cyber.github.io/english-quest/.
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
@@ -83,7 +83,10 @@ var HEADERS = {
   // The audit trail (Audit.js): opens, wrong PINs, and what parents, the admin, the teacher and the owner changed.
   Audit: ['Timestamp', 'Date', 'Role', 'Who', 'Group', 'Action', 'Detail', 'Ok', 'Device'],
   // A family's plan (src/Privacy.js, entitlement): empty = the pilot, full access. Source: apple, google or manual.
-  Plans: ['Group', 'Plan', 'Source', 'Until', 'Ref', 'Updated']
+  Plans: ['Group', 'Plan', 'Source', 'Until', 'Ref', 'Updated'],
+  // The Writer's Desk (Missions.js): what a kid wrote in a mission (First = her first try when she rewrote it, Checks = the
+  // checklist, '3 of 5'), and the teacher's mark and preset note, which the kid and her parents see.
+  Writing: ['Timestamp', 'Id', 'Girl', 'Date', 'Mission', 'Item', 'Level', 'Prompt', 'Text', 'First', 'Checks', 'Words', 'Mark', 'Comment', 'MarkedOn']
 };
 
 var WORDS = [
@@ -141,7 +144,7 @@ function api() {
   apiDuoInvite: apiDuoInvite, apiDuoAnswer: apiDuoAnswer, apiDuoNudge: apiDuoNudge, apiDuoEnd: apiDuoEnd,
   apiTugCheck: apiTugCheck, apiTugSave: apiTugSave,
   apiShop: apiShop, apiShopBuy: apiShopBuy, apiWear: apiWear, apiWords: apiWords, apiSaveWord: apiSaveWord, apiDesign: apiDesign,
-  apiMissionResult: apiMissionResult, apiFlag: apiFlag,
+  apiMissionResult: apiMissionResult, apiFlag: apiFlag, apiTeacherWriting: apiTeacherWriting, apiTeacherMark: apiTeacherMark,
   apiJoinCheck: apiJoinCheck, apiJoin: apiJoin, apiPlacement: apiPlacement, apiFeedback: apiFeedback,
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
   apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade,
@@ -164,6 +167,7 @@ function doPost(e) {
       return ContentService.createTextOutput(JSON.stringify({ ok: false, update: true, error: 'Please update the app' })).setMimeType(ContentService.MimeType.JSON);
     }
     REQ_DEV = cleanDev(req.dev);
+    REQ_APP = String(req.v || '');
     REQ_OPEN = cleanOpen(req.open);
     PERF_PARTS = null;
     var t0 = Date.now();
@@ -774,6 +778,7 @@ function buildDashboard(kid) {
     placement: placementInfo(kid),
     games: gameStats(kid, t, owned['word-saver']),
     chat: pending || nest ? null : chatInfo(kid, t),
+    writing: pending || nest ? null : writingInfo(kid),
     coins: coinsOf(kid).balance,
     upgrades: upgradesOf(owned),
     polish: polishInfo(kid),
@@ -884,8 +889,8 @@ function nextExercise(section, level, used, missions) {
   var byLevel = CATALOG[section];
   var start = Math.max(0, LEVELS.indexOf(level));
   if (missions) {
-    // Writing has no missions yet, and C1 has no Use of English: a kid with missions gets a Use of English (or a
-    // grammar) mission that day instead of a link out of the app.
+    // A writing day gives the next Writer's Desk mission of her level; when they run out (and for C1, which has no Use of
+    // English), a Use of English (or a grammar) mission that day instead of a link out of the app.
     var tries = section === 'writing' || section === 'use-of-english' ? [section, 'use-of-english', 'grammar'] : [section];
     for (var s = 0; s < tries.length; s++) {
       var own = (CATALOG[tries[s]] || {})[LEVELS[start]] || [];

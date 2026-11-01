@@ -5,7 +5,7 @@
 
 // Columns that hold a kid's name, and columns that hold a family (group) id.
 var KID_COLS = { Girls: ['Name'], Games: ['Girl'], Review: ['Girl'], Gates: ['Girl'], Assignments: ['Girl'], Log: ['Girl'], Push: ['Girl'],
-  Bonus: ['Girl'], Shop: ['Girl'], Wardrobe: ['Girl'], Words: ['Girl'], Flags: ['Girl'], Placements: ['Girl'], Chats: ['Girl'],
+  Bonus: ['Girl'], Shop: ['Girl'], Wardrobe: ['Girl'], Words: ['Girl'], Flags: ['Girl'], Placements: ['Girl'], Chats: ['Girl'], Writing: ['Girl'],
   Duos: ['A', 'B'], Duels: ['Host', 'Guest'], Audit: ['Who'] };
 var GROUP_COLS = { Groups: ['Id'], Rewards: ['Group'], ParentPush: ['Who'], Feedback: ['Group'], Audit: ['Group'], Plans: ['Group'] };
 
@@ -109,12 +109,15 @@ function apiExportData(pin, groupId) {
 }
 
 // Least data (specs/store-readiness.md): the audit trail keeps 180 days, the text of what a kid said to Chacho 90 days
-// (the counts stay). Runs at night on Cloudflare (platformTick). It removes the old audit rows only when there are a
-// month's worth of them, so the table is rewritten about once a month, not every night.
+// (the counts stay), what she wrote at the Writer's Desk a year (WRITING.keepDays, the whole row). Runs at night on
+// Cloudflare (platformTick). It removes the old audit rows only when there are a month's worth of them, so the table is
+// rewritten about once a month, not every night.
 var KEEP = { auditDays: 180, saidDays: 90, batchDays: 30 };
 function retentionSweep() {
-  var now = Date.now(), day = 86400000, out = { audit: 0, said: 0 };
+  var now = Date.now(), day = 86400000, out = { audit: 0, said: 0, writing: 0 };
   var limit = fmt(new Date(now - KEEP.auditDays * day)), batch = fmt(new Date(now - (KEEP.auditDays + KEEP.batchDays) * day));
+  var wlimit = fmt(new Date(now - WRITING.keepDays * day)), writes = readTable('Writing');
+  if (writes.length && String(writes[0].Date) < wlimit) out.writing = eraseRows('Writing', function (o) { return String(o.Date instanceof Date ? fmt(o.Date) : o.Date) < wlimit; });
   var audits = readTable('Audit');
   if (audits.length && String(audits[0].Date) < batch) out.audit = eraseRows('Audit', function (o) { return String(o.Date instanceof Date ? fmt(o.Date) : o.Date) < limit; });
   var sh = sheet('Chats');

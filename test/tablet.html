@@ -17,7 +17,7 @@ pre{white-space:pre-wrap;margin:12px 0 0}
 const PHONES = [[360, 640, 'Small phone'], [390, 844, 'iPhone'], [430, 932, 'Big phone']];
 const TABLETS = [[768, 1024, 'iPad portrait'], [1024, 768, 'iPad landscape'], [820, 1180, 'iPad Air portrait'], [1180, 820, 'iPad Air landscape'], [800, 1280, 'Android tablet']];
 const SIZES = new URLSearchParams(location.search).has('phones') ? PHONES : TABLETS;
-const S = 0.42, screen = new URLSearchParams(location.search).get('screen') || 'today', out = document.getElementById('out');
+const S = Number(new URLSearchParams(location.search).get('s')) || 0.42, screen = new URLSearchParams(location.search).get('screen') || 'today', out = document.getElementById('out');
 const row = document.getElementById('row');
 // The layout size the tablet script in Index.html picks (tabletFit): 520 px wide in portrait, 640 px tall in landscape.
 const fitK = (w, h) => Math.max(1, Math.min(2, w > h ? h / 640 : w / 520));
@@ -73,6 +73,31 @@ async function show(f){
     if (screen === 'play') ev("dashTab = 'play'; renderDash()");
     if (screen === 'game') await ev("startGame('match')");
     if (screen === 'mission') { await ev("loadMissions(MS_FILES['a2'])"); await ev("previewMission('a2g01', '')"); ev("MS.si = Math.min(4, MS.S.length - 1); MS.sub = {}; MS.guess = null; MS.drawn = -1; msRender()"); }
+    // The Writer's Desk (specs/missions.md): write = the task (&id=a1w01, a frame; b1w02, a text box), write-check = the
+    // checklist after a first try that misses some, write-done = Chacho's version, write-kbd = typing with the keyboard
+    // open (the frame shrinks to 55%), say = Say it again after two readings, me-writing / parent-writing = the pieces
+    // with the teacher's note, teacher-writing = the teacher's list.
+    if (screen.startsWith('write') || screen === 'say') {
+      const id = new URLSearchParams(location.search).get('id') || 'b1w02';
+      await ev("loadMissions(msFile('" + id + "'))"); await ev("previewMission('" + id + "', '')");
+      ev("MS.si = MS.S.findIndex(s => " + (screen === 'say' ? "s.t === 'say'" : "s.t === 'q' && s.it.k === 'write'") + "); MS.sub = {}; MS.drawn = -1; msRender()");
+      const it = ev('MS.S[MS.si] && MS.S[MS.si].it'), frame = it && it.frame;
+      const draft = frame ? JSON.stringify(it.fill.map((x, i) => i ? '' : x)) : JSON.stringify('hi maya guess what i have a new puppy');
+      if (screen === 'write-check' || screen === 'write-done') { ev(frame ? 'MS.sub.gaps = ' + draft : 'MS.sub.text = ' + draft); ev('msRender(); msWriteGo(false)'); }
+      if (screen === 'write-done') { ev(frame ? 'MS.sub.gaps = ' + JSON.stringify(it.fill) : 'MS.sub.text = MS.S[MS.si].it.model'); ev('msRender(); msWriteGo(false)'); }
+      if (screen === 'write-kbd') {
+        ev('kbdFit()');
+        const fld = d.querySelector('.mwrite textarea, .mwrite input');
+        fld.focus(); fld.value = frame ? it.fill[0] : 'Hi Maya! Guess what? I have just got a puppy, and she is small, brown and very funny. She sleeps on my bed every night and she loves the beach.';
+        fld.dispatchEvent(new w.Event('input'));
+        f.height = Math.round(Number(f.height) * .55); await new Promise(r => setTimeout(r, 300)); ev('kbdFit()');
+      }
+      if (screen === 'say') ev('MS.sub.rounds = [{ wpm: 84, heard: 8 }, { wpm: 97, heard: 9 }]; msRender()');
+    }
+    const WR = "[{ id: 'w1', date: dash.today, mission: 'a2w02', level: 'A2', prompt: 'Write about a holiday or a fun trip you had.', text: 'Last summer we went to Eilat. We swam in the sea and saw lots of fish. It was great!', first: 'last summer we go to eilat and swim in the sea', checks: '6 of 6', mark: 'star', markLabel: 'Excellent', comment: 'Great job! Your sentences are clear and easy to read.', marked: dash.today }, { id: 'w2', date: dash.today, mission: 'a2w01', level: 'A2', prompt: 'Invite a friend to a picnic in the park. Say when it is.', text: 'Hi Noa! Would you like to come to a picnic in the park? It is on Friday.', first: '', checks: '6 of 7', mark: '', markLabel: '', comment: '', marked: '' }]";
+    if (screen === 'me-writing') ev("dash.writing = " + WR + "; dashTab = 'me'; renderDash(); setTimeout(() => document.querySelector('.mwmodel, .panel h2') && [...document.querySelectorAll('.panel h2')].find(h => h.textContent === 'My writing').scrollIntoView(), 50)");
+    if (screen === 'teacher-writing') await ev("(async () => { TEACHER = 'dev'; const items = " + WR + "; const oc = call; call = (fn, ...a) => fn === 'apiTeacherWriting' ? Promise.resolve({ items, marks: [{ k: 'star', label: 'Excellent' }, { k: 'good', label: 'Good work' }, { k: 'more', label: 'Keep practising' }], comments: ['Great job! Your sentences are clear and easy to read.', 'Lovely ideas! Next time, check the capital letters.'] }) : oc(fn, ...a); await teacherWriting(); })()");
+    if (screen === 'parent-writing') await ev("(async () => { const items = " + WR + "; const oc = call; call = async (fn, ...a) => { const r = await oc(fn, ...a); if (fn === 'apiParent') r.groups.forEach(g => g.girls.forEach(k => { if (k.girl.name === 'Aviv') k.writing = items; })); r.isAdmin = false; return r; }; await parent('1234', false, false); const det = [...document.querySelectorAll('details summary')].find(s => /כתיבה|Writing/.test(s.textContent)); if (det) { det.parentElement.open = true; det.scrollIntoView(); } })()");
   }
   await new Promise(r => setTimeout(r, 1500));
   const app = d.getElementById('app');

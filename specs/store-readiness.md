@@ -53,8 +53,8 @@ commit.
 
 Kept by the app's own server: today the private Google Sheet (Apps Script, owner's Google account); after the move to
 Cloudflare (`specs/cloudflare.md`) a SQLite database inside the server's Durable Object (the owner's Cloudflare account),
-with the sheet as a nightly copy. Retention on Cloudflare: the audit trail 180 days, the text of what a kid said to Chacho 90 days
-(`retentionSweep`). A family's plan (tab `Plans`, empty in the pilot).
+with the sheet as a nightly copy. Retention on Cloudflare: the audit trail 180 days, the text of what a kid said to Chacho 90 days,
+what a kid wrote at the Writer's Desk a year (`retentionSweep`). A family's plan (tab `Plans`, empty in the pilot).
 
 - Kid: first name (English), age or grade (a Chacho's Nest kid: the real age, 2 to 7), level, PIN, color, pet and its name,
   group. Optional email (older setups). The Nest's Say it step uses the microphone for loudness only, on the phone:
@@ -67,6 +67,12 @@ with the sheet as a nightly copy. Retention on Cloudflare: the audit trail 180 d
   Chacho's Nest: the day played and, for each word of the day, whether it was found on the first try (Log.Detail, for the
   review days); deleted with the kid's Log rows.
 - Talk with Chacho: the text the phone heard (no audio), counts of spoken and tapped answers.
+- The Writer's Desk (tab `Writing`, `specs/missions.md`): the one to three sentences a kid wrote in a writing mission (one
+  line, at most 400 characters, no markup, never stored as a formula), her first try when she rewrote it, the checklist
+  score, the task, and the teacher's mark and preset note. Seen by the kid, her parents and the teacher (without the kid's
+  name); never by another kid. The tasks never ask for personal details (missions-check refuses the words). Deleted with the
+  kid and after a year. Say it again (fluency) uses the phone's speech recognition for timing only, when the parent's
+  microphone switch is on; nothing of it is kept or sent by the app.
 - Feedback and "Something wrong here?" notes.
 - Devices: push subscription endpoints and the browser's user-agent string.
 - Audit trail (tab Audit, `specs/audit.md`): when a kid, parent, admin or teacher opened the app (once per half hour),
