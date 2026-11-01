@@ -366,14 +366,17 @@ function nkDrag(el, opts){
   });
 }
 // The picture flies from where it is into a target and shrinks away (a tap instead of a drag, or after a drop).
+// done runs only while the same screen is up: a kid who taps the X while a picture flies (Get dressed, Give it to me, Sort it)
+// must not have the next screen changed by it (it threw on NE.worn of the next session).
 function nkFly(el, to, done){
+  const ne = NE, tok = NE && NE.tok;
   const r = el.getBoundingClientRect(), [x1, y1] = nkCenter(to), g = el.cloneNode(true);
   g.classList.add('nk-ghost');
   Object.assign(g.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' });
   document.body.appendChild(g);
   el.classList.add('lift');
   g.animate([{ transform: 'translate(0,0) scale(1)' }, { transform: `translate(${x1 - r.left - r.width / 2}px,${y1 - r.top - r.height / 2}px) scale(.35)`, opacity: .2 }],
-    { duration: 420, easing: 'cubic-bezier(.4,.1,.6,1)' }).onfinish = () => { g.remove(); if (done) done(); };
+    { duration: 420, easing: 'cubic-bezier(.4,.1,.6,1)' }).onfinish = () => { g.remove(); if (done && NE === ne && (!NE || NE.tok === tok)) done(); };
 }
 
 // ---------- Places drawn in code (stories and the big picture) ----------
