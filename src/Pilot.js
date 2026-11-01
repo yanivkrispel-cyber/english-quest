@@ -2,8 +2,10 @@
 // in the app, parents send feedback, the teacher reviews missions, and the admin sees a funnel per family.
 
 var PILOT = { joinsPerDay: 15, maxKids: 5, feedbackPerDay: 5, teacherFlagsPerDay: 200 };
-// The grade a parent picks sets the level the in-app level test starts from.
-var GRADE_LEVEL = { 3: 'a1', 4: 'a1', 5: 'a2', 6: 'a2', 7: 'b1', 8: 'b1', 9: 'b1-b2', 10: 'b1-b2', 11: 'b2', 12: 'b2' };
+// The grade a parent picks sets the level the in-app level test starts from: one level below the Israeli curriculum's
+// band for the grade (night review, finding 12: foundation to grade 6 ends near A2, intermediate 7-9 near B1,
+// proficiency 10-12 near B1+/B2), so the test climbs to her level instead of starting above it.
+var GRADE_LEVEL = { 3: 'a1', 4: 'a1', 5: 'a1', 6: 'a1', 7: 'a2', 8: 'a2', 9: 'b1', 10: 'b1', 11: 'b1-b2', 12: 'b1-b2' };
 
 function inviteOk(code) {
   var want = String(getSetting('InviteCode') || '').trim().toLowerCase();
@@ -18,17 +20,16 @@ function apiJoinCheck(code) {
   return { ok: ok };
 }
 
-// data: { family, parent, parentPin, email, consent, kids: [{ name, grade }] }
+// data: { family, parent, email, consent, kids: [{ name, grade }] }. The parents' code (6 digits) is made here; a
+// parentPin an old copy of the app still sends is ignored (it used to be the parent's choice, and "taken" told codes apart).
 function apiJoin(code, data) {
   ensureSetup();
   if (!inviteOk(code)) throw new Error('הקישור הזה כבר לא פעיל. בקשו קישור חדש ממי ששלח לכם.');
   data = data || {};
   var clean = function (s, max) { return String(s || '').replace(/[<>"]/g, '').replace(/\s+/g, ' ').trim().slice(0, max); };
   var family = clean(data.family, 40), parentName = clean(data.parent, 40), email = clean(data.email, 80);
-  var parentPin = String(data.parentPin || '').trim();
   if (!family) throw new Error('כתבו שם משפחה');
   if (!parentName) throw new Error('כתבו את השם שלכם');
-  if (!/^\d{4}$/.test(parentPin)) throw new Error('קוד ההורה צריך להיות 4 ספרות');
   if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error('כתובת המייל לא נראית תקינה');
   if (data.consent !== true) throw new Error('צריך לאשר את תנאי הפרטיות כדי להמשיך');
   // A school kid sends a grade (3 to 12); a Chacho's Nest kid (Nest.js) sends her age (2 to 7) instead.
@@ -42,15 +43,15 @@ function apiJoin(code, data) {
 
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
-  var id, out = [];
+  var id, out = [], parentPin;
   try {
     var gs = readTableUncached('Groups'), t = today();
     if (gs.filter(function (g) { return String(g.Joined || '').slice(0, 10) === t; }).length >= PILOT.joinsPerDay) throw new Error('הגענו למכסת ההרשמות להיום. נסו שוב מחר.');
-    if (String(parentPin) === String(getSetting('AdminPIN')) || gs.some(function (g) { return String(g.ParentPIN) === parentPin; })) throw new Error('הקוד הזה תפוס. בחרו 4 ספרות אחרות.');
     var name = family, n = 2;
     while (gs.some(function (g) { return String(g.Name).toLowerCase() === name.toLowerCase(); })) name = family + ' ' + (n++);
     var ids = gs.map(function (g) { return String(g.Id); });
-    do { id = Math.random().toString(36).slice(2, 8); } while (ids.indexOf(id) >= 0);
+    do { id = randomId(); } while (ids.indexOf(id) >= 0);
+    parentPin = newParentCode();
     appendRow('Groups', { Id: id, Name: name, ParentPIN: parentPin, Goal: 1500, GoalReward: 'ערב פיצה משפחתי', Email: email,
       Parent: parentName, Joined: Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm'), Consent: t });
     var girls = readTableUncached('Girls'), taken = girls.map(function (k) { return String(k.Name).toLowerCase(); });
@@ -120,7 +121,7 @@ function apiFeedback(pin, text, score) {
 function apiTeacherFlag(code, missionId, itemId, note) {
   ensureSetup();
   var want = String(getSetting('TeacherCode') || '').trim();
-  checkPin('teacher', !!want && String(code || '').trim() === want);
+  checkPin('teacher', !!want && sameSecret(code, want));
   missionId = String(missionId || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 12);
   itemId = cleanIds([itemId], 1)[0] || '';
   note = String(note || '').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 500);
@@ -134,7 +135,7 @@ function apiTeacherFlag(code, missionId, itemId, note) {
 function apiTeacherCheck(code) {
   ensureSetup();
   var want = String(getSetting('TeacherCode') || '').trim();
-  checkPin('teacher', !!want && String(code || '').trim() === want);
+  checkPin('teacher', !!want && sameSecret(code, want));
   auditOpen('teacher', 'teacher', '');
   return { ok: true };
 }
@@ -172,6 +173,7 @@ function apiPilotStats(pin) {
       firstMission: all.filter(function (k) { return k.missions > 0; }).length, active7: all.filter(function (k) { return k.last7 >= 4; }).length },
     feedback: fb.slice(-12).reverse().map(function (f) { return { group: f.Group, date: f.Date, score: f.Score, text: f.Text }; }),
     chat: chatBoard(t),
+    items: itemStats(12, 5),
     teacherFlags: flags.filter(function (f) { return f.Girl === 'Teacher'; }).length,
     teacherCode: String(getSetting('TeacherCode') || ''),
     base: String(getSetting('PublicUrl') || ''),
@@ -185,7 +187,7 @@ function apiPilotInvite(pin, open, code) {
   if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can change this');
   code = String(code || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 24);
   if (code) setSetting('InviteCode', code);
-  if (!getSetting('InviteCode')) setSetting('InviteCode', Math.random().toString(36).slice(2, 8));
+  if (!getSetting('InviteCode')) setSetting('InviteCode', randomId());
   setSetting('InviteOpen', open ? 'yes' : 'no');
   audit('admin', 'admin', '', 'invite link', (open ? 'opened' : 'closed') + (code ? ', new code' : ''));
   return apiPilotStats(pin);
@@ -234,7 +236,7 @@ function apiParentSetAge(pin, name, choice) {
     lock.releaseLock();
   }
   audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'kid age', kid.Name + ': ' + label);
-  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
+  return parentView(access);
 }
 
 // A parent turns the kid's Hebrew help on or off (night review, finding 10; on by itself for A1 and A2, Code.js kidHebrew).

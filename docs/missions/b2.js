@@ -23,7 +23,7 @@ window.EQ_MISSIONS.b2 = [
       { k: 'mc', q: 'We ___ a great time at the concert last night.', o: ['had', 'have had', 'were having'], a: 0, why: 'last night → past simple: we had a great time.' }
     ] },
     { name: 'Questions and negatives', items: [
-      { k: 'tf', q: '"I haven\'t a car."', a: false, fix: 'I don\'t have a car. (or: I haven\'t got a car.)', why: 'With have = own, use don\'t have or haven\'t got.' },
+      { k: 'tf', q: '"I don\'t have got a car."', a: false, fix: 'I don\'t have a car. (or: I haven\'t got a car.)', why: 'With have = own, use don\'t have or haven\'t got.' },
       { k: 'type', q: '___ you got a minute? I need your help.', a: ['have'], why: 'have got → Have you got…?' },
       { k: 'mc', q: 'How often ___ you have a haircut?', o: ['do', 'have', 'are'], a: 0, why: 'have a haircut is an action → do in questions.' },
       { k: 'tf', q: '"Did you have fun at the party?"', a: true, why: 'have fun is an action → did in the past.' }

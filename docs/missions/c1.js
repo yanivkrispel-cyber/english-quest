@@ -31,13 +31,13 @@ window.EQ_MISSIONS.c1 = [
     ] },
     { name: 'Build it', items: [
       { k: 'build', s: 'Why are you being so polite all of a sudden?', why: 'be being + adjective = unusual behaviour right now.' },
-      { k: 'spot', s: 'So I *walked* into the room, and everyone goes quiet.', fix: 'walk', why: 'In a story told in the present, keep the tense: I walk in, everyone goes quiet.' },
+      { k: 'spot', s: 'So I walk in, everyone *went* quiet, and the teacher looks at me.', fix: 'goes', why: 'In a story told in the present, keep the tense: I walk in, everyone goes quiet.' },
       { k: 'build', s: 'My English is getting better every week.', why: 'A change in progress → is getting.' }
     ] }
   ],
   use: [
     { k: 'teach', s: 'He is always *forget* his keys!', fix: 'forgetting', why: 'always + continuous: he is always forgetting.' },
-    { k: 'type', q: '"You ___ ridiculous!" she laughed when I put on my dad\'s hat.', hint: '(be, about behaviour right now)', a: ['are being', '\'re being'],
+    { k: 'type', q: '"You ___ ridiculous!" she laughed when I started talking like a robot.', hint: '(be, about behaviour right now)', a: ['are being', '\'re being'],
       why: 'be being + adjective = how someone is behaving right now.' },
     { k: 'mc', q: 'Which sentence sounds like live sports commentary?', o: ['Cohen passes to Levi, Levi shoots… and it\'s a goal!', 'Cohen passed to Levi, who had shot.', 'Cohen will pass to Levi.'], a: 0,
       why: 'Commentary uses the present simple for each quick action.' }
@@ -60,7 +60,7 @@ window.EQ_MISSIONS.c1 = [
     { name: 'Order of events', items: [
       { k: 'mc', q: 'When I got to the station, the train ___.', o: ['had already left', 'already left', 'was already leaving'], a: 0, why: 'It left before I arrived → past perfect.' },
       { k: 'mc', q: 'Her eyes were red. She ___ for hours.', o: ['had been crying', 'cried', 'was crying'], a: 0, why: 'A long action up to that moment → past perfect continuous.' },
-      { k: 'mc', q: 'It was a dark night. Snow ___ softly as we walked home.', o: ['was falling', 'had fallen', 'fell'], a: 0, why: 'The background of a story → past continuous.' },
+      { k: 'mc', q: 'It was a dark night. Snow ___ softly as we walked home.', o: ['was falling', 'had fallen', 'falls'], a: 0, why: 'The background of a story → past continuous.' },
       { k: 'mc', q: 'I ___ call you, but my battery died.', o: ['was going to', 'would', 'had gone to'], a: 0, why: 'A plan that didn\'t happen → was going to.' }
     ] },
     { name: 'Complete', items: [
@@ -156,7 +156,7 @@ window.EQ_MISSIONS.c1 = [
     ] },
     { name: 'In a text', items: [
       { k: 'gaps', title: 'The surprise party',
-        t: 'I had been [1] all week because I thought everyone had forgotten my birthday. When I opened the door and thirty friends shouted "Surprise!", I was completely [2]: I couldn\'t say a word. I was really [3] that they had planned it for weeks, and by the end of the night I was over the [4].',
+        t: 'I had been [1] all week, because my friends kept whispering and went quiet whenever I came in. When I opened the door and thirty friends shouted "Surprise!", I was completely [2]: I couldn\'t say a word. I was really [3] that they had planned it for weeks, and by the end of the night I was over the [4].',
         gaps: [
           { o: ['on edge', 'livid', 'touched'], a: 0, why: 'nervous and tense all week → on edge.' },
           { o: ['dumbfounded', 'gutted', 'livid'], a: 0, why: 'she couldn\'t say a word → dumbfounded.' },
@@ -350,7 +350,7 @@ window.EQ_MISSIONS.c1 = [
         { k: 'tf', q: 'A cloned voice can know your family code word.', a: false, fix: 'A cloned voice won\'t know it.', why: '"A cloned voice won\'t know it."' }
       ] },
       { lines: [
-        ['A', 'It\'s a bit sad, though, isn\'t it? That we can\'t just trust a familiar voice anymore.'],
+        ['A', 'It\'s a bit sad, though, isn\'t it? That we can\'t just trust a familiar voice any more.'],
         ['B', 'It is. But a little healthy scepticism isn\'t paranoia. It\'s just the price of living with powerful technology.']
       ], items: [
         { k: 'mc', q: 'How does Adam see being careful?', o: ['as reasonable, not paranoid', 'as too much work', 'as unnecessary'], a: 0, why: '"a little healthy scepticism isn\'t paranoia"' }

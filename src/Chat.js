@@ -63,7 +63,9 @@ function chatInfo(kid, t) {
     week: wk.length,
     weekVoice: wk.filter(function (r) { return Number(r.Voice) > 0; }).length,
     voiceDays: Object.keys(days).length,
-    best: best
+    best: best,
+    // The recast step after an answer that fits nothing (night review, finding 5); Settings.TalkRecast = off turns it off.
+    recast: String(getSetting('TalkRecast') || '').toLowerCase() !== 'off'
   };
 }
 

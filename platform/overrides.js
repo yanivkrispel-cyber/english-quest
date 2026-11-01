@@ -111,6 +111,6 @@ function platformPushTtl() { return PUSH_TTL; }
 
 // 4. The relay (src/Relay.js) belongs to Apps Script: here it never relays, and its admin calls refuse.
 cfIntercept = function () { return null; };
-apiCfExport = function () { throw new Error('Not on this server: use /admin/export'); };
-apiCfMode = function () { throw new Error('Not on this server'); };
+cfExport = function () { throw new Error('Not on this server: use /admin/export'); };
+cfSetMode = function () { throw new Error('Not on this server'); };
 cfMirror = function () { throw new Error('Not on this server'); };

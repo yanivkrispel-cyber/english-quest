@@ -87,7 +87,7 @@ window.EQ_MISSIONS.b1 = [
   title: 'Finished time or up to now?', dinner: 'What is the most interesting thing you have ever done?',
   kid: 'Done or up to now?', he: 'עבר פשוט או present perfect',
   hook: { q: 'When did a person walk on the Moon for the first time?', o: ['1959', '1969', '1979'], a: 1,
-    reveal: 'In *1969*. Neil Armstrong *walked* on the Moon in 1969 (a finished time: past simple). Since then only twelve people *have walked* on the Moon (up to now: present perfect).' },
+    reveal: 'In *1969*. Neil Armstrong *walked* on the Moon in 1969 (a finished time: past simple). In all, twelve people *have walked* on the Moon (up to now: present perfect).' },
   learn: { kind: 'rule', title: 'Past simple or present perfect?',
     lines: ['*Past simple* for a finished time (yesterday, last year, in 2019, when I was six): I *visited* Rome last summer.',
       '*Present perfect* (have / has + past participle) for experiences and for up to now, with no finished time: I*\'ve been* to Rome. *Have you ever* eaten sushi?',
@@ -182,7 +182,7 @@ window.EQ_MISSIONS.b1 = [
     { w: 'trust', d: 'believe that someone is honest and good', ex: 'I *trust* my sister with my secrets.' },
     { w: 'rely on', d: 'need someone and know they will help', ex: 'You can always *rely on* Grandpa.' },
     { w: 'get to know', d: 'learn more about a person', ex: 'I want to *get to know* the new girl.' },
-    { w: 'close friend', d: 'a very good friend', ex: 'Maya is my *close friend*.' }
+    { w: 'close friend', d: 'a very good friend', ex: 'Maya is a *close friend* of mine.' }
   ] },
   steps: [
     { name: 'Match', items: [
@@ -367,7 +367,7 @@ window.EQ_MISSIONS.b1 = [
   steps: [
     { name: 'Listen again', items: [
       { k: 'type', clip: 1, q: 'Sam ___ his first big exam when he was fifteen.', a: ['failed'], why: 'fail an exam = not pass it.' },
-      { k: 'mc', clip: 0, q: 'At first, Ruth was ___ Mr Clark.', o: ['afraid of', 'in love with', 'angry with'], a: 0, why: '"I was afraid of him."' },
+      { k: 'mc', clip: 0, q: 'At first, Ruth was ___ Mr Clark.', o: ['afraid of', 'bored by', 'angry with'], a: 0, why: '"I was afraid of him."' },
       { k: 'hear', say: 'He was strict, but he really cared.', q: 'What does she say about him?', o: ['He cared about his students.', 'He never smiled.', 'He was a new teacher.'], a: 0,
         why: 'He was strict, but he really cared.' },
       { k: 'sort', q: 'How can a teacher be?', g: ['good for students', 'not so good'],

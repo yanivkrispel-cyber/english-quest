@@ -26,9 +26,17 @@ about three minutes, the copy identical tab by tab, parity 143 of 143 answers): 
 - The front end calls `/api` on its own site (`API_URL` in `src/Index.html` and `docs/sw.js`); `worker/range.js` passes it to
   the Durable Object (a Durable Object binding: one Worker request a call). The old GitHub Pages address still calls Apps
   Script, which relays.
-- `src/Relay.js` (Apps Script): `CF_MODE` empty (now), `freeze` (every call refused for a few minutes) or `relay` (every
+- `src/Relay.js` (Apps Script): `CF_MODE` empty, `freeze` (every call refused for a few minutes) or `relay` (now: every
   call passed to the new server; this script's reminders off; `cfMirror` copies the new server's data into the sheet
-  every night at 03:00). `apiCfExport` (admin PIN) exports every sheet and every Script Property.
+  every night at 03:00). Since the night review (2026-11-01) the mode and the export are not web calls: run `cfModeRelay`,
+  `cfModeNormal`, `cfModeFreeze` or `cfSetMode(mode, url, token)` / `cfExport()` from the Apps Script editor. The relay and
+  the nightly copy only talk to coco.coachkrispel.com (or a host in the Script Property `CF_HOSTS`), and `CF_TOKEN` is
+  dropped when the address changes. Script Properties: `CF_TOKEN` = the Worker's `EXPORT_TOKEN` (reads /admin/export only),
+  `CF_RELAY_KEY` = the Worker's `RELAY_KEY` (relayed calls share one per-address bucket).
+- Sign-in (`src/Auth.js`, `worker/api/http.js`): the Workers pass Cloudflare's `CF-Connecting-IP` as `X-Coco-IP` for the
+  per-address limits (memory only, no rows written), answer CORS only for the app's own origins, and compare tokens in
+  constant time. The admin's passphrase: `node tools/admin-passphrase.js new <file>`, then
+  `COCO_ADMIN_TOKEN=… node tools/admin-passphrase.js set <file> https://coco-api.<account>.workers.dev` (only the hash travels).
 - New with the move, on both servers: the admin's Data card (`src/Admin.js`, replaces hand edits in the sheet), the family's
   data download and deletion (`src/Privacy.js`), retention, the `Plans` tab with `entitlement()`, `Settings.MinApp`
   (an app older than that `APP_V` is asked to update), the fonts from `docs/fonts/`.

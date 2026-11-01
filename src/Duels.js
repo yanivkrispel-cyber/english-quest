@@ -448,7 +448,7 @@ function tugMate(name, cred) {
   cred = String(cred || '');
   if (cred.indexOf('.') < 0) return duelKid(name, cred);
   var parts = cred.split('.'), exp = Number(parts[0]), kid = findGirl(name);
-  if (!kid || !(exp > Date.now()) || parts[1] !== tugSign(kid.Name, exp)) throw new Error('Wrong PIN');
+  if (!kid || !(exp > Date.now()) || !sameSecret(parts[1], tugSign(kid.Name, exp))) throw new Error('Wrong PIN');
   if (pendingLevelTest(kid)) throw new Error('Take the level test first.');
   return kid;
 }
@@ -557,7 +557,7 @@ function duelCode(rows) {
   rows.forEach(function (r) { used[r.Id] = true; });
   for (var tries = 0; tries < 200; tries++) {
     var c = '';
-    for (var i = 0; i < 4; i++) c += DUEL_LETTERS[Math.floor(Math.random() * DUEL_LETTERS.length)];
+    for (var i = 0; i < 4; i++) c += DUEL_LETTERS[randomInt(DUEL_LETTERS.length)];
     if (!used[c]) return c;
   }
   throw new Error('Could not create a code, try again');

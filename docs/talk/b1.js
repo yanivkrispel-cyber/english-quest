@@ -479,10 +479,10 @@ window.EQ_TALK.b1 = (window.EQ_TALK.b1 || []).concat([
         c: "How long have you been learning English? A long time, or just a few months?",
         he: 'כמה זמן אתם לומדים אנגלית? למשל: I have been learning English for five years.',
         a: [
-          { k: ['month months week weeks'], r: "Only a short time, and you already speak so well!" },
+          { k: ['month months week weeks'], r: "You have been learning for a few months? Keep going, it adds up fast!" },
           { k: ['year years since long ages grade class'], r: "Wow, you have been learning for ages! It shows." }
         ],
-        o: "Every day you learn a little more. Well done!",
+        o: "Every day you learn a little more, and it all adds up.",
         t: ["I have been learning English for five years.", "I've been learning it since first grade.", "Only for a few months."],
         x: [["i am learning english for 5 years", 1], ["since first grade", 1], ["two months", 0], ["for a long time", 1], ["i don't remember", -1]]
       },

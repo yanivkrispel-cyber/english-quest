@@ -80,5 +80,13 @@ reading topic (54 missions); that covers what any kid gets in the coming week, s
 Writing (Friday) keeps its link until phase 2. Listening episodes are recorded with Kokoro (`tools/missions_audio.py`,
 kokoro-onnx, Apache 2.0) into `docs/missions/audio/<mission>-<part>.mp3`.
 
+Month 2 (2026-11-01, review finding 13): 28 more missions each for A1 and A2 (239 in all), the next catalog topics of
+every section (g10-g17, v06-v09, l10-l17, r05-r08, u05-u08), so the youngest kids have about eight weeks before the link
+fallback. A week of the rotation uses 2 grammar, 1 vocabulary, 2 listening, 1 reading and a Friday. Each new mission has
+`kid` (a title a 7-year-old understands, max 30) and `he` (the Hebrew topic name), at least one `build` and one `type`,
+and at least two items that practise a month-1 point (`why` starts with "Review"). Their talks give every turn a `model`
+answer. Topics unfit for kids keep their language point in a new setting (a2l17 "the murder" is a missing class cake).
+The other levels still have 31 missions each.
+
 Checks: `node test/missions-check.js` (shapes, answers, lengths per level, ids, catalog urls, audio files) and
 `node tools/missions-index.js` (writes the index the server reads).

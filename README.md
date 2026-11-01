@@ -43,7 +43,8 @@ notifications, and reward points.
 - **Mini-games in the app** (about 2 minutes, 5 items a round, at the kid's level; the score saves by
   itself): *Match it* (word ↔ picture at A1, word ↔ definition above), *Hear it* (the phone reads a
   word or sentence aloud), *Build it* (tap the words into a sentence), *Spot it* (tap the wrong word).
-  The day's warm-up game follows the day's section. Missed items come back after 1, 3, 7 and 21 days;
+  The day's warm-up game follows the day's section. Missed items come back after 1, 3, 7 and 21 days, and items answered
+  right come back after 7, 21 and 60 days (the slow track: at most 20 new and 10 due a day, after the missed ones);
   two strong rounds in a row bring one item from the next level. Content: `docs/games.js`.
 - **Pets**: each kid adopts one of 10 pets and names it. Right answers give XP (2 each, +5 for a
   perfect round, at most 60 a day from games) and task points count too; the pet grows through five
@@ -52,11 +53,17 @@ notifications, and reward points.
   How the art is made: `tools/PETS.md`.
 - **Journey map**: a world per level (A1 Sunny Meadow, A2 Whisper Woods, B1 Crystal Caves, B1+ Misty Peaks,
   B2 Sky Islands, C1 Star Summit), drawn in code. Every daily task is a station on a winding road, and the pet
-  stands at the kid's station. After 30 stations (or 20 with an average of 85%+) the gate to the next level opens.
-- **Gate challenge**: 15 questions from the next level (4 Match it, 4 Hear it, 4 Spot it, 3 Build it), scored in
+  stands at the kid's station. After 30 stations (or 20 with an average of 85%+) **and** mastery of the level (80% right on
+  the first try over her last 80 game and task questions in the world, at least 40; `Settings.GateMastery` = a number or
+  `off`) the gate to the next level opens. A kid who met the stations rule before 2026-11-02 (`Settings.GateMasteryFrom`)
+  or already tried the gate keeps it open. The map says what is missing ("Get 80% right in games and missions...").
+- **Gate challenge**: 15 questions from the next level (4 Match it, 4 Hear it, 3 Spot it, 3 Build it and one Type it, where
+  she types the right word), all from the held-out bank (`gate` in `docs/games.js`, 42 items a level) that the games
+  never show, the ones she has not had first (night review, finding 12). Scored in
   the app. 12 right raises the kid's level (daily tasks and games move up), gives the pet 100 XP and plays the
   level-up ceremony with a certificate picture to share; parents get a notification. After a miss the gate opens
-  again 3 days later and the missed questions come back in the games. The last world (C1) ends at a summit.
+  again 3 days later with new questions (held-out items never enter the review). The last world (C1) ends at a summit.
+  The admin's Pilot card lists the hardest items (first-try right rate, from `Games.Missed/Right` and `Gates.Missed/Right`).
 - **Play together** (spec: `specs/play-together.md`): a kid invites any other kid in the app (her group first,
   then the other groups) and they get a notification. *Word Duel*: 7 questions each from all four games, each at
   her own level, raced live on two phones (runners on a track, preset reactions, 3 minutes). *Challenge*: one plays
@@ -161,9 +168,9 @@ Phone / browser                     GitHub Pages (docs/)            Google
 | Tab | Columns | Notes |
 |---|---|---|
 | Girls | Name, Age, PIN, Level, Email, Redeemed, Color, Group, Pet, PetName, PetSince, Missions | One row per kid (name kept for history). Names must be unique. `Redeemed` = points spent on rewards. Pet = pet id; task points count toward its growth from PetSince on. `Missions` = no keeps her daily task on test-english.com (empty = Today's Mission). |
-| Games | Timestamp, Girl, Date, Game, Level, Correct, Total, XP, Missed | One row per finished mini-game round. |
-| Review | Girl, Items | Spaced review: `itemId\|box\|due` entries for items a kid missed. |
-| Gates | Timestamp, Girl, Date, From, To, Correct, Total, Passed, Tasks, XP | One row per gate challenge. `Tasks` = tasks the kid had logged by then; the stations of her current world are the tasks after the last passed gate. |
+| Games | Timestamp, Girl, Date, Game, Level, Correct, Total, XP, Missed, Right | One row per finished mini-game round (Right since SETUP v24). |
+| Review | Girl, Items | Spaced review: `itemId\|box\|due` entries: boxes 1 to 4 for items she missed, 11 to 13 the slow track for items answered right. |
+| Gates | Timestamp, Girl, Date, From, To, Correct, Total, Passed, Tasks, XP, Missed, Right | One row per gate challenge (Missed/Right: item ids, since SETUP v24). `Tasks` = tasks the kid had logged by then; the stations of her current world are the tasks after the last passed gate. |
 | Groups | Id, Name, ParentPIN, Goal, GoalReward, Email, Friends | First row is the default group (link without `?g=`). Empty ParentPIN = admin only. `Friends` = `no` keeps the group's kids out of play with other groups. |
 | Duos | Id, Created, A, B, State, Since, Ended, Nudges, Milestones, QuestDone | One row per duo streak (`invited` / `active` / `declined` / `ended`). The streak and the quest are computed from Log and Games; only nudges, reached badges and rewarded weeks are stored. |
 | Shop | Timestamp, Girl, Date, Item, Color, Price, Paid, Manners, Sentence, Words | One row per purchase. Coins = points + XP minus `Paid`. `Manners` = politeness chips lit (0-4), `Sentence` = what she asked. `Words` = the words an item made of words was bought with. A Studio design's `Item` is its token (`~cape..big.sparkly.purple.velvet.tiny..gold.stars.p`), `Sentence` = the design. |
@@ -241,13 +248,16 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | apiChatResult(name, pin, talk, turns, voice, tiles, mic, said, seconds) | kid | Talk with Chacho (`specs/talk.md`): save a talk's summary and give the bonus (3 XP aloud, 1 a tile, +3 all aloud; 30 a day) |
 | apiTugCheck / apiTugSave | kid | Tug of War on one phone: checks the second kid's PIN once (returns a 2-day token the phone keeps instead of her PIN), then saves both results (a save id makes a save sent twice count once) |
 | apiPushSubscribe / apiPushMessage | kid / service worker | Register a device / text of the pending notification |
-| apiParent(pin) | parent / admin | Overview of the groups this PIN may see |
+| apiParent(cred) | parent / admin | Overview of the groups this credential may see (`src/Auth.js`: `g:<family id>:<code>`, `n:<family name>:<code>`, a session `pt.…`, or the admin's passphrase); a typed code also returns a 30-day session `token`; a session sees no kid PINs (`locked`) |
 | apiParentPushSubscribe / Prefs / Test | parent / admin | Parent notifications on this phone |
 | apiAdminAddGroup / AddKid / Settings / TestPush | admin | Management |
 | apiNestResult(name, pin, date, day, correct, total, seconds, detail) | kid | A Chacho's Nest session; the day's own session logs the day (15 points) and each word's first try (`detail`, "cat:1,dog:0"), anything else is free play |
 | apiAudit(pin, days) | admin | The audit timeline (1 to 30 days) with a summary per family and the device split |
 
-Wrong PINs: 8 attempts per name (or for parent PINs) lock it for 15 minutes.
+Wrong PINs (`src/Auth.js`): 8 attempts per kid, family or the teacher lock it for 15 minutes; the admin's passphrase 20 in 6 hours
+(and 5 an hour per address); 50 wrong tries an hour from one address (`Settings.IpFailLimit`) block that address, whatever
+names it tries (calls relayed by Apps Script share one bucket of 500). Names that do not exist keep nothing (no lockout key, no
+audit line). Deleting, downloading, the kids' codes and the admin's Data card need the code typed, not a remembered session.
 
 ## Deploy
 

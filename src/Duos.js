@@ -302,7 +302,7 @@ function duoNewId(rows) {
   var used = {};
   rows.forEach(function (r) { used[r.Id] = true; });
   for (;;) {
-    var id = 'U' + Math.random().toString(36).slice(2, 8);
+    var id = 'U' + randomId();
     if (!used[id]) return id;
   }
 }

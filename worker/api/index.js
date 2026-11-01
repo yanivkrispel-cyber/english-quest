@@ -4,14 +4,17 @@
 // and keeps the sheets in memory between requests.
 //
 // Routes on the object: POST /api, POST /tick (the cron, every 10 minutes), and for the owner's tools with the
-// X-Admin-Token header: GET /admin/export, POST /admin/import, GET /admin/stats.
+// X-Admin-Token header: GET /admin/export, POST /admin/import, GET /admin/stats, POST /admin/passphrase (the admin's
+// passphrase hash, tools/admin-passphrase.js). GET /admin/export also takes EXPORT_TOKEN, the read-only token Apps Script
+// keeps for its nightly copy (src/Relay.js cfMirror), so the full ADMIN_TOKEN never has to leave the owner's computer.
+// Secrets: ADMIN_TOKEN, EXPORT_TOKEN, RELAY_KEY (the same value as Apps Script's CF_RELAY_KEY).
 import { DurableObject } from 'cloudflare:workers';
 import { createGas, sqliteStore, createServer, nodeCrypto } from './server.js';
 import { sendOutbox } from './push.js';
+import { corsHeaders, safeEqual, withClientIp, callerIp } from './http.js';
 
-const CORS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' };
-const json = (body, status = 200) => new Response(typeof body === 'string' ? body : JSON.stringify(body),
-  { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', ...CORS } });
+const json = (body, status = 200, origin = '') => new Response(typeof body === 'string' ? body : JSON.stringify(body),
+  { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', ...corsHeaders(origin) } });
 
 export class CocoServer extends DurableObject {
   constructor(ctx, env) {
@@ -74,23 +77,26 @@ export class CocoServer extends DurableObject {
   }
 
   admin(request) {
-    const token = this.env.ADMIN_TOKEN;
-    return !!token && request.headers.get('X-Admin-Token') === token;
+    return safeEqual(request.headers.get('X-Admin-Token'), this.env.ADMIN_TOKEN);
+  }
+  exporter(request) {
+    return this.admin(request) || safeEqual(request.headers.get('X-Admin-Token'), this.env.EXPORT_TOKEN);
   }
 
   async fetch(request) {
-    const url = new URL(request.url), path = url.pathname;
+    const url = new URL(request.url), path = url.pathname, origin = request.headers.get('Origin') || '';
+    if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(origin) });
     if (path === '/api' && request.method === 'POST') {
-      const body = await request.text(), t0 = Date.now();
+      const body = await request.text(), t0 = Date.now(), ip = callerIp(request, this.env);
       let out;
       try {
-        out = this.run(S => S.doPost({ postData: { contents: body }, parameter: {} }).getContent());
+        out = this.run(S => S.doPost({ postData: { contents: body }, parameter: {}, ip }).getContent());
       } catch (e) {
         out = JSON.stringify({ ok: false, error: 'The server is busy, try again' });
       }
       this.count(Date.now() - t0);
       this.afterRequest();
-      return json(out);
+      return json(out, 200, origin);
     }
     if (path === '/tick' && request.method === 'POST') {
       const ran = this.run(S => S.tick());
@@ -100,8 +106,14 @@ export class CocoServer extends DurableObject {
     }
     // The stores' notices about purchases (Plans, src/Privacy.js entitlement): not turned on before the store launch.
     if (path === '/hooks/apple' || path === '/hooks/google') return json({ ok: false, error: 'Not enabled yet' }, 501);
+    if (path === '/admin/export' && request.method === 'GET' && this.exporter(request)) return json({ ok: true, data: this.exportAll() });
     if (path.startsWith('/admin/')) {
       if (!this.admin(request)) return json({ ok: false, error: 'Not allowed' }, 403);
+      if (path === '/admin/passphrase' && request.method === 'POST') {
+        const body = await request.json().catch(() => ({}));
+        try { this.run(S => S.adminPassSet(body.value)); } catch (e) { return json({ ok: false, error: String((e && e.message) || e) }, 400); }
+        return json({ ok: true });
+      }
       if (path === '/admin/stats') {
         const rows = this.sql('SELECT sheet, COUNT(*) AS n FROM rows GROUP BY sheet');
         return json({ ok: true, use: this.use, store: this.G.store.stats, rows, dbBytes: this.ctx.storage.sql.databaseSize });
@@ -150,8 +162,8 @@ function stub(env) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
-    if (url.pathname === '/api' || url.pathname.startsWith('/admin/')) return stub(env).fetch(request);
+    if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request.headers.get('Origin') || '') });
+    if (url.pathname === '/api' || url.pathname.startsWith('/admin/')) return stub(env).fetch(withClientIp(request));
     return json({ ok: false, error: 'Not found' }, 404);
   },
   async scheduled(event, env, ctx) {
