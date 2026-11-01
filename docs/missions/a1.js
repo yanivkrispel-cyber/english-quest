@@ -3,7 +3,7 @@
 window.EQ_MISSIONS = window.EQ_MISSIONS || {};
 window.EQ_MISSIONS.a1 = [
 {
-  id: 'a1g01', url: 'https://test-english.com/grammar-points/a1/present-simple-forms-of-to-be/', type: 'grammar',
+  id: 'a1g01', type: 'grammar',
   title: 'am, is, are', dinner: 'How are you today, and what is your favourite food?',
   hook: { q: 'Which animal is the tallest in the world?', o: ['The giraffe', 'The elephant', 'The horse'], a: 0,
     reveal: 'The *giraffe*! A giraffe *is* about 5 metres tall. Giraffes *are* the tallest animals in the world.' },
@@ -39,7 +39,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g02', url: 'https://test-english.com/grammar-points/a1/this-that-these-those/', type: 'grammar',
+  id: 'a1g02', type: 'grammar',
   title: 'this, that, these, those', dinner: 'What is this on your plate?',
   hook: { q: 'How many legs does a spider have?', o: ['6', '8', '10'], a: 1,
     reveal: '*Eight*! *These* eight legs help a spider run very fast.' },
@@ -76,7 +76,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g03', url: 'https://test-english.com/grammar-points/a1/possessive-adjectives/', type: 'grammar',
+  id: 'a1g03', type: 'grammar',
   title: 'my, your, his, her', dinner: 'What is your favourite thing in your room?',
   hook: { q: 'Which planet is the biggest?', o: ['Jupiter', 'Mars', 'Earth'], a: 0,
     reveal: '*Jupiter*! *Its* size is huge: more than 1,300 Earths can fit inside it.' },
@@ -112,7 +112,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1v01', url: 'https://test-english.com/vocabulary/a1/common-things-a1-english-vocabulary/', type: 'vocabulary',
+  id: 'a1v01', type: 'vocabulary',
   title: 'Common things', dinner: 'What do you have in your school bag?',
   hook: { q: 'Before clocks, what did people use to tell the time?', o: ['The sun', 'The moon', 'Phones'], a: 0,
     reveal: '*The sun*! People used a sundial: its shadow showed the time. Today we use a *clock* or a *phone*.' },
@@ -158,7 +158,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1v02', url: 'https://test-english.com/vocabulary/a1/common-verbs-and-verb-phrases-a1-english-vocabulary/', type: 'vocabulary',
+  id: 'a1v02', type: 'vocabulary',
   title: 'My day', dinner: 'What time do you get up and go to bed?',
   hook: { q: 'About how many hours does a cat sleep in one day?', o: ['About 5', 'About 15', 'About 23'], a: 1,
     reveal: 'About *15 hours*! A cat *sleeps* more than it *plays*. Today: words for your day.' },
@@ -204,7 +204,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l01', url: 'https://test-english.com/listening/a1/giving-personal-information-a1-english-listening-test/', type: 'listening',
+  id: 'a1l01', type: 'listening',
   title: 'Joining a club', dinner: 'How do you spell your name in English?',
   hook: { q: 'Which first name do more people in the world have than any other?', o: ['Mohammed', 'John', 'Maria'], a: 0,
     reveal: '*Mohammed*! Many millions of people have this name. And what is *your* name?' },
@@ -257,7 +257,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l02', url: 'https://test-english.com/listening/a1/who-is-in-your-new-class-a1-english-listening-test/', type: 'listening',
+  id: 'a1l02', type: 'listening',
   title: 'My new class', dinner: 'Who sits next to you in class?',
   hook: { q: 'In which country is the biggest school in the world, with more than 50,000 students?', o: ['India', 'The USA', 'China'], a: 0,
     reveal: 'In *India*! A school in the city of Lucknow has more than 50,000 students. That\'s a big class photo!' },
@@ -309,7 +309,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l03', url: 'https://test-english.com/listening/a1/how-often-do-you-a1-english-listening-test/', type: 'listening',
+  id: 'a1l03', type: 'listening',
   title: 'How often?', dinner: 'How often do you eat vegetables?',
   hook: { q: 'What is the most popular drink in the world, after water?', o: ['Tea', 'Coffee', 'Orange juice'], a: 0,
     reveal: '*Tea*! Many people drink it *every day*. How often do *you* drink tea?' },
@@ -359,7 +359,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1r01', url: 'https://test-english.com/reading/a1/guess-who-a1-english-reading-test/', type: 'reading',
+  id: 'a1r01', type: 'reading',
   title: 'Guess who?', dinner: 'Can you describe an animal so I can guess it?',
   hook: { q: 'Which animal can sleep standing up?', o: ['A horse', 'A dog', 'A fish'], a: 0,
     reveal: 'A *horse*! Horses can rest standing up. Now read the clues and guess the animals.' },
@@ -394,7 +394,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1u02', url: 'https://test-english.com/use-of-english/a1/a1-english-test-2-multiple-choice-questions/', type: 'use-of-english',
+  id: 'a1u02', type: 'use-of-english',
   title: 'A cat at school', dinner: 'What animal would you like to bring to school?',
   hook: { q: 'What do we call a baby cat?', o: ['A kitten', 'A puppy', 'A calf'], a: 0,
     reveal: 'A *kitten*! Today\'s news story is about a cat that goes to school every day. (It is a made-up story!)' },
@@ -427,7 +427,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g04', url: 'https://test-english.com/grammar-points/a1/a-an-plurals/', type: 'grammar',
+  id: 'a1g04', type: 'grammar',
   title: 'a, an and plurals', dinner: 'How many apples and bananas do we have at home?',
   hook: { q: 'How many teeth does an adult usually have?', o: ['20', '32', '50'], a: 1,
     reveal: '*32 teeth*! A young child has 20. One *tooth*, two *teeth*: some plurals are strange!' },
@@ -466,7 +466,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g05', url: 'https://test-english.com/grammar-points/a1/adjectives/', type: 'grammar',
+  id: 'a1g05', type: 'grammar',
   title: 'Adjectives: a big dog', dinner: 'Can you describe your best friend with three adjectives?',
   hook: { q: 'Which is the biggest animal that ever lived?', o: ['The T. rex', 'The blue whale', 'The African elephant'], a: 1,
     reveal: 'The *blue whale*! It is a *very big* animal, about 30 metres long. *Big*, *blue*, *long*: these words are adjectives.' },
@@ -504,7 +504,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g06', url: 'https://test-english.com/grammar-points/a1/present-simple/', type: 'grammar',
+  id: 'a1g06', type: 'grammar',
   title: 'I play, she plays', dinner: 'What do you do every day after school?',
   hook: { q: 'What do bees make?', o: ['Milk', 'Honey', 'Bread'], a: 1,
     reveal: '*Honey*! A bee *visits* many flowers every day. Today: I make, she makes, does she make?' },
@@ -542,7 +542,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g07', url: 'https://test-english.com/grammar-points/a1/questions/', type: 'grammar',
+  id: 'a1g07', type: 'grammar',
   title: 'Who? What? Where?', dinner: 'What questions can you ask me about my day?',
   hook: { q: 'How many colours are there in a rainbow?', o: ['5', '7', '10'], a: 1,
     reveal: 'We usually say *seven*: red, orange, yellow, green, blue, indigo and violet. *How many*, *what*, *where*: today we ask questions!' },
@@ -579,7 +579,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g08', url: 'https://test-english.com/grammar-points/a1/adverbs-frequency/', type: 'grammar',
+  id: 'a1g08', type: 'grammar',
   title: 'always, often, never', dinner: 'What do you usually do at the weekend?',
   hook: { q: 'How often can we see a full moon?', o: ['Every night', 'About once a month', 'Once a year'], a: 1,
     reveal: 'About *once a month*! The moon is *always* there, but we *sometimes* see all of it and *sometimes* only a part.' },
@@ -617,7 +617,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g09', url: 'https://test-english.com/grammar-points/a1/object-pronouns/', type: 'grammar',
+  id: 'a1g09', type: 'grammar',
   title: 'I or me? she or her?', dinner: 'Who do you sit with at lunch, and what do you talk about?',
   hook: { q: 'Which animal knows that it is looking at itself in a mirror?', o: ['A goldfish', 'A frog', 'A dolphin'], a: 2,
     reveal: 'A *dolphin*! Put a mirror in front of *it*, and it knows: "That\'s *me*!"' },
@@ -654,7 +654,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1u01', url: 'https://test-english.com/use-of-english/a1/a1-test-1/', type: 'use-of-english',
+  id: 'a1u01', type: 'use-of-english',
   title: 'Max the robot waiter', dinner: 'Would you like a robot at home, and what would it do?',
   hook: { q: 'In which country was the first pizza made?', o: ['The USA', 'Italy', 'Greece'], a: 1,
     reveal: 'In *Italy*, in the city of Naples! Today\'s news story is about a robot that brings pizza. (It is a made-up story!)' },
@@ -687,7 +687,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1u03', url: 'https://test-english.com/use-of-english/a1/a1-english-test-3-text-multiple-choice-gaps/', type: 'use-of-english',
+  id: 'a1u03', type: 'use-of-english',
   title: 'The longest sandwich', dinner: 'What is your favourite sandwich?',
   hook: { q: 'The word "sandwich" comes from…', o: ['a man', 'a city in Italy', 'a song'], a: 0,
     reveal: 'A *man*: the Earl of Sandwich, in England. The story says he ate meat between two pieces of bread when he played cards. Today\'s news: a very long sandwich! (It is a made-up story!)' },
@@ -720,7 +720,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1u04', url: 'https://test-english.com/use-of-english/a1/a1-english-test-4-multiple-choice-questions/', type: 'use-of-english',
+  id: 'a1u04', type: 'use-of-english',
   title: 'Grandma on a skateboard', dinner: 'What fun thing would you like to do when you are seventy?',
   hook: { q: 'How old was the oldest person in history?', o: ['99', '122', '150'], a: 1,
     reveal: '*122* years old: Jeanne Calment from France. She is the oldest person we know of. Today\'s news is about a grandma who loves her skateboard. (It is a made-up story!)' },
@@ -753,7 +753,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1v03', url: 'https://test-english.com/vocabulary/a1/family-and-relatives-a1-english-vocabulary/', type: 'vocabulary',
+  id: 'a1v03', type: 'vocabulary',
   title: 'My family', dinner: 'How many cousins do you have, and who is the oldest?',
   hook: { q: 'Which animal mother carries her baby in a pocket?', o: ['The kangaroo', 'The cat', 'The bear'], a: 0,
     reveal: 'The *kangaroo*! A baby kangaroo lives in its *mother*\'s pocket for about six months. Today: family words.' },
@@ -800,7 +800,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1v04', url: 'https://test-english.com/vocabulary/a1/opposite-adjectives-for-describing-people-and-things-a1-english-vocabulary/', type: 'vocabulary',
+  id: 'a1v04', type: 'vocabulary',
   title: 'Opposites', dinner: 'Who is the tallest person in our family?',
   hook: { q: 'Which of these animals is the slowest?', o: ['A snail', 'A rabbit', 'A horse'], a: 0,
     reveal: 'A *snail*! It is very *slow*. A rabbit is *fast*. Slow and fast are opposites, and today you learn more of them.' },
@@ -848,7 +848,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1v05', url: 'https://test-english.com/vocabulary/a1/daily-routines-a1-english-vocabulary/', type: 'vocabulary',
+  id: 'a1v05', type: 'vocabulary',
   title: 'Morning to night', dinner: 'What time did you wake up today?',
   hook: { q: 'How do astronauts on the space station wash their hair?', o: ['With a special shampoo and very little water', 'In a normal shower', 'They never wash it'], a: 0,
     reveal: 'With a *special shampoo* and very little water. In space you can\'t *have a shower* like at home!' },
@@ -896,7 +896,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l04', url: 'https://test-english.com/listening/a1/what-are-you-doing-a1-english-listening-test/', type: 'listening',
+  id: 'a1l04', type: 'listening',
   title: 'What are you doing?', dinner: 'What is your best friend doing right now, do you think?',
   hook: { q: 'Who made the first phone call, in 1876?', o: ['Alexander Graham Bell', 'Thomas Edison', 'Albert Einstein'], a: 0,
     reveal: '*Alexander Graham Bell*! He called his helper, Mr Watson. Today friends call and ask: What *are* you *doing*?' },
@@ -949,7 +949,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l05', url: 'https://test-english.com/listening/a1/tell-me-about-your-life-a1-english-listening-test/', type: 'listening',
+  id: 'a1l05', type: 'listening',
   title: 'Life on a kibbutz', dinner: 'What is your favourite part of the day, and why?',
   hook: { q: 'How many litres of milk can one cow give in a day?', o: ['About 2', 'About 30', 'About 300'], a: 1,
     reveal: 'About *30 litres*! That\'s a lot of milk. Today you meet a girl who *gets up* early to help with the cows.' },
@@ -1001,7 +1001,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l06', url: 'https://test-english.com/listening/a1/what-are-you-going-to-do-a1-english-listening-test/', type: 'listening',
+  id: 'a1l06', type: 'listening',
   title: 'Holiday plans', dinner: 'What are you going to do this weekend?',
   hook: { q: 'Where is the lowest place on land in the world?', o: ['The Dead Sea', 'The Sahara', 'Mount Everest'], a: 0,
     reveal: 'The *Dead Sea*! It is about 430 metres below the level of the sea. And today, Ido *is going to* visit it.' },
@@ -1051,7 +1051,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l07', url: 'https://test-english.com/listening/a1/comparing-things-and-people-a1-english-listening-test/', type: 'listening',
+  id: 'a1l07', type: 'listening',
   title: 'Which dog?', dinner: 'Which is better, a cat or a dog, and why?',
   hook: { q: 'Which animal is faster?', o: ['A cheetah', 'A horse', 'They are the same'], a: 0,
     reveal: 'A *cheetah*! It can run at about 100 kilometres an hour. It is much *faster than* a horse.' },
@@ -1100,7 +1100,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l08', url: 'https://test-english.com/listening/a1/describing-rooms-there-is-are-prepositions-of-place-a1-english-listening-test/', type: 'listening',
+  id: 'a1l08', type: 'listening',
   title: 'My new room', dinner: 'What is there on the wall in your room?',
   hook: { q: 'In Japan, many people sleep on a futon. What is a futon?', o: ['A bed you put on the floor', 'A big chair', 'A kind of food'], a: 0,
     reveal: 'A *bed on the floor*! In the morning people put it *in* a cupboard, so *there is* more space in the room.' },
@@ -1151,7 +1151,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l09', url: 'https://test-english.com/listening/a1/countries-nationalities-and-languages-a1-english-listening-test/', type: 'listening',
+  id: 'a1l09', type: 'listening',
   title: 'International camp', dinner: 'Which country would you like to visit, and why?',
   hook: { q: 'Which language do most people in Brazil speak?', o: ['Portuguese', 'Spanish', 'English'], a: 0,
     reveal: '*Portuguese*! Brazil is in South America, and most people there speak *Portuguese*, not Spanish.' },
@@ -1203,7 +1203,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1r02', url: 'https://test-english.com/reading/a1/about-my-family/', type: 'reading',
+  id: 'a1r02', type: 'reading',
   title: 'About my family', dinner: 'Who in our family is the funniest, and why?',
   hook: { q: 'Which hair colour is the rarest in the world?', o: ['Red', 'Black', 'Brown'], a: 0,
     reveal: '*Red*! Only about 1 or 2 people in 100 have red hair. Now read about a family and how they look.' },
@@ -1240,7 +1240,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1r03', url: 'https://test-english.com/reading/a1/neighborhood-reading-test/', type: 'reading',
+  id: 'a1r03', type: 'reading',
   title: 'My neighbourhood', dinner: 'What is your favourite place near our home?',
   hook: { q: 'What do we call a shop that sells bread and cakes?', o: ['A bakery', 'A library', 'A chemist'], a: 0,
     reveal: 'A *bakery*! And there is a very good bakery near Adam\'s home. Mmm!' },
@@ -1276,7 +1276,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1r04', url: 'https://test-english.com/reading/a1/the-british-ways-a1-english-reading-test/', type: 'reading',
+  id: 'a1r04', type: 'reading',
   title: 'The British way', dinner: 'What is one thing that is different in another country you know?',
   hook: { q: 'In Britain, on which side of the road do cars drive?', o: ['On the left', 'On the right', 'In the middle'], a: 0,
     reveal: 'On the *left*! In Israel cars drive on the right, so be careful when you cross the road in London.' },

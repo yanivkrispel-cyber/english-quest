@@ -3,7 +3,7 @@
 window.EQ_MISSIONS = window.EQ_MISSIONS || {};
 window.EQ_MISSIONS.bp = [
 {
-  id: 'bpg01', url: 'https://test-english.com/grammar-points/b1-b2/questions-different-types/', type: 'grammar',
+  id: 'bpg01', type: 'grammar',
   title: 'Questions of all kinds', dinner: 'What question would you like to ask a famous person?',
   hook: { q: 'Which question word does NOT start with "wh"?', o: ['How', 'Which', 'Whose'], a: 0,
     reveal: '*How*! All the other question words start with wh: who, what, where, when, why, which and whose.' },
@@ -41,7 +41,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpg02', url: 'https://test-english.com/grammar-points/b1-b2/indirect-questions/', type: 'grammar',
+  id: 'bpg02', type: 'grammar',
   title: 'Polite questions', dinner: 'Do you know what we are having for dinner tomorrow?',
   hook: { q: 'Which is the most visited museum in the world?', o: ['The Louvre in Paris', 'The British Museum', 'The Met in New York'], a: 0,
     reveal: '*The Louvre*, with about 9 million visitors a year. If you go there, you might ask: *Could you tell me where the Mona Lisa is?*' },
@@ -79,7 +79,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpg03', url: 'https://test-english.com/grammar-points/b1-b2/auxiliary-verbs-different-uses/', type: 'grammar',
+  id: 'bpg03', type: 'grammar',
   title: 'Small words, big jobs', dinner: 'You like pizza, don\'t you?',
   hook: { q: 'Which is the most common verb in English?', o: ['be', 'have', 'do'], a: 0,
     reveal: '*Be*! The next ones are have and do, the helper verbs of this mission. They do a lot of work in English.' },
@@ -117,7 +117,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpv01', url: 'https://test-english.com/vocabulary/b1-b2/the-weather-and-natural-disasters-b1-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'bpv01', type: 'vocabulary',
   title: 'Extreme weather', dinner: 'What is the most extreme weather you have ever seen?',
   hook: { q: 'What is the hottest temperature ever officially measured on Earth?', o: ['About 47 °C', 'About 57 °C', 'About 67 °C'], a: 1,
     reveal: 'About *57 °C*, in Death Valley, USA, in 1913. Today\'s words are about extreme weather and natural disasters.' },
@@ -164,7 +164,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpv02', url: 'https://test-english.com/vocabulary/b1-b2/health-problems-and-injuries-b1-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'bpv02', type: 'vocabulary',
   title: 'When something hurts', dinner: 'Have you ever had an injury? What happened?',
   hook: { q: 'How many bones are there in an adult\'s body?', o: ['106', '206', '306'], a: 1,
     reveal: '*206*! Babies have even more, about 300, and some of them grow together. Today: words for when something hurts.' },
@@ -211,7 +211,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl01', url: 'https://test-english.com/listening/b1-b2/ravi-the-uncatchable-smuggler-b1-listening-test/', type: 'listening',
+  id: 'bpl01', type: 'listening',
   title: 'The Uncatchable', dinner: 'Would you rather be a famous detective or a famous inventor? Why?',
   hook: { q: 'The Mona Lisa was once stolen from the Louvre. When?', o: ['In 1911', 'In 1961', 'In 2001'], a: 0,
     reveal: 'In *1911*! A worker hid in the museum and walked out with the painting under his coat. It came back two years later.' },
@@ -264,7 +264,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl02', url: 'https://test-english.com/listening/b1-b2/will-humans-become-supermachines-b1-english-listening-test/', type: 'listening',
+  id: 'bpl02', type: 'listening',
   title: 'Humans or machines?', dinner: 'Would you put a chip in your hand to open doors? Why or why not?',
   hook: { q: 'In Sweden, thousands of people have a tiny chip under the skin of their hand. What is it for?', o: ['Opening doors and paying', 'Speaking other languages', 'Seeing in the dark'], a: 0,
     reveal: '*Opening doors and paying*! The chip works like a key card under the skin. Is that the future, or a scary idea?' },
@@ -320,7 +320,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl03', url: 'https://test-english.com/listening/b1-b2/i-should-have-b2-english-listening-test/', type: 'listening',
+  id: 'bpl03', type: 'listening',
   title: 'I should have…', dinner: 'What is something you should have done this week?',
   hook: { q: 'A nurse who cared for old people wrote about their biggest regret. What was it?', o: ['Not living the life they really wanted', 'Not making more money', 'Not travelling more'], a: 0,
     reveal: '*Not living the life they really wanted*. The nurse, Bronnie Ware, wrote that many people said: I wish I had been braver.' },
@@ -368,7 +368,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpr01', url: 'https://test-english.com/reading/b1-b2/why-we-sleep-b1-english-reading-test/', type: 'reading',
+  id: 'bpr01', type: 'reading',
   title: 'Why we sleep', dinner: 'What time do you usually go to sleep, and what helps you fall asleep?',
   hook: { q: 'Which animal sleeps with only half of its brain at a time?', o: ['Dolphins', 'Cats', 'Horses'], a: 0,
     reveal: '*Dolphins*! One half of the brain rests while the other half stays awake, so they can keep swimming and breathing.' },
@@ -409,7 +409,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpu02', url: 'https://test-english.com/use-of-english/b1-b2/b1-test-2-multiple-choice-questions/', type: 'use-of-english',
+  id: 'bpu02', type: 'use-of-english',
   title: 'The wallet that came home', dinner: 'What would you do if you found a wallet in the street?',
   hook: { q: 'In a famous honesty experiment, researchers "lost" wallets in 40 countries. About how many?', o: ['About 170', 'About 1,700', 'About 17,000'], a: 2,
     reveal: 'About *17,000*! And the surprise: wallets with more money in them were returned *more* often, not less.' },
@@ -442,7 +442,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpg04', url: 'https://test-english.com/grammar-points/b1-b2/the-the-comparatives/', type: 'grammar',
+  id: 'bpg04', type: 'grammar',
   title: 'The more, the better', dinner: 'What is something that gets better the more you do it?',
   hook: { q: 'A famous book said you need a lot of practice to become an expert. How many hours?', o: ['100 hours', '1,000 hours', '10,000 hours'], a: 2,
     reveal: '*10,000 hours*! Scientists say it is not a magic number, but one thing is true: the more you practise, the better you get.' },
@@ -481,7 +481,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpg05', url: 'https://test-english.com/grammar-points/b1-b2/present-perfect-simple-continuous/', type: 'grammar',
+  id: 'bpg05', type: 'grammar',
   title: 'Have done or have been doing?', dinner: 'What have you been doing a lot lately?',
   hook: { q: 'A light bulb in a fire station in California has been shining almost non-stop since…', o: ['1901', '1951', '1991'], a: 0,
     reveal: '*1901*! It has been shining for more than 120 years, and it has become a famous tourist attraction.' },
@@ -521,7 +521,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpg06', url: 'https://test-english.com/grammar-points/b1-b2/adjectives-without-noun/', type: 'grammar',
+  id: 'bpg06', type: 'grammar',
   title: 'The young and the old', dinner: 'What could our town do to help the elderly?',
   hook: { q: 'In which country are there more bikes than people?', o: ['The Netherlands', 'Denmark', 'Germany'], a: 0,
     reveal: '*The Netherlands*! There are about 23 million bikes for about 18 million people. The Dutch (no -s!) ride everywhere.' },
@@ -561,7 +561,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpg07', url: 'https://test-english.com/grammar-points/b1-b2/adjective-order/', type: 'grammar',
+  id: 'bpg07', type: 'grammar',
   title: 'Adjectives in order', dinner: 'Can you describe your favourite thing at home with three adjectives?',
   hook: { q: '"A big red ball" sounds right, "a red big ball" sounds wrong. Why do English speakers know that?', o: ['They feel it, nobody teaches them', 'They learn it in first grade', 'There is no reason'], a: 0,
     reveal: '*They just feel it*! Most English speakers have never learned the rule, but they almost never get it wrong. You can learn it in two minutes.' },
@@ -603,7 +603,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpg08', url: 'https://test-english.com/grammar-points/b1-b2/so-such-a-so-much-so-many/', type: 'grammar',
+  id: 'bpg08', type: 'grammar',
   title: 'So, such, so much, so many', dinner: 'What made you so happy this week?',
   hook: { q: 'How many hours a day can a koala sleep?', o: ['About 8', 'About 14', 'About 20'], a: 2,
     reveal: 'Up to *20 hours*! Koalas sleep so much because their leaves give them so little energy. Such a relaxed life!' },
@@ -642,7 +642,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpg09', url: 'https://test-english.com/grammar-points/b1-b2/narrative-tenses/', type: 'grammar',
+  id: 'bpg09', type: 'grammar',
   title: 'Telling a story', dinner: 'What was happening when you got home today?',
   hook: { q: 'In 1928 a scientist came back from holiday and found mould on a dish in his lab. What did it lead to?', o: ['The first antibiotic', 'The first vaccine', 'The microwave'], a: 0,
     reveal: '*The first antibiotic*, penicillin! Alexander Fleming *was cleaning* his lab when he *noticed* that the mould *had killed* the bacteria. Three past tenses in one story!' },
@@ -682,7 +682,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpu01', url: 'https://test-english.com/use-of-english/b1-b2/b1-english-test-1-text-multiple-choice-gaps/', type: 'use-of-english',
+  id: 'bpu01', type: 'use-of-english',
   title: 'The night before the final', dinner: 'When did you feel like giving up, and what helped you keep going?',
   hook: { q: 'Which word comes from a play written in Czech in 1920?', o: ['robot', 'computer', 'rocket'], a: 0,
     reveal: '*Robot*! The writer Karel Čapek used it in his play (his brother Josef had the idea), from the Czech word "robota", which means hard work.' },
@@ -715,7 +715,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpu03', url: 'https://test-english.com/use-of-english/b1-b2/b1-english-test-3-text-with-multiple-choice-gaps/', type: 'use-of-english',
+  id: 'bpu03', type: 'use-of-english',
   title: 'Grandpa\'s cooking channel', dinner: 'Which family recipe would you film for the whole world?',
   hook: { q: 'Where does shakshuka come from?', o: ['North Africa', 'Italy', 'India'], a: 0,
     reveal: '*North Africa*, most food historians say. Families from Tunisia and Libya brought it to Israel, and now it is a favourite breakfast here.' },
@@ -748,7 +748,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpu04', url: 'https://test-english.com/use-of-english/b1-b2/b1-english-test-4-multiple-choice-questions/', type: 'use-of-english',
+  id: 'bpu04', type: 'use-of-english',
   title: 'The stone on the beach', dinner: 'If you found something very old, would you keep it or give it to a museum?',
   hook: { q: 'Which came first on Earth: dinosaurs or flowers?', o: ['Dinosaurs', 'Flowers', 'They came at the same time'], a: 0,
     reveal: '*Dinosaurs*! They appeared about 230 million years ago, and the oldest flower fossils are only about 130 million years old.' },
@@ -782,7 +782,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpv03', url: 'https://test-english.com/vocabulary/b1-b2/air-travel-b1-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'bpv03', type: 'vocabulary',
   title: 'At the airport', dinner: 'If you could fly anywhere tomorrow, where would you go?',
   hook: { q: 'Which airport has the most passengers in the world?', o: ['Atlanta, USA', 'London Heathrow', 'Dubai'], a: 0,
     reveal: '*Atlanta*, in the USA, with more than 100 million passengers a year. Today: the words you need when you fly.' },
@@ -830,7 +830,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpv04', url: 'https://test-english.com/vocabulary/b1-b2/crime-and-punishment-b1-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'bpv04', type: 'vocabulary',
   title: 'Crime and the courts', dinner: 'What is a fair punishment for someone who writes on the school walls?',
   hook: { q: 'Sherlock Holmes "lived" at a famous address in London. Which one?', o: ['221B Baker Street', '10 Downing Street', '1 Oxford Street'], a: 0,
     reveal: '*221B Baker Street*. Holmes was invented, but today there is a real Sherlock Holmes museum there. Today: words for crime, the police and the courts.' },
@@ -879,7 +879,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpv05', url: 'https://test-english.com/vocabulary/b1-b2/types-of-crime-and-offenders-b1-english-vocabulary/', type: 'vocabulary',
+  id: 'bpv05', type: 'vocabulary',
   title: 'Who did it?', dinner: 'What would you do if you saw someone shoplifting?',
   hook: { q: 'Where does the word "vandal" come from?', o: ['A people who took Rome in 455', 'A Dutch painter', 'A kind of spray paint'], a: 0,
     reveal: '*The Vandals*, a people who took Rome in the year 455 and carried away its treasures. Today a vandal is someone who damages things on purpose.' },
@@ -928,7 +928,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl04', url: 'https://test-english.com/listening/b1-b2/crime-scene-investigation-b1-english-listening-test/', type: 'listening',
+  id: 'bpl04', type: 'listening',
   title: 'The case of the missing cake', dinner: 'If you were a detective, what case would you like to solve?',
   hook: { q: 'Which part of your body leaves marks that are different for every person, even for twins?', o: ['Your fingertips', 'Your elbows', 'Your knees'], a: 0,
     reveal: 'Your *fingertips*! Even identical twins have different fingerprints. And koalas have fingerprints that look a lot like ours.' },
@@ -982,7 +982,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl05', url: 'https://test-english.com/listening/b1-b2/culture-shock-living-abroad-b1-english-listening-test/', type: 'listening',
+  id: 'bpl05', type: 'listening',
   title: 'Far from home', dinner: 'If our family moved to another country, what would you miss most?',
   hook: { q: 'In Japan, what can confuse people or even seem rude in a restaurant?', o: ['Leaving a tip', 'Saying thank you', 'Eating with chopsticks'], a: 0,
     reveal: '*Leaving a tip*! In Japan, good service is normal, and a tip can confuse people. Every country has its own unwritten rules.' },
@@ -1034,7 +1034,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl06', url: 'https://test-english.com/listening/b1-b2/fears-and-phobias-b1-english-listening-test/', type: 'listening',
+  id: 'bpl06', type: 'listening',
   title: 'Small steps, big fears', dinner: 'What were you afraid of when you were little, and how did you stop being afraid?',
   hook: { q: 'What is arachnophobia a fear of?', o: ['Spiders', 'Heights', 'Small spaces'], a: 0,
     reveal: '*Spiders*! It is one of the most common phobias in the world. A fear of heights is acrophobia, and a fear of small spaces is claustrophobia.' },
@@ -1088,7 +1088,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl07', url: 'https://test-english.com/listening/b1-b2/journey-through-our-solar-system-b2-english-listening-test/', type: 'listening',
+  id: 'bpl07', type: 'listening',
   title: 'A trip through space', dinner: 'If you could visit one planet, which would you choose, and why?',
   hook: { q: 'How long does light from the Sun take to reach the Earth?', o: ['About 8 seconds', 'About 8 minutes', 'About 8 hours'], a: 1,
     reveal: 'About *8 minutes*! So the Sun you see is the Sun as it was 8 minutes ago. (But never look straight at it!)' },
@@ -1141,7 +1141,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl08', url: 'https://test-english.com/listening/b1-b2/air-travel-experiences-b1-english-listening-test/', type: 'listening',
+  id: 'bpl08', type: 'listening',
   title: 'Flight stories', dinner: 'What is the best or the worst trip you have ever had?',
   hook: { q: 'Why does food on a plane often taste less good?', o: ['Our sense of taste gets weaker in a plane.', 'The food is old.', 'The cooks don\'t use salt.'], a: 0,
     reveal: 'In the dry air and low air pressure of a plane, our sense of salt and sweet gets weaker, by about a third. That is why airline food often has extra salt!' },
@@ -1193,7 +1193,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl09', url: 'https://test-english.com/listening/b1-b2/health-problems-b1-b2-english-listening-test/', type: 'listening',
+  id: 'bpl09', type: 'listening',
   title: 'At the doctor\'s', dinner: 'How many glasses of water did you drink today?',
   hook: { q: 'About how much of your body is water?', o: ['About 30%', 'About 60%', 'About 90%'], a: 1,
     reveal: 'About *60%*! Your brain has even more, about three quarters. So when you don\'t drink enough, your head can really feel it.' },
@@ -1248,7 +1248,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpr02', url: 'https://test-english.com/reading/b1-b2/the-business-of-running-b1-english-reading-test/', type: 'reading',
+  id: 'bpr02', type: 'reading',
   title: 'The business of running', dinner: 'If you started a new sport tomorrow, which one would it be, and what would you need to buy?',
   hook: { q: 'Who won the first modern Olympic marathon, in 1896?', o: ['A Greek water carrier', 'An American student', 'A British teacher'], a: 0,
     reveal: '*Spyridon Louis*, a Greek man who carried water for a living. Today, running is a business worth billions. How did that happen?' },
@@ -1288,7 +1288,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpr03', url: 'https://test-english.com/reading/b1-b2/why-we-cant-stop-lying-b1-english-reading-test/', type: 'reading',
+  id: 'bpr03', type: 'reading',
   title: 'Why we can\'t stop lying', dinner: 'Is it ever OK to tell a white lie? When?',
   hook: { q: 'Pinocchio\'s nose grew when he lied. In a study in Spain, what happened to people\'s noses when they lied?', o: ['They got warmer.', 'They got longer.', 'They turned blue.'], a: 0,
     reveal: 'They got *warmer*! Scientists in Granada used heat cameras and found that the skin around the nose can warm up when people lie. A real Pinocchio effect!' },
@@ -1328,7 +1328,7 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpr04', url: 'https://test-english.com/reading/b1-b2/incredible-hoaxes-b1-english-reading-test/', type: 'reading',
+  id: 'bpr04', type: 'reading',
   title: 'Incredible hoaxes', dinner: 'Have you ever been fooled by a joke or a fake photo? What happened?',
   hook: { q: 'In which country do children stick paper fish on people\'s backs on 1 April?', o: ['France', 'Japan', 'Brazil'], a: 0,
     reveal: '*France*! There the day is called "poisson d\'avril", April fish. Today: some of the biggest tricks in history.' },

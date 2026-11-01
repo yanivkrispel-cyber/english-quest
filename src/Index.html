@@ -1982,7 +1982,7 @@ function petCard(d){
       <div class="bar mt-s" style="height:10px"><i style="width:${Math.max(3, pct)}%"></i></div>
       <div class="xp-row"><span>${p.to ? (p.xp - p.from) + ' / ' + span + ' XP' : p.xp + ' XP'}</span><span>${p.to ? 'to ' + STAGES[p.stage] : 'Fully grown!'}</span></div>
     </div>
-    ${lt ? `<a class="btn btn-teal btn-block" href="${esc(lt.url)}" target="_blank" rel="noopener" style="grid-column:1 / -1">${icon('target')} Start the level test</a>`
+    ${lt ? `<a class="btn btn-teal btn-block" href="${esc(lt.url)}" target="_blank" rel="noopener" data-gate="1" style="grid-column:1 / -1">${icon('target')} Start the level test</a>`
       : `<button class="btn btn-primary btn-block" data-game="${rec}" style="grid-column:1 / -1">${icon('play')} Play ${GAME_INFO[rec].name}</button>`}
   </div>`;
 }
@@ -2031,7 +2031,7 @@ function renderOnboarding(d){
       <div class="row-flex mt-s" style="gap:10px">${tile('level')}<b>${esc(lt.title)}</b></div>
       <h2>Let's find your English level</h2>
       <div class="sub" style="color:#3b3f55">Answer the questions on test-english.com. At the end you will see your level (A1, A2, B1…). Come back here and tap <b>I got my level</b>.</div>
-      <div class="btns"><a class="btn btn-teal" href="${esc(lt.url)}" target="_blank" rel="noopener">Start ${icon('arrow-up-right')}</a>
+      <div class="btns"><a class="btn btn-teal" href="${esc(lt.url)}" target="_blank" rel="noopener" data-gate="1">Start ${icon('arrow-up-right')}</a>
         <button class="btn btn-primary" id="gotlevel">I got my level ${icon('check')}</button></div>
     </div>`}
     <div class="glass panel">
@@ -5730,7 +5730,7 @@ function codeShare(v){
     <div class="label">Send this code to your friend</div>
     <div class="codebig">${esc(v.code)}</div>
     <div class="row-flex" style="justify-content:center;gap:8px;flex-wrap:wrap">
-      <a class="btn btn-teal btn-sm" target="_blank" rel="noopener" href="${esc(waLink(text))}">${icon('whatsapp-logo')} WhatsApp</a>
+      <a class="btn btn-teal btn-sm" target="_blank" rel="noopener" data-gate="1" href="${esc(waLink(text))}">${icon('whatsapp-logo')} WhatsApp</a>
       <button class="btn btn-glass btn-sm" data-copy="${esc(text)}">${icon('copy')} Copy</button></div>
     <div class="sub mt-s" style="font-size:12px">${v.mode === 'challenge' ? 'Your friend has 24 hours to play it.' : 'The code is open for ' + duelLeft(v, true) + '.'}</div>
   </div>`;
@@ -7169,7 +7169,7 @@ function levelUp(r){
    }],
    [1850, () => ov.querySelectorAll('.reveal').forEach(x => x.classList.remove('hide'))],
    [2300, () => { if (pi && p && p.move) playMove(pi, p.move); }]].forEach(([ms, f]) => setTimeout(f, ms));
-  ov.querySelector('#lv-share').onclick = shareLevel;
+  ov.querySelector('#lv-share').onclick = () => grownUp(shareLevel);
   ov.querySelector('#lv-ok').onclick = () => { ov.remove(); renderMap(); };
 }
 
@@ -8991,7 +8991,7 @@ function todayCard(t){
     ${t.section === 'level' ? '<div class="sub" style="color:#3b3f55">Takes about 20–30 minutes. At the end you will see your level — remember it!</div>' : ''}
     ${t.done ? `<div class="done-badge"><div class="big-check">${BIG_CHECK}</div>
         <div><b style="font-size:20px">${esc(scoreText(t))}</b><div class="sub" style="color:#3b3f55">+${esc(t.points)} points · great job!</div></div></div>`
-      : `<div class="btns"><a class="btn btn-teal" href="${esc(t.url)}" target="_blank" rel="noopener">Open ${icon('arrow-up-right')}</a>
+      : `<div class="btns"><a class="btn btn-teal" href="${esc(t.url)}" target="_blank" rel="noopener" data-gate="1">Open ${icon('arrow-up-right')}</a>
          <button class="btn btn-primary" data-log="${t.date}">I'm done ${icon('check')}</button></div>`}
   </div>`;
 }
@@ -9040,7 +9040,7 @@ function openSheet(w){
     <div class="row-flex between"><span class="row-flex" style="gap:10px">${tile(w.section, true)}<span class="label">${isLevel ? esc(w.label) : w.day + ' ' + fmtDate(w.date) + ' · ' + esc(w.label)}</span></span>
       <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x">${icon('x')}</button></div>
     <h2 style="margin-top:8px;font-size:20px">${esc(w.title)}</h2>
-    <a class="btn btn-teal btn-block mt" href="${esc(w.url)}" target="_blank" rel="noopener">Open exercise ${icon('arrow-up-right')}</a>
+    <a class="btn btn-teal btn-block mt" href="${esc(w.url)}" target="_blank" rel="noopener" data-gate="1">Open exercise ${icon('arrow-up-right')}</a>
     <div class="label mt">${isLevel ? 'Which level did you get?' : 'Your score'}</div>
     ${isLevel ? `<div class="levels">${LEVELS.map(([k,l]) => `<button class="btn btn-glass" data-lv="${k}">${l}</button>`).join('')}</div>`
       : `<div class="score-grid">
@@ -9151,6 +9151,51 @@ async function copyText(text){
   toast('Copied');
 }
 const waLink = text => 'https:' + '/' + '/api.whatsapp.com/send?text=' + encodeURIComponent(text);
+// The grown-ups' gate (specs/store-readiness.md rule 2, night review 2026-11-01): nothing on the kids' side opens another
+// site or app (test-english.com, WhatsApp, the share sheet) until a grown-up answers a sum written in Hebrew words. A link
+// marked data-gate="1" goes through it (one listener for the whole page); code calls grownUp(then). Passed once, it stays
+// open for 10 minutes on this phone (sessionStorage). The parents' area needs no gate (it is behind the parents' code).
+const GATE_NUM = { 6: 'שש', 7: 'שבע', 8: 'שמונה', 9: 'תשע' };
+function grownUp(then){
+  try { if (Number(sessionStorage.getItem('eq_gate')) > Date.now()) return then(); } catch(e){}
+  const a = 6 + Math.floor(Math.random() * 4), b = 6 + Math.floor(Math.random() * 4);
+  let tries = 0;
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="sheet glass" role="dialog" aria-modal="true" aria-labelledby="gate-h">
+    <div class="row-flex between"><span class="row-flex" style="gap:10px"><span class="tile sm t-level">${icon('lock-simple', 'duotone')}</span><h2 id="gate-h" style="margin:0">Ask a grown-up</h2></span>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="gate-x" aria-label="Back">${icon('x')}</button></div>
+    <div class="sub mt-s">This opens a website or another app. A grown-up can open it for you.</div>
+    <div class="soft mt he" dir="rtl" lang="he" style="padding:12px 14px;border-radius:14px">
+      <div class="label" style="text-align:right">להורים</div>
+      <div style="font-size:15px">כדי להמשיך מחוץ לאפליקציה, כתבו את התשובה בספרות: כמה זה <b>${GATE_NUM[a]} כפול ${GATE_NUM[b]}</b>?</div>
+      <input class="input mt-s" id="gate-a" inputmode="numeric" maxlength="3" autocomplete="off" dir="ltr" style="text-align:right" aria-label="התשובה">
+      <div class="sub mt-s" id="gate-msg" style="font-size:13px;min-height:18px" aria-live="polite"></div>
+    </div>
+    <div class="row-flex mt" style="gap:8px"><button class="btn btn-glass" style="flex:1" id="gate-back">Back</button><button class="btn btn-primary" style="flex:1" id="gate-ok">${icon('check')} Continue</button></div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove(), input = ov.querySelector('#gate-a');
+  ov.onclick = e => { if (e.target === ov) close(); };
+  ov.querySelector('#gate-x').onclick = close;
+  ov.querySelector('#gate-back').onclick = close;
+  const ok = () => {
+    if (Number(input.value.trim()) === a * b) {
+      try { sessionStorage.setItem('eq_gate', String(Date.now() + 600000)); } catch(e){}
+      close(); then();
+    } else if (++tries >= 3) close();
+    else { input.value = ''; ov.querySelector('#gate-msg').textContent = 'לא נכון, נסו שוב'; input.focus(); }
+  };
+  ov.querySelector('#gate-ok').onclick = ok;
+  input.onkeydown = e => { if (e.key === 'Enter') ok(); };
+  setTimeout(() => input.focus(), 50);
+}
+document.addEventListener('click', e => {
+  const a = e.target.closest && e.target.closest('a[data-gate]');
+  if (!a) return;
+  e.preventDefault();
+  grownUp(() => window.open(a.href, '_blank', 'noopener'));
+}, true);
 
 function groupMessage(g, word){
   if (PHE) return `בוקר טוב! ☀️ המשימה של היום מחכה 💜\n10 דקות ביום: פותחים את הקישור, בוחרים שם, ועושים את המשימה של היום.\n\n🔗 ${g.link}\n\n📝 המילה של היום: ${word.word} (${word.meaning})\n` +

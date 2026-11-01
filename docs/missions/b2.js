@@ -3,7 +3,7 @@
 window.EQ_MISSIONS = window.EQ_MISSIONS || {};
 window.EQ_MISSIONS.b2 = [
 {
-  id: 'b2g01', url: 'https://test-english.com/grammar-points/b2/have-auxiliary-main-verb/', type: 'grammar',
+  id: 'b2g01', type: 'grammar',
   title: 'Two kinds of have', dinner: 'What do you usually have for breakfast?',
   hook: { q: 'About how many cups of tea do people in the UK drink every day, all together?', o: ['About 1 million', 'About 100 million', 'About 1 billion'], a: 1,
     reveal: 'About *100 million*! The British *have* a lot of tea (have as a main verb), and they *have had* this habit for centuries (have as a helper).' },
@@ -41,7 +41,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2g02', url: 'https://test-english.com/grammar-points/b2/clauses-contrast-purpose-reason-result/', type: 'grammar',
+  id: 'b2g02', type: 'grammar',
   title: 'Linking ideas', dinner: 'What do you do so that you don\'t forget your homework?',
   hook: { q: 'Why do zebras have stripes? Most scientists today think it is…', o: ['to keep biting flies away', 'to look taller', 'to stay warm'], a: 0,
     reveal: 'Most scientists now think stripes help zebras *to keep* biting flies away: the flies find it hard to land on them. *Although* the debate is not over, the fly idea has the most evidence.' },
@@ -80,7 +80,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2g03', url: 'https://test-english.com/grammar-points/b2/generic-pronouns/', type: 'grammar',
+  id: 'b2g03', type: 'grammar',
   title: 'Someone left their phone', dinner: 'If someone in your class feels left out, what can you do to help them?',
   hook: { q: 'Which word did the Merriam-Webster dictionary choose as its Word of the Year in 2019?', o: ['they', 'selfie', 'emoji'], a: 0,
     reveal: '*They*! More and more people use *they* for one person, when we don\'t know, or don\'t say, if the person is a man or a woman.' },
@@ -118,7 +118,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2v01', url: 'https://test-english.com/vocabulary/b2/relationships-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'b2v01', type: 'vocabulary',
   title: 'Close and not so close', dinner: 'Who in our family do you take after?',
   hook: { q: 'Identical twins share almost all of their DNA. Do they have the same fingerprints?', o: ['Yes, exactly the same', 'No, they are different', 'Only on one hand'], a: 1,
     reveal: '*No*! Even identical twins have different fingerprints. You can *take after* your family, but you are still one of a kind.' },
@@ -165,7 +165,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2v02', url: 'https://test-english.com/vocabulary/b2/feelings-and-emotions-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'b2v02', type: 'vocabulary',
   title: 'Strong feelings', dinner: 'What made you feel thrilled or relieved recently?',
   hook: { q: 'Scientists used to talk about 6 basic emotions. A 2017 study of people watching short videos found how many kinds?', o: ['6', '27', '100'], a: 1,
     reveal: '*27*! Researchers in California showed people about 2,000 short videos and found 27 kinds of emotion, from awe to awkwardness.' },
@@ -213,7 +213,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l01', url: 'https://test-english.com/listening/b2/relationship-dilemmas-b2-english-listening-test/', type: 'listening',
+  id: 'b2l01', type: 'listening',
   title: 'Friendship dilemmas', dinner: 'What would you do if a friend kept copying your homework?',
   hook: { q: 'A psychologist studied how friendships grow. About how many hours together turn a stranger into a close friend?', o: ['About 20', 'About 200', 'About 2,000'], a: 1,
     reveal: 'About *200 hours*! The psychologist Jeffrey Hall found that close friendships need around 200 hours of time together.' },
@@ -270,7 +270,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l02', url: 'https://test-english.com/listening/b2/can-music-be-medicine-b2-english-listening-test/', type: 'listening',
+  id: 'b2l02', type: 'listening',
   title: 'Can music be medicine?', dinner: 'What music helps you when you study or do sport?',
   hook: { q: 'Which of these can music really do, according to research?', o: ['Help some people who lost their speech to sing words', 'Cure the flu', 'Make plants grow twice as fast'], a: 0,
     reveal: 'Some people who lost their speech after a stroke can *sing* words they can\'t say. Music therapists use this to help them talk again.' },
@@ -320,7 +320,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l03', url: 'https://test-english.com/listening/b2/regrets-i-wish-id-b2-english-listening-test/', type: 'listening',
+  id: 'b2l03', type: 'listening',
   title: 'I wish I\'d…', dinner: 'Is there something you wish you had done differently this year?',
   hook: { q: 'In a famous study, what did people regret more in the long run?', o: ['The things they did', 'The things they didn\'t do', 'Both the same'], a: 1,
     reveal: '*The things they didn\'t do*. Psychologists found that in the short term we regret our actions, but in the long term we regret the chances we missed.' },
@@ -367,7 +367,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2r01', url: 'https://test-english.com/reading/b2/is-overtourism-pricing-locals-out-b2-english-reading-test/', type: 'reading',
+  id: 'b2r01', type: 'reading',
   title: 'Too many tourists?', dinner: 'How could tourists help a city instead of hurting it?',
   hook: { q: 'In 2024 Venice began charging day visitors a fee on its busiest days. How much?', o: ['€5', '€50', '€500'], a: 0,
     reveal: '*€5*, in 2024. Venice became the first city in the world to charge day-trippers to enter, to fight overtourism.' },
@@ -408,7 +408,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2u02', url: 'https://test-english.com/use-of-english/b2/b2-english-test-2-multiple-choice-questions/', type: 'use-of-english',
+  id: 'b2u02', type: 'use-of-english',
   title: 'No phones at dinner', dinner: 'Should we have a no-phones rule at our dinner table? Why?',
   hook: { q: 'In a study, people talked with a phone lying on the table. What happened?', o: ['They felt less connected', 'They talked more', 'Nothing changed'], a: 0,
     reveal: '*They felt less connected*. Just having a phone on the table, even switched off, made conversations feel less close.' },
@@ -441,7 +441,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2g04', url: 'https://test-english.com/grammar-points/b2/reflexive-reciprocal-pronouns/', type: 'grammar',
+  id: 'b2g04', type: 'grammar',
   title: 'Myself or each other?', dinner: 'What is something you taught yourself to do?',
   hook: { q: 'Which of these animals can recognise itself in a mirror?', o: ['Dolphins', 'Dogs', 'Cats'], a: 0,
     reveal: '*Dolphins*! In experiments, dolphins with a mark on their body turned in front of a mirror to look at *themselves*. Dogs and cats usually think the dog or cat in the mirror is another animal.' },
@@ -480,7 +480,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2g05', url: 'https://test-english.com/grammar-points/b2/there-and-it/', type: 'grammar',
+  id: 'b2g05', type: 'grammar',
   title: 'There or it?', dinner: 'Is there anything new in your class this week?',
   hook: { q: 'How much of all the water on Earth is fresh water (not salty)?', o: ['About 3%', 'About 30%', 'About 60%'], a: 0,
     reveal: 'Only *about 3%*! *There is* a lot of water on our planet, but most of it is salty sea water. *It\'s* important not to waste the fresh water we have.' },
@@ -519,7 +519,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2g06', url: 'https://test-english.com/grammar-points/b2/narrative-tenses-used-to-would/', type: 'grammar',
+  id: 'b2g06', type: 'grammar',
   title: 'Telling stories', dinner: 'What did you use to do when you were little that you don\'t do now?',
   hook: { q: 'Before alarm clocks were common, some people in Britain paid a "knocker-up". What was that person\'s job?', o: ['Waking people up by tapping on their windows', 'Delivering milk', 'Lighting the street lamps'], a: 0,
     reveal: '*Waking people up*! Knocker-ups *used to* walk the streets early in the morning, and they *would* tap on bedroom windows with a long stick until the workers woke up.' },
@@ -558,7 +558,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2g07', url: 'https://test-english.com/grammar-points/b2/get/', type: 'grammar',
+  id: 'b2g07', type: 'grammar',
   title: 'So many gets', dinner: 'What gets you in a good mood on a bad day?',
   hook: { q: 'Your friend says, "I don\'t get it." What does she mean?', o: ['I don\'t understand', 'I didn\'t receive it', 'I can\'t reach it'], a: 0,
     reveal: '*I don\'t understand*. Get is one of the busiest verbs in English: it can mean understand, receive, buy, fetch, arrive and become, and it\'s part of many phrasal verbs.' },
@@ -597,7 +597,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2g08', url: 'https://test-english.com/grammar-points/b2/discourse-markers/', type: 'grammar',
+  id: 'b2g08', type: 'grammar',
   title: 'Anyway, by the way', dinner: 'What was the best part of your day? By the way, did anything funny happen?',
   hook: { q: 'How many hearts does an octopus have?', o: ['One', 'Three', 'Eight'], a: 1,
     reveal: '*Three*! *What\'s more*, its blood is blue. *However*, one of the hearts stops beating when it swims, *which is why* octopuses often prefer crawling.' },
@@ -636,7 +636,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2g09', url: 'https://test-english.com/grammar-points/b2/speculation-deduction/', type: 'grammar',
+  id: 'b2g09', type: 'grammar',
   title: 'It must be…', dinner: 'Who do you think might be the tallest person in our family in ten years?',
   hook: { q: 'Why do cats push their paws in and out on soft blankets? Scientists think it might be…', o: ['a habit from when they were kittens', 'to sharpen their claws', 'because they are cold'], a: 0,
     reveal: 'It *may* be a habit from kittenhood: kittens push against their mother to get milk. Nobody can be completely sure, so scientists say it *might* or *could* be the reason.' },
@@ -675,7 +675,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2u01', url: 'https://test-english.com/use-of-english/b2/b2-english-test-1-text-multiple-choice-gaps/', type: 'use-of-english',
+  id: 'b2u01', type: 'use-of-english',
   title: 'The beach robot', dinner: 'What could we invent to make our neighbourhood cleaner?',
   hook: { q: 'How long can a plastic bottle take to break down in the sea?', o: ['About 4 years', 'About 45 years', 'About 450 years'], a: 2,
     reveal: 'Scientists often estimate *about 450 years*. That is why every bottle picked up from a beach really matters.' },
@@ -709,7 +709,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2u03', url: 'https://test-english.com/use-of-english/b2/b2-english-test-3-text-multiple-choice-gaps/', type: 'use-of-english',
+  id: 'b2u03', type: 'use-of-english',
   title: 'Reading to dogs', dinner: 'Which animal would you like to read a story to, and why?',
   hook: { q: 'In some libraries around the world, children practise reading aloud to…', o: ['dogs', 'plants', 'robots'], a: 0,
     reveal: '*Dogs*! Many libraries and schools have reading-dog programmes. A calm dog listens without judging, so shy readers feel more confident.' },
@@ -743,7 +743,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2u04', url: 'https://test-english.com/use-of-english/b2/b2-english-test-4-multiple-choice-questions/', type: 'use-of-english',
+  id: 'b2u04', type: 'use-of-english',
   title: 'The school garden', dinner: 'If we had a garden, what would you like to grow?',
   hook: { q: 'Scientifically speaking, which of these is a fruit?', o: ['A tomato', 'A carrot', 'A potato'], a: 0,
     reveal: '*A tomato*! It grows from a flower and has seeds inside, so for scientists it is a fruit, even if we put it in a salad.' },
@@ -777,7 +777,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2v03', url: 'https://test-english.com/vocabulary/b2/the-news-and-media-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'b2v03', type: 'vocabulary',
   title: 'In the news', dinner: 'What news story did you hear about this week, and where did it come from?',
   hook: { q: 'A 2018 study looked at millions of posts on Twitter. How did false stories spread, compared with true ones?', o: ['More slowly', 'At the same speed', 'Faster'], a: 2,
     reveal: '*Faster*! Researchers at MIT found that true stories took about six times longer than false ones to reach 1,500 people. That is why you should always check the *source*.' },
@@ -825,7 +825,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2v04', url: 'https://test-english.com/vocabulary/b2/war-and-peace-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'b2v04', type: 'vocabulary',
   title: 'Making peace', dinner: 'What is the best way to make peace with someone after an argument?',
   hook: { q: 'Most Nobel Prizes are given in Stockholm. Where is the Nobel Peace Prize given?', o: ['In Stockholm too', 'In Oslo', 'In Geneva'], a: 1,
     reveal: '*Oslo*, in Norway! Alfred Nobel asked for the *peace* prize to be given by a Norwegian committee, so it has its own ceremony there.' },
@@ -873,7 +873,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2v05', url: 'https://test-english.com/vocabulary/b2/tourism-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'b2v05', type: 'vocabulary',
   title: 'Holiday words', dinner: 'Would you rather go on a package holiday or plan your own adventure? Why?',
   hook: { q: 'Which country gets the most international tourists in the world?', o: ['The USA', 'Spain', 'France'], a: 2,
     reveal: '*France*! It gets about 100 million international visitors a year, more than the number of people who live there.' },
@@ -921,7 +921,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l04', url: 'https://test-english.com/listening/b2/behind-the-scenes-with-an-actor-b2-english-listening-test/', type: 'listening',
+  id: 'b2l04', type: 'listening',
   title: 'Behind the scenes', dinner: 'Would you like to act on a stage one day? Why or why not?',
   hook: { q: 'In the theatre, people don\'t say "good luck" before a show. What do they say instead?', o: ['"Break a leg!"', '"Fall down!"', '"Lose your voice!"'], a: 0,
     reveal: '*"Break a leg!"* Many actors believe that saying "good luck" brings bad luck, so they wish each other the opposite.' },
@@ -977,7 +977,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l05', url: 'https://test-english.com/listening/b2/socializing-and-parties-b2-english-listening-test/', type: 'listening',
+  id: 'b2l05', type: 'listening',
   title: 'Party survival tips', dinner: 'What is a good question to ask someone you have just met?',
   hook: { q: 'Psychologists asked strangers to talk for a few minutes. What did they usually get wrong afterwards?', o: ['They thought the other person liked them less than they really did', 'They thought the other person was older', 'They forgot the other person\'s name'], a: 0,
     reveal: 'They *underestimated how much the other person liked them*. Scientists call it the "liking gap": people usually like us more than we think!' },
@@ -1034,7 +1034,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l06', url: 'https://test-english.com/listening/b2/discussing-news-and-media-b2-english-listening-test/', type: 'listening',
+  id: 'b2l06', type: 'listening',
   title: 'Where do you get your news?', dinner: 'Where do you get most of your news, and do you trust it?',
   hook: { q: 'Which famous fake photo appears online again after almost every big flood?', o: ['A shark swimming down a street', 'A cow on a roof', 'A boat in a tree'], a: 0,
     reveal: 'The *shark in the street*! The same edited photo has been shared after floods in many different countries.' },
@@ -1088,7 +1088,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l07', url: 'https://test-english.com/listening/b2/dark-tourism-b2-english-listening-test/', type: 'listening',
+  id: 'b2l07', type: 'listening',
   title: 'Trips into film worlds', dinner: 'Which place from a film or a TV show would you most like to visit, and why?',
   hook: { q: 'Hobbiton, the village from The Lord of the Rings films, was built in New Zealand. Where exactly?', o: ['On a sheep farm', 'On a beach', 'On top of a mountain'], a: 0,
     reveal: '*On a sheep farm*! The film makers spotted its green hills from the air. Today the little round doors of the hobbit holes are one of New Zealand\'s best-known sights.' },
@@ -1142,7 +1142,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l08', url: 'https://test-english.com/listening/b2/retirement-challenges-in-the-u-s-b2-english-listening-test/', type: 'listening',
+  id: 'b2l08', type: 'listening',
   title: 'Grandpa retires', dinner: 'What would you like to do every day if you never had to work?',
   hook: { q: 'In the USA, at what age can people born in 1960 or later get their full state pension?', o: ['60', '67', '75'], a: 1,
     reveal: '*67*! But many Americans stop working earlier or later, and some of them find the change harder than they expected.' },
@@ -1198,7 +1198,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l09', url: 'https://test-english.com/listening/b2/the-truth-about-expired-food-b2-english-listening-test/', type: 'listening',
+  id: 'b2l09', type: 'listening',
   title: 'Best before or use by?', dinner: 'What food do we throw away most often at home, and how could we waste less?',
   hook: { q: 'Honey was found in ancient Egyptian tombs, thousands of years old. Was it still safe to eat?', o: ['Yes', 'No, it was poisonous', 'It had turned into stone'], a: 0,
     reveal: '*Yes*! Honey has very little water and is very acidic, so bacteria can\'t grow in it. Not every food is that lucky.' },
@@ -1251,7 +1251,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2r02', url: 'https://test-english.com/reading/b2/coolcationing-a-new-travel-trend-b2-english-reading-test/', type: 'reading',
+  id: 'b2r02', type: 'reading',
   title: 'Holidays in the cool', dinner: 'For a summer holiday, would you choose somewhere hot or somewhere cool? Why?',
   hook: { q: 'In the north of Norway, what is the "midnight sun"?', o: ['The sun doesn\'t set for weeks in summer.', 'A full moon that looks like the sun.', 'A sunset at exactly midnight.'], a: 0,
     reveal: 'In the far north of Norway, *the sun doesn\'t set* from late May to late July. You can play football at midnight in daylight!' },
@@ -1292,7 +1292,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2r03', url: 'https://test-english.com/reading/b2/using-ai-to-talk-to-the-deceased-b2-english-reading-test/', type: 'reading',
+  id: 'b2r03', type: 'reading',
   title: 'Talking to whales', dinner: 'If you could ask one animal one question, which animal would you choose, and what would you ask?',
   hook: { q: 'Which animal has the biggest brain on Earth?', o: ['The sperm whale', 'The African elephant', 'The blue whale'], a: 0,
     reveal: '*The sperm whale*! Its brain weighs about eight kilograms, around six times as much as a human brain. No wonder scientists want to know what these whales are saying.' },
@@ -1334,7 +1334,7 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2r04', url: 'https://test-english.com/reading/b2/regulating-deepfakes-b2-english-reading-test/', type: 'reading',
+  id: 'b2r04', type: 'reading',
   title: 'Is that really you?', dinner: 'How could you check whether a video of a famous person is real?',
   hook: { q: 'Where does the word "deepfake" come from?', o: ['"deep learning" + "fake"', 'a film called Deep Fake', 'a deep-sea fish that changes colour'], a: 0,
     reveal: '"*Deep learning*" (a kind of artificial intelligence) + "*fake*". The word first appeared online in 2017.' },
