@@ -4975,7 +4975,7 @@ function chatRender(){
   const sub = 'Talk with Chacho · ' + esc(lv) + (end ? ' · done' : ' · ' + (CT.i + 1) + ' of ' + s.turns.length);
   const bub = (b, k) => b.who === 'alt' ? `<div class="cb coco ctalt"><span>Another way to say it: <b>${esc(b.text)}</b></span></div>`
     : b.who === 'coco'
-    ? `<div class="cb coco"><img src="${cocoSrc(b.mood || 'happy')}" alt=""><span>${esc(b.text)}${b.clip || b.parts ? ` <button class="ctsay" data-ctsay="${k}" title="Hear it again">${icon('speaker-high')}</button>` : ''}</span></div>
+    ? `<div class="cb coco"><img src="${cocoSrc(b.mood || 'happy')}" alt=""><span>${b.model ? b.parts.map((p, i) => i === b.model ? '<b>' + esc(p[0]) + '</b>' : esc(p[0])).join(' ') : esc(b.text)}${b.clip || b.parts ? ` <button class="ctsay" data-ctsay="${k}" title="Hear it again">${icon('speaker-high')}</button>` : ''}</span></div>
        ${CT.preview && TEACHER && b.flag ? `<div class="row-flex ctflag" style="gap:6px"><button class="mflag" data-ctflag="${esc(b.flag)}">Something wrong here?</button></div>` : ''}`
     : `<div class="cb me"><span>${esc(b.text)}${b.tile ? '' : ` ${icon('microphone')}`}</span></div>`;
   const tiles = !end && u && (CT.tilesOn || CT.saying) ? `<div class="cttiles">${(CT.saying ? [CT.saying.text] : u.t).map((t, k) => `<button class="opt" data-cttile="${k}"${busy ? ' disabled' : ''}>${esc(t)}</button>`).join('')}</div>` : '';
@@ -5051,8 +5051,8 @@ function chatCoco(text, clip, then, mood){
   chatPlay(text, clip, () => { if (CT) then(); });
 }
 // Several recorded parts in one bubble: [[text, clip], ...], played one after the other.
-function chatCocoAll(parts, then, mood){
-  CT.log.push({ who: 'coco', text: parts.map(p => p[0]).join(' '), parts, mood });
+function chatCocoAll(parts, then, mood, model){
+  CT.log.push({ who: 'coco', text: parts.map(p => p[0]).join(' '), parts, mood, model });
   CT.phase = 'coco';
   chatRender();
   chatPlayAll(parts, () => { if (CT) then(); });
@@ -5175,7 +5175,7 @@ function chatAnswer(text, via){
 function chatRecast(model){
   const u = chatTurn(), clip = u.m ? chatClip(CT.i, 'm') : chatClip(CT.i, 't' + (model.k + 1));
   CT.saying = { text: model.text, clip };
-  chatCocoAll([[CHAT_BANK.recast, 'bank-recast'], [model.text, clip], [CHAT_BANK.turn, 'bank-turn']], chatAsk, 'thinking');
+  chatCocoAll([[CHAT_BANK.recast, 'bank-recast'], [model.text, clip], [CHAT_BANK.turn, 'bank-turn']], chatAsk, 'thinking', 1);
 }
 function chatSaid(text, via){
   const m = CT.saying;

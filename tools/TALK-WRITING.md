@@ -73,6 +73,12 @@ number. Then make the branches catch them.
 branches; the check warns when all go to one). Natural, correct English, at the level's length. Each tile must fit a
 branch (or, for an open turn, be long enough).
 
+The tiles are also the turn's **model answers** (night review, finding 5): when nothing fits, Chacho says the tile closest
+to what the kid said ("You can say it like this: ... Now you say it!"), and on an open question shows it as "Another way to
+say it". So every tile must be a sentence you would be happy to hear Chacho say as the right way. A turn may give one model
+of its own instead, `m: "I would like a sandwich, please."` (at most the tile length; on a turn with branches it must fit
+one). Each model is recorded as a clip (`<id>-<n>t<k>`, or `<id>-<n>m`). The check fails a turn without a model.
+
 ## Lengths per level (the check enforces them)
 
 | Level | Turns | Chacho's question (words) | Replies, `o`, `end` | Tile |
@@ -98,7 +104,10 @@ reason or an example ("Why?", "What would you do if...?"), so the kid says a ful
 - Each reply (`r`, `o`) reacts in one or two short sentences and does **not** ask a question (the next turn's `c` asks).
   The next `c` must make sense after **any** branch's reply and after `o`.
 - `o` must make sense whatever the kid said, including nonsense or something off-topic ("Interesting! Thank you for
-  telling me." is fine; "Wow, a dog!" is not).
+  telling me." is fine; "Wow, a dog!" is not). It **never praises the English** ("Well said!", "Great words!", "You sound
+  like a real commentator"): it may follow a wrong sentence, and the recast after it does the teaching.
+- A sample answer with a typical mistake should land on a branch whose reply recasts it (says the right form), not on
+  `o`: the c1 commentator turn has a branch for "he take the ball" that answers "And he takes the ball, he shoots...".
 - Plain text only: no emoji, no names of the kid (Chacho does not know who is playing; the line is recorded once for
   everyone), no "[name]" placeholders, no stage directions. Write numbers as words when they are said ("three coins").
 - Spell British or American, but be consistent within a level (the missions use British: favourite, colour).

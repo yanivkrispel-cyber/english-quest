@@ -28,9 +28,12 @@ kid, "open on this phone", install steps for iPhone or Android, and the way into
 
 New kids with missions (`dash.girl.inApp`) take the level test in the app instead of test-english.com. Adaptive blocks
 of five game items from `docs/games.js` (Match it, Hear it, Spot it, Build it and one more), starting at the grade's
-level: 4 or 5 right moves up, 2 or fewer down, 3 stops; at most five blocks. The level is the highest block with 3 of 5
-(`placeLevel`; a strong B1 with 2 of 5 at B2, or 3 of 5 at B2, is B1+). Form A uses half of the items (by id hash)
-and the retest, form B, the other half.
+level: 4 or 5 right moves up, 2 or fewer down, 3 stops, but never before two blocks (a second block at the same level);
+at most five blocks. The level is the highest level with 3 of 5 (two blocks at one level count together; `placeLevel`;
+a strong B1 with 2 of 5 at B2, or 3 of 5 at B2, is B1+). Form A uses half of the game items (by id hash); the retest,
+form B, uses the held-out bank (`gate` in games.js) that the games never show, items she has not had in a gate first
+(night review, finding 12). The grade's level (`GRADE_LEVEL`) is one level below the Israeli curriculum's band for
+the grade: grades 3 to 6 A1, 7 and 8 A2, 9 and 10 B1, 11 and 12 B1+.
 
 - `apiPlacement(name, pin, form, level, correct, total, detail)`: form A logs the level like the old link did
   (through `apiSubmit`); form B only records. Tab `Placements`.
