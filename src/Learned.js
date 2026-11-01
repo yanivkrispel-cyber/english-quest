@@ -57,7 +57,7 @@ function learnedLine(kid, dates) {
     var tasks = logs.filter(function (l) { return l.Section !== 'level' && l.Section !== 'nest'; }), topics = [], newWords = 0, low = null;
     tasks.forEach(function (l) {
       var m = l.Mission ? missionOf(l.URL) : null;
-      var topic = (m && m.he) || SECTION_HE[l.Section] || '';
+      var topic = (m && m.h) || SECTION_HE[l.Section] || '';
       if (topic && topics.indexOf(topic) < 0) topics.push(topic);
       if (m && m.w) newWords += Number(m.w) || 0;
       var pct = l.Percent === '' || l.Percent == null ? null : Number(l.Percent);

@@ -1499,6 +1499,26 @@ check('back from the Nest with no test: the class level and the level test', kid
 run("apiPilotInvite('1234', false, '')");
 }
 
+// ---- Hebrew help for young kids and the kids' mission titles (night review D1, findings 10 and 11) ----
+{
+const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+const fails = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + label); } catch (e) { console.log('ok: ' + label + ' is rejected: ' + e.message); } };
+const lv = n => run(`findGirl(${JSON.stringify(n)}).Level`), heOf = (n, pin) => run(`apiDashboard(${JSON.stringify(n)}, '${pin}')`).girl.he;
+check('Hebrew help is on by itself for A1 and A2, off above and in the Nest', run("[kidHebrew({ Level: 'a1' }), kidHebrew({ Level: 'a2' }), kidHebrew({ Level: 'b1' }), kidHebrew({ Level: 'nest', Hebrew: 'yes' }), kidHebrew({ Level: 'c1', Hebrew: 'yes' }), kidHebrew({ Level: 'a1', Hebrew: 'no' })].join()") === 'true,true,false,false,true,false');
+check('the dashboard says it', heOf('Ziv', '4821') === (['a1', 'a2'].indexOf(lv('Ziv')) >= 0));
+fails('a wrong PIN', () => run("apiKidHebrew('Aviv', '0000', false)"));
+check('the kid turns it off in Me', run("apiKidHebrew('Aviv', '2694', false)").girl.he === false && run("findGirl('Aviv').Hebrew") === 'no');
+check('the kid turns it on again', run("apiKidHebrew('Aviv', '2694', true)").girl.he === true);
+fails('a parent of another family', () => run("apiParentKidHebrew('7788', 'Ziv', true)"));
+const p = run("apiParentKidHebrew('1234', 'Ziv', true)");
+check('a parent (here the admin) turns it on for a B2 kid', heOf('Ziv', '4821') === true && p.groups.some(g => g.girls.some(k => k.girl.name === 'Ziv' && k.girl.he)));
+check('the change is in the audit trail', sheets.Audit.rows.slice(-1)[0].join('|').includes('kid hebrew'));
+run("setGirlFields('Aviv', { Hebrew: '' })"); run("setGirlFields('Ziv', { Hebrew: '' })");
+const day = run("apiDashboard('Aviv', '2694')").week.find(w => w.mission);
+check('a day with a mission carries the kids\' title and the Hebrew topic', !day || (typeof day.mission.kid === 'string' && day.mission.kid.length > 0 && /[א-ת]/.test(day.mission.he)), JSON.stringify(day && day.mission));
+check('missionHe gives the Hebrew topic for parents', /[א-ת]/.test(run("missionHe('https://test-english.com/grammar-points/a1/present-simple-forms-of-to-be/')")));
+}
+
 // The move to Cloudflare (src/Relay.js): inert by default, freeze, relay, export. Since the night review (2026-11-01) the
 // mode and the export are run from the Apps Script editor only, and the relay and the nightly copy talk to the app's own
 // server only (a token is never kept for another address).

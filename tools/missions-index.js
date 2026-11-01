@@ -1,6 +1,6 @@
 // Writes src/MissionIndex.js from docs/missions/*.js: for every catalog topic that has a mission, its id, the number of
-// questions (counted by the app's own msCount), the dinner question for the parents' summary, and the topic's Hebrew name
-// and new words for the parents' sentence. The server reads it to hand out missions and to check results. Runs the content
+// questions (counted by the app's own msCount), the dinner question for the parents' summary, and the topic's Hebrew name (h),
+// new words (w) for the parents' sentence, and the kids' title (k). The server reads it to hand out missions and to check results. Runs the content
 // check first and stops when it fails.
 // The index is keyed by the catalog topic's address, found from the mission id (topicOf). The mission files themselves are
 // sent to the phones, so this also removes any url: field from them (night review 2026-11-01, finding 21: the app ships
@@ -13,10 +13,11 @@ r.errors.forEach(e => console.log('FAIL: ' + e));
 if (r.errors.length) process.exit(1);
 const { missions, count } = load();
 const index = {};
-// he: the topic in Hebrew, w: the new words it teaches (word and key cards), for the parents' sentence (src/Learned.js).
+// h: the topic in Hebrew, k: the kids' title, w: the new words it teaches (word and key cards), for the parents' sentence (src/Learned.js).
 Object.keys(missions).sort().forEach(f => missions[f].forEach(m => {
   const e = index[topicOf(m.id).u] = { id: m.id, n: count.msCount(m), q: m.dinner };
-  if (m.he) e.he = m.he;
+  if (m.kid) e.k = m.kid;
+  if (m.he) e.h = m.he;
   const w = m.learn && (m.learn.kind === 'words' || m.learn.kind === 'keys') ? (m.learn.words || []).length : 0;
   if (w) e.w = w;
 }));

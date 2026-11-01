@@ -244,6 +244,17 @@ function apiParentSetAge(pin, name, choice) {
   return parentView(access);
 }
 
+// A parent turns the kid's Hebrew help on or off (night review, finding 10; on by itself for A1 and A2, Code.js kidHebrew).
+function apiParentKidHebrew(pin, name, on) {
+  ensureSetup();
+  var access = parentAccess(pin);
+  var kid = findGirl(name);
+  if (!kid || (!access.isAdmin && groupOf(kid) !== String(access.group.Id))) throw new Error('Unknown kid');
+  setGirlFields(kid.Name, { Hebrew: on ? 'yes' : 'no' });
+  audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'kid hebrew', kid.Name + ': ' + (on ? 'on' : 'off'));
+  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
+}
+
 // Deletes a kid's assignments for days she did not play (a played day keeps its row, so the history stays).
 function dropUnplayedDays(name) {
   var played = {};

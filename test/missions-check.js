@@ -64,6 +64,10 @@ function check() {
       if (m.url !== undefined) warn('url: in a mission file (node tools/missions-index.js removes it; the phones do not need it)');
       if (m.type !== section) err('type should be ' + section);
       if (!m.title || m.title.length > 40) err('title missing or too long');
+      // kid: the title kids see instead of the catalog topic (night review, finding 10); he: the topic in Hebrew for parents.
+      if (!m.kid || m.kid.length > 28 || /\.$/.test(m.kid)) err('kid title missing, too long (28) or ends with a period');
+      if (!m.he || !/[\u05d0-\u05ea]/.test(m.he) || m.he.length > 48) err('he (the topic in Hebrew) missing or too long (48)');
+      if (m.kid) { const k = file + ':' + m.kid.toLowerCase(); if (seen.has(k)) err('kid title used twice in ' + file); seen.add(k); }
       if (!m.dinner || !/\?$/.test(m.dinner)) err('dinner question missing (ends with ?)');
       const h = m.hook;
       if (!h || !h.q || !Array.isArray(h.o) || h.o.length < 2 || h.o.length > 4 || !(h.a >= 0 && h.a < h.o.length) || !h.reveal) err('hook needs q, 2-4 options, a and reveal');

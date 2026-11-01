@@ -83,7 +83,7 @@ Cloudflare's own point-in-time history of the database, 30 days. A deleted famil
 30 days); the privacy text says so. The phones' error reports are kept 30 days (`opsSweep`).
 
 - Kid: first name (English), age or grade (a Chacho's Nest kid: the real age, 2 to 7), level, PIN, color, pet and its name,
-  group. Optional email (older setups). The parents' switches: the microphone (`Mic`) and the reminder hour (`RemindAt`); the
+  group, the Hebrew help choice (`Girls.Hebrew`: yes, no or empty = on for A1 and A2; set by the kid in Me or a parent). Optional email (older setups). The parents' switches: the microphone (`Mic`) and the reminder hour (`RemindAt`); the
   last day she opened the app (`Seen`) and, when it comes, the day the admin was told she would be deleted (`Inactive`).
 - Kids and kids: blocks (`Blocks`: who blocked whom, the day) and reports (`Reports`: who, about whom, a preset reason). The Nest's Say it step uses the microphone for loudness only, on the phone:
   nothing is recorded or sent. The Nest's "Chacho repeats you" (`docs/nest/echo.js`) holds the kid's few seconds of voice in
@@ -119,8 +119,9 @@ Cloudflare's own point-in-time history of the database, 30 days. A deleted famil
 
 On the phone (local storage): the remembered kid and PIN, the group, the last dashboard, settings (sound, voice), a
 remembered parent's signed session (`eq_admin`, 30 days, never the code; void once the family code changes) and their last
-parents' view without the kids' codes (`eq_par`; both deleted on sign-out), and how long the last open
-took (`eq_open_m`), today's feature counts and up to 5 error reports waiting to be sent with the next call (`eq_use`, `eq_err`). Chacho's
+parents' view without the kids' codes (`eq_par`; both deleted on sign-out), how long the last open
+took (`eq_open_m`), today's feature counts and up to 5 error reports waiting to be sent with the next call (`eq_use`, `eq_err`), whether the last kid had Hebrew help on (`eq_he`, for the wait screen) and that a kid has seen the
+first-run tour (`eq_tour_<kid>`). Chacho's
 Nest also keeps, on the phone only: how many times each game was played (Chacho shows a new game first), the microphone
 choice, the kid's last 12 colored pictures (which colors went where; no drawing, photo or sound), and the sticker book
 (`docs/nest/stickers.js`): which stickers the kid has already seen pop (word ids, `eq_nest_stickers_<kid>`) and the
