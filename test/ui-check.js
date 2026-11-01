@@ -20,5 +20,7 @@ scripts.forEach((code, i) => {
     seen[name] = true;
   }
 });
+// The cut icon fonts (tools/icon_subset.js) must hold every icon the app asks for.
+{ const r = require('../tools/icon_subset.js').check(); r.bad.forEach(b => errors.push('icon font: ' + b + ' is missing (run node tools/icon_subset.js, then node build-pages.js)')); }
 if (errors.length) { console.log(errors.join('\n')); process.exit(1); }
 console.log('Index.html OK: ' + scripts.length + ' scripts, ' + Object.keys(seen).length + ' top-level names, no "//" trap, no duplicates');
