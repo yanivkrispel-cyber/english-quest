@@ -200,6 +200,27 @@ html.tablet .nk-games{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
 .nk-stars.big{font-size:52px;gap:10px}
 .nk-stars span{color:rgba(60,60,90,.15)}
 .nk-stars span.on{color:#f59e0b}
+/* Nest icon buttons are at least 64 px (finding 15; body.nestkid is set while a Nest screen is up, clayIcons' observer). */
+body.nestkid .icon-btn{width:64px;height:64px;font-size:24px}
+body.nestkid .icon-btn i{font-size:28px}
+body.nestkid .icon-btn .cicon{width:40px;height:40px}
+/* Grown-ups only: a long press fills a ring around the button (nkGateBind in play.js), then a sum in Hebrew words. */
+.nk-gate{position:relative;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.nk-gate::after{content:'';position:absolute;inset:-6px;border-radius:50%;pointer-events:none;opacity:0;transition:opacity .15s;
+  background:conic-gradient(var(--primary) calc(var(--hold,0) * 360deg),rgba(255,255,255,.55) 0);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 6px),#000 calc(100% - 5px));mask:radial-gradient(farthest-side,transparent calc(100% - 6px),#000 calc(100% - 5px))}
+.nk-gate.holding::after{opacity:1}
+.nk-gatetip{position:fixed;z-index:60;padding:8px 12px;border-radius:14px;background:var(--glass);box-shadow:var(--shadow);font-size:13px;font-weight:700;color:var(--ink);animation:up .2s}
+.nk-gateopts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+/* "Chacho is sleepy": the day's screen time is up (nkBedtime). Calm: no motion but a slow breath. */
+.nk-bed{min-height:calc(100dvh - 68px)}
+.nk-bedmain{flex:1;position:relative;display:grid;place-items:center;align-content:center;gap:6px}
+.nk-bedcoco{width:min(56vw,240px);height:auto;animation:nkbreath 4s ease-in-out infinite}
+.nk-bedpet{width:min(34vw,150px);height:auto}
+.nk-moon{font-size:56px;color:var(--orange)}
+@keyframes nkbreath{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+@media (prefers-reduced-motion:reduce){.nk-bedcoco{animation:none}}
+.nk-switchout{align-self:center;margin:4px 0 8px}
 .nk-switch{flex:1;display:grid;grid-template-columns:repeat(2,1fr);gap:16px;align-content:center;justify-items:center}
 .nk-kid{width:100%;max-width:200px;aspect-ratio:1;border-radius:30px;display:grid;place-items:center;align-content:center;gap:8px;cursor:pointer;border:0;font-size:20px;color:var(--ink)}
 .nk-kid .pet-face,.nk-kid .avatar{width:96px;height:96px;font-size:40px}
@@ -533,6 +554,8 @@ h2{font-size:18px;font-weight:700;margin:0}
 .cell.future{opacity:.45}
 .hist{display:flex;gap:6px;align-items:flex-end;height:50px;margin-top:8px}
 .hist div{flex:1;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,#a5b4fc,#6366f1);min-height:4px}
+/* The parents' kid card: a chip says its number in words, so a long one wraps to two lines instead of spilling. */
+.pchips .chip{height:auto;min-height:28px;padding-top:4px;padding-bottom:4px;line-height:1.35}
 .recent{font-size:13px;margin-top:10px}
 .recent div{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.5)}
 .recent div span:nth-child(2){flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1686,7 +1709,8 @@ function clayIcons(root){
   });
 }
 let clayIconsQ = 0;
-new MutationObserver(() => { if (!clayIconsQ) clayIconsQ = requestAnimationFrame(() => { clayIconsQ = 0; clayIcons(document.body); }); })
+new MutationObserver(() => { if (!clayIconsQ) clayIconsQ = requestAnimationFrame(() => { clayIconsQ = 0; clayIcons(document.body);
+  document.body.classList.toggle('nestkid', !!document.querySelector('#app > .nk-home, #app > .gscreen.nk, #app > .nkh, #app > .nka, #app > .nks')); }); })
   .observe(document.documentElement, { childList: true, subtree: true });
 const tile = (sec, sm) => { const x = SEC[sec] || SEC.grammar; return '<span class="tile ' + (sm ? 'sm ' : '') + x[1] + '">' + icon(x[0], 'duotone') + '</span>'; };
 const noEmoji = s => String(s ?? '').replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}]/gu, '').replace(/\s+/g, ' ').trim();
@@ -2082,7 +2106,7 @@ function petGrows(p, from){
       <div class="halo">${petArt(Object.assign({}, p, { stage: from }), 'happy', 'a')}
         ${petArt(p, 'celebrate', 'b', { style: 'opacity:0;transform:scale(.4)' })}</div>
       <h1 class="reveal hide">${esc(p.name)} is growing!</h1>
-      <div class="sub reveal hide">Now ${/^[AEIOU]/.test(now) ? 'an' : 'a'} ${now} · ${p.xp} XP</div>
+      <div class="sub reveal hide">Now ${/^[AEIOU]/.test(now) ? 'an' : 'a'} ${now}${dash && dash.nest ? '' : ' · ' + p.xp + ' XP'}</div>
       <button class="btn btn-teal btn-block mt reveal hide" id="evo-ok">Yay!</button>
     </div>`;
   document.body.appendChild(ov);
@@ -7737,7 +7761,7 @@ function dataCard(){
 }
 const DATA = { table: 'Girls', open: '', q: '' };
 const DATA_LABEL = { ParentPIN: 'Parent code', GoalReward: 'Goal reward', PetName: 'Pet name', Redeemed: 'Redeemed points', Missions: 'Daily task',
-  Friends: 'Play with other families', NestPerDay: 'Nest sessions a day', NestArcadeMin: 'Arcade minutes a day', Group: 'Family' };
+  Friends: 'Play with other families', NestPerDay: 'Nest sessions a day', NestArcadeMin: 'Arcade minutes a day', NestMin: 'Nest screen minutes a day (empty = by age)', Group: 'Family' };
 const DATA_TABLES = { Girls: 'Kids', Groups: 'Families', Settings: 'Settings' };
 const DATA_HINT = { Missions: 'empty = Today\'s Mission, no = test-english.com', Friends: 'empty = plays with other families, no = only its own',
   Redeemed: 'points spent on rewards' };
@@ -8040,6 +8064,7 @@ function nestDays(u){
 function nestPlayground(){
   // Chacho's arcade (docs/nest/arcade.js): the playground with two shelves, for the arcade kids.
   if (window.EQ_NEST && typeof nkArcade === 'function' && nkArcOn()) return nkArcade();
+  if (typeof nkTimeUp === 'function' && nkTimeUp()) return nkBedtime();
   const games = dash && dash.nest && window.EQ_NEST ? nkPlayGames() : [];
   if (!games.length) return renderDash();
   const L = Object.fromEntries(NG_GAMES);
@@ -8067,6 +8092,8 @@ function renderNest(d){
         document.getElementById('nkagain').onclick = () => renderNest(d); });
     return;
   }
+  // Screen time (finding 15): the day's minutes are used up, Chacho sleeps until tomorrow. The clock runs on every Nest screen.
+  if (typeof nkClockOn === 'function') { nkClockOn(); if (nkTimeUp()) return nkBedtime(); }
   // The living home (n.home: specs/nest-home.md, docs/nest/home.js).
   if (n.home && typeof nkHome === 'function') return nkHome(d);
   // Settings.NestAll (n.all): every unit is open now, each with its days to pick.
@@ -8102,7 +8129,7 @@ function renderNest(d){
     : nestStart(nkPick(n.played.filter(id => String(id).split('.')[0] === b.dataset.nkunit).concat([b.dataset.nkunit]))));
   document.getElementById('nkhear').onclick = () => nestPlay(['en-hi']);
   const art = document.getElementById('nkart'); if (art) art.onclick = nkAlbum;
-  document.getElementById('logout').onclick = nestSwitch;
+  nkGateBind(document.getElementById('logout'), nestSwitch);
   const pet = document.getElementById('nkpet');
   if (pet) pet.onclick = () => { paMood(pet.querySelector('svg'), 'celebrate'); buzz(true); };
   app.querySelectorAll('[data-nkpet]').forEach(b => b.onclick = async () => {
@@ -8126,11 +8153,11 @@ function deviceKidDrop(name){ store.set('eq_kids', deviceKids().filter(k => k.na
 function nestSwitch(){
   nestStopAudio();
   const kids = deviceKids();
-  app.innerHTML = `<div class="nk-home">
+  app.innerHTML = `<div class="nk-home" id="nkswitch">
     <div class="row-flex between"><button class="btn btn-glass icon-btn" id="nkback" aria-label="Back">${icon('arrow-left')}</button><span></span></div>
     <div class="nk-switch">${kids.map((k, i) => `<button class="nk-kid glass" data-nkkid="${i}">${petFace(store.get('eq_pet_' + k.name), colorOf(k.name), k.name)}<b>${esc(k.name)}</b></button>`).join('')}
       <button class="nk-kid glass add" id="nkother" aria-label="Someone else">${icon('user-plus', 'duotone')}</button></div>
-    <button class="btn btn-glass btn-block" id="nkout">${icon('sign-out')} Sign out</button>
+    <button class="btn btn-glass btn-sm nk-switchout" id="nkout">${icon('sign-out')} Sign out</button>
   </div>`;
   document.getElementById('nkback').onclick = renderDash;
   document.getElementById('nkother').onclick = signOut;
@@ -8146,7 +8173,7 @@ function nestSwitch(){
 
 // ---- A session: the engine and every activity live in docs/nest/play.js (nestStart, nestRender, NK.*) ----
 function nestLeave(){ if (typeof nkHomeStop === 'function') nkHomeStop(); if (typeof nkActorOff === 'function') nkActorOff(); const sky = document.getElementById('nksky'); if (sky) sky.remove(); if (typeof nkHandStop === 'function') nkHandStop(); const mic = document.getElementById('nkmic'); if (mic) mic.remove(); if (NE && NE.chant) NE.chant.stop(); if (NE) clearTimeout(NE.idleT); nestStopAudio(); nestMicStop(); NE = null; }
-function nestExit(){ const pv = NE && NE.preview, pl = NE && NE.play; nestLeave(); if (pv) nestGallery(); else if (pl) nestPlayground(); else renderDash(); }
+function nestExit(){ const pv = NE && NE.preview, pl = NE && NE.play; if (typeof nkPause === 'function') nkPause(); nestLeave(); if (pv) nestGallery(); else if (pl) nestPlayground(); else renderDash(); }
 // The day's result: the day id the server gave, the score of the rounds that count, and each word's first try
 // ("cat:1,dog:0") for the review days and the parents' view.
 async function nestFinish(){
@@ -8170,23 +8197,45 @@ function ageRow(g){
     <span class="chip">${icon(g.nest ? 'bird' : 'graduation-cap')} ${esc(ageLabel(ageValue(g)))}</span>
     <button class="btn btn-glass btn-sm" data-ageopen="${esc(g.girl.name)}">${icon('pencil-simple')} שינוי גיל או כיתה</button></div>`;
 }
-// Chacho's Nest: how many lessons a day (Girls.NestPerDay; 0 = no limit). The playground is open either way.
+// Minutes in words for the parents: "רבע שעה", "20 דקות".
+const heMin = n => ({ 10: 'עשר דקות', 15: 'רבע שעה', 30: 'חצי שעה' })[n] || n + ' דקות';
+// Chacho's Nest, screen time a day (finding 15): at most 20 / 30 / 40 minutes by age (dash.nest.capMax), the parent may
+// choose less, never more and never "no limit". The chip shows today's minutes on every phone that reported them.
+const NEST_MIN_OPTS = { 20: [10, 15, 20], 30: [15, 20, 30], 40: [20, 30, 40] };
+function nestTimeChip(n){
+  const used = Math.min(n.cap, Math.round((n.used || 0) / 60));
+  return `<span class="chip ${used >= n.cap ? 'orange' : ''}">${icon('timer')} ${T(`Today: ${used} of ${n.cap} min`, `זמן מסך היום: ${used} מתוך ${n.cap} דקות`)}</span>`;
+}
+function nestMinRow(g){
+  if (!g.nest || !g.nest.capMax) return '';
+  const opts = NEST_MIN_OPTS[g.nest.capMax] || [g.nest.capMax];
+  return `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:6px;flex-wrap:wrap;align-items:center">
+    <span class="sub" style="margin:0;font-size:13px">זמן מסך בקן ביום:</span>
+    ${opts.map(n => `<button class="btn btn-sm ${g.nest.cap === n ? 'btn-primary' : 'btn-glass'}" data-nestmin="${n}" data-nestminkid="${esc(g.girl.name)}">${heMin(n)}</button>`).join('')}
+    <div class="sub" style="font-size:12px;width:100%;margin:0">אחרי הזמן הזה צ׳אצ׳ו הולך לישון עד מחר, בכל המכשירים. השיעורים, המשחקים והחזרות נספרים יחד. המקסימום לגיל הזה: ${heMin(g.nest.capMax)}.</div></div>`;
+}
+// Chacho's Nest: how many lessons a day (Girls.NestPerDay; at most three). The playground is open either way.
 function nestPerDayRow(g){
   if (!g.nest) return '';
   const v = g.nest.perDay == null ? 1 : g.nest.perDay;
   return `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:6px;flex-wrap:wrap;align-items:center">
     <span class="sub" style="margin:0;font-size:13px">שיעורים ביום:</span>
-    ${[[1, 'אחד'], [2, 'שניים'], [3, 'שלושה'], [0, 'בלי הגבלה']].map(([n, l]) => `<button class="btn btn-sm ${v === n ? 'btn-primary' : 'btn-glass'}" data-perday="${n}" data-perkid="${esc(g.girl.name)}">${l}</button>`).join('')}</div>`;
+    ${[[1, 'אחד'], [2, 'שניים'], [3, 'שלושה']].map(([n, l]) => `<button class="btn btn-sm ${v === n ? 'btn-primary' : 'btn-glass'}" data-perday="${n}" data-perkid="${esc(g.girl.name)}">${l}</button>`).join('')}</div>`;
 }
-// Chacho's arcade: minutes a day (Girls.NestArcadeMin; 15 when empty, 0 = no limit), for the kids who have the arcade.
+// Chacho's arcade: minutes a day (Girls.NestArcadeMin; 15 when empty), inside the day's screen time.
 function nestArcadeRow(g){
   if (!g.nest || !g.nest.arcade) return '';
-  const v = g.nest.arcadeMin == null ? 15 : g.nest.arcadeMin;
+  const v = g.nest.arcadeMin == null ? 15 : g.nest.arcadeMin, opts = [10, 15, 30].filter(n => n <= (g.nest.cap || 30));
   return `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:6px;flex-wrap:wrap;align-items:center">
-    <span class="sub" style="margin:0;font-size:13px">משחקי צ׳אצ׳ו ביום:</span>
-    ${[[10, 'עשר דקות'], [15, 'רבע שעה'], [30, 'חצי שעה'], [0, 'בלי הגבלה']].map(([n, l]) => `<button class="btn btn-sm ${v === n ? 'btn-primary' : 'btn-glass'}" data-arcmin="${n}" data-arckid="${esc(g.girl.name)}">${l}</button>`).join('')}</div>`;
+    <span class="sub" style="margin:0;font-size:13px">מתוכן במשחקי צ׳אצ׳ו:</span>
+    ${opts.map(n => `<button class="btn btn-sm ${v === n ? 'btn-primary' : 'btn-glass'}" data-arcmin="${n}" data-arckid="${esc(g.girl.name)}">${heMin(n)}</button>`).join('')}</div>`;
 }
 function bindAgeRows(p, pin){
+  app.querySelectorAll('[data-nestmin]').forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try { renderParent(await call('apiParentNestMin', pin, b.dataset.nestminkid, Number(b.dataset.nestmin)), pin); toast(b.dataset.nestminkid + ': ' + b.textContent.trim()); }
+    catch(err){ toast(err.message, true); b.disabled = false; }
+  });
   app.querySelectorAll('[data-arcmin]').forEach(b => b.onclick = async () => {
     b.disabled = true;
     try { renderParent(await call('apiParentNestArcade', pin, b.dataset.arckid, Number(b.dataset.arcmin)), pin); toast(b.dataset.arckid + ': ' + b.textContent.trim()); }
@@ -8235,7 +8284,11 @@ function nestFillParent(p){
   loadNest().then(() => els.forEach(el => {
     const u = nestUnit(el.dataset.nkfill);
     if (!u) return;
-    el.innerHTML = `<div class="he sub" dir="rtl" lang="he" style="font-size:13px;margin:0">${icon('bird')} היום בקן של צ׳אצ׳ו: <b>${esc(u.he)}</b></div>
+    const kid = p ? [].concat(...p.groups.map(x => x.girls)).find(x => x.girl.name === el.dataset.nkkid) : null;
+    // Ages 2 and 3 learn with a grown-up next to them (AAP, WHO; finding 15): the card says how.
+    const coplay = kid && kid.nest && kid.nest.age <= 3 ? `<div class="he soft stat mt-s" dir="rtl" lang="he" style="align-items:flex-start"><span class="tile sm t-together">${icon('users-three', 'duotone')}</span>
+      <div style="font-size:13px;line-height:1.5"><b>משחקים ביחד.</b> בגיל הזה לומדים הכי טוב עם מבוגר: שבו ליד <bdi>${esc(kid.girl.name)}</bdi>, הצביעו יחד על התמונות ואמרו את המילים בקול אחרי צ׳אצ׳ו. אחרי השיעור, מילה אחת מהיום בארוחת הערב.</div></div>` : '';
+    el.innerHTML = `<div class="he sub" dir="rtl" lang="he" style="font-size:13px;margin:0">${icon('bird')} היום בקן של צ׳אצ׳ו: <b>${esc(u.he)}</b></div>${coplay}
       <div class="nk-learnrow">${nestWordsOf(u).map(w => `<button class="nk-lw" data-nkw="${esc(w.id)}" title="${esc(w.he)}">${nestPic(w)}<span dir="ltr">${esc(w.en)}</span></button>`).join('')}</div>
       ${nestCardMore(u)}`;
     el.querySelectorAll('[data-nkw]').forEach(b => b.onclick = () => nestPlay(['w-' + b.dataset.nkw]));
@@ -9295,56 +9348,72 @@ function renderParent(p, pin){
   };
 }
 
-// Where a kid is on her journey, for parents.
+// Where a kid is on her journey, for parents: every number with its words (no tooltips: phones have none).
 function journeyChip(j){
-  const g = j.gate, gate = g.state === 'open' ? ' · gate open' : g.state === 'wait' && g.last ? ` · gate ${g.last.correct}/${g.last.total}` : '';
-  return `<span class="chip ${g.state === 'open' ? 'teal' : ''}" title="World ${j.world}: ${esc(j.name)}">${icon('map-trifold')} ${esc(j.name)} ${Math.min(j.stations, j.goal)}/${j.goal}${gate}</span>`;
+  const g = j.gate, st = Math.min(j.stations, j.goal);
+  const gate = g.state === 'open' ? T(' · gate open', ' · השער פתוח') : g.state === 'wait' && g.last ? T(` · gate ${g.last.correct}/${g.last.total}`, ` · בשער: ${g.last.correct} מתוך ${g.last.total}`) : '';
+  return `<span class="chip ${g.state === 'open' ? 'teal' : ''}">${icon('map-trifold')} ${T(`World ${j.world}: ${esc(j.name)} ${st}/${j.goal}`, `עולם ${j.world}, <bdi>${esc(j.name)}</bdi>: ${st} מתוך ${j.goal} תחנות`)}${gate}</span>`;
 }
 
+// Hebrew text from the server with English words in it (topics, Nest words): each Latin run in a <bdi>.
+const heBidi = t => esc(t).replace(/([A-Za-z][A-Za-z0-9'’+.\- ]*[A-Za-z0-9+]|[A-Za-z])/g, '<bdi>$1</bdi>');
+// The day strip in the parents' view: Hebrew day letters, Sunday first (the strip runs right to left).
+const HE_DAYS = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳'], EN_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const dayLetter = w => PHE ? HE_DAYS[EN_DAYS.indexOf(w.day)] || w.day : w.day;
+// "3 ימים" / "יום אחד": a count with its word, the number first.
+const heN = (n, one, many) => n === 1 ? one : n + ' ' + many;
+
 function girlCard(g, isAdmin, grp){
-  const s = g.stats;
+  const s = g.stats, nest = !!g.nest;
+  // Every chip says what its number is, in words (finding 14). Nest kids: no points, streak or average (finding 15).
+  const chips = [
+    g.levelTest ? `<span class="chip orange">${icon('target')} ${T('Level test pending', 'עוד לא עשה מבחן רמה')}</span>`
+      : `<span class="chip purple">${icon('calendar-check')} ${T(`${s.weekDone}/${s.weekTotal} days this week`, `ימי תרגול השבוע: ${s.weekDone} מתוך ${s.weekTotal}`)}</span>`,
+    g.journey ? journeyChip(g.journey) : '',
+    isAdmin && g.pin ? `<span class="chip">${icon('key')} ${esc(g.pin)}</span>` : '',
+    !nest && s.avg != null ? `<span class="chip">${icon('target')} ${T(`Average ${s.avg}%`, `ציון ממוצע: ${s.avg}%`)}</span>` : '',
+    !nest && s.streak ? `<span class="chip">${icon('fire')} ${T(`${s.streak}-day streak`, 'רצף: ' + heN(s.streak, 'יום אחד', 'ימים'))}</span>` : '',
+    !nest && g.coins != null ? `<span class="chip">${coin}${T(coinsTxt(g.coins) + ' coins', coinsTxt(g.coins) + ' מטבעות לחנות')}</span>` : '',
+    !nest && g.games && g.games.weekRounds ? `<span class="chip">${icon('game-controller')} ${T(`Games this week: ${g.games.weekRounds}${g.games.weekAvg != null ? ', ' + g.games.weekAvg + '% right' : ''}`, `משחקים השבוע: ${heN(g.games.weekRounds, 'סבב אחד', 'סבבים')}${g.games.weekAvg != null ? ', ' + g.games.weekAvg + '% נכון' : ''}`)}</span>` : '',
+    nest && g.nest.cap ? nestTimeChip(g.nest) : '',
+    isAdmin && g.push ? `<span class="chip ${g.push.devices ? 'teal' : ''}">${icon('bell')} ${g.push.devices}</span>` : '',
+    isAdmin && g.push && g.push.devices ? `<button class="chip" style="cursor:pointer" data-testpush="${esc(g.girl.name)}">${icon('paper-plane-tilt')} Test</button>` : '',
+    s.total ? `<span class="chip">${icon('check-circle')} ${T(`${s.total} tasks total`, `${nest ? 'שיעורים' : 'משימות'} בסך הכול: ${s.total}`)}</span>` : '',
+    g.chat && g.chat.week ? `<span class="chip teal">${icon('microphone')} ${T(`${g.chat.weekVoice}/${g.chat.week} talks out loud`, `שיחות בקול השבוע: ${g.chat.weekVoice} מתוך ${g.chat.week}`)}</span>` : ''
+  ].filter(Boolean).join('');
+  const tr = g.track;
   return `<div class="glass panel">
     <div class="row-flex between">
       <div class="row-flex">${petFace(g.pet, g.girl.color, g.girl.name)}
-        <div><h2>${esc(g.girl.name)}</h2><span class="sub" style="font-size:13px">${T('Level', 'רמה')} <bdi>${esc(g.girl.levelLabel)}</bdi>${g.pet ? ' · ' + esc(g.pet.name) + ' the ' + STAGES[g.pet.stage - 1] : ''}${g.email ? ' · reminders on' : ''}</span></div></div>
-      <span class="chip orange">${icon('star')} ${s.balance}</span>
+        <div><h2>${esc(g.girl.name)}</h2><span class="sub" style="font-size:13px">${nest ? T("Chacho's Nest", 'הקן של צ׳אצ׳ו') : tr ? T('Track', 'מסלול') + ` <bdi>${esc(tr.label)}</bdi>` : T('Level', 'רמה') + ` <bdi>${esc(g.girl.levelLabel)}</bdi>`}${g.pet ? ' · ' + (PHE ? `<bdi>${esc(g.pet.name)}</bdi>` : esc(g.pet.name) + ' the ' + STAGES[g.pet.stage - 1]) : ''}${g.email ? T(' · reminders on', ' · תזכורות במייל') : ''}</span></div></div>
+      ${nest ? '' : `<span class="chip orange">${icon('star')} ${T(s.balance + ' points', s.balance + ' נקודות')}</span>`}
     </div>
-    <div class="row-flex mt-s" style="flex-wrap:wrap;gap:8px">
-      ${g.levelTest ? `<span class="chip orange">${icon('target')} ${T('Level test pending', 'עוד לא עשה מבחן רמה')}</span>` : `<span class="chip purple">${s.weekDone}/${s.weekTotal} ${T('this week', 'השבוע')}</span>`}
-      ${g.journey ? journeyChip(g.journey) : ''}
-      ${isAdmin && g.pin ? `<span class="chip">${icon('key')} ${esc(g.pin)}</span>` : ''}
-      <span class="chip">${icon('target')} ${s.avg == null ? '–' : s.avg + '%'}</span>
-      <span class="chip">${icon('fire')} ${s.streak}</span>
-      ${g.coins != null ? `<span class="chip" title="Coins for Chacho's shop">${coin}${coinsTxt(g.coins)}</span>` : ''}
-      ${g.games ? `<span class="chip" title="Mini-games this week">${icon('game-controller')} ${g.games.weekRounds}${g.games.weekAvg != null ? ' · ' + g.games.weekAvg + '%' : ''}</span>` : ''}
-      ${isAdmin && g.push ? `<span class="chip ${g.push.devices ? 'teal' : ''}">${icon('bell')} ${g.push.devices}</span>` : ''}
-      ${isAdmin && g.push && g.push.devices ? `<button class="chip" style="cursor:pointer" data-testpush="${esc(g.girl.name)}">${icon('paper-plane-tilt')} Test</button>` : ''}
-      <span class="chip">${s.total} ${T('tasks total', 'משימות בסך הכול')}</span>
-      ${g.chat && g.chat.week ? `<span class="chip teal" title="Talk with Chacho this week">${icon('microphone')} ${g.chat.weekVoice}/${g.chat.week} ${T('talks out loud', 'שיחות בקול')}</span>` : ''}
-    </div>
+    ${g.learned ? `<div class="soft stat mt-s he" dir="rtl" lang="he" style="align-items:flex-start"><span class="tile sm t-vocab">${icon('book-open-text', 'duotone')}</span>
+      <div style="font-size:15px;line-height:1.5"><div style="font-weight:700">${heBidi(g.learned)}</div>${tr ? `<div class="sub" style="font-size:13px;margin-top:4px">מסלול <bdi>${esc(tr.label)}</bdi>: מתרגלים ${esc(tr.he)}. זו רמת התרגול, לא ציון.</div>` : ''}</div></div>` : ''}
+    <div class="row-flex mt-s pchips" style="flex-wrap:wrap;gap:8px">${chips}</div>
     ${placementLine(g)}
     ${nestParentCard(g)}
     ${ageRow(g)}
-    ${nestPerDayRow(g)}${nestArcadeRow(g)}
+    ${nestMinRow(g)}${nestPerDayRow(g)}${nestArcadeRow(g)}
     ${!isAdmin && g.pin && grp ? `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:8px;flex-wrap:wrap">
       <a class="btn btn-teal btn-sm" href="${esc(waLink(kidInvite(grp.link, { name: g.girl.name, pin: g.pin, nest: !!g.nest })))}" target="_blank" rel="noopener">${icon('whatsapp-logo')} שליחת הקישור האישי</a>
       <button class="btn btn-glass btn-sm" data-kidhere="${esc(g.girl.name)}" data-kidpin="${esc(g.pin)}" data-kidgroup="${esc(grp.id)}">${icon('device-mobile')} משחק בטלפון הזה</button>
-      <span class="chip" title="קוד גיבוי">${icon('key')} <bdi>${esc(g.pin)}</bdi></span></div>` : ''}
+      <span class="chip">${icon('key')} קוד גיבוי: <bdi>${esc(g.pin)}</bdi></span></div>` : ''}
     ${g.chat && g.chat.best ? `<div class="sub mt-s" style="font-size:13px">${icon('chats-circle')} ${T('Said to Chacho this week:', 'משפט מהשיחה עם צ׳אצ׳ו השבוע:')} <bdi dir="ltr">"${esc(g.chat.best)}"</bdi></div>` : ''}
     <div class="strip">${g.week.map(w => {
       const st = w.beforeStart ? 'future' : w.done ? 'done' : w.isFuture ? 'future' : w.isToday ? 'pending' : 'missed';
       const v = w.done ? (w.section === 'level' ? (w.levelResult || '✓') : (w.percent !== '' ? w.percent + '%' : '✓')) : st === 'missed' ? '✕' : '';
-      return `<div class="cell ${st}" title="${esc(w.title || w.label)}"><div>${w.day}</div><div>${icon((SEC[w.section] || SEC.grammar)[0], 'duotone')}</div><div class="v">${esc(v)}</div></div>`;
+      return `<div class="cell ${st}"><div>${dayLetter(w)}</div><div>${icon((SEC[w.section] || SEC.grammar)[0], 'duotone')}</div><div class="v">${esc(v)}</div></div>`;
     }).join('')}</div>
     ${g.history.length > 1 ? `<div class="label mt">${T('Weekly completion', 'השלמה לפי שבוע')}</div>
-      <div class="hist">${g.history.map(h => `<div title="${fmtDate(h.week)}: ${h.done}/${h.expected}" style="height:${4 + Math.round(h.done / Math.max(1, h.expected) * 42)}px"></div>`).join('')}</div>
+      <div class="hist">${g.history.map(h => `<div style="height:${4 + Math.round(h.done / Math.max(1, h.expected) * 42)}px"></div>`).join('')}</div>
       <div class="row-flex" style="gap:6px;font-size:11px;color:var(--muted);font-weight:700">${g.history.map(h => `<span style="flex:1;text-align:center">${h.done}/${h.expected}</span>`).join('')}</div>` : ''}
     <details><summary>${T('Recent activity', 'פעילות אחרונה')} ▾</summary>
       <div class="recent">${g.recent.length ? g.recent.map(r => `<div><span>${fmtDate(r.doneOn)}</span>
-        <span><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title)}</a></span>
-        <b>${r.section === 'level' ? 'Level' : esc(r.correct) + '/' + esc(r.total)}</b>${r.mission && r.seconds ? `<span title="Played in the app">${Math.max(1, Math.round(r.seconds / 60))} min</span>` : ''}<span>+${esc(r.points)}</span></div>`).join('') : `<div>${T('No activity yet', 'עדיין אין פעילות')}</div>`}</div>
+        <span>${r.url && /^https?:/.test(r.url) ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">${PHE && r.he ? heBidi(r.he) : esc(r.title)}</a>` : PHE && r.he ? heBidi(r.he) : esc(r.title)}</span>
+        <b>${r.section === 'level' ? T('Level', 'מבחן רמה') : esc(r.correct) + '/' + esc(r.total)}</b>${r.mission && r.seconds ? `<span>${Math.max(1, Math.round(r.seconds / 60))} ${T('min', 'דק׳')}</span>` : ''}${nest ? '' : `<span>+${esc(r.points)}</span>`}</div>`).join('') : `<div>${T('No activity yet', 'עדיין אין פעילות')}</div>`}</div>
     </details>
-    ${g.bought && g.bought.length ? `<details><summary>Chacho's shop ▾</summary><div class="recent">${g.bought.map(b => `<div><span>${fmtDate(b.date)}</span>
+    ${g.bought && g.bought.length ? `<details><summary>${T("Chacho's shop", 'החנות של צ׳אצ׳ו')} ▾</summary><div class="recent">${g.bought.map(b => `<div><span>${fmtDate(b.date)}</span>
       <span>"${esc(b.sentence)}"</span><b>${esc(b.design ? (b.perfect ? 'Studio design · Perfect Fit' : 'Studio design') : b.name)}</b><span>${coinsTxt(b.paid)}</span></div>`).join('')}</div></details>` : ''}
   </div>`;
 }

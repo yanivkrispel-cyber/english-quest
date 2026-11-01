@@ -43,6 +43,11 @@ for (let k = 1; k <= 13; k++) {
 }
 // Chacho's Nest (specs/nest.md): Mia, 4, in the same family, with no pet yet (PIN 5151).
 run("appendRow('Girls', { Name: 'Mia', Age: 4, PIN: '5151', Level: 'nest', Redeemed: 0, Color: '#f472b6', Group: defaultGroupId() })");
+// Noam, 2 (PIN 6161), played the first lesson today: the parents' Nest card with the sentence and the co-play prompt.
+run("appendRow('Girls', { Name: 'Noam', Age: 2, PIN: '6161', Level: 'nest', Redeemed: 0, Color: '#38bdf8', Group: defaultGroupId() })");
+run("apiNestResult('Noam', '6161', today(), 'n01', 5, 8, 300, 'hello:1,yes:0,no:1,baby:0')");
+// Ziv did today's vocabulary mission (8 new words, 64%): a full Hebrew sentence in the parents' view (src/Learned.js).
+run("appendRow('Log', { Timestamp: new Date(), Girl: 'Ziv', Date: today(), DoneOn: today(), Section: 'vocabulary', Level: 'b2', Title: 'Relationships', URL: 'https:' + '//test-english.com/vocabulary/b2/relationships-b2-english-vocabulary/', Correct: 9, Total: 14, Percent: 64, Points: 10, Mission: 'b2v01', Seconds: 420 })");
 // The Wordrobe opens on its date (Settings.ShopOpens); Aviv may shop before it, Ziv sees the teaser.
 run("setSetting('ShopEarly', 'Aviv')");
 // An open invite, so the families' sign-up can be tried: /test/dev.html?join=friends

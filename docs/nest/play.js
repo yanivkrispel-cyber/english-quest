@@ -406,7 +406,7 @@ const NK_STORY_SPOTS = [[[50, 58, 46]], [[30, 60, 36], [70, 60, 36]], [[20, 62, 
 const NK_SCENE_GROUND = [[16, 72, 22], [40, 78, 22], [64, 72, 22], [86, 80, 20], [28, 52, 18], [72, 50, 18]];
 const NK_SCENE_SKY = [[20, 22, 18], [52, 18, 18], [82, 26, 18]];
 function nkItem(w, spot, i){
-  return `<button class="nk-it" data-nki="${i}" style="left:${spot[0]}%;top:${spot[1]}%;width:${spot[2]}%;aspect-ratio:1">${w.id === 'parrot' || !w.id ? `<img src="${cocoSrc('happy')}" alt="" draggable="false">` : nestPic(w)}</button>`;
+  return `<button class="nk-it" data-nki="${i}" aria-label="${esc(w.en || 'Chacho')}" style="left:${spot[0]}%;top:${spot[1]}%;width:${spot[2]}%;aspect-ratio:1">${w.id === 'parrot' || !w.id ? `<img src="${cocoSrc('happy')}" alt="" draggable="false">` : nestPic(w)}</button>`;
 }
 
 // ---------- Coloring pages drawn in code: regions with data-r; "main" is the part Chacho names ----------
@@ -543,13 +543,155 @@ function nkCompose(u, day, only){
 
 // ---------- A session ----------
 // id: a day id (or a unit id: its first day). preview: the teacher's page (nothing is saved). only: one activity.
+// ---------- Grown-ups only, screen time, and a lesson that waits (the night review, finding 15, 2026-11-01) ----------
+// Leaving the kid (who is playing, sign out) needs a grown-up: a long press with a ring that fills (a tap does nothing), then
+// a sum in Hebrew words a small kid cannot read. The X in a lesson goes back to the Nest home and the lesson waits there.
+// Screen time: the phone counts every 5 s while the Nest is on screen and in use, across lessons, replays, the playground
+// and the arcade; at the day's cap (dash.nest.cap, by age) Chacho goes to sleep until tomorrow.
+const NK_HOLD = 1500;
+const NK_HE_NUM = ['שלוש', 'ארבע', 'חמש', 'שש', 'שבע', 'שמונה', 'תשע'];
+function nkGateBind(btn, onPass){
+  if (!btn) return;
+  btn.classList.add('nk-gate');
+  let raf = 0, t0 = 0;
+  const stop = () => { cancelAnimationFrame(raf); raf = 0; btn.style.setProperty('--hold', 0); btn.classList.remove('holding'); };
+  btn.onclick = e => { e.stopPropagation(); if (!btn.dataset.passed) nkGateHint(btn); btn.dataset.passed = ''; };
+  btn.addEventListener('pointerdown', e => {
+    e.stopPropagation();
+    t0 = performance.now(); btn.classList.add('holding');
+    const step = now => {
+      const p = Math.min(1, (now - t0) / NK_HOLD);
+      btn.style.setProperty('--hold', p.toFixed(3));
+      if (p >= 1) { stop(); btn.dataset.passed = '1'; nkGateAsk(onPass); return; }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => btn.addEventListener(ev, () => { if (raf) stop(); }));
+  btn.addEventListener('contextmenu', e => e.preventDefault());
+}
+// A short tap: a word for the grown-up next to the button (the kid hears nothing and nothing happens).
+function nkGateHint(btn){
+  let tip = document.getElementById('nkgatetip');
+  if (tip) tip.remove();
+  tip = document.createElement('div');
+  tip.id = 'nkgatetip'; tip.className = 'nk-gatetip he'; tip.dir = 'rtl'; tip.lang = 'he';
+  tip.textContent = 'למבוגרים: לחיצה ארוכה';
+  const r = btn.getBoundingClientRect();
+  tip.style.top = Math.round(r.bottom + 8) + 'px';
+  tip.style.right = Math.max(8, Math.round(window.innerWidth - r.right)) + 'px';
+  document.body.appendChild(tip);
+  setTimeout(() => tip.remove(), 2200);
+}
+function nkGateAsk(onPass){
+  const pick = () => 4 + Math.floor(Math.random() * 6), a = pick(), b = pick(), ans = a * b;
+  const opts = shuffle([...new Set([ans, ans + a, ans - b, ans + 10])]).slice(0, 4);
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="sheet glass he" dir="rtl" lang="he" style="display:grid;gap:12px">
+    <div class="row-flex between"><h2>רק למבוגרים</h2><button class="btn btn-glass icon-btn" id="nkgx" aria-label="סגירה">${icon('x')}</button></div>
+    <div class="sub" style="margin:0">כדי לצאת או להחליף ילד: כמה זה ${NK_HE_NUM[a - 3]} כפול ${NK_HE_NUM[b - 3]}?</div>
+    <div class="nk-gateopts">${opts.map(n => `<button class="btn btn-glass" data-nkg="${n}">${n}</button>`).join('')}</div></div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  ov.onclick = e => { if (e.target === ov) close(); };
+  ov.querySelector('#nkgx').onclick = close;
+  ov.querySelectorAll('[data-nkg]').forEach(x => x.onclick = () => { close(); if (Number(x.dataset.nkg) === ans) onPass(); });
+}
+
+// The lesson that waits: the same session object while the app is open; after a reload, the same day from the same step.
+let NK_PAUSED = null;
+const nkResumeKey = () => 'eq_nest_resume_' + nkKid();
+function nkPause(){
+  if (!NE || NE.preview || NE.play || NE.arcade) return;
+  const s = NE.steps[NE.si];
+  if (!s || s.t === 'done' || NE.si === 0 && !NE.total) return;
+  NE.spent = Date.now() - NE.t0;
+  NK_PAUSED = NE;
+  store.set(nkResumeKey(), { d: dash.today, id: NE.dayId, si: NE.si, c: NE.correct, n: NE.total, res: NE.res, ms: NE.spent });
+}
+function nkResumeDrop(){ NK_PAUSED = null; store.del(nkResumeKey()); }
+// nestStart calls it: true when the lesson went on where it stopped.
+function nkResume(id){
+  if (NK_PAUSED && NK_PAUSED.dayId === id && dash && dash.today) {
+    NE = NK_PAUSED; NK_PAUSED = null;
+    NE.t0 = Date.now() - (NE.spent || 0); NE.tok = 0;
+    return true;
+  }
+  const r = store.get(nkResumeKey());
+  if (!r || r.id !== id || r.d !== dash.today || !NE) return false;
+  NE.si = Math.max(0, Math.min(r.si, NE.steps.length - 2));
+  NE.correct = r.c || 0; NE.total = r.n || 0; NE.res = r.res || {}; NE.t0 = Date.now() - (r.ms || 0);
+  return true;
+}
+
+// Screen time a day.
+const NKT = { t: 0, sent: 0, touch: 0, on: false };
+const nkTimeKey = () => 'eq_nest_time_' + nkKid();
+const nkTimeOn = () => !!(session && dash && dash.nest && dash.nest.cap && !dash.preview);
+function nkTimeUsed(){
+  if (!nkTimeOn()) return 0;
+  const m = store.get(nkTimeKey()) || {};
+  return Math.max(m.d === dash.today ? m.s || 0 : 0, dash.nest.used || 0);
+}
+const nkTimeLeft = () => nkTimeOn() ? dash.nest.cap * 60 - nkTimeUsed() : Infinity;
+const nkTimeUp = () => nkTimeLeft() <= 0;
+const nkOnScreen = () => !!document.querySelector('#app > .nk-home, #app > .gscreen.nk, #app > .nkh, #app > .nka, #app > .nks');
+function nkClockOn(){
+  if (!NKT.on) { NKT.on = true; document.addEventListener('pointerdown', () => { NKT.touch = Date.now(); }, true); }
+  if (!NKT.t) NKT.t = setInterval(nkClockTick, 5000);
+}
+function nkClockTick(){
+  if (!nkTimeOn()) { clearInterval(NKT.t); NKT.t = 0; return; }
+  // Counts while the screen is on and the kid plays: a session, or a touch in the last minute (the home, the shelves).
+  // Only on a Nest screen (not the parents' view on the same phone, not the picker behind the grown-ups' gate).
+  if (!nkOnScreen() || document.getElementById('nkswitch') || document.getElementById('nkbed')) return;
+  if (document.hidden || !(NE && !NE.preview || Date.now() - NKT.touch < 60000)) return;
+  const s = nkTimeUsed() + 5;
+  store.set(nkTimeKey(), { d: dash.today, s });
+  // The server hears it every 3 minutes and at the cap (one cell, Girls.NestTime).
+  if (s - NKT.sent >= 180 || nkTimeLeft() <= 0 && NKT.sent < dash.nest.cap * 60) nkClockSend(s);
+  // A lesson stops at its next step, an arcade game at its end; 90 seconds over the cap anything stops.
+  if (nkTimeLeft() <= -90) nkBedtime();
+  else if (nkTimeUp() && !NE && !document.querySelector('.overlay')) nkBedtime();
+}
+function nkClockSend(s){
+  NKT.sent = s;
+  call('apiNestTime', session.name, session.pin, s).then(r => { if (dash && dash.nest && r) dash.nest.used = Math.max(dash.nest.used || 0, r.used || 0); }).catch(() => {});
+}
+// "Chacho is sleepy, see you tomorrow": calm, no music, Chacho asleep, a Hebrew line for the grown-up.
+function nkBedtime(){
+  if (NE) { nkPause(); nestLeave(); }
+  if (typeof nkHomeStop === 'function') nkHomeStop();
+  document.querySelectorAll('.overlay').forEach(o => o.remove());
+  const cap = dash.nest.cap;
+  if (NKT.sent < cap * 60) nkClockSend(Math.max(nkTimeUsed(), cap * 60));
+  window.scrollTo(0, 0);
+  app.innerHTML = `<div class="nk-home nk-bed" id="nkbed">
+    <div class="row-flex between"><span></span><button class="btn btn-glass icon-btn" id="nkbwho" aria-label="Who is playing?">${icon('users-three', 'duotone')}</button></div>
+    <div class="nk-bedmain">
+      <div class="nk-moon">${icon('moon-stars', 'duotone')}</div>
+      <img class="nk-bedcoco" src="${typeof nkPoseSrc === 'function' ? nkPoseSrc('sleep') : cocoSrc('sleepy')}" alt="Chacho is asleep" draggable="false">
+      ${dash.pet ? petArt(dash.pet, 'sleepy', 'nk-bedpet') : ''}
+    </div>
+    <div class="glass panel he" dir="rtl" lang="he" style="font-size:14px;line-height:1.6">
+      <b>צ׳אצ׳ו הולך לישון, ונתראה מחר.</b> זמן המסך בקן להיום נגמר: ${heMin(cap)}. אפשר להמשיך בלי מסך: לשיר את השיר של היום או לחפש בבית דברים שלמדנו, ולהגיד אותם באנגלית.
+    </div></div>`;
+  nkGateBind(document.getElementById('nkbwho'), nestSwitch);
+  nestPlay(['en-sleepy']);
+}
+
 function nestStart(id, preview, only){
   const d = nkDay(id), u = d && nestUnit(d.unit);
   if (!u) return;
+  if (!preview && nkTimeUp()) return nkBedtime();
   const n = dash.nest;
+  // The lesson the kid left with the X goes on where it stopped (nkPause).
+  if (!preview && !only && NK_PAUSED && NK_PAUSED.dayId === id && nkResume(id)) { window.scrollTo(0, 0); nestRender(true); return; }
   NE = { u, dayId: id, day: d.day, si: 0, correct: 0, total: 0, res: {}, t0: Date.now(), review: !!u.review, tries: 0, heard: false,
     preview: !!preview, age: n.age, k: n.choices, words: n.words, tok: 0 };
   NE.steps = nkCompose(u, d.day, only);
+  if (!preview && !only) nkResume(id);
   window.scrollTo(0, 0);
   nestRender(true);
 }
@@ -593,6 +735,7 @@ function nkPlaySession(game){
   return NE;
 }
 function nkPlayStart(game){
+  if (nkTimeUp()) return nkBedtime();
   if (!nkPlaySession(game)) return;
   window.scrollTo(0, 0);
   nestRender(true);
@@ -606,6 +749,9 @@ function nestPrompt(s, opening){
 function nestRender(opening){
   if (!NE) return;
   const s = NE.steps[NE.si];
+  // The day's screen time is up: the lesson waits for tomorrow at this step (the end screen still saves a finished one).
+  if (s.t !== 'done' && !NE.preview && nkTimeUp()) return nkBedtime();
+  if (!NE.preview) nkClockOn();
   nkSkyOn();
   NE.tok = ++NK_RUN.tok;
   NE.locked = false;
@@ -618,7 +764,7 @@ function nestRender(opening){
   const cue = NK_CUE[s.t] || NK_CUE.find;
   app.innerHTML = `<div class="gscreen gplay nk nkg-${s.t}">
     <div class="row-flex between nk-top">
-      <button class="btn btn-glass icon-btn" id="nkx" aria-label="Close">${icon('x')}</button>
+      <button class="btn btn-glass icon-btn" id="nkx" aria-label="Back to the nest">${icon(NE.preview || NE.play || NE.arcade ? 'x' : 'house')}</button>
       <div class="nk-prog">${dots}</div>
       <button class="btn btn-glass icon-btn" id="nkagain" aria-label="Listen again">${icon('speaker-high')}</button>
     </div>
@@ -629,6 +775,7 @@ function nestRender(opening){
       <div class="nk-slot" id="nkslot"></div>
     </div>
   </div>`;
+  // The X: back to the Nest home (a lesson waits there, nkPause), or to the playground or the arcade.
   document.getElementById('nkx').onclick = nestExit;
   // Listen again: only when Chacho is quiet, so it never cuts a line whose end starts the next part of a game.
   document.getElementById('nkagain').onclick = () => { if (nestQueue) return; const k = s.t === 'done' ? ['en-great'] : NK[s.t].say ? NK[s.t].say(s) : []; nestPlay(k.length ? k : (NK[s.t].intro || ['en-listen'])); };
@@ -777,7 +924,7 @@ const nkFill = html => { const st = nkStage(); st.innerHTML = `<div class="nk-fi
 NK.meet = {
   say: s => ['w-' + s.w.id], intro: ['en-meet'],
   render(s, opening){
-    nkFill(`<button class="nk-card big" id="nkpic">${nestPic(s.w)}</button>${NE.words ? `<div class="nk-word">${esc(s.w.en)}</div>` : ''}`);
+    nkFill(`<button class="nk-card big" id="nkpic" aria-label="${esc(s.w.en)}">${nestPic(s.w)}</button>${NE.words ? `<div class="nk-word">${esc(s.w.en)}</div>` : ''}`);
     const pic = document.getElementById('nkpic'), nx = nkBtn('next', 'Next', nestAdvance);
     pic.onclick = () => { pic.classList.remove('pop'); void pic.offsetWidth; pic.classList.add('pop'); nestPlay(['w-' + s.w.id]); };
     nestPlay(nestPrompt(s, opening), () => { nx.classList.add('ready'); if (nkLive(s)) nkIdle(s, nx); });
@@ -786,7 +933,7 @@ NK.meet = {
 NK.phrase = {
   say: () => ['p-' + NE.u.id],
   render(s){
-    nkFill(`<button class="nk-card big" id="nkpic">${nestPhrasePic(NE.u)}</button>${NE.words ? `<div class="nk-word long">${esc(NE.u.phrase.en)}</div>` : ''}`);
+    nkFill(`<button class="nk-card big" id="nkpic" aria-label="${esc(NE.u.phrase.en)}">${nestPhrasePic(NE.u)}</button>${NE.words ? `<div class="nk-word long">${esc(NE.u.phrase.en)}</div>` : ''}`);
     const nx = nkBtn('next', 'Next', nestAdvance), pic = document.getElementById('nkpic');
     pic.onclick = () => { pic.classList.remove('pop'); void pic.offsetWidth; pic.classList.add('pop'); nestPlay(['p-' + NE.u.id]); };
     nestPlay(nestPrompt(s), () => { nx.classList.add('ready'); if (nkLive(s)) nkIdle(s, nx); });
@@ -800,7 +947,7 @@ NK.find = {
 };
 // Two to four pictures, one is right (Find it, Who says that?). again: what Chacho says after a wrong tap.
 function nkChoice(s, opening, again){
-  nkFill(`<div class="nk-opts n${s.opts.length}">${s.opts.map((o, i) => `<button class="nk-card" data-nkopt="${i}">${nestPic(o)}<span class="nk-cap"></span></button>`).join('')}</div>`);
+  nkFill(`<div class="nk-opts n${s.opts.length}">${s.opts.map((o, i) => `<button class="nk-card" data-nkopt="${i}" aria-label="${esc(o.en)}">${nestPic(o)}<span class="nk-cap"></span></button>`).join('')}</div>`);
   NE.tries = 0;
   const right = () => app.querySelector(`[data-nkopt="${s.opts.findIndex(o => o.id === s.w.id)}"]`);
   app.querySelectorAll('[data-nkopt]').forEach(b => b.onclick = () => nkTap(b, s, false, again));
@@ -825,7 +972,7 @@ function nkTap(b, s, byCoco, again){
 NK.move = {
   say: s => ['en-move', 'm-' + s.id], intro: ['en-with'],
   render(s){
-    nkFill(`<button class="nk-card big" id="nkpic">${nestPic(s.m)}</button>${NE.words ? `<div class="nk-word long">${esc(s.m.en)}</div>` : ''}`);
+    nkFill(`<button class="nk-card big" id="nkpic" aria-label="${esc(s.m.en)}">${nestPic(s.m)}</button>${NE.words ? `<div class="nk-word long">${esc(s.m.en)}</div>` : ''}`);
     NE.heard = false;
     const did = nkBtn('did', 'I did it', () => { if (!nkLive(s) || NE.heard) return; NE.heard = true; nkWin(s, [nkPraise()]); });
     const pic = document.getElementById('nkpic');
@@ -839,7 +986,7 @@ NK.say = {
   say: s => [s.clip], intro: ['en-say'],
   render(s){
     const pic = s.phrase ? nestPhrasePic(NE.u) : nestPic(s.w), txt = s.phrase ? NE.u.phrase.en : s.w.en;
-    nkFill(`<div class="nk-ring" id="nkring"><button class="nk-card big" id="nkpic">${pic}</button></div>${NE.words ? `<div class="nk-word${s.phrase ? ' long' : ''}">${esc(txt)}</div>` : ''}`);
+    nkFill(`<div class="nk-ring" id="nkring"><button class="nk-card big" id="nkpic" aria-label="${esc(txt)}">${pic}</button></div>${NE.words ? `<div class="nk-word${s.phrase ? ' long' : ''}">${esc(txt)}</div>` : ''}`);
     NE.heard = false;
     nkBtn('said', 'I said it', () => nkHeard(s));
     document.getElementById('nkpic').onclick = () => nestPlay([s.clip]);
@@ -880,7 +1027,7 @@ NK.give = {
   say: s => ['g-' + s.w.id], intro: ['en-give'], demo: true,
   render(s, opening){
     nkFill(`<div class="nk-pet" id="nkpet">${nkPet('happy')}</div>
-      <div class="nk-row n${s.opts.length}">${s.opts.map((o, i) => `<button class="nk-card" data-nkopt="${i}">${nestPic(o)}</button>`).join('')}</div>`);
+      <div class="nk-row n${s.opts.length}">${s.opts.map((o, i) => `<button class="nk-card" data-nkopt="${i}" aria-label="${esc(o.en)}">${nestPic(o)}</button>`).join('')}</div>`);
     const pet = document.getElementById('nkpet'), right = () => app.querySelector(`[data-nkopt="${s.opts.findIndex(o => o.id === s.w.id)}"]`);
     NE.tries = 0;
     const take = (b, byCoco) => {
@@ -913,7 +1060,7 @@ NK.peek = {
   render(s, opening){
     const list = s.opts || shuffle([s.w].concat(Array(nkKidBushes() - 1).fill(null)));
     const TINT = ['rgba(99,102,241,.5)', 'rgba(236,72,153,.45)', 'rgba(20,184,166,.5)'], bush = i => `<span class="bk" style="--tint:${TINT[i % 3]}"></span>`;
-    nkFill(`<div class="nk-bushes">${list.map((o, i) => `<button class="nk-bush${o ? '' : ' hidden'}${!s.opts && o ? ' wiggle' : ''}" data-nkb="${i}">
+    nkFill(`<div class="nk-bushes">${list.map((o, i) => `<button class="nk-bush${o ? '' : ' hidden'}${!s.opts && o ? ' wiggle' : ''}" data-nkb="${i}" aria-label="${esc(o ? o.en : 'Bush')}">
       <span class="pk">${o ? nestPic(o) : ''}</span>${bush(i)}</button>`).join('')}</div>`);
     NE.tries = 0;
     const idx = list.findIndex(o => o && o.id === s.w.id), right = () => app.querySelector(`[data-nkb="${idx}"]`);
@@ -1014,7 +1161,7 @@ NK.sort = {
     const show = () => {
       if (!nkLive(s)) return;
       const w = s.items[s.ii], si = document.getElementById('nksi');
-      si.innerHTML = `<button class="nk-card" id="nkitem">${nestPic(w)}</button>`;
+      si.innerHTML = `<button class="nk-card" id="nkitem" aria-label="${esc(w.en)}">${nestPic(w)}</button>`;
       const it = document.getElementById('nkitem');
       const into = i => s.boxes[i].ids.includes(w.id);
       const drop = (el, box, byCoco) => {
@@ -1049,7 +1196,7 @@ NK.pairs = {
   say: () => [], intro: ['en-pairs'], demo: true,
   render(s, opening){
     const cards = shuffle([].concat(...s.words.map(w => [{ w, txt: false }, { w, txt: s.written }])));
-    nkFill(`<div class="nk-pairs${cards.length > 6 ? ' c4' : ''}">${cards.map((c, i) => `<button class="nk-pc" data-nkc="${i}"><span class="in">
+    nkFill(`<div class="nk-pairs${cards.length > 6 ? ' c4' : ''}">${cards.map((c, i) => `<button class="nk-pc" data-nkc="${i}" aria-label="${esc(c.w.en)}"><span class="in">
       <span class="bc"><img src="${cocoSrc('happy')}" alt="" draggable="false"></span>
       <span class="fc">${c.txt ? `<b>${esc(c.w.en)}</b>` : nestPic(c.w)}</span></span></button>`).join('')}</div>`);
     let open = [], got = 0, demoPair = false;
@@ -1092,7 +1239,7 @@ NK.missing = {
     const opts = shuffle([s.gone].concat(shuffle(s.board.filter(w => w.id !== s.gone.id)).slice(0, 2)));
     nkFill(`<div class="nk-board n${s.board.length === 3 ? 3 : 2}" id="nkboard">${s.board.map((w, i) => `<div class="nk-card" data-nkm="${i}">${nestPic(w)}</div>`).join('')}
       <div class="nk-curtain" id="nkcur"><img src="${cocoSrc('sleepy')}" alt=""></div></div>
-      <div class="nk-row n3" id="nkmo" style="visibility:hidden">${opts.map((o, i) => `<button class="nk-card" data-nkopt="${i}">${nestPic(o)}</button>`).join('')}</div>`);
+      <div class="nk-row n3" id="nkmo" style="visibility:hidden">${opts.map((o, i) => `<button class="nk-card" data-nkopt="${i}" aria-label="${esc(o.en)}">${nestPic(o)}</button>`).join('')}</div>`);
     NE.tries = 0; NE.locked = true;
     const cur = document.getElementById('nkcur'), tok = NE.tok;
     nestPlay((opening ? ['en-hi'] : []).concat(['en-look']), () => setTimeout(() => {
@@ -1129,7 +1276,7 @@ NK.missing = {
 NK.odd = {
   say: () => ['en-odd'], demo: true,
   render(s, opening){
-    nkFill(`<div class="nk-four">${s.cards.map((o, i) => `<button class="nk-card" data-nkopt="${i}">${nestPic(o)}</button>`).join('')}</div>`);
+    nkFill(`<div class="nk-four">${s.cards.map((o, i) => `<button class="nk-card" data-nkopt="${i}" aria-label="${esc(o.en)}">${nestPic(o)}</button>`).join('')}</div>`);
     NE.tries = 0;
     const right = () => app.querySelector(`[data-nkopt="${s.cards.indexOf(s.w)}"]`);
     const pick = (b, byCoco) => {
@@ -1155,7 +1302,7 @@ NK.chant = {
   say: () => [],
   render(s, opening){
     const lines = EQ_NEST.chants[s.unit], ws = lines.map(l => nkWord(l[1]) || { id: l[1], pic: l[1] });
-    nkFill(`<div class="nk-chant">${ws.map((w, i) => `<button class="nk-card" data-nkl="${i}">${nestPic(w)}</button>`).join('')}</div>
+    nkFill(`<div class="nk-chant">${ws.map((w, i) => `<button class="nk-card" data-nkl="${i}" aria-label="${esc(w.en)}">${nestPic(w)}</button>`).join('')}</div>
       <div class="nk-beat" id="nkbeat"><i></i><i></i><i></i><i></i></div>`);
     app.querySelectorAll('[data-nkl]').forEach(b => b.onclick = () => {
       b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
@@ -1304,7 +1451,7 @@ NK.dress = {
     NE.worn = NE.worn || {};
     const worn = Object.keys(NE.worn).map(slot => `<span class="nk-wear" data-slot="${slot}" style="left:${NK_SLOT[slot][0]}%;top:${NK_SLOT[slot][1]}%;width:${NK_SLOT[slot][2]}%;aspect-ratio:1">${nestPic(NE.worn[slot])}</span>`).join('');
     nkFill(`<div class="nk-teddy" id="nkted"><img src="${esc(nestPicSrc('teddy-bear'))}" alt="" draggable="false">${worn}</div>
-      <div class="nk-row n${s.opts.length}">${s.opts.map((o, i) => `<button class="nk-card" data-nkopt="${i}">${nestPic(o)}</button>`).join('')}</div>`);
+      <div class="nk-row n${s.opts.length}">${s.opts.map((o, i) => `<button class="nk-card" data-nkopt="${i}" aria-label="${esc(o.en)}">${nestPic(o)}</button>`).join('')}</div>`);
     const ted = document.getElementById('nkted'), right = () => app.querySelector(`[data-nkopt="${s.opts.findIndex(o => o.id === s.w.id)}"]`);
     NE.tries = 0;
     const put = (b, byCoco) => {
@@ -1334,7 +1481,7 @@ NK.dress = {
 NK.teach = {
   say: s => ['w-' + s.w.id], intro: ['en-teach'],
   render(s){
-    nkFill(`<button class="nk-card big" id="nkpic">${nestPic(s.w)}</button>${NE.words ? `<div class="nk-word">${esc(s.w.en)}</div>` : ''}`);
+    nkFill(`<button class="nk-card big" id="nkpic" aria-label="${esc(s.w.en)}">${nestPic(s.w)}</button>${NE.words ? `<div class="nk-word">${esc(s.w.en)}</div>` : ''}`);
     document.getElementById('nkpic').onclick = () => nestPlay(['w-' + s.w.id]);
     const th = nkBtn('thumb', 'Got it', () => { if (!nkLive(s)) return; confetti(); nkWin(s, ['en-great']); });
     nestPlay(nestPrompt(s), () => { if (nkLive(s)) nkIdle(s, th); });
@@ -1349,6 +1496,7 @@ NK.done = {
     const h = nkBtn('home', 'Home', nestExit);
     confetti(); buzz(true);
     nestPlay(['en-done', 'en-bye'], () => h.classList.add('ready'));
+    if (!NE.preview && !NE.play) nkResumeDrop();
     nestFinish();
   }
 };

@@ -35,7 +35,7 @@ NK.cards = {
       pile.innerHTML = `<span class="nkc-card on" style="--c:${hex(color)}">${face(top.sneeze ? Object.assign({}, top) : top)}</span>`;
       if (top.sneeze) pile.firstChild.style.setProperty('--ring', hex(color));
       mineEl.style.setProperty('--n', mine.length);
-      mineEl.innerHTML = mine.map((k, i) => `<button class="nkc-card${turn === 'kid' && glow && ok(k) ? ' can' : ''}" data-k="${i}" style="--i:${i - (mine.length - 1) / 2};--c:${k.sneeze ? '#a855f7' : hex(k.c)}">${face(k)}</button>`).join('');
+      mineEl.innerHTML = mine.map((k, i) => `<button class="nkc-card${turn === 'kid' && glow && ok(k) ? ' can' : ''}" data-k="${i}" aria-label="${k.sneeze ? 'Chacho sneezes' : k.c + ' ' + k.n}" style="--i:${i - (mine.length - 1) / 2};--c:${k.sneeze ? '#a855f7' : hex(k.c)}">${face(k)}</button>`).join('');
       mineEl.querySelectorAll('[data-k]').forEach(b => b.onclick = () => play(Number(b.dataset.k)));
       deckEl.classList.toggle('can', turn === 'kid' && !mine.some(ok));
     };

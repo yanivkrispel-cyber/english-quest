@@ -2,7 +2,7 @@
 // kid card, the 21:00 summary and the weekly email all use learnedLine(). Built from the rows the parents' view already
 // reads (Log, Games, Chats; kidRows is the request memo), the mission index (Hebrew topic name `he`, new words `w`) and the
 // Nest index (the unit's Hebrew title), so it costs no extra sheet read per kid.
-// The Hebrew rules (specs/parents.md): numbers next to words, never a dash between numbers; English words stay as they
+// The Hebrew rules: numbers next to words, never a dash between numbers; English words stay as they
 // are and the app puts them in <bdi>.
 
 // A topic's Hebrew name when the mission has none yet (missions get `he` from docs/missions/*.js).
@@ -69,7 +69,7 @@ function learnedLine(kid, dates) {
     if (games.length) parts.push(heCount(games.length, 'סבב משחק אחד', 'סבבי משחק'));
     var chats = kidRows('Chats', kid.Name).filter(inDates);
     if (chats.length) parts.push(heCount(chats.length, 'שיחה אחת עם צ׳אצ׳ו', 'שיחות עם צ׳אצ׳ו'));
-    if (low && low.topic) hard = 'הכי קשה: ' + low.topic;
+    if (low && low.topic && tasks.length > 1) hard = 'הכי קשה: ' + low.topic;
   }
   if (!parts.length) return { text: '', any: false };
   return { text: parts.join(', ') + '.' + (hard ? ' ' + hard + '.' : ''), any: true };

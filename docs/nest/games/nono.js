@@ -16,7 +16,7 @@ NK.nono = {
     const r = () => s.rounds[s.ri];
     const later = (f, ms) => setTimeout(() => { if (NE && NE.tok === tok) f(); }, ms);
     const show = () => {
-      card.innerHTML = nestPic(r().w);
+      card.innerHTML = nestPic(r().w); card.setAttribute('aria-label', r().w.en);
       nkAgain(card, 'pop');
       open = false; tries = 0;
       no.classList.remove('ready', 'pick'); yes.classList.remove('ready', 'pick');

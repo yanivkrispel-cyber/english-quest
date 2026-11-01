@@ -17,7 +17,8 @@ commit.
 2. **Nothing leaves the app from the kids' side without a parental gate.** External links (websites, WhatsApp, the
    store, email), sharing and anything that opens another app go in the parents' area, or behind a gate a young child
    cannot pass (a question for adults, not a "tap and hold"). This includes new buttons, notifications that open a link,
-   and content that links out.
+   and content that links out. In Chacho's Nest, leaving the kid (who is playing, sign out) is behind the grown-ups' gate too:
+   a long press with a filling ring, then a sum in Hebrew words (`nkGateBind`, `specs/nest.md`).
 3. **Kids only meet kids through safe channels.** No free text, voice or pictures between kids. Kid-to-kid features use
    preset messages and reactions, show only the first name and the pet, and a parent can turn them off (`Groups.Friends`
    today). Anything new that lets kids find or contact each other needs a parent switch and a way to report or block.
@@ -38,14 +39,17 @@ commit.
    never bought, as long as this holds. No random rewards for coins or money (loot boxes); if a surprise box is ever
    added, it is free, or its odds are shown before the purchase.
 8. **No pressure on kids.** No purchase prompts aimed at kids, no countdowns or "only today" on things bought with money,
-   no guilt messages. Streak savers and reminders stay gentle; kid notifications only at the set daytime hours.
+   no guilt messages. Streak savers and reminders stay gentle; kid notifications only at the set daytime hours. Ages 2 to 7
+   (the Nest) see no points, streak or XP numbers, and the Nest stops for the day at a hard screen-time cap (20, 30 or 40
+   minutes by age, the parent may set less, never "no limit"; AAP and WHO), ending on a calm "see you tomorrow".
 9. **Content fit for the age rating.** No violence, death, war, horror, romance, alcohol, drugs, gambling, politics or
    religion, and nothing scary for young kids, in missions, talks, games and items. Facts are checked, brand names are
    avoided. (This is why b2r03, b2v04, b2l07, bpl05 were replaced.)
 10. **Works as an app.** Every new screen fits the phone without page scrolling where the app frame applies, works
     offline where possible (the service worker), and never sends a kid to a website to do the daily task.
-11. **Accessibility basics.** Text that can be read aloud or seen large enough, buttons at least 44 px, color is never
-    the only signal, `prefers-reduced-motion` respected.
+11. **Accessibility basics.** Text that can be read aloud or seen large enough, buttons at least 44 px (64 px in the Nest),
+    color is never the only signal, `prefers-reduced-motion` respected, and picture-only buttons have a name (the Nest's answer
+    cards carry their word).
 12. **Reviewer path.** A store reviewer must be able to try everything: keep a demo family (fake names, fake PINs) that
     opens every feature, and keep it working when features change.
 
@@ -61,11 +65,14 @@ with the sheet as a nightly copy. Retention on Cloudflare: the audit trail 180 d
   nothing is recorded or sent. The Nest's "Chacho repeats you" (`docs/nest/echo.js`) holds the kid's few seconds of voice in
   the phone's memory only, plays it back once in a parrot's voice and drops it: never written to storage, never sent, no
   speech recognition, the microphone off before the replay.
-- Parent / family: family name, parent's first name, parent PIN, optional email, consent date.
+- Parent / family: family name, parent's first name, parent PIN, optional email, consent date. For a Nest kid, the
+  parent's choices: lessons a day, arcade minutes and screen time a day (`Girls.NestPerDay`, `NestArcadeMin`, `NestMin`).
 - Activity: tasks and missions with scores and time spent, game rounds, missed items for review, gate challenges,
   level tests, duels and their answers, duo streaks, shop purchases (coins), what the pet wears, saved words, bonus XP.
   Chacho's Nest: the day played and, for each word of the day, whether it was found on the first try (Log.Detail, for the
-  review days); deleted with the kid's Log rows.
+  review days); deleted with the kid's Log rows. Today's Nest screen time (`Girls.NestTime`: a date and a number of seconds,
+  overwritten each day). The parents' weekly sentence (`src/Learned.js`) is computed from these rows on every read; nothing
+  new is stored for it.
 - Talk with Chacho: the text the phone heard (no audio), counts of spoken and tapped answers.
 - Feedback and "Something wrong here?" notes.
 - Devices: push subscription endpoints and the browser's user-agent string.
@@ -84,7 +91,9 @@ free page (the place and up to 40 stickers with their spots, `eq_nest_board_<kid
 drawn on the phone from the parents' view data and leaves the phone only when a parent shares or saves it from the
 parents' area (behind the parents' code); nothing new is stored on the server. Chacho's arcade (stage C) keeps today's date and the
 seconds played on the phone (`eq_nest_arc_<kid>`), and the server keeps one number the parent sets, the arcade minutes a day
-(`Girls.NestArcadeMin`). Talking Chacho and No, Chacho! use the microphone as the living home does: in memory for one replay, or
+(`Girls.NestArcadeMin`). The Nest's screen time keeps today's date and seconds on the phone too (`eq_nest_time_<kid>`), and a
+lesson left with the X keeps its place until it is finished (`eq_nest_resume_<kid>`: the date, the day id, the step, the score
+and each word's first try so far). Talking Chacho and No, Chacho! use the microphone as the living home does: in memory for one replay, or
 loudness only; nothing is kept or sent.
 
 ## Known gaps before a store submission
@@ -105,6 +114,9 @@ loudness only; nothing is kept or sent.
   processing note are needed before selling.
 - No `assetlinks.json` / native shell yet; no store listing, age rating questionnaire or data safety form yet.
 - The app name and Chacho: trademark check in Israel not done.
+- The Nest's screen time is counted on the phone and reported every 3 minutes: two tablets used at the same time, or a
+  cleared phone, can add a few minutes over the cap before the server's number reaches them. The grown-ups' sum is in Hebrew
+  words only (an English-speaking family needs an English version before a store build outside Israel).
 - The Nest's microphone: a parent who said "no" (or a phone that refused) cannot turn the microphone back on in the app
   (`eq_nest_mic` has no switch in the parents' area yet).
 - Chacho's Nest (ages 2 to 7, `specs/nest.md`) puts kids under 5 in the same app as teenagers. Apple's Kids Category takes

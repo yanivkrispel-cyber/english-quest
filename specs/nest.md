@@ -4,10 +4,12 @@ The owner's go on 2026-10-27 (proposal: https://claude.ai/artifact/UoyjFPsekjTaX
 kids join from the same invite link. Owner's choices: ages 2 to 7; a parent sits with the youngest, older kids play
 alone; the only reward is the pet (no shop, no coins on screen).
 
-**No Hebrew voice (owner, 2026-10-27: "בלי עברית וכרגע בלי הקלטות").** The kid hears only Chacho's English, in Kokoro.
-Chacho shows each game himself, a hand shows where to tap or drag, and the instructions are short English lines that come
-back every day. Hebrew is text for grown-ups only (the parents' card, the microphone sheet, the note behind a long press
-on Chacho). No human recordings for now. The games plan: https://claude.ai/artifact/GfzVYFfXfE4HRa2nMKy13T (phases 1 to 4
+**Hebrew voice: decided, coming (owner, 2026-10-31).** Until then the kid hears only Chacho's English (Chatterbox,
+`specs/voice.md`): Chacho shows each game himself, a hand shows where to tap or drag, and the instructions are short English
+lines that come back every day; Hebrew is text for grown-ups (the parents' card, the microphone sheet, the note behind a long
+press on Chacho). The owner's decision of 2026-10-31 replaces the earlier "no Hebrew" (2026-10-27: "בלי עברית וכרגע בלי
+הקלטות"): Chacho will say short Hebrew *instructions* only (what to do in a game), never translations of the English words,
+off from age 6, package B, with voice samples first. It is built on its own branch and is not in this code yet. The games plan: https://claude.ai/artifact/GfzVYFfXfE4HRa2nMKy13T (phases 1 to 4
 built 2026-10-27).
 
 ## Who is a Nest kid
@@ -93,16 +95,21 @@ per word `[days found on the first try, days missed, the last day met]`.
 
 `renderNest()`: the pet (or "choose a friend": tap a pet, it gets its default name), Chacho, one huge Start for today's
 day, the units already played as round picture buttons (one of their days again, free play), and the palette button
-once the kid has colored a picture. A small "who's playing" button goes back to the kid picker. No tabs, journey, shop,
-duels, Talk with Chacho, reminders or stats.
+once the kid has colored a picture. A small "who's playing" button goes back to the kid picker, for grown-ups only (below,
+"Grown-ups only"). No tabs, journey, shop, duels, Talk with Chacho, reminders or stats, and no points or streak numbers.
 
 Other kids never see Nest kids in Play together or duo lists.
 
 ## Parents
 
-The parent view shows a Nest kid like any kid (week strip, history), plus "what we learned": today's unit's words with
-their pictures and a play button for each word, the phrase (English, Hebrew, play button) and "לשחק בבית": the unit's two
-ideas for home (`home`; on a review day the shared `parent.review` ideas).
+The parent view shows a Nest kid like any kid (week strip with Hebrew day letters, history), with the week in one Hebrew
+sentence (`src/Learned.js`: lessons and their units, words met, the words still practiced; the same sentence goes into the
+21:00 summary and the weekly email), today's screen time ("זמן מסך היום: 12 מתוך 30 דקות"), no points, streak or average,
+plus "what we learned": today's unit's words with their pictures and a play button for each word, the phrase (English, Hebrew,
+play button) and "לשחק בבית": the unit's two ideas for home (`home`; on a review day the shared `parent.review` ideas). For
+ages 2 and 3 the card adds "משחקים ביחד": sit next to the kid, point at the pictures together and say the words after Chacho
+(AAP and WHO: young kids learn best from a screen with a grown-up). The parent sets the screen time (below), lessons a day
+and the arcade's share in the kid card.
 
 ## The teacher's preview
 
@@ -162,7 +169,8 @@ any screen that scrolls; `?unit=n07&game=give&age=4` shows one.
 ## Store rules
 
 New about a kid: the real age (already the `Age` column) and, per day, each word's first try (`Log.Detail`, deleted with
-the kid's rows). On the phone only: how many times each game was played, the microphone choice, and up to 12 colored
+the kid's rows); the parent's screen-time choice (`Girls.NestMin`) and today's Nest minutes (`Girls.NestTime`, one date and
+a number, overwritten every day). On the phone only: today's Nest seconds, a lesson left half way (`eq_nest_resume_<kid>`), how many times each game was played, the microphone choice, and up to 12 colored
 pictures (which colors went where). The microphone is asked for on the Say it step, with a Hebrew sentence for the
 parent; without it the button works. Drag games need no permission. The age band question (Apple's Kids Category has one
 band an app: 5 and under, 6 to 8, 9 to 11) is in the gaps list of `specs/store-readiness.md`.
@@ -187,8 +195,8 @@ Proposal and the owner's pick: https://claude.ai/artifact/TEp9sYUzd8VUWfGB21H684
   needs two met words from `EQ_NEST.give` (none in n01), Who says that? two sound words (from n04). Sort it and Odd one out
   play on one met unit against another theme (`nkPlaySession`), not on every met word mixed (2026-10-28: Give it to me
   opened straight onto the end screen for a kid who had met only n01).
-- **One more lesson**: `Girls.NestPerDay` (SETUP v21; empty = 1, 0 = no limit), set by the parent in the kid card
-  (`apiParentNestPerDay`). Once the day's own lesson is logged, `nestInfo.next` is the next day of the program (`nestNext`) and
+- **One more lesson**: `Girls.NestPerDay` (SETUP v21; empty = 1, at most 3 since 2026-11-01: there is no "no limit", an
+  old 0 counts as 3), set by the parent in the kid card (`apiParentNestPerDay`). Once the day's own lesson is logged, `nestInfo.next` is the next day of the program (`nestNext`) and
   the big button starts it; `apiNestResult` logs it with points only while today's count is under the number. The week strip
   keeps the day's own lesson (the first Nest row of a date).
 - **Right answer** (`nkCheer`): the card jumps with a gold glow, stars burst, a gold star flies into the progress row (the
@@ -198,6 +206,32 @@ Proposal and the owner's pick: https://claude.ai/artifact/TEp9sYUzd8VUWfGB21H684
   removed by `nestLeave` and `renderNest`.
 - Open to every Nest kid since 2026-10-28 (the owner: open to all, the palettes change by unit, the party every third).
   Check: `test/tablet.html?screen=nest-home2|nest-ground|nest-cheer[&phones]`.
+
+## Grown-ups only, screen time, no numbers (the night review, finding 15, 2026-11-01)
+
+- **Grown-ups only** (`nkGateBind`, `nkGateAsk` in play.js): "who is playing" on the living home, the old home and the bedtime
+  screen opens only after a long press (1.5 s, a ring fills around the button; a short tap shows "למבוגרים: לחיצה ארוכה" and
+  does nothing), then a sum in Hebrew words ("כמה זה שבע כפול שש?", four answers; a wrong one closes the sheet). The picker
+  behind it (`nestSwitch`) has a small Sign out in the middle under the kids, not a wide button at the screen's edge.
+- **The X in a lesson goes home** (a house icon; the playground and the arcade keep the X back to their shelf). The lesson waits
+  (`nkPause`): the same session while the app is open, and `eq_nest_resume_<kid>` (today's date, the day id, the step, the
+  score and first tries so far) after a reload; the egg starts it again at that step. A finished lesson clears it.
+- **Screen time a day** (`nkClock*`, `nkBedtime`): 20 minutes for ages 2 and 3, 30 for 4 and 5, 40 for 6 and 7
+  (`NEST.cap`, `nestCapMax`); the parent may choose less in the kid card (`Girls.NestMin`, `apiParentNestMin`, audited; the
+  most for the age clears the cell), never more and never "no limit". The phone counts 5 s at a time while a Nest screen is
+  visible and in use (a session, or a touch in the last minute): lessons, replays, the playground, the arcade, the home. It keeps
+  `eq_nest_time_<kid>` (date and seconds) and tells the server every 3 minutes and at the cap (`apiNestTime`: one cell,
+  `Girls.NestTime` = "<date> <seconds>", the most any phone reported); `nestInfo` returns `cap`, `capMax` and `used`, so a
+  second tablet knows. At the cap a lesson stops at its next step (it waits for tomorrow), an arcade game at its end, anything
+  90 seconds after the cap: the calm bedtime screen, Chacho asleep with the moon, "I'm sleepy now. Let's play more tomorrow!"
+  (`en-sleepy`) and a Hebrew line for the grown-up (the time is up, see you tomorrow, an idea without a screen). The finished
+  lesson's end screen still saves it. The preview and the test pages have no clock.
+- **No numbers for the kid**: no points, streak or XP anywhere a Nest kid looks (the pet's growth screen shows no XP for a Nest
+  kid). The server still gives the day's points (they grow the pet) and the parents' view keeps the week strip.
+- **Bigger and named**: every Nest icon button is at least 64 px (`body.nestkid`, set while a Nest screen is up), and every
+  answer card has the word as its accessible name (`aria-label`).
+- Check: `test/tablet.html?screen=nest-switch|nest-gate|nest-sleepy[&phones]`, `?screen=parent-he&kid=Noam` (Noam, 2, in the
+  dev server, has a lesson today), `test/nest-games.html?all`.
 
 ## The arcade plan, stage A: a live Chacho (2026-10-29)
 
@@ -260,7 +294,8 @@ behind it, so no new art), wobbles it and says the word. Story and the big pictu
   (`nkArcLoad`); `nkArcStep` builds what it plays on and hides a game with nothing to play on. `NE.off` stops what a game runs
   (the echo, the animation frame) when the kid leaves.
 - **Minutes a day**: `Girls.NestArcadeMin` (SETUP v22), set by the parent in the kid card (`nestArcadeRow`, `apiParentNestArcade`:
-  ten minutes, a quarter of an hour, half an hour, no limit; empty = 15, 0 = no limit; audited), `dash.nest.arcadeMin`. The phone
+  ten minutes, a quarter of an hour, half an hour, never more than the day's screen time; empty = 15; audited), `dash.nest.arcadeMin`.
+  Since 2026-11-01 there is no "no limit": an old 0 is the day's screen time (below). The phone
   counts every 5 s of a Chacho game on a visible screen (`eq_nest_arc_<kid>`, today's date and seconds; nothing is sent). When the
   minutes are used up, a game that is on goes on to its end and the shelf shows Chacho asleep ("I'm sleepy now. Let's play more
   tomorrow!"); the learning games stay open.
