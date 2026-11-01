@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v26';
+var SETUP_VERSION = 'v27';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 // The kids' front end (Cloudflare, docs/). Until 2026-10 it was https://yanivkrispel-cyber.github.io/english-quest/.
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
@@ -63,7 +63,9 @@ var HEADERS = {
   Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince', 'Missions', 'NestPerDay', 'NestArcadeMin',
     // Safety.js: Mic = yes when a parent turned the microphone on; RemindAt = the reminder hour ('off'; empty = the default);
     // Seen = the last day she opened the app; Inactive = the day the admin was told she would be deleted for inactivity.
-    'Mic', 'RemindAt', 'Seen', 'Inactive'],
+    'Mic', 'RemindAt', 'Seen', 'Inactive',
+    // Nest.js (finding 15): NestMin = the parent's screen-time cap a day; NestTime = today's seconds, from the phones.
+    'NestMin', 'NestTime'],
   Games: ['Timestamp', 'Girl', 'Date', 'Game', 'Level', 'Correct', 'Total', 'XP', 'Missed', 'Right'],
   Review: ['Girl', 'Items'],
   Gates: ['Timestamp', 'Girl', 'Date', 'From', 'To', 'Correct', 'Total', 'Passed', 'Tasks', 'XP', 'Missed', 'Right'],
@@ -168,7 +170,7 @@ function api() {
   apiMissionResult: apiMissionResult, apiFlag: apiFlag,
   apiJoinCheck: apiJoinCheck, apiJoin: apiJoin, apiPlacement: apiPlacement, apiFeedback: apiFeedback,
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
-  apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade,
+  apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade, apiParentNestMin: apiParentNestMin, apiNestTime: apiNestTime,
   apiAdminData: apiAdminData, apiAdminEdit: apiAdminEdit,
   apiDeleteData: apiDeleteData, apiExportData: apiExportData,
   apiParentConsent: apiParentConsent, apiParentFriends: apiParentFriends, apiParentMic: apiParentMic, apiParentRemind: apiParentRemind,
@@ -634,9 +636,14 @@ function parentData(list, isAdmin, who, hide) {
       }
       d.history = history;
       d.recent = logs.filter(function (l) { return l.Girl === k.Name; }).slice(-8).reverse().map(function (l) {
+        var m = l.Mission && l.Section !== 'nest' ? missionOf(l.URL) : null;
         return { date: l.Date, doneOn: l.DoneOn, section: l.Section, title: l.Title, url: l.URL, correct: l.Correct, total: l.Total, percent: l.Percent, points: l.Points,
-          mission: l.Mission || '', seconds: Number(l.Seconds) || null };
+          mission: l.Mission || '', seconds: Number(l.Seconds) || null,
+          he: l.Section === 'nest' ? nestTitleHe(l.Mission) : (m && m.he) || SECTION_HE[l.Section] || '' };
       });
+      // What she learned this week in one Hebrew sentence, and her level as a track (src/Learned.js).
+      d.learned = learnedWeek(k, t);
+      d.track = isNest(k) ? null : levelTrack(k.Level);
       d.email = k.Email;
       d.bought = shopBought(kidRows('Shop', k.Name), 3);
       d.pin = hide ? undefined : String(k.PIN);
@@ -1010,8 +1017,9 @@ function weeklySummary() {
   if (owner) {
     MailApp.sendEmail({ to: owner, subject: 'English with Chacho — weekly summary ' + data.today, htmlBody: data.groups.map(summaryHtml).join('<hr>') });
   }
+  // A family gets its email in Hebrew: each kid's sentence of the week (the one in the parents' view) and track.
   data.groups.forEach(function (g) {
-    if (g.email) MailApp.sendEmail({ to: g.email, subject: 'English with Chacho — ' + g.name + ' weekly summary', htmlBody: summaryHtml(g) });
+    if (g.email) MailApp.sendEmail({ to: g.email, subject: 'מה למדנו השבוע: ' + g.name, htmlBody: learnedEmailHtml(g) });
   });
 }
 
@@ -1020,7 +1028,8 @@ function summaryHtml(g) {
     return '<tr><td><b>' + d.girl.name + '</b></td><td>' + d.stats.weekDone + '/' + d.stats.weekTotal + '</td><td>' +
       (d.stats.avg === null ? '–' : d.stats.avg + '%') + '</td><td>' + d.stats.streak + '</td><td>' + d.stats.balance + '</td><td>' + d.girl.levelLabel +
       (d.journey ? ' · ' + Math.min(d.journey.stations, d.journey.goal) + '/' + d.journey.goal + (d.journey.gate.state === 'open' ? ' (gate open)' : '') : '') + '</td><td>' +
-      d.games.weekRounds + (d.games.weekAvg === null ? '' : ' (' + d.games.weekAvg + '%)') + '</td></tr>';
+      d.games.weekRounds + (d.games.weekAvg === null ? '' : ' (' + d.games.weekAvg + '%)') + '</td></tr>' +
+      '<tr><td colspan="7" dir="rtl" style="text-align:right">' + String(d.learned || '').replace(/[<>&]/g, '') + '</td></tr>';
   }).join('');
   return '<h3>' + g.name + '</h3><table cellpadding="6" border="1" style="border-collapse:collapse"><tr><th>Name</th><th>Week</th><th>Avg</th><th>Streak</th><th>Points</th><th>Level</th><th>Games</th></tr>' +
     rows + '</table><p>Group goal: ' + g.goal.total + ' / ' + g.goal.goal + '</p><p><a href="' + g.link + '">Open English with Chacho</a></p>';

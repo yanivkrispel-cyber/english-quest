@@ -362,7 +362,7 @@ var CATALOG = {"grammar":{"a1":[{"t":"Present simple forms of 'to be': am/is/are
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v24b';
+var SETUP_VERSION = 'v27';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 // The kids' front end (Cloudflare, docs/). Until 2026-10 it was https://yanivkrispel-cyber.github.io/english-quest/.
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
@@ -397,11 +397,23 @@ var PETS = ['turtle', 'monster', 'cat', 'cow', 'fawn', 'donkey', 'sheep', 'giraf
 var PET_STAGES = [0, 150, 500, 1100, 2000];
 // Spaced review: a missed item comes back after 1 day, then 3, 7 and 21 days while it is answered right.
 var REVIEW_DAYS = [1, 3, 7, 21];
+// The slow track (night review, finding 13): an item answered right comes back after 7, 21 and 60 days (boxes 11 to 13),
+// and so does an item that finished the fast track (60 days). At most `slowNew` new ones a day and `slowDue` due ones a day,
+// after the missed ones. Held-out gate items (g*:) never enter the review.
+var REVIEW_SLOW = [7, 21, 60], REVIEW_CAP = { slowNew: 20, slowDue: 10 };
+var HELD_ID = /^g[mlbst]:/;
 // Journey map: a world per level. Every daily task done is a station. After `stations` of them
 // (or `early` with an average of `earlyAvg`% or more) the gate to the next level opens: an in-app
 // challenge of `items` questions from that level. `pass`% raises the kid's level and gives the pet
 // `xp`; after a miss the gate opens again `waitDays` later.
-var JOURNEY = { stations: 30, early: 20, earlyAvg: 85, items: 15, pass: 80, waitDays: 3, xp: 100 };
+var JOURNEY = { stations: 30, early: 20, earlyAvg: 85, items: 15, pass: 80, waitDays: 3, xp: 100,
+  // Mastery (night review, finding 12): the stations alone do not open the gate any more. She also needs `mastery`% right
+  // on the first try over her last `masteryItems` game and mission questions in this world (at least `masteryMin`).
+  // Settings.GateMastery: a percentage, or off. A kid who met the stations rule before `masteryFrom`
+  // (Settings.GateMasteryFrom) or already tried this gate keeps her open gate.
+  mastery: 80, masteryItems: 80, masteryMin: 40, masteryFrom: '2026-11-02' };
+// Item stats (first-try right rate per item) count rounds from this day on: the Right column starts with SETUP v24.
+var ITEM_STATS_FROM = '2026-11-01';
 var WORLDS = { a1: 'Sunny Meadow', a2: 'Whisper Woods', b1: 'Crystal Caves', 'b1-b2': 'Misty Peaks', b2: 'Sky Islands', c1: 'Star Summit' };
 
 // The sheet tab for kids is still called "Girls" (it predates groups).
@@ -410,10 +422,12 @@ var HEADERS = {
   Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince', 'Missions', 'NestPerDay', 'NestArcadeMin',
     // Safety.js: Mic = yes when a parent turned the microphone on; RemindAt = the reminder hour ('off'; empty = the default);
     // Seen = the last day she opened the app; Inactive = the day the admin was told she would be deleted for inactivity.
-    'Mic', 'RemindAt', 'Seen', 'Inactive'],
-  Games: ['Timestamp', 'Girl', 'Date', 'Game', 'Level', 'Correct', 'Total', 'XP', 'Missed'],
+    'Mic', 'RemindAt', 'Seen', 'Inactive',
+    // Nest.js (finding 15): NestMin = the parent's screen-time cap a day; NestTime = today's seconds, from the phones.
+    'NestMin', 'NestTime'],
+  Games: ['Timestamp', 'Girl', 'Date', 'Game', 'Level', 'Correct', 'Total', 'XP', 'Missed', 'Right'],
   Review: ['Girl', 'Items'],
-  Gates: ['Timestamp', 'Girl', 'Date', 'From', 'To', 'Correct', 'Total', 'Passed', 'Tasks', 'XP'],
+  Gates: ['Timestamp', 'Girl', 'Date', 'From', 'To', 'Correct', 'Total', 'Passed', 'Tasks', 'XP', 'Missed', 'Right'],
   Assignments: ['Girl', 'Date', 'Section', 'Level', 'Title', 'URL'],
   // Mission and Seconds: a task played as a mission in the app (Missions.js); empty for the old link.
   // Detail: a Nest day's first try per word ("cat:1,dog:0", Nest.js), for the review days and the parents' view.
@@ -450,7 +464,11 @@ var HEADERS = {
   Plans: ['Group', 'Plan', 'Source', 'Until', 'Ref', 'Updated'],
   // Safety.js: a kid blocked another kid; a report (a block with a preset reason) for the admin and the kid's parents.
   Blocks: ['Timestamp', 'Girl', 'Blocked', 'Date'],
-  Reports: ['Timestamp', 'Girl', 'About', 'Date', 'Reason', 'Group']
+  Reports: ['Timestamp', 'Girl', 'About', 'Date', 'Reason', 'Group'],
+  // Feature use (Ops.js): one row per kid, day and part of the app she opened, with how many times (written in batches).
+  Usage: ['Date', 'Girl', 'Feature', 'Opens'],
+  // The phones' error reports (Ops.js), kept 30 days. Girl: only when the call that carried the report was hers.
+  Errors: ['Timestamp', 'Date', 'Girl', 'Where', 'Message', 'Device', 'App']
 };
 
 var WORDS = [
@@ -511,11 +529,11 @@ function api() {
   apiMissionResult: apiMissionResult, apiFlag: apiFlag,
   apiJoinCheck: apiJoinCheck, apiJoin: apiJoin, apiPlacement: apiPlacement, apiFeedback: apiFeedback,
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
-  apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade,
-  apiCfExport: apiCfExport, apiCfMode: apiCfMode, apiAdminData: apiAdminData, apiAdminEdit: apiAdminEdit,
+  apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade, apiParentNestMin: apiParentNestMin, apiNestTime: apiNestTime,
+  apiAdminData: apiAdminData, apiAdminEdit: apiAdminEdit,
   apiDeleteData: apiDeleteData, apiExportData: apiExportData,
   apiParentConsent: apiParentConsent, apiParentFriends: apiParentFriends, apiParentMic: apiParentMic, apiParentRemind: apiParentRemind,
-  apiKidBlock: apiKidBlock, apiParentUnblock: apiParentUnblock
+  apiKidBlock: apiKidBlock, apiParentUnblock: apiParentUnblock, apiHealth: apiHealth
   };
 }
 
@@ -533,33 +551,24 @@ function doPost(e) {
       return ContentService.createTextOutput(JSON.stringify({ ok: false, update: true, error: 'Please update the app' })).setMimeType(ContentService.MimeType.JSON);
     }
     REQ_DEV = cleanDev(req.dev);
+    REQ_IP = cleanIp(e.ip);
     REQ_OPEN = cleanOpen(req.open);
     PERF_PARTS = null;
     var t0 = Date.now();
     out = { ok: true, data: API[req.fn].apply(null, req.args || []) };
     perfNote(req.fn, Date.now() - t0, PERF_PARTS);
   } catch (err) {
-    out = { ok: false, error: String((err && err.message) || err) };
+    // update: an old copy of the app is asked to load the new one (Auth.js LEGACY_PARENT).
+    out = { ok: false, error: String((err && err.message) || err), update: err && err.update ? true : undefined };
   }
+  // The feature counts and error reports the phone sent along (Ops.js); never breaks the answer.
+  try { opsNote(req, out.ok); } catch (err) { console.error(err); }
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }
 
 // Link sent to the kids (WhatsApp, reminder emails): the public front end when set.
 function publicUrl() {
   return getSetting('PublicUrl') || getSetting('AppUrl');
-}
-
-// Brute-force guard: 8 wrong PINs for the same key lock it for 15 minutes.
-function checkPin(key, ok) {
-  var c = CacheService.getScriptCache(), k = 'F:' + key;
-  var fails = Number(c.get(k)) || 0;
-  if (fails >= 8) throw new Error('Too many attempts — try again in 15 minutes');
-  if (!ok) {
-    c.put(k, String(fails + 1), 900);
-    auditPin(key, fails + 1);
-    throw new Error('Wrong PIN');
-  }
-  if (fails) c.remove(k);
 }
 
 // ---------- Groups ----------
@@ -704,7 +713,7 @@ function apiGameResult(name, pin, game, level, correct, total, missed, right, se
     xp = correct * GAME_XP.right + second * GAME_XP.right / 2 + (correct === total && total >= 5 ? GAME_XP.perfect : 0);
     xp = Math.max(0, Math.min(xp, GAME_XP.dayCap - used));
     appendRow('Games', { Timestamp: new Date(), Girl: kid.Name, Date: t, Game: game, Level: level,
-      Correct: correct, Total: total, XP: xp, Missed: missed.join(' ') });
+      Correct: correct, Total: total, XP: xp, Missed: missed.join(' '), Right: right.join(' ') });
     updateReview(kid.Name, missed, right, t);
   } finally {
     lock.releaseLock();
@@ -791,12 +800,27 @@ function readReview(name) {
 
 function updateReview(name, missed, right, t) {
   var map = readReview(name), changed = false;
-  missed.forEach(function (id) { map[id] = { box: 1, due: addDays(t, REVIEW_DAYS[0]) }; changed = true; });
-  right.forEach(function (id) {
+  var mine = function (id) { return !HELD_ID.test(id); };
+  var slowToday = Object.keys(map).filter(function (id) { return map[id].box === 11 && map[id].due === addDays(t, REVIEW_SLOW[0]); }).length;
+  missed.filter(mine).forEach(function (id) { map[id] = { box: 1, due: addDays(t, REVIEW_DAYS[0]) }; changed = true; });
+  right.filter(mine).forEach(function (id) {
     var e = map[id];
-    if (!e) return;
+    if (!e) {
+      // Right the first time: the slow track (a few a day).
+      if (slowToday >= REVIEW_CAP.slowNew) return;
+      slowToday++; changed = true;
+      map[id] = { box: 11, due: addDays(t, REVIEW_SLOW[0]) };
+      return;
+    }
+    if (e.box >= 10) {
+      if (e.due > t) return;
+      changed = true;
+      if (e.box - 10 >= REVIEW_SLOW.length) { delete map[id]; return; }
+      map[id] = { box: e.box + 1, due: addDays(t, REVIEW_SLOW[e.box - 10]) };
+      return;
+    }
     changed = true;
-    if (e.box >= REVIEW_DAYS.length) { delete map[id]; return; }
+    if (e.box >= REVIEW_DAYS.length) { map[id] = { box: 10 + REVIEW_SLOW.length, due: addDays(t, REVIEW_SLOW[REVIEW_SLOW.length - 1]) }; return; }
     map[id] = { box: e.box + 1, due: addDays(t, REVIEW_DAYS[e.box]) };
   });
   if (changed) writeReview(name, map);
@@ -815,10 +839,13 @@ function reviewAdd(name, id, t) {
   writeReview(name, map);
 }
 
+// Due items: the missed ones (fast track) first, then a few from the slow track.
 function dueReview(name, t) {
   var map = readReview(name);
-  return Object.keys(map).filter(function (id) { return map[id].due <= t; })
-    .sort(function (a, b) { return map[a].due < map[b].due ? -1 : 1; }).slice(0, 30);
+  var due = Object.keys(map).filter(function (id) { return map[id].due <= t; })
+    .sort(function (a, b) { return map[a].due < map[b].due ? -1 : 1; });
+  var fast = due.filter(function (id) { return map[id].box < 10; }), slow = due.filter(function (id) { return map[id].box >= 10; });
+  return fast.concat(slow.slice(0, REVIEW_CAP.slowDue)).slice(0, 30);
 }
 
 // ---------- Journey ----------
@@ -835,7 +862,13 @@ function journeyInfo(kid, t) {
   var mine = tasks.slice(lastPass >= 0 ? Number(gates[lastPass].Tasks) || 0 : 0);
   var tries = gates.slice(lastPass + 1), last = tries[tries.length - 1];
   var n = mine.length, avg = avgPercent(mine);
-  var ready = n >= JOURNEY.stations || (n >= JOURNEY.early && avg !== null && avg >= JOURNEY.earlyAvg);
+  var stationsOk = n >= JOURNEY.stations || (n >= JOURNEY.early && avg !== null && avg >= JOURNEY.earlyAvg);
+  var mastery = masteryInfo(kid, mine, lastPass >= 0 ? String(gates[lastPass].Date) : '');
+  // An open gate stays open: she already tried it, or the stations opened it before mastery counted.
+  if (stationsOk && !mastery.ok && (tries.length || stationsDay(mine) < (String(getSetting('GateMasteryFrom') || '').trim() || JOURNEY.masteryFrom))) mastery.kept = true;
+  var ready = stationsOk && (mastery.ok || !!mastery.kept);
+  var seen = [];
+  gates.forEach(function (g) { (String(g.Missed || '') + ' ' + String(g.Right || '')).split(' ').forEach(function (id) { if (HELD_ID.test(id)) seen.push(id); }); });
   var until = last ? addDays(last.Date, JOURNEY.waitDays) : null;
   var state = !next ? 'top' : !ready ? 'locked' : until && until > t ? 'wait' : 'open';
   return {
@@ -846,15 +879,58 @@ function journeyInfo(kid, t) {
     }),
     gate: {
       state: state, next: next, nextLabel: next ? LEVEL_LABEL[next] : null, nextName: next ? WORLDS[next] : null,
-      items: JOURNEY.items, need: gateNeed(), until: state === 'wait' ? until : null, tries: tries.length,
+      items: JOURNEY.items, need: gateNeed(), until: state === 'wait' ? until : null, tries: tries.length, seen: seen.slice(-120),
       last: last ? { correct: Number(last.Correct), total: Number(last.Total), date: last.Date } : null
     },
+    stationsOk: stationsOk, mastery: mastery,
     worlds: LEVELS.map(function (l) { return { level: l, label: LEVEL_LABEL[l], name: WORLDS[l] }; }),
     passed: gates.filter(function (g) { return g.Passed === 'yes'; }).map(function (g) { return { from: g.From, to: g.To, date: g.Date }; })
   };
 }
 
 function gateNeed() { return Math.ceil(JOURNEY.items * JOURNEY.pass / 100); }
+
+// How well she knows her level: the share right on the first try of her last game and mission questions in this world
+// (games of her level since `since`, the world's tasks: missions, or the scores logged from the link). { need, pct, n, min, ok }; need 0 = the rule is off.
+function masteryInfo(kid, mine, since) {
+  var set = String(getSetting('GateMastery') || '').trim().toLowerCase();
+  var need = set === 'off' ? 0 : Number(set) > 0 && Number(set) <= 100 ? Number(set) : JOURNEY.mastery;
+  var rows = [];
+  kidRows('Games', kid.Name).forEach(function (g) {
+    if (String(g.Date) >= since && GAMES.indexOf(g.Game) >= 0 && g.Level === kid.Level) rows.push({ d: String(g.Date), c: Number(g.Correct) || 0, n: Number(g.Total) || 0 });
+  });
+  mine.forEach(function (l) { if (Number(l.Total) > 0) rows.push({ d: String(l.DoneOn || l.Date), c: Number(l.Correct) || 0, n: Number(l.Total) }); });
+  rows.sort(function (a, b) { return a.d < b.d ? 1 : a.d > b.d ? -1 : 0; });
+  var c = 0, n = 0;
+  for (var i = 0; i < rows.length && n < JOURNEY.masteryItems; i++) { c += rows[i].c; n += rows[i].n; }
+  var pct = n ? Math.round(c / n * 100) : null;
+  return { need: need, pct: pct, n: n, min: JOURNEY.masteryMin, ok: !need || (n >= JOURNEY.masteryMin && pct >= need) };
+}
+
+// The day the stations rule was first met in this world ('' if never): the 30th task, or the 20th or later with an 85% average.
+function stationsDay(mine) {
+  for (var k = JOURNEY.early; k <= mine.length; k++) {
+    var avg = avgPercent(mine.slice(0, k));
+    if (k >= JOURNEY.stations || (avg !== null && avg >= JOURNEY.earlyAvg)) return String(mine[k - 1].DoneOn || mine[k - 1].Date);
+  }
+  return '9999';
+}
+
+// First-try right rate per item, from the Missed and Right columns of Games and Gates since ITEM_STATS_FROM: the items
+// with at least `min` answers, the hardest first (the teacher's look at the bank).
+function itemStats(limit, min) {
+  var c = {};
+  var add = function (list, ok) {
+    String(list || '').split(' ').forEach(function (id) { if (!id) return; var e = c[id] = c[id] || { id: id, right: 0, n: 0 }; e.n++; if (ok) e.right++; });
+  };
+  readTable('Games').concat(readTable('Gates')).forEach(function (r) {
+    if (String(r.Date) < ITEM_STATS_FROM) return;
+    add(r.Missed, false); add(r.Right, true);
+  });
+  var all = Object.keys(c).map(function (k) { return c[k]; }).filter(function (e) { return e.n >= (min || 5); });
+  all.sort(function (a, b) { return a.right / a.n - b.right / b.n || b.n - a.n; });
+  return { items: all.slice(0, limit || 12), counted: Object.keys(c).length };
+}
 
 // One gate challenge, scored in the app like the games. Passing raises the kid's level: her next
 // daily tasks and games come from the new level, and the map starts the next world.
@@ -876,7 +952,7 @@ function apiGateResult(name, pin, correct, total, missed, right) {
     if (j.gate.state !== 'open') throw new Error('The gate is not open yet.');
     var passed = correct >= j.gate.need;
     row = { Timestamp: new Date(), Girl: kid.Name, Date: t, From: j.level, To: j.gate.next, Correct: correct, Total: total,
-      Passed: passed ? 'yes' : 'no', Tasks: j.tasks, XP: passed ? JOURNEY.xp : correct * GAME_XP.right };
+      Passed: passed ? 'yes' : 'no', Tasks: j.tasks, XP: passed ? JOURNEY.xp : correct * GAME_XP.right, Missed: missed.join(' '), Right: right.join(' ') };
     appendRow('Gates', row);
     if (passed) setGirlField(kid.Name, 'Level', j.gate.next);
     updateReview(kid.Name, missed, right, t);
@@ -889,23 +965,19 @@ function apiGateResult(name, pin, correct, total, missed, right) {
   return dash;
 }
 
-// The admin PIN (Settings) sees every group; a group's ParentPIN sees only that group.
+// The admin (passphrase) sees every group; a family's code, with the family, sees only that family (Auth.js parentAccess).
+// Signing in with a code also gives the phone a session to remember instead of the code (token).
 function apiParent(pin) {
   ensureSetup();
   var access = parentAccess(pin);
   if (access.isAdmin) auditOpen('admin', 'admin', ''); else auditOpen('parent', access.group.Name, String(access.group.Id));
-  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
+  var data = parentView(access);
+  if (!access.token) data.token = sessionToken(access);
+  return data;
 }
 
-function parentAccess(pin) {
-  pin = String(pin).trim();
-  var isAdmin = pin === String(getSetting('AdminPIN')).trim();
-  var group = isAdmin ? null : groups().filter(function (g) { return String(g.ParentPIN || '').trim() && String(g.ParentPIN).trim() === pin; })[0];
-  checkPin('parent', isAdmin || !!group);
-  return { isAdmin: isAdmin, group: group };
-}
-
-function parentData(list, isAdmin, who) {
+// hide: a remembered phone's session (Auth.js): no kid's PIN, no family code; the parent types the code to see them.
+function parentData(list, isAdmin, who, hide) {
   var t = today();
   var logs = readTable('Log');
   var out = list.map(function (g) {
@@ -923,19 +995,24 @@ function parentData(list, isAdmin, who) {
       }
       d.history = history;
       d.recent = logs.filter(function (l) { return l.Girl === k.Name; }).slice(-8).reverse().map(function (l) {
+        var m = l.Mission && l.Section !== 'nest' ? missionOf(l.URL) : null;
         return { date: l.Date, doneOn: l.DoneOn, section: l.Section, title: l.Title, url: l.URL, correct: l.Correct, total: l.Total, percent: l.Percent, points: l.Points,
-          mission: l.Mission || '', seconds: Number(l.Seconds) || null };
+          mission: l.Mission || '', seconds: Number(l.Seconds) || null,
+          he: l.Section === 'nest' ? nestTitleHe(l.Mission) : (m && m.he) || SECTION_HE[l.Section] || '' };
       });
+      // What she learned this week in one Hebrew sentence, and her level as a track (src/Learned.js).
+      d.learned = learnedWeek(k, t);
+      d.track = isNest(k) ? null : levelTrack(k.Level);
       d.email = k.Email;
       d.bought = shopBought(kidRows('Shop', k.Name), 3);
-      d.pin = String(k.PIN);
+      d.pin = hide ? undefined : String(k.PIN);
       return d;
     });
     return {
       id: id,
       name: g.Name,
       link: groupLink(id),
-      parentPin: isAdmin ? String(g.ParentPIN || '') : undefined,
+      parentPin: isAdmin && !hide ? String(g.ParentPIN || '') : undefined,
       email: g.Email,
       goal: {
         goal: Number(g.Goal) || 1500,
@@ -948,6 +1025,7 @@ function parentData(list, isAdmin, who) {
   });
   return {
     isAdmin: !!isAdmin,
+    locked: !!hide,
     groups: out,
     sheetUrl: isAdmin ? SpreadsheetApp.getActive().getUrl() : null,
     sheetCopy: typeof PLATFORM !== 'undefined',   // on Cloudflare the sheet is a nightly copy (specs/cloudflare.md)
@@ -977,8 +1055,8 @@ function apiAdminAddGroup(pin, name, email) {
   var id, parentPin;
   try {
     var ids = groups().map(function (g) { return String(g.Id); });
-    do { id = Math.random().toString(36).slice(2, 8); } while (ids.indexOf(id) >= 0);
-    parentPin = uniqueParentPin();
+    do { id = randomId(); } while (ids.indexOf(id) >= 0);
+    parentPin = newParentCode();
     appendRow('Groups', { Id: id, Name: name, ParentPIN: parentPin, Goal: 1500, GoalReward: 'Pizza party for the group', Email: String(email || '').trim() });
   } finally {
     lock.releaseLock();
@@ -1027,28 +1105,21 @@ function apiAdminSettings(pin, reminderHour) {
   return apiParent(pin);
 }
 
-// The admin sets a family's parents' code (4 digits, unused by another family or the admin).
+// The admin sets a family's parents' code (6 digits). A code opens its own family only, so it need not be unique and is
+// never compared with another family's or the admin's (no "taken" answer to learn codes from). Old sessions end with it.
 function apiAdminParentPin(pin, groupId, newPin) {
   ensureSetup();
-  if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can change settings');
+  if (!parentAccess(pin, { typed: true }).isAdmin) throw new Error('Only the admin can change settings');
   newPin = String(newPin || '').trim();
-  if (!/^\d{4}$/.test(newPin)) throw new Error('A parents code is 4 digits');
+  if (!/^\d{6}$/.test(newPin)) throw new Error('A parents code is 6 digits');
   var gs = groups(), g = gs.filter(function (x) { return String(x.Id) === String(groupId); })[0];
   if (!g) throw new Error('Unknown family');
-  if (newPin === String(getSetting('AdminPIN')) || gs.some(function (x) { return x !== g && String(x.ParentPIN) === newPin; })) throw new Error('This code is taken');
   invalidate('Groups');
   var sh = sheet('Groups'), values = sh.getDataRange().getValues(), col = values[0].indexOf('ParentPIN');
   for (var i = 1; i < values.length; i++) if (String(values[i][0]) === String(g.Id)) sh.getRange(i + 1, col + 1).setValue(newPin);
   invalidate('Groups');
   audit('admin', 'admin', String(g.Id), 'parents code', g.Name);
   return { ok: true };
-}
-
-function uniqueParentPin() {
-  var taken = groups().map(function (g) { return String(g.ParentPIN); }).concat([String(getSetting('AdminPIN'))]);
-  var p;
-  do { p = randomPin(); } while (taken.indexOf(p) >= 0);
-  return p;
 }
 
 // ---------- Dashboard ----------
@@ -1305,8 +1376,9 @@ function weeklySummary() {
   if (owner) {
     MailApp.sendEmail({ to: owner, subject: 'English with Chacho — weekly summary ' + data.today, htmlBody: data.groups.map(summaryHtml).join('<hr>') });
   }
+  // A family gets its email in Hebrew: each kid's sentence of the week (the one in the parents' view) and track.
   data.groups.forEach(function (g) {
-    if (g.email) MailApp.sendEmail({ to: g.email, subject: 'English with Chacho — ' + g.name + ' weekly summary', htmlBody: summaryHtml(g) });
+    if (g.email) MailApp.sendEmail({ to: g.email, subject: 'מה למדנו השבוע: ' + g.name, htmlBody: learnedEmailHtml(g) });
   });
 }
 
@@ -1315,7 +1387,8 @@ function summaryHtml(g) {
     return '<tr><td><b>' + d.girl.name + '</b></td><td>' + d.stats.weekDone + '/' + d.stats.weekTotal + '</td><td>' +
       (d.stats.avg === null ? '–' : d.stats.avg + '%') + '</td><td>' + d.stats.streak + '</td><td>' + d.stats.balance + '</td><td>' + d.girl.levelLabel +
       (d.journey ? ' · ' + Math.min(d.journey.stations, d.journey.goal) + '/' + d.journey.goal + (d.journey.gate.state === 'open' ? ' (gate open)' : '') : '') + '</td><td>' +
-      d.games.weekRounds + (d.games.weekAvg === null ? '' : ' (' + d.games.weekAvg + '%)') + '</td></tr>';
+      d.games.weekRounds + (d.games.weekAvg === null ? '' : ' (' + d.games.weekAvg + '%)') + '</td></tr>' +
+      '<tr><td colspan="7" dir="rtl" style="text-align:right">' + String(d.learned || '').replace(/[<>&]/g, '') + '</td></tr>';
   }).join('');
   return '<h3>' + g.name + '</h3><table cellpadding="6" border="1" style="border-collapse:collapse"><tr><th>Name</th><th>Week</th><th>Avg</th><th>Streak</th><th>Points</th><th>Level</th><th>Games</th></tr>' +
     rows + '</table><p>Group goal: ' + g.goal.total + ' / ' + g.goal.goal + '</p><p><a href="' + g.link + '">Open English with Chacho</a></p>';
@@ -1382,7 +1455,7 @@ function ensureSetup() {
     clearCache();
 
     var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: PUBLIC_URL, PilotFrom: today(), ShopOpens: SHOP.opens, ShopEarly: '',
-      InviteCode: Math.random().toString(36).slice(2, 8), InviteOpen: 'no', TeacherCode: String(100000 + Math.floor(Math.random() * 900000)) };
+      InviteCode: randomId(), InviteOpen: 'no', TeacherCode: newTeacherCode() };
     Object.keys(defaults).forEach(function (k) { if (getSetting(k) === null) setSetting(k, defaults[k]); });
     if (getSetting('AppUrl') !== APP_URL) setSetting('AppUrl', APP_URL);
     // v18: the front end moved from GitHub Pages to its own address (the old one shows a "new home" screen).
@@ -1616,15 +1689,15 @@ function setSetting(key, value) {
   invalidate('Settings');
 }
 
+// A name nobody has is checked against the caller's address only (Auth.js checkPin): nothing is written for it.
 function auth(name, pin) {
   ensureSetup();
   var g = findGirl(name);
-  checkPin('girl:' + String(name).toLowerCase(), !!g && String(g.PIN).trim() === String(pin).trim());
+  checkPin('girl:' + String(name).toLowerCase(), !!g && sameSecret(g.PIN, pin), LOCK.name, !g);
   duelSeen(g.Name);
   return g;
 }
 
-function randomPin() { return String(1000 + Math.floor(Math.random() * 9000)); }
 
 // ---------- Date helpers (yyyy-MM-dd strings, Asia/Jerusalem) ----------
 
@@ -1635,6 +1708,224 @@ function addDays(s, n) { var d = parseDate(s); d.setDate(d.getDate() + n); retur
 function daysBetween(a, b) { return Math.round((parseDate(b) - parseDate(a)) / 86400000); }
 function weekStart(s) { return addDays(s, -parseDate(s).getDay()); }
 function weekDates(s) { var ws = weekStart(s), out = []; for (var i = 0; i < 7; i++) out.push(addDays(ws, i)); return out; }
+
+// ---- src/Auth.js ----
+// Signing in (specs/security.md, the night review of 2026-11-01): kids' PINs, a family's parents' code, the admin's
+// passphrase and the teacher's code, the lockouts that guard them, and the signed session a phone keeps instead of a code.
+//
+// Credentials a parents' call carries (the first argument, still called pin in the calls):
+//   'g:<family id>:<code>'    a parent typed the family's code (an empty id is the default family, a link without ?g=)
+//   'n:<family name>:<code>'  the same when the phone knows no family: the parent typed the family's name
+//   'pt.<id>.<expiry>.<sig>'  a remembered phone (sessionToken): 30 days, signed, void once the family's code changes
+//   anything else             the admin's passphrase (Script Property ADMIN_PASS); before it is set, the old AdminPIN
+// A family's code opens that family only; a wrong one counts against that family and the caller's address, never others.
+
+var LOCK = {
+  name: { max: 8, sec: 900, msg: 'Too many attempts — try again in 15 minutes' },   // one kid, one family, the teacher
+  admin: { max: 20, sec: 21600, msg: 'Too many attempts — try again in 6 hours' },  // the passphrase, from every address
+  ip: { max: 50, sec: 3600 },          // wrong PINs and codes from one address, whatever names it tries (Settings.IpFailLimit)
+  relay: { max: 500, sec: 3600 },      // calls relayed by Apps Script (old copies of the app) all come from Google: one bucket
+  adminIp: { max: 5, sec: 3600 }       // wrong passphrases from one address
+};
+var SESSION = { days: 30 };
+var CODE_AGAIN = 'Type the code again';
+var LEGACY_PARENT = 'Service update: please open the app again';
+
+// The caller's address, given by the Cloudflare Worker (worker/api/index.js): 'relay' for calls relayed by Apps Script, '' when
+// unknown (Apps Script itself sees no address, so nothing is counted per address there). Memory only, never written.
+var REQ_IP = '';
+function cleanIp(ip) {
+  ip = String(ip || '');
+  return ip === 'relay' || /^[0-9A-Fa-f:.]{2,45}$/.test(ip) ? ip : '';
+}
+
+// ---------- Per-address limits (cache only: no row is written for an attempt) ----------
+
+function ipRule() {
+  if (REQ_IP === 'relay') return LOCK.relay;
+  var n = Number(getSetting('IpFailLimit'));
+  return n > 0 ? { max: n, sec: LOCK.ip.sec } : LOCK.ip;
+}
+function ipGuard(admin) {
+  if (!REQ_IP) return;
+  var c = CacheService.getScriptCache();
+  if ((Number(c.get('IP:' + REQ_IP)) || 0) >= ipRule().max) throw new Error('Too many attempts — try again in an hour');
+  if (admin && REQ_IP !== 'relay' && (Number(c.get('IPA:' + REQ_IP)) || 0) >= LOCK.adminIp.max) throw new Error('Too many attempts — try again in an hour');
+}
+function ipFail(admin) {
+  if (!REQ_IP) return;
+  var c = CacheService.getScriptCache(), k = 'IP:' + REQ_IP;
+  c.put(k, String((Number(c.get(k)) || 0) + 1), ipRule().sec);
+  if (admin && REQ_IP !== 'relay') { k = 'IPA:' + REQ_IP; c.put(k, String((Number(c.get(k)) || 0) + 1), LOCK.adminIp.sec); }
+}
+
+// Brute-force guard for one name (a kid, a family, the admin, the teacher), on top of the caller's address: rule.max wrong
+// tries lock the name for rule.sec. unknown: the name does not exist, so nothing is kept about it (no lockout key, no
+// audit line; finding 6: made-up names filled the free plan's daily writes). The answer is the same "Wrong PIN".
+function checkPin(key, ok, rule, unknown) {
+  rule = rule || LOCK.name;
+  ipGuard(key === 'admin');
+  var c = CacheService.getScriptCache(), k = 'F:' + key;
+  var fails = unknown ? 0 : Number(c.get(k)) || 0;
+  if (fails >= rule.max) throw new Error(rule.msg);
+  if (!ok) {
+    ipFail(key === 'admin');
+    if (!unknown) {
+      c.put(k, String(fails + 1), rule.sec);
+      auditPin(key, fails + 1, rule);
+    }
+    throw new Error('Wrong PIN');
+  }
+  if (fails) c.remove(k);
+}
+
+// ---------- Comparing and making secrets ----------
+
+// Constant time: both sides are hashed first, so neither the length nor the first different character shows in the time taken.
+function sameSecret(a, b) {
+  a = String(a == null ? '' : a).trim(); b = String(b == null ? '' : b).trim();
+  if (!a || !b) return false;
+  var x = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, a, Utilities.Charset.UTF_8);
+  var y = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, b, Utilities.Charset.UTF_8);
+  var d = 0;
+  for (var i = 0; i < x.length; i++) d |= (x[i] ^ y[i]);
+  return d === 0;
+}
+
+// 32 random bytes (0..255). getUuid is a random (version 4) UUID on both platforms (SecureRandom / crypto.randomUUID);
+// two of them through SHA-256 give evenly spread bytes. Math.random is not used for anything secret.
+function randomBytes() {
+  return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, Utilities.getUuid() + Utilities.getUuid(), Utilities.Charset.UTF_8)
+    .map(function (b) { return b & 255; });
+}
+// A whole number from 0 to n - 1, without bias (n up to 2^32).
+function randomInt(n) {
+  var lim = Math.floor(4294967296 / n) * n;
+  for (;;) {
+    var b = randomBytes();
+    for (var i = 0; i + 4 <= b.length; i += 4) {
+      var x = b[i] * 16777216 + b[i + 1] * 65536 + b[i + 2] * 256 + b[i + 3];
+      if (x < lim) return x % n;
+    }
+  }
+}
+function randomString(alphabet, len) {
+  var out = '', n = alphabet.length, lim = Math.floor(256 / n) * n;
+  while (out.length < len) {
+    var b = randomBytes();
+    for (var i = 0; i < b.length && out.length < len; i++) if (b[i] < lim) out += alphabet.charAt(b[i] % n);
+  }
+  return out;
+}
+function randomPin() { return String(1000 + randomInt(9000)); }                       // a kid's PIN: 4 digits
+function newParentCode() { return String(100000 + randomInt(900000)); }               // a family's code: 6 digits, made here
+function randomId() { return randomString('abcdefghijklmnopqrstuvwxyz0123456789', 6); }  // a family id
+function newTeacherCode() { return randomString('abcdefghijkmnpqrstuvwxyz23456789', 12); }
+
+// ---------- The admin's passphrase ----------
+// Kept as 'v1$<rounds>$<salt>$<hash>' in the Script Property ADMIN_PASS (set with tools/admin-passphrase.js, never in
+// the sheet). Typing is forgiving: case, spaces and dashes do not count.
+function passNorm(p) { return String(p || '').toLowerCase().replace(/[\s\-]+/g, ''); }
+function passHash(pass, salt, rounds) {
+  var h = salt;
+  for (var i = 0; i < rounds; i++) h = Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, h + '|' + pass, Utilities.Charset.UTF_8));
+  return h;
+}
+function passStored() { return PropertiesService.getScriptProperties().getProperty('ADMIN_PASS') || ''; }
+function passOk(secret, stored) {
+  var p = String(stored).split('$');
+  if (p.length !== 4 || p[0] !== 'v1') return false;
+  return sameSecret(p[3], passHash(passNorm(secret), p[2], Math.min(20000, Number(p[1]) || 1)));
+}
+var PASS_FORMAT = /^v1\$\d{1,5}\$[A-Za-z0-9_\-]{16,64}\$[A-Za-z0-9_\-=]{40,64}$/;
+// The owner's tool (POST /admin/passphrase on the Worker, with ADMIN_TOKEN): only the hash travels. From then on the old
+// 4-digit AdminPIN opens nothing, and every remembered admin phone signs in again.
+function adminPassSet(value) {
+  value = String(value || '');
+  if (!PASS_FORMAT.test(value)) throw new Error('Not a passphrase hash');
+  PropertiesService.getScriptProperties().setProperty('ADMIN_PASS', value);
+  CacheService.getScriptCache().remove('F:admin');
+  audit('owner', 'tool', '', 'admin passphrase', 'set');
+  return true;
+}
+
+// ---------- Who is calling: parentAccess ----------
+
+// opts.typed: the call needs the code itself (deleting, downloading, the kids' codes and links, the Data card), not a
+// remembered phone's session.
+function parentAccess(cred, opts) {
+  cred = String(cred == null ? '' : cred).trim();
+  var a = /^pt\./.test(cred) ? sessionAccess(cred) : /^[gn]:/.test(cred) ? familyAccess(cred) : adminAccess(cred);
+  if (opts && opts.typed && a.token) throw new Error(CODE_AGAIN);
+  return a;
+}
+
+function familyAccess(cred) {
+  var at = cred.lastIndexOf(':'), code = cred.slice(at + 1), what = cred.slice(2, at), g;
+  if (cred.charAt(0) === 'g') g = what ? findGroup(what) : groups()[0];
+  else {
+    var name = what.replace(/^\s*משפחת\s+/, '').trim().toLowerCase();
+    g = name ? groups().filter(function (x) { return String(x.Name).trim().toLowerCase() === name; })[0] : null;
+  }
+  var want = g ? String(g.ParentPIN || '').trim() : '';
+  // A family without a code (the admin's own) or no family at all: the same answer, nothing kept.
+  checkPin('parent:' + (want ? String(g.Id) : '-'), !!want && sameSecret(code, want), LOCK.name, !want);
+  return { isAdmin: false, group: g, token: false };
+}
+
+function adminAccess(secret) {
+  var stored = passStored();
+  if (stored) {
+    // A bare number is an old copy of the app with a parent's remembered code (it sent no family): it asks to update and is
+    // never tried as the passphrase.
+    if (/^\d{0,6}$/.test(secret)) { ipGuard(); var e = new Error(LEGACY_PARENT); e.update = true; throw e; }
+    checkPin('admin', passOk(secret, stored), LOCK.admin);
+    return { isAdmin: true, group: null, token: false };
+  }
+  // Until the passphrase is set: the old 4-digit AdminPIN. A wrong number may be an old copy's parent code: it counts
+  // against the address only (old copies must not lock the owner out), and asks the old copy to update.
+  ipGuard(true);
+  if (sameSecret(secret, getSetting('AdminPIN'))) return { isAdmin: true, group: null, token: false };
+  ipFail(true);
+  if (/^\d{1,6}$/.test(secret)) { var u = new Error(LEGACY_PARENT); u.update = true; throw u; }
+  throw new Error('Wrong PIN');
+}
+
+// ---------- Remembered phones: a signed session instead of the code ----------
+
+function sessionSecret() {
+  var props = PropertiesService.getScriptProperties(), s = props.getProperty('SessionSecret');
+  if (!s) { s = Utilities.getUuid() + Utilities.getUuid(); props.setProperty('SessionSecret', s); }
+  return s;
+}
+// What a session is tied to: the family's code, or the admin's passphrase (the AdminPIN before it). Changing it ends
+// every session of that account.
+function sessionBind(id) {
+  if (id === 'admin') { var p = passStored(); return p ? 'pass:' + p : 'pin:' + String(getSetting('AdminPIN') || '').trim(); }
+  var g = findGroup(id);
+  return g && String(g.ParentPIN || '').trim() ? 'code:' + String(g.ParentPIN).trim() : '';
+}
+function sessionSign(id, exp, bind) {
+  return Utilities.base64EncodeWebSafe(Utilities.computeHmacSha256Signature(id + '|' + exp + '|' + bind, sessionSecret())).replace(/=+$/, '').slice(0, 32);
+}
+function sessionToken(access) {
+  var id = access.isAdmin ? 'admin' : String(access.group.Id), bind = sessionBind(id);
+  if (!bind) return '';
+  var exp = Date.now() + SESSION.days * 86400000;
+  return 'pt.' + id + '.' + exp + '.' + sessionSign(id, exp, bind);
+}
+function sessionAccess(cred) {
+  ipGuard();
+  var p = cred.split('.'), sig = p.pop(), exp = Number(p.pop()), id = p.slice(1).join('.');
+  var bind = id ? sessionBind(id) : '';
+  if (!bind || !(exp > Date.now()) || !sameSecret(sig, sessionSign(id, exp, bind))) { ipFail(); throw new Error('Wrong PIN'); }
+  return id === 'admin' ? { isAdmin: true, group: null, token: true } : { isAdmin: false, group: findGroup(id), token: true };
+}
+
+// The parents' view for whoever signed in: a session (token) sees no kid's PIN, no family code and no personal link.
+function parentView(access) {
+  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id), access.token);
+}
 
 // ---- src/Push.js ----
 // Web Push (VAPID) for reminders on phones that installed the app.
@@ -1900,6 +2191,19 @@ function parentSummary() {
     var kids = who === 'admin' ? readTable('Girls') : kidsIn(who);
     if (!kids.length) return;
     var n = kids.filter(function (k) { return done[k.Name]; }).length;
+    // A family reads it in Hebrew: each kid's sentence of the day, the same words as the parents' view (src/Learned.js).
+    if (who !== 'admin') {
+      var lines = kids.map(function (k) {
+        var g = gated[k.Name], gate = g ? (g.Passed === 'yes' ? ' מסלול חדש: ' + LEVEL_LABEL[g.To] + '.' : ' שער: ' + g.Correct + ' מתוך ' + g.Total + '.') : '';
+        return k.Name + ': ' + learnedDay(k, t) + gate;
+      });
+      kids.forEach(function (k) {
+        var l = done[k.Name], m = l && l.Mission && l.Section !== 'nest' ? missionOf(l.URL) : null;
+        if (m && m.q && lines.length < kids.length + 3) lines.push('שאלה לארוחת הערב עם ' + k.Name + ': ' + m.q);
+      });
+      try { deliver(byWho[who], { title: 'היום: ' + n + ' מתוך ' + kids.length + ' תרגלו', body: lines.join('\n') }, 'ParentPush'); } catch (e) { console.error(e); }
+      return;
+    }
     var body = kids.map(function (k) {
       var l = done[k.Name], n = played[k.Name], du = duels[k.Name], g = gated[k.Name];
       var games = (n ? ' +' + n + (n === 1 ? ' game' : ' games') : '') + (du ? ' +' + du + (du === 1 ? ' game together' : ' games together') : '');
@@ -2519,7 +2823,7 @@ function tugMate(name, cred) {
   cred = String(cred || '');
   if (cred.indexOf('.') < 0) return duelKid(name, cred);
   var parts = cred.split('.'), exp = Number(parts[0]), kid = findGirl(name);
-  if (!kid || !(exp > Date.now()) || parts[1] !== tugSign(kid.Name, exp)) throw new Error('Wrong PIN');
+  if (!kid || !(exp > Date.now()) || !sameSecret(parts[1], tugSign(kid.Name, exp))) throw new Error('Wrong PIN');
   if (pendingLevelTest(kid)) throw new Error('Take the level test first.');
   return kid;
 }
@@ -2630,7 +2934,7 @@ function duelCode(rows) {
   rows.forEach(function (r) { used[r.Id] = true; });
   for (var tries = 0; tries < 200; tries++) {
     var c = '';
-    for (var i = 0; i < 4; i++) c += DUEL_LETTERS[Math.floor(Math.random() * DUEL_LETTERS.length)];
+    for (var i = 0; i < 4; i++) c += DUEL_LETTERS[randomInt(DUEL_LETTERS.length)];
     if (!used[c]) return c;
   }
   throw new Error('Could not create a code, try again');
@@ -3029,7 +3333,7 @@ function duoNewId(rows) {
   var used = {};
   rows.forEach(function (r) { used[r.Id] = true; });
   for (;;) {
-    var id = 'U' + Math.random().toString(36).slice(2, 8);
+    var id = 'U' + randomId();
     if (!used[id]) return id;
   }
 }
@@ -3866,11 +4170,11 @@ function cocoGrade(words, name, color) {
 var MISSION_INDEX = {"https://test-english.com/grammar-points/a1/present-simple-forms-of-to-be/":{"id":"a1g01","n":14,"q":"How are you today, and what is your favourite food?"},
 "https://test-english.com/grammar-points/a1/this-that-these-those/":{"id":"a1g02","n":14,"q":"What is this on your plate?"},
 "https://test-english.com/grammar-points/a1/possessive-adjectives/":{"id":"a1g03","n":14,"q":"What is your favourite thing in your room?"},
-"https://test-english.com/vocabulary/a1/common-things-a1-english-vocabulary/":{"id":"a1v01","n":14,"q":"What do you have in your school bag?"},
-"https://test-english.com/vocabulary/a1/common-verbs-and-verb-phrases-a1-english-vocabulary/":{"id":"a1v02","n":14,"q":"What time do you get up and go to bed?"},
-"https://test-english.com/listening/a1/giving-personal-information-a1-english-listening-test/":{"id":"a1l01","n":10,"q":"How do you spell your name in English?"},
-"https://test-english.com/listening/a1/who-is-in-your-new-class-a1-english-listening-test/":{"id":"a1l02","n":10,"q":"Who sits next to you in class?"},
-"https://test-english.com/listening/a1/how-often-do-you-a1-english-listening-test/":{"id":"a1l03","n":10,"q":"How often do you eat vegetables?"},
+"https://test-english.com/vocabulary/a1/common-things-a1-english-vocabulary/":{"id":"a1v01","n":14,"q":"What do you have in your school bag?","w":8},
+"https://test-english.com/vocabulary/a1/common-verbs-and-verb-phrases-a1-english-vocabulary/":{"id":"a1v02","n":14,"q":"What time do you get up and go to bed?","w":8},
+"https://test-english.com/listening/a1/giving-personal-information-a1-english-listening-test/":{"id":"a1l01","n":10,"q":"How do you spell your name in English?","w":3},
+"https://test-english.com/listening/a1/who-is-in-your-new-class-a1-english-listening-test/":{"id":"a1l02","n":10,"q":"Who sits next to you in class?","w":3},
+"https://test-english.com/listening/a1/how-often-do-you-a1-english-listening-test/":{"id":"a1l03","n":10,"q":"How often do you eat vegetables?","w":3},
 "https://test-english.com/reading/a1/guess-who-a1-english-reading-test/":{"id":"a1r01","n":10,"q":"Can you describe an animal so I can guess it?"},
 "https://test-english.com/use-of-english/a1/a1-english-test-2-multiple-choice-questions/":{"id":"a1u02","n":13,"q":"What animal would you like to bring to school?"},
 "https://test-english.com/grammar-points/a1/a-an-plurals/":{"id":"a1g04","n":14,"q":"How many apples and bananas do we have at home?"},
@@ -3882,26 +4186,54 @@ var MISSION_INDEX = {"https://test-english.com/grammar-points/a1/present-simple-
 "https://test-english.com/use-of-english/a1/a1-test-1/":{"id":"a1u01","n":13,"q":"Would you like a robot at home, and what would it do?"},
 "https://test-english.com/use-of-english/a1/a1-english-test-3-text-multiple-choice-gaps/":{"id":"a1u03","n":13,"q":"What is your favourite sandwich?"},
 "https://test-english.com/use-of-english/a1/a1-english-test-4-multiple-choice-questions/":{"id":"a1u04","n":13,"q":"What fun thing would you like to do when you are seventy?"},
-"https://test-english.com/vocabulary/a1/family-and-relatives-a1-english-vocabulary/":{"id":"a1v03","n":14,"q":"How many cousins do you have, and who is the oldest?"},
-"https://test-english.com/vocabulary/a1/opposite-adjectives-for-describing-people-and-things-a1-english-vocabulary/":{"id":"a1v04","n":15,"q":"Who is the tallest person in our family?"},
-"https://test-english.com/vocabulary/a1/daily-routines-a1-english-vocabulary/":{"id":"a1v05","n":15,"q":"What time did you wake up today?"},
-"https://test-english.com/listening/a1/what-are-you-doing-a1-english-listening-test/":{"id":"a1l04","n":10,"q":"What is your best friend doing right now, do you think?"},
-"https://test-english.com/listening/a1/tell-me-about-your-life-a1-english-listening-test/":{"id":"a1l05","n":10,"q":"What is your favourite part of the day, and why?"},
-"https://test-english.com/listening/a1/what-are-you-going-to-do-a1-english-listening-test/":{"id":"a1l06","n":10,"q":"What are you going to do this weekend?"},
-"https://test-english.com/listening/a1/comparing-things-and-people-a1-english-listening-test/":{"id":"a1l07","n":10,"q":"Which is better, a cat or a dog, and why?"},
-"https://test-english.com/listening/a1/describing-rooms-there-is-are-prepositions-of-place-a1-english-listening-test/":{"id":"a1l08","n":10,"q":"What is there on the wall in your room?"},
-"https://test-english.com/listening/a1/countries-nationalities-and-languages-a1-english-listening-test/":{"id":"a1l09","n":10,"q":"Which country would you like to visit, and why?"},
+"https://test-english.com/vocabulary/a1/family-and-relatives-a1-english-vocabulary/":{"id":"a1v03","n":14,"q":"How many cousins do you have, and who is the oldest?","w":8},
+"https://test-english.com/vocabulary/a1/opposite-adjectives-for-describing-people-and-things-a1-english-vocabulary/":{"id":"a1v04","n":15,"q":"Who is the tallest person in our family?","w":8},
+"https://test-english.com/vocabulary/a1/daily-routines-a1-english-vocabulary/":{"id":"a1v05","n":15,"q":"What time did you wake up today?","w":8},
+"https://test-english.com/listening/a1/what-are-you-doing-a1-english-listening-test/":{"id":"a1l04","n":10,"q":"What is your best friend doing right now, do you think?","w":3},
+"https://test-english.com/listening/a1/tell-me-about-your-life-a1-english-listening-test/":{"id":"a1l05","n":10,"q":"What is your favourite part of the day, and why?","w":3},
+"https://test-english.com/listening/a1/what-are-you-going-to-do-a1-english-listening-test/":{"id":"a1l06","n":10,"q":"What are you going to do this weekend?","w":3},
+"https://test-english.com/listening/a1/comparing-things-and-people-a1-english-listening-test/":{"id":"a1l07","n":10,"q":"Which is better, a cat or a dog, and why?","w":3},
+"https://test-english.com/listening/a1/describing-rooms-there-is-are-prepositions-of-place-a1-english-listening-test/":{"id":"a1l08","n":10,"q":"What is there on the wall in your room?","w":3},
+"https://test-english.com/listening/a1/countries-nationalities-and-languages-a1-english-listening-test/":{"id":"a1l09","n":10,"q":"Which country would you like to visit, and why?","w":3},
 "https://test-english.com/reading/a1/about-my-family/":{"id":"a1r02","n":11,"q":"Who in our family is the funniest, and why?"},
 "https://test-english.com/reading/a1/neighborhood-reading-test/":{"id":"a1r03","n":10,"q":"What is your favourite place near our home?"},
 "https://test-english.com/reading/a1/the-british-ways-a1-english-reading-test/":{"id":"a1r04","n":10,"q":"What is one thing that is different in another country you know?"},
+"https://test-english.com/grammar-points/a1/whose-possessive-s/":{"id":"a1g10","n":15,"q":"Whose plate has the most colours tonight?","he":"של מי זה? (whose, 's)"},
+"https://test-english.com/grammar-points/a1/at-in-on-prepositions-time/":{"id":"a1g11","n":14,"q":"What is your favourite day of the week, and why?","he":"מילות זמן: at, in, on"},
+"https://test-english.com/grammar-points/a1/at-in-on-prepositions-of-place/":{"id":"a1g12","n":14,"q":"Where do you like to be on a hot day?","he":"איפה זה? at, in, on למקום"},
+"https://test-english.com/grammar-points/a1/can-cant/":{"id":"a1g13","n":14,"q":"What is something new you can do this year?","he":"יכול או לא יכול: can, can't"},
+"https://test-english.com/grammar-points/a1/present-continuous/":{"id":"a1g14","n":14,"q":"What is everyone doing right now, at this table?","he":"מה קורה עכשיו? (present continuous)"},
+"https://test-english.com/grammar-points/a1/present-simple-present-continuous/":{"id":"a1g15","n":14,"q":"What do you usually do after school, and what are you doing this evening?","he":"כל יום או עכשיו? (simple / continuous)"},
+"https://test-english.com/grammar-points/a1/imperative-sit-dont-talk/":{"id":"a1g16","n":14,"q":"What can you cook or make, and what are the steps?","he":"הוראות: Sit down! Don't run!"},
+"https://test-english.com/grammar-points/a1/was-were/":{"id":"a1g17","n":14,"q":"What was the best part of your day today?","he":"היה, היו: was, were"},
+"https://test-english.com/vocabulary/a1/days-months-seasons-a1-english-vocabulary/":{"id":"a1v06","n":17,"q":"What is your favourite season, and why?","he":"ימים, חודשים ועונות","w":8},
+"https://test-english.com/vocabulary/a1/food-and-meals-a1-english-vocabulary/":{"id":"a1v07","n":17,"q":"What is on your plate tonight? Can you name three things in English?","he":"אוכל וארוחות","w":8},
+"https://test-english.com/vocabulary/a1/countries-and-nationalities-a1-english-vocabulary/":{"id":"a1v08","n":17,"q":"Which country's food would you like to try?","he":"מדינות ולאומים","w":8},
+"https://test-english.com/vocabulary/a1/shops-and-shopping-a1-english-vocabulary/":{"id":"a1v09","n":17,"q":"If you had your own shop, what would it sell?","he":"חנויות וקניות","w":8},
+"https://test-english.com/use-of-english/a1/a1-english-test-5-text-multiple-choice-gaps/":{"id":"a1u05","n":14,"q":"Which animal would you take to the beach, and what would it do there?","he":"חדשות: עז בחוף הים"},
+"https://test-english.com/use-of-english/a1/a1-english-test-6-multiple-choice-questions/":{"id":"a1u06","n":13,"q":"What would you do on a snowy day?","he":"חדשות: איש שלג באילת"},
+"https://test-english.com/listening/a1/the-house-my-favourite-room-a1-english-listening-test/":{"id":"a1l10","n":13,"q":"Which room in our home do you like best, and why?","he":"הבית: החדר האהוב עליי","w":3},
+"https://test-english.com/listening/a1/whats-your-job-a1-english-listening-test/":{"id":"a1l11","n":13,"q":"What job would you like to do one day, and why?","he":"מה העבודה שלך? מקצועות","w":3},
+"https://test-english.com/listening/a1/invitations-would-you-like-to-a1-english-listening-test/":{"id":"a1l12","n":13,"q":"Who would you like to invite for a fun day out, and where would you go?","he":"הזמנות: Would you like to...?","w":3},
+"https://test-english.com/listening/a1/what-did-you-do-last-weekend-a1-english-listening-test/":{"id":"a1l13","n":13,"q":"What was the best part of your weekend?","he":"מה עשיתם בסוף השבוע? (Past simple)","w":3},
+"https://test-english.com/listening/a1/ordering-at-the-restaurant-a1-listening-test/":{"id":"a1l14","n":13,"q":"If you had a café, what would you put on the menu?","he":"מזמינים אוכל במסעדה","w":3},
+"https://test-english.com/listening/a1/free-time-listening-test/":{"id":"a1l15","n":12,"q":"What is your favourite thing to do on a free afternoon?","he":"שעות הפנאי: מה עושים בזמן החופשי","w":3},
+"https://test-english.com/listening/a1/city-transport-a1-english-listening-test/":{"id":"a1l16","n":12,"q":"What is the best way to get around our town, and why?","he":"תחבורה בעיר: אוטובוס, רכבת, אופניים","w":3},
+"https://test-english.com/listening/a1/describing-people-a1-english-listening-test/":{"id":"a1l17","n":12,"q":"Can you describe a friend, so I can guess who it is?","he":"מתארים אנשים: שיער, עיניים, בגדים","w":3},
+"https://test-english.com/reading/a1/my-life-abroad-a1-english-reading-test/":{"id":"a1r05","n":13,"q":"If we lived in another country for a year, which country would you choose?","he":"החיים שלי בחו״ל: שנה ביפן"},
+"https://test-english.com/reading/a1/top-things-that-i-do-a1-english-reading-test/":{"id":"a1r06","n":13,"q":"What are your top three things to do, and which one is number one?","he":"הדברים שהכי כיף לי לעשות"},
+"https://test-english.com/reading/a1/a-day-in-the-life-of-an-airline-pilot-a1-english-reading-test/":{"id":"a1r07","n":13,"q":"Which city would you like to fly to, and why?","he":"יום בחיים של טייסת מטוסי נוסעים"},
+"https://test-english.com/reading/a1/daily-routines-sportswoman/":{"id":"a1r08","n":13,"q":"Which sport would you like to try, and why?","he":"סדר היום של ספורטאית"},
+"https://test-english.com/use-of-english/a1/a1-english-test-7-text-with-multiple-choice-gaps/":{"id":"a1u07","n":14,"q":"If you had a pet tortoise, what name would you give it?","he":"חדשות מצחיקות: צב במרוץ"},
+"https://test-english.com/use-of-english/a1/a1-english-test-8-multiple-choice-questions/":{"id":"a1u08","n":14,"q":"What is your favourite fruit on a hot day?","he":"חדשות מצחיקות: האבטיח הענק"},
 "https://test-english.com/grammar-points/a2/asking-questions-in-english/":{"id":"a2g01","n":14,"q":"What questions can you ask me about my day, in English?"},
 "https://test-english.com/grammar-points/a2/subject-questions-questions-preposition/":{"id":"a2g02","n":14,"q":"Who did you sit next to at school today?"},
 "https://test-english.com/grammar-points/a2/present-simple-continuous/":{"id":"a2g03","n":14,"q":"What are you doing right now, and what do you usually do after dinner?"},
-"https://test-english.com/vocabulary/a2/words-with-prepositions-a2-english-vocabulary/":{"id":"a2v01","n":14,"q":"What are you good at, and what are you afraid of?"},
-"https://test-english.com/vocabulary/a2/describing-peoples-appearance-a2-english-vocabulary/":{"id":"a2v02","n":14,"q":"What does your best friend look like?"},
-"https://test-english.com/listening/a2/what-are-your-roommates-like-a2-english-listening-test/":{"id":"a2l01","n":11,"q":"What is your best friend like?"},
-"https://test-english.com/listening/a2/checking-into-a-hotel-a2-english-listening-test/":{"id":"a2l02","n":11,"q":"If we stay in a hotel, what will you ask at reception?"},
-"https://test-english.com/listening/a2/giving-directions-a2-english-listening-test/":{"id":"a2l03","n":11,"q":"How do you get from our home to your school?"},
+"https://test-english.com/vocabulary/a2/words-with-prepositions-a2-english-vocabulary/":{"id":"a2v01","n":14,"q":"What are you good at, and what are you afraid of?","w":8},
+"https://test-english.com/vocabulary/a2/describing-peoples-appearance-a2-english-vocabulary/":{"id":"a2v02","n":14,"q":"What does your best friend look like?","w":8},
+"https://test-english.com/listening/a2/what-are-your-roommates-like-a2-english-listening-test/":{"id":"a2l01","n":11,"q":"What is your best friend like?","w":4},
+"https://test-english.com/listening/a2/checking-into-a-hotel-a2-english-listening-test/":{"id":"a2l02","n":11,"q":"If we stay in a hotel, what will you ask at reception?","w":3},
+"https://test-english.com/listening/a2/giving-directions-a2-english-listening-test/":{"id":"a2l03","n":11,"q":"How do you get from our home to your school?","w":3},
 "https://test-english.com/reading/a2/should-i-tell-my-neighbour-a2-english-reading-test/":{"id":"a2r01","n":10,"q":"Do you think Tamar should talk to Mrs Hill? Why?"},
 "https://test-english.com/use-of-english/a2/a2-english-test-2-multiple-choice-questions/":{"id":"a2u02","n":13,"q":"Where would you go if you could take a bus anywhere on your own?"},
 "https://test-english.com/grammar-points/a2/past-simple-form-use/":{"id":"a2g04","n":14,"q":"What was the best thing that happened to you yesterday?"},
@@ -3913,26 +4245,54 @@ var MISSION_INDEX = {"https://test-english.com/grammar-points/a1/present-simple-
 "https://test-english.com/use-of-english/a2/a2-english-test-1-text-multiple-choice-gaps/":{"id":"a2u01","n":13,"q":"Which animal would you like to see at your school for a day?"},
 "https://test-english.com/use-of-english/a2/a2-english-test-3-text-with-multiple-choice-gaps/":{"id":"a2u03","n":13,"q":"What was the best idea you had this week?"},
 "https://test-english.com/use-of-english/a2/a2-english-test-4-multiple-choice-questions/":{"id":"a2u04","n":13,"q":"What unusual hobby would you like to try?"},
-"https://test-english.com/vocabulary/a2/describing-peoples-personality-a2-english-vocabulary/":{"id":"a2v03","n":14,"q":"Which three words describe your personality best?"},
-"https://test-english.com/vocabulary/a2/shops-and-shopping-a2-english-vocabulary/":{"id":"a2v04","n":14,"q":"What is your favourite shop, and what do you buy there?"},
-"https://test-english.com/vocabulary/a2/clothes-a2-english-vocabulary/":{"id":"a2v05","n":14,"q":"What clothes do you wear on a cold winter day?"},
-"https://test-english.com/listening/a2/do-your-kids-help-with-household-chores-a2-english-listening-test/":{"id":"a2l04","n":11,"q":"Which chore at home do you like most, and which one do you hate?"},
-"https://test-english.com/listening/a2/what-do-you-have-to-do-at-home-a2-english-listening-test/":{"id":"a2l05","n":11,"q":"Which house rule do you think is the most important?"},
-"https://test-english.com/listening/a2/renting-a-car-a2-english-listening-test/":{"id":"a2l06","n":11,"q":"Would you like to ride bikes together in a new city? Which one?"},
-"https://test-english.com/listening/a2/party-experiences-a2-english-listening-test/":{"id":"a2l07","n":11,"q":"What is the best party you have ever been to?"},
-"https://test-english.com/listening/a2/what-are-your-hobbies-a2-listening-test/":{"id":"a2l08","n":11,"q":"What hobby would you like to try one day?"},
-"https://test-english.com/listening/a2/have-you-ever-experiences-a2-english-listening-test/":{"id":"a2l09","n":10,"q":"Have you ever done something really brave? What was it?"},
+"https://test-english.com/vocabulary/a2/describing-peoples-personality-a2-english-vocabulary/":{"id":"a2v03","n":14,"q":"Which three words describe your personality best?","w":8},
+"https://test-english.com/vocabulary/a2/shops-and-shopping-a2-english-vocabulary/":{"id":"a2v04","n":14,"q":"What is your favourite shop, and what do you buy there?","w":8},
+"https://test-english.com/vocabulary/a2/clothes-a2-english-vocabulary/":{"id":"a2v05","n":14,"q":"What clothes do you wear on a cold winter day?","w":8},
+"https://test-english.com/listening/a2/do-your-kids-help-with-household-chores-a2-english-listening-test/":{"id":"a2l04","n":11,"q":"Which chore at home do you like most, and which one do you hate?","w":3},
+"https://test-english.com/listening/a2/what-do-you-have-to-do-at-home-a2-english-listening-test/":{"id":"a2l05","n":11,"q":"Which house rule do you think is the most important?","w":3},
+"https://test-english.com/listening/a2/renting-a-car-a2-english-listening-test/":{"id":"a2l06","n":11,"q":"Would you like to ride bikes together in a new city? Which one?","w":3},
+"https://test-english.com/listening/a2/party-experiences-a2-english-listening-test/":{"id":"a2l07","n":11,"q":"What is the best party you have ever been to?","w":3},
+"https://test-english.com/listening/a2/what-are-your-hobbies-a2-listening-test/":{"id":"a2l08","n":11,"q":"What hobby would you like to try one day?","w":3},
+"https://test-english.com/listening/a2/have-you-ever-experiences-a2-english-listening-test/":{"id":"a2l09","n":10,"q":"Have you ever done something really brave? What was it?","w":3},
 "https://test-english.com/reading/a2/the-girl-who-saved-100-lives-a2-english-reading-test/":{"id":"a2r02","n":10,"q":"What is something useful you learned at school this year?"},
 "https://test-english.com/reading/a2/living-in-a-small-town-vs-a-big-city-a2-english-reading-test/":{"id":"a2r03","n":9,"q":"Would you like to live in a big city or a small town? Why?"},
 "https://test-english.com/reading/a2/what-rainbows-mean-around-the-world-a2-english-reading-test/":{"id":"a2r04","n":10,"q":"Which colour of the rainbow do you like best, and why?"},
+"https://test-english.com/grammar-points/a2/defining-relative-clauses-who-which-that-where/":{"id":"a2g10","n":14,"q":"Who is a person that always makes you laugh?","he":"משפטי זיקה: who, which, that, where"},
+"https://test-english.com/grammar-points/a2/present-perfect/":{"id":"a2g11","n":14,"q":"What is something new that you have learned this week?","he":"Present perfect: have / has + V3"},
+"https://test-english.com/grammar-points/a2/present-perfect-or-past-simple/":{"id":"a2g12","n":14,"q":"What is the most interesting place you have ever been to, and when did you go?","he":"Present perfect או past simple?"},
+"https://test-english.com/grammar-points/a2/something-anything-nothing-etc/":{"id":"a2g13","n":14,"q":"Is there anything new you would like to learn this year?","he":"something, anything, nothing ועוד"},
+"https://test-english.com/grammar-points/a2/comparative-superlative-adjectives-adverbs/":{"id":"a2g14","n":14,"q":"What is the funniest film you have ever seen?","he":"השוואה: er, more, the most ותארי פועל"},
+"https://test-english.com/grammar-points/a2/too-too-much-too-many-enough/":{"id":"a2g15","n":14,"q":"Do you think kids have enough time to play after school?","he":"too, too much, too many, enough"},
+"https://test-english.com/grammar-points/a2/much-many-little-few-some-any/":{"id":"a2g16","n":14,"q":"Do you spend a lot of time outside, or only a little?","he":"much, many, a little, a few, some, any"},
+"https://test-english.com/grammar-points/a2/most-most-of-the-most/":{"id":"a2g17","n":14,"q":"What do you like the most about the weekend?","he":"most, most of, the most"},
+"https://test-english.com/vocabulary/a2/housework-a2-english-vocabulary/":{"id":"a2v06","n":16,"q":"Which job at home do you like doing the most?","he":"עבודות בית","w":8},
+"https://test-english.com/vocabulary/a2/towns-and-cities-a2-english-vocabulary/":{"id":"a2v07","n":16,"q":"If you could build one new place in our town, what would it be?","he":"בעיר: מקומות ודרכים","w":8},
+"https://test-english.com/vocabulary/a2/common-phrasal-verbs-a2-english-vocabulary/":{"id":"a2v08","n":16,"q":"What time do you usually wake up, and what time do you get up?","he":"פעלים עם מילה קטנה (phrasal verbs)","w":8},
+"https://test-english.com/vocabulary/a2/the-weather-a2-english-vocabulary/":{"id":"a2v09","n":16,"q":"What is your favourite kind of weather, and why?","he":"מזג האוויר","w":8},
+"https://test-english.com/use-of-english/a2/a2-english-test-5-text-with-multiple-choice-gaps/":{"id":"a2u05","n":14,"q":"If you had a very slow pet, what funny name would you give it?","he":"חדשות מצחיקות: הצב שהגיע לספרייה"},
+"https://test-english.com/use-of-english/a2/a2-english-test-6-multiple-choice-questions/":{"id":"a2u06","n":13,"q":"What is the funniest thing you have ever seen at the beach?","he":"חדשות מצחיקות: השחף ומשקפי השמש"},
+"https://test-english.com/listening/a2/shopping-for-clothes-a2-english-listening-test/":{"id":"a2l10","n":12,"q":"What is your favourite piece of clothing, and why?","he":"קונים בגדים: מידה, צבע ומדידה","w":3},
+"https://test-english.com/listening/a2/new-years-resolutions-a2-english-listening-test/":{"id":"a2l11","n":12,"q":"What is one new thing you are going to try this year?","he":"תוכניות לשנה עם be going to","w":3},
+"https://test-english.com/listening/a2/talking-about-films-listening-test/":{"id":"a2l12","n":12,"q":"What is the funniest film you have ever seen?","he":"מדברים על סרטים: סוגים ודעות","w":3},
+"https://test-english.com/listening/a2/future-plans-listening-test/":{"id":"a2l13","n":12,"q":"What is something fun you are doing next weekend?","he":"תוכניות: going to, will והווה מתמשך","w":3},
+"https://test-english.com/listening/a2/if-i-were-a-millionaire-second-conditional-a2-english-listening-test/":{"id":"a2l14","n":13,"q":"If you could have any animal as a pet, which would you choose?","he":"אילו... If I had…, I would…","w":3},
+"https://test-english.com/listening/a2/the-city-where-i-live-listening-test/":{"id":"a2l15","n":12,"q":"What is the best place in our town, and why?","he":"העיר שלי: חיפה","w":3},
+"https://test-english.com/listening/a2/my-friends-listening-test/":{"id":"a2l16","n":12,"q":"What do you like doing most with your friends?","he":"החברים שלי: אופי ומראה","w":3},
+"https://test-english.com/listening/a2/what-were-you-doing-at-the-time-of-the-murder-past-tenses-a2-english-listening-test/":{"id":"a2l17","n":13,"q":"What were you doing at seven o'clock this morning?","he":"תעלומה: past continuous ו-past simple","w":3},
+"https://test-english.com/reading/a2/should-kids-help-with-household-chores-a2-english-reading-test/":{"id":"a2r05","n":13,"q":"Which job at home do you think is the most important?","he":"האם ילדים צריכים לעזור בבית?"},
+"https://test-english.com/reading/a2/three-popular-inventions-from-the-1920s-reading-test/":{"id":"a2r06","n":13,"q":"Which invention could you not live without?","he":"שלוש המצאות משנות ה-20"},
+"https://test-english.com/reading/a2/a-really-popular-summer-festival-in-the-uk-a2-english-reading-test/":{"id":"a2r07","n":13,"q":"What would a perfect festival in our town have?","he":"פסטיבל קיץ ענק בלונדון"},
+"https://test-english.com/reading/a2/three-experiences-i-have-had-a2-english-reading-test/":{"id":"a2r08","n":14,"q":"What is the most exciting thing you have ever done?","he":"שלוש חוויות שלי (present perfect)"},
+"https://test-english.com/use-of-english/a2/a2-english-test-7-text-with-multiple-choice-gaps/":{"id":"a2u07","n":13,"q":"If you had a garden, what would you grow?","he":"חדשות מצחיקות: האבטיח הענק"},
+"https://test-english.com/use-of-english/a2/a2-english-test-8-multiple-choice-questions/":{"id":"a2u08","n":13,"q":"If you had a robot helper, what job would you give it?","he":"חדשות מצחיקות: הרובוט שיצא לטיול"},
 "https://test-english.com/grammar-points/b1/present-simple-present-continuous/":{"id":"b1g01","n":14,"q":"What are you learning at school these days?"},
 "https://test-english.com/grammar-points/b1/future-forms/":{"id":"b1g02","n":14,"q":"What are you going to do this weekend?"},
 "https://test-english.com/grammar-points/b1/past-simple-present-perfect/":{"id":"b1g03","n":14,"q":"What is the most interesting thing you have ever done?"},
-"https://test-english.com/vocabulary/b1/more-daily-routines-b1-english-vocabulary/":{"id":"b1v01","n":14,"q":"How do you unwind after a busy day?"},
-"https://test-english.com/vocabulary/b1/relationships-b1-english-vocabulary/":{"id":"b1v02","n":14,"q":"What do you and your best friend have in common?"},
-"https://test-english.com/listening/b1/working-while-travelling-the-world-b1-english-listening-test/":{"id":"b1l01","n":11,"q":"Where would you like to work and travel one day?"},
-"https://test-english.com/listening/b1/where-did-you-stay-b1-english-listening-test/":{"id":"b1l02","n":10,"q":"What was the best place you ever stayed on holiday?"},
-"https://test-english.com/listening/b1/stories-of-school-and-education-b1-english-listening-test/":{"id":"b1l03","n":11,"q":"Who is a teacher who really helped you, and how?"},
+"https://test-english.com/vocabulary/b1/more-daily-routines-b1-english-vocabulary/":{"id":"b1v01","n":14,"q":"How do you unwind after a busy day?","w":8},
+"https://test-english.com/vocabulary/b1/relationships-b1-english-vocabulary/":{"id":"b1v02","n":14,"q":"What do you and your best friend have in common?","w":8},
+"https://test-english.com/listening/b1/working-while-travelling-the-world-b1-english-listening-test/":{"id":"b1l01","n":11,"q":"Where would you like to work and travel one day?","w":3},
+"https://test-english.com/listening/b1/where-did-you-stay-b1-english-listening-test/":{"id":"b1l02","n":10,"q":"What was the best place you ever stayed on holiday?","w":3},
+"https://test-english.com/listening/b1/stories-of-school-and-education-b1-english-listening-test/":{"id":"b1l03","n":11,"q":"Who is a teacher who really helped you, and how?","w":3},
 "https://test-english.com/reading/b1/travel-around-europe-in-5-stops-b1-english-reading-test/":{"id":"b1r01","n":10,"q":"If you could visit five cities in Europe, which would you choose?"},
 "https://test-english.com/use-of-english/b1/b1-english-test-2-multiple-choice-questions/":{"id":"b1u02","n":13,"q":"If our pet could talk, what do you think it would say?"},
 "https://test-english.com/grammar-points/b1/present-perfect-simple-present-perfect-continuous/":{"id":"b1g04","n":14,"q":"What have you been practising a lot recently?"},
@@ -3944,26 +4304,26 @@ var MISSION_INDEX = {"https://test-english.com/grammar-points/a1/present-simple-
 "https://test-english.com/use-of-english/b1/b1-test-1/":{"id":"b1u01","n":13,"q":"If you had a garden, what would you like to grow in it?"},
 "https://test-english.com/use-of-english/b1/b1-english-test-3-text-multiple-choice-gaps/":{"id":"b1u03","n":13,"q":"If we had a dog, where would you take it every day?"},
 "https://test-english.com/use-of-english/b1/b1-english-test-4-multiple-choice-questions/":{"id":"b1u04","n":14,"q":"If you could build a robot, what job would it do for our family?"},
-"https://test-english.com/vocabulary/b1/education-b1-english-vocabulary/":{"id":"b1v03","n":14,"q":"Which subject do you find the most interesting, and why?"},
-"https://test-english.com/vocabulary/b1/money-b1-english-vocabulary/":{"id":"b1v04","n":14,"q":"If you had 100 shekels, would you spend it or save it?"},
-"https://test-english.com/vocabulary/b1/work-b1-english-vocabulary/":{"id":"b1v05","n":14,"q":"What job would you like to try for one day?"},
-"https://test-english.com/listening/b1/personal-work-stories-b1-english-listening-test/":{"id":"b1l04","n":11,"q":"What job do you think you would be good at, and why?"},
-"https://test-english.com/listening/b1/talking-about-money-b1-english-listening-test/":{"id":"b1l05","n":11,"q":"Should kids get pocket money for helping at home?"},
-"https://test-english.com/listening/b1/famous-sports-cheating-scandals-b1-english-listening-test/":{"id":"b1l06","n":11,"q":"Why do you think some people cheat in sport?"},
-"https://test-english.com/listening/b1/weird-driving-rules-modal-verbs-b1-english-listening-test/":{"id":"b1l07","n":11,"q":"If you could make one new rule for our home, what would it be?"},
-"https://test-english.com/listening/b1/borough-market-b1-english-listening-test/":{"id":"b1l08","n":11,"q":"What food from another country would you like to try?"},
-"https://test-english.com/listening/b1/york-england-a-medieval-town-b1-english-listening-test/":{"id":"b1l09","n":11,"q":"If you could visit any time in history, which would you choose?"},
+"https://test-english.com/vocabulary/b1/education-b1-english-vocabulary/":{"id":"b1v03","n":14,"q":"Which subject do you find the most interesting, and why?","w":8},
+"https://test-english.com/vocabulary/b1/money-b1-english-vocabulary/":{"id":"b1v04","n":14,"q":"If you had 100 shekels, would you spend it or save it?","w":8},
+"https://test-english.com/vocabulary/b1/work-b1-english-vocabulary/":{"id":"b1v05","n":14,"q":"What job would you like to try for one day?","w":8},
+"https://test-english.com/listening/b1/personal-work-stories-b1-english-listening-test/":{"id":"b1l04","n":11,"q":"What job do you think you would be good at, and why?","w":3},
+"https://test-english.com/listening/b1/talking-about-money-b1-english-listening-test/":{"id":"b1l05","n":11,"q":"Should kids get pocket money for helping at home?","w":3},
+"https://test-english.com/listening/b1/famous-sports-cheating-scandals-b1-english-listening-test/":{"id":"b1l06","n":11,"q":"Why do you think some people cheat in sport?","w":3},
+"https://test-english.com/listening/b1/weird-driving-rules-modal-verbs-b1-english-listening-test/":{"id":"b1l07","n":11,"q":"If you could make one new rule for our home, what would it be?","w":3},
+"https://test-english.com/listening/b1/borough-market-b1-english-listening-test/":{"id":"b1l08","n":11,"q":"What food from another country would you like to try?","w":3},
+"https://test-english.com/listening/b1/york-england-a-medieval-town-b1-english-listening-test/":{"id":"b1l09","n":11,"q":"If you could visit any time in history, which would you choose?","w":3},
 "https://test-english.com/reading/b1/why-your-coworkers-hate-you-b1-english-reading-test/":{"id":"b1r02","n":10,"q":"What makes someone a good person to work with?"},
 "https://test-english.com/reading/b1/unusual-and-wonderful-jobs-b1-english-reading-test/":{"id":"b1r03","n":10,"q":"Which unusual job would you love to do, and why?"},
 "https://test-english.com/reading/b1/how-led-lights-can-save-sea-turtles-lives-b1-english-reading-test/":{"id":"b1r04","n":10,"q":"What can our family do to help animals in the sea?"},
 "https://test-english.com/grammar-points/b2/have-auxiliary-main-verb/":{"id":"b2g01","n":14,"q":"What do you usually have for breakfast?"},
 "https://test-english.com/grammar-points/b2/clauses-contrast-purpose-reason-result/":{"id":"b2g02","n":14,"q":"What do you do so that you don't forget your homework?"},
 "https://test-english.com/grammar-points/b2/generic-pronouns/":{"id":"b2g03","n":14,"q":"If someone in your class feels left out, what can you do to help them?"},
-"https://test-english.com/vocabulary/b2/relationships-b2-english-vocabulary/":{"id":"b2v01","n":14,"q":"Who in our family do you take after?"},
-"https://test-english.com/vocabulary/b2/feelings-and-emotions-b2-english-vocabulary/":{"id":"b2v02","n":14,"q":"What made you feel thrilled or relieved recently?"},
-"https://test-english.com/listening/b2/relationship-dilemmas-b2-english-listening-test/":{"id":"b2l01","n":11,"q":"What would you do if a friend kept copying your homework?"},
-"https://test-english.com/listening/b2/can-music-be-medicine-b2-english-listening-test/":{"id":"b2l02","n":10,"q":"What music helps you when you study or do sport?"},
-"https://test-english.com/listening/b2/regrets-i-wish-id-b2-english-listening-test/":{"id":"b2l03","n":11,"q":"Is there something you wish you had done differently this year?"},
+"https://test-english.com/vocabulary/b2/relationships-b2-english-vocabulary/":{"id":"b2v01","n":14,"q":"Who in our family do you take after?","w":8},
+"https://test-english.com/vocabulary/b2/feelings-and-emotions-b2-english-vocabulary/":{"id":"b2v02","n":14,"q":"What made you feel thrilled or relieved recently?","w":8},
+"https://test-english.com/listening/b2/relationship-dilemmas-b2-english-listening-test/":{"id":"b2l01","n":11,"q":"What would you do if a friend kept copying your homework?","w":3},
+"https://test-english.com/listening/b2/can-music-be-medicine-b2-english-listening-test/":{"id":"b2l02","n":10,"q":"What music helps you when you study or do sport?","w":3},
+"https://test-english.com/listening/b2/regrets-i-wish-id-b2-english-listening-test/":{"id":"b2l03","n":11,"q":"Is there something you wish you had done differently this year?","w":3},
 "https://test-english.com/reading/b2/is-overtourism-pricing-locals-out-b2-english-reading-test/":{"id":"b2r01","n":10,"q":"How could tourists help a city instead of hurting it?"},
 "https://test-english.com/use-of-english/b2/b2-english-test-2-multiple-choice-questions/":{"id":"b2u02","n":13,"q":"Should we have a no-phones rule at our dinner table? Why?"},
 "https://test-english.com/grammar-points/b2/reflexive-reciprocal-pronouns/":{"id":"b2g04","n":14,"q":"What is something you taught yourself to do?"},
@@ -3975,26 +4335,26 @@ var MISSION_INDEX = {"https://test-english.com/grammar-points/a1/present-simple-
 "https://test-english.com/use-of-english/b2/b2-english-test-1-text-multiple-choice-gaps/":{"id":"b2u01","n":13,"q":"What could we invent to make our neighbourhood cleaner?"},
 "https://test-english.com/use-of-english/b2/b2-english-test-3-text-multiple-choice-gaps/":{"id":"b2u03","n":13,"q":"Which animal would you like to read a story to, and why?"},
 "https://test-english.com/use-of-english/b2/b2-english-test-4-multiple-choice-questions/":{"id":"b2u04","n":13,"q":"If we had a garden, what would you like to grow?"},
-"https://test-english.com/vocabulary/b2/the-news-and-media-b2-english-vocabulary/":{"id":"b2v03","n":14,"q":"What news story did you hear about this week, and where did it come from?"},
-"https://test-english.com/vocabulary/b2/war-and-peace-b2-english-vocabulary/":{"id":"b2v04","n":14,"q":"What is the best way to make peace with someone after an argument?"},
-"https://test-english.com/vocabulary/b2/tourism-b2-english-vocabulary/":{"id":"b2v05","n":14,"q":"Would you rather go on a package holiday or plan your own adventure? Why?"},
-"https://test-english.com/listening/b2/behind-the-scenes-with-an-actor-b2-english-listening-test/":{"id":"b2l04","n":11,"q":"Would you like to act on a stage one day? Why or why not?"},
-"https://test-english.com/listening/b2/socializing-and-parties-b2-english-listening-test/":{"id":"b2l05","n":11,"q":"What is a good question to ask someone you have just met?"},
-"https://test-english.com/listening/b2/discussing-news-and-media-b2-english-listening-test/":{"id":"b2l06","n":11,"q":"Where do you get most of your news, and do you trust it?"},
-"https://test-english.com/listening/b2/dark-tourism-b2-english-listening-test/":{"id":"b2l07","n":11,"q":"Which place from a film or a TV show would you most like to visit, and why?"},
-"https://test-english.com/listening/b2/retirement-challenges-in-the-u-s-b2-english-listening-test/":{"id":"b2l08","n":11,"q":"What would you like to do every day if you never had to work?"},
-"https://test-english.com/listening/b2/the-truth-about-expired-food-b2-english-listening-test/":{"id":"b2l09","n":11,"q":"What food do we throw away most often at home, and how could we waste less?"},
+"https://test-english.com/vocabulary/b2/the-news-and-media-b2-english-vocabulary/":{"id":"b2v03","n":14,"q":"What news story did you hear about this week, and where did it come from?","w":8},
+"https://test-english.com/vocabulary/b2/war-and-peace-b2-english-vocabulary/":{"id":"b2v04","n":14,"q":"What is the best way to make peace with someone after an argument?","w":8},
+"https://test-english.com/vocabulary/b2/tourism-b2-english-vocabulary/":{"id":"b2v05","n":14,"q":"Would you rather go on a package holiday or plan your own adventure? Why?","w":8},
+"https://test-english.com/listening/b2/behind-the-scenes-with-an-actor-b2-english-listening-test/":{"id":"b2l04","n":11,"q":"Would you like to act on a stage one day? Why or why not?","w":3},
+"https://test-english.com/listening/b2/socializing-and-parties-b2-english-listening-test/":{"id":"b2l05","n":11,"q":"What is a good question to ask someone you have just met?","w":3},
+"https://test-english.com/listening/b2/discussing-news-and-media-b2-english-listening-test/":{"id":"b2l06","n":11,"q":"Where do you get most of your news, and do you trust it?","w":3},
+"https://test-english.com/listening/b2/dark-tourism-b2-english-listening-test/":{"id":"b2l07","n":11,"q":"Which place from a film or a TV show would you most like to visit, and why?","w":3},
+"https://test-english.com/listening/b2/retirement-challenges-in-the-u-s-b2-english-listening-test/":{"id":"b2l08","n":11,"q":"What would you like to do every day if you never had to work?","w":3},
+"https://test-english.com/listening/b2/the-truth-about-expired-food-b2-english-listening-test/":{"id":"b2l09","n":11,"q":"What food do we throw away most often at home, and how could we waste less?","w":3},
 "https://test-english.com/reading/b2/coolcationing-a-new-travel-trend-b2-english-reading-test/":{"id":"b2r02","n":10,"q":"For a summer holiday, would you choose somewhere hot or somewhere cool? Why?"},
 "https://test-english.com/reading/b2/using-ai-to-talk-to-the-deceased-b2-english-reading-test/":{"id":"b2r03","n":11,"q":"If you could ask one animal one question, which animal would you choose, and what would you ask?"},
 "https://test-english.com/reading/b2/regulating-deepfakes-b2-english-reading-test/":{"id":"b2r04","n":10,"q":"How could you check whether a video of a famous person is real?"},
 "https://test-english.com/grammar-points/b1-b2/questions-different-types/":{"id":"bpg01","n":14,"q":"What question would you like to ask a famous person?"},
 "https://test-english.com/grammar-points/b1-b2/indirect-questions/":{"id":"bpg02","n":14,"q":"Do you know what we are having for dinner tomorrow?"},
 "https://test-english.com/grammar-points/b1-b2/auxiliary-verbs-different-uses/":{"id":"bpg03","n":14,"q":"You like pizza, don't you?"},
-"https://test-english.com/vocabulary/b1-b2/the-weather-and-natural-disasters-b1-b2-english-vocabulary/":{"id":"bpv01","n":14,"q":"What is the most extreme weather you have ever seen?"},
-"https://test-english.com/vocabulary/b1-b2/health-problems-and-injuries-b1-b2-english-vocabulary/":{"id":"bpv02","n":14,"q":"Have you ever had an injury? What happened?"},
-"https://test-english.com/listening/b1-b2/ravi-the-uncatchable-smuggler-b1-listening-test/":{"id":"bpl01","n":11,"q":"Would you rather be a famous detective or a famous inventor? Why?"},
-"https://test-english.com/listening/b1-b2/will-humans-become-supermachines-b1-english-listening-test/":{"id":"bpl02","n":11,"q":"Would you put a chip in your hand to open doors? Why or why not?"},
-"https://test-english.com/listening/b1-b2/i-should-have-b2-english-listening-test/":{"id":"bpl03","n":11,"q":"What is something you should have done this week?"},
+"https://test-english.com/vocabulary/b1-b2/the-weather-and-natural-disasters-b1-b2-english-vocabulary/":{"id":"bpv01","n":14,"q":"What is the most extreme weather you have ever seen?","w":8},
+"https://test-english.com/vocabulary/b1-b2/health-problems-and-injuries-b1-b2-english-vocabulary/":{"id":"bpv02","n":14,"q":"Have you ever had an injury? What happened?","w":8},
+"https://test-english.com/listening/b1-b2/ravi-the-uncatchable-smuggler-b1-listening-test/":{"id":"bpl01","n":11,"q":"Would you rather be a famous detective or a famous inventor? Why?","w":3},
+"https://test-english.com/listening/b1-b2/will-humans-become-supermachines-b1-english-listening-test/":{"id":"bpl02","n":11,"q":"Would you put a chip in your hand to open doors? Why or why not?","w":3},
+"https://test-english.com/listening/b1-b2/i-should-have-b2-english-listening-test/":{"id":"bpl03","n":11,"q":"What is something you should have done this week?","w":3},
 "https://test-english.com/reading/b1-b2/why-we-sleep-b1-english-reading-test/":{"id":"bpr01","n":10,"q":"What time do you usually go to sleep, and what helps you fall asleep?"},
 "https://test-english.com/use-of-english/b1-b2/b1-test-2-multiple-choice-questions/":{"id":"bpu02","n":13,"q":"What would you do if you found a wallet in the street?"},
 "https://test-english.com/grammar-points/b1-b2/the-the-comparatives/":{"id":"bpg04","n":14,"q":"What is something that gets better the more you do it?"},
@@ -4006,26 +4366,26 @@ var MISSION_INDEX = {"https://test-english.com/grammar-points/a1/present-simple-
 "https://test-english.com/use-of-english/b1-b2/b1-english-test-1-text-multiple-choice-gaps/":{"id":"bpu01","n":13,"q":"When did you feel like giving up, and what helped you keep going?"},
 "https://test-english.com/use-of-english/b1-b2/b1-english-test-3-text-with-multiple-choice-gaps/":{"id":"bpu03","n":13,"q":"Which family recipe would you film for the whole world?"},
 "https://test-english.com/use-of-english/b1-b2/b1-english-test-4-multiple-choice-questions/":{"id":"bpu04","n":13,"q":"If you found something very old, would you keep it or give it to a museum?"},
-"https://test-english.com/vocabulary/b1-b2/air-travel-b1-b2-english-vocabulary/":{"id":"bpv03","n":14,"q":"If you could fly anywhere tomorrow, where would you go?"},
-"https://test-english.com/vocabulary/b1-b2/crime-and-punishment-b1-b2-english-vocabulary/":{"id":"bpv04","n":14,"q":"What is a fair punishment for someone who writes on the school walls?"},
-"https://test-english.com/vocabulary/b1-b2/types-of-crime-and-offenders-b1-english-vocabulary/":{"id":"bpv05","n":14,"q":"What would you do if you saw someone shoplifting?"},
-"https://test-english.com/listening/b1-b2/crime-scene-investigation-b1-english-listening-test/":{"id":"bpl04","n":11,"q":"If you were a detective, what case would you like to solve?"},
-"https://test-english.com/listening/b1-b2/culture-shock-living-abroad-b1-english-listening-test/":{"id":"bpl05","n":11,"q":"If our family moved to another country, what would you miss most?"},
-"https://test-english.com/listening/b1-b2/fears-and-phobias-b1-english-listening-test/":{"id":"bpl06","n":10,"q":"What were you afraid of when you were little, and how did you stop being afraid?"},
-"https://test-english.com/listening/b1-b2/journey-through-our-solar-system-b2-english-listening-test/":{"id":"bpl07","n":11,"q":"If you could visit one planet, which would you choose, and why?"},
-"https://test-english.com/listening/b1-b2/air-travel-experiences-b1-english-listening-test/":{"id":"bpl08","n":11,"q":"What is the best or the worst trip you have ever had?"},
-"https://test-english.com/listening/b1-b2/health-problems-b1-b2-english-listening-test/":{"id":"bpl09","n":11,"q":"How many glasses of water did you drink today?"},
+"https://test-english.com/vocabulary/b1-b2/air-travel-b1-b2-english-vocabulary/":{"id":"bpv03","n":14,"q":"If you could fly anywhere tomorrow, where would you go?","w":8},
+"https://test-english.com/vocabulary/b1-b2/crime-and-punishment-b1-b2-english-vocabulary/":{"id":"bpv04","n":14,"q":"What is a fair punishment for someone who writes on the school walls?","w":8},
+"https://test-english.com/vocabulary/b1-b2/types-of-crime-and-offenders-b1-english-vocabulary/":{"id":"bpv05","n":14,"q":"What would you do if you saw someone shoplifting?","w":8},
+"https://test-english.com/listening/b1-b2/crime-scene-investigation-b1-english-listening-test/":{"id":"bpl04","n":11,"q":"If you were a detective, what case would you like to solve?","w":3},
+"https://test-english.com/listening/b1-b2/culture-shock-living-abroad-b1-english-listening-test/":{"id":"bpl05","n":11,"q":"If our family moved to another country, what would you miss most?","w":3},
+"https://test-english.com/listening/b1-b2/fears-and-phobias-b1-english-listening-test/":{"id":"bpl06","n":10,"q":"What were you afraid of when you were little, and how did you stop being afraid?","w":3},
+"https://test-english.com/listening/b1-b2/journey-through-our-solar-system-b2-english-listening-test/":{"id":"bpl07","n":11,"q":"If you could visit one planet, which would you choose, and why?","w":3},
+"https://test-english.com/listening/b1-b2/air-travel-experiences-b1-english-listening-test/":{"id":"bpl08","n":11,"q":"What is the best or the worst trip you have ever had?","w":3},
+"https://test-english.com/listening/b1-b2/health-problems-b1-b2-english-listening-test/":{"id":"bpl09","n":11,"q":"How many glasses of water did you drink today?","w":3},
 "https://test-english.com/reading/b1-b2/the-business-of-running-b1-english-reading-test/":{"id":"bpr02","n":10,"q":"If you started a new sport tomorrow, which one would it be, and what would you need to buy?"},
 "https://test-english.com/reading/b1-b2/why-we-cant-stop-lying-b1-english-reading-test/":{"id":"bpr03","n":10,"q":"Is it ever OK to tell a white lie? When?"},
 "https://test-english.com/reading/b1-b2/incredible-hoaxes-b1-english-reading-test/":{"id":"bpr04","n":10,"q":"Have you ever been fooled by a joke or a fake photo? What happened?"},
 "https://test-english.com/grammar-points/c1/advanced-present-simple-and-present-continuous/":{"id":"c1g01","n":14,"q":"What is someone in our family always doing that drives you mad?"},
 "https://test-english.com/grammar-points/c1/advanced-past-simple-past-continuous-past-perfect/":{"id":"c1g02","n":14,"q":"What had you never done before this year?"},
 "https://test-english.com/grammar-points/c1/advanced-modal-verbs-will-would-and-should/":{"id":"c1g03","n":14,"q":"What would you do every summer when you were younger?"},
-"https://test-english.com/vocabulary/c1/feelings-and-reactions-c1-english-vocabulary/":{"id":"c1v01","n":14,"q":"When were you last completely taken aback?"},
-"https://test-english.com/vocabulary/c1/ways-of-walking-c1-english-vocabulary/":{"id":"c1v02","n":14,"q":"How do you walk into school on a Monday morning?"},
-"https://test-english.com/listening/c1/when-i-completely-embarrassed-myself-c1-english-listening-test/":{"id":"c1l01","n":11,"q":"What is an embarrassing moment you can laugh about now?"},
-"https://test-english.com/listening/c1/why-is-walking-humans-superpower-c1-english-listening-test/":{"id":"c1l02","n":10,"q":"Do you think better when you walk or when you sit? Why?"},
-"https://test-english.com/listening/c1/when-you-cant-trust-who-you-hear-c1-english-listening-test/":{"id":"c1l03","n":10,"q":"What secret word could our family use to stay safe?"},
+"https://test-english.com/vocabulary/c1/feelings-and-reactions-c1-english-vocabulary/":{"id":"c1v01","n":14,"q":"When were you last completely taken aback?","w":8},
+"https://test-english.com/vocabulary/c1/ways-of-walking-c1-english-vocabulary/":{"id":"c1v02","n":14,"q":"How do you walk into school on a Monday morning?","w":8},
+"https://test-english.com/listening/c1/when-i-completely-embarrassed-myself-c1-english-listening-test/":{"id":"c1l01","n":11,"q":"What is an embarrassing moment you can laugh about now?","w":3},
+"https://test-english.com/listening/c1/why-is-walking-humans-superpower-c1-english-listening-test/":{"id":"c1l02","n":10,"q":"Do you think better when you walk or when you sit? Why?","w":3},
+"https://test-english.com/listening/c1/when-you-cant-trust-who-you-hear-c1-english-listening-test/":{"id":"c1l03","n":10,"q":"What secret word could our family use to stay safe?","w":3},
 "https://test-english.com/reading/c1/what-makes-us-laugh-c1-english-reading-test/":{"id":"c1r01","n":10,"q":"What made you laugh today?"},
 "https://test-english.com/grammar-points/c1/advanced-modal-verbs-can-be-able-to-may-might/":{"id":"c1g04","n":14,"q":"What will you be able to do in five years that you can't do now?"},
 "https://test-english.com/grammar-points/c1/the-subjunctive-in-english-present-and-past/":{"id":"c1g05","n":14,"q":"If you were the head teacher for a day, what would you change?"},
@@ -4034,15 +4394,15 @@ var MISSION_INDEX = {"https://test-english.com/grammar-points/a1/present-simple-
 "https://test-english.com/grammar-points/c1/advanced-word-order/":{"id":"c1g08","n":14,"q":"What is something you have never done but would love to try?"},
 "https://test-english.com/grammar-points/c1/prepositions-position-and-advanced-patterns/":{"id":"c1g09","n":14,"q":"What are you most looking forward to this month?"},
 "https://test-english.com/grammar-points/c1/subject-verb-agreement-advanced-rules/":{"id":"c1g10","n":14,"q":"Which subject is the hardest for you this year, and why?"},
-"https://test-english.com/vocabulary/c1/vague-language-imprecision-c1-english-vocabulary/":{"id":"c1v03","n":14,"q":"Roughly how many hours did you spend outside this week, give or take?"},
-"https://test-english.com/vocabulary/c1/idiomatic-infinitive-phrases-c1-english-vocabulary/":{"id":"c1v04","n":14,"q":"To be honest, what was the best part of your day?"},
-"https://test-english.com/vocabulary/c1/adverb-adjective-collocations-c1-english-vocabulary/":{"id":"c1v05","n":14,"q":"What is wildly popular at your school right now?"},
-"https://test-english.com/listening/c1/social-medias-impact-on-teenage-brains-c1-english-listening-test/":{"id":"c1l04","n":11,"q":"Which app could you take a break from for a week?"},
-"https://test-english.com/listening/c1/too-intelligent-to-be-happy-c1-english-listening/":{"id":"c1l05","n":10,"q":"What small thing made you happy this week?"},
-"https://test-english.com/listening/c1/are-we-eating-better-c1-english-listening/":{"id":"c1l06","n":10,"q":"What dish would you like us to cook together at home?"},
-"https://test-english.com/listening/c1/sleep-tourism-rest-or-stress-c1-english-listening-test/":{"id":"c1l07","n":10,"q":"What helps you fall asleep on a busy night?"},
-"https://test-english.com/listening/c1/a-perfect-democracy-c1-english-listening-test/":{"id":"c1l08","n":10,"q":"How should our family decide where to go on a day trip?"},
-"https://test-english.com/listening/c1/operation-cat-drop-c1-english-listening-test/":{"id":"c1l09","n":10,"q":"Have you ever solved one problem and accidentally created another?"},
+"https://test-english.com/vocabulary/c1/vague-language-imprecision-c1-english-vocabulary/":{"id":"c1v03","n":14,"q":"Roughly how many hours did you spend outside this week, give or take?","w":8},
+"https://test-english.com/vocabulary/c1/idiomatic-infinitive-phrases-c1-english-vocabulary/":{"id":"c1v04","n":14,"q":"To be honest, what was the best part of your day?","w":8},
+"https://test-english.com/vocabulary/c1/adverb-adjective-collocations-c1-english-vocabulary/":{"id":"c1v05","n":14,"q":"What is wildly popular at your school right now?","w":8},
+"https://test-english.com/listening/c1/social-medias-impact-on-teenage-brains-c1-english-listening-test/":{"id":"c1l04","n":11,"q":"Which app could you take a break from for a week?","w":3},
+"https://test-english.com/listening/c1/too-intelligent-to-be-happy-c1-english-listening/":{"id":"c1l05","n":10,"q":"What small thing made you happy this week?","w":3},
+"https://test-english.com/listening/c1/are-we-eating-better-c1-english-listening/":{"id":"c1l06","n":10,"q":"What dish would you like us to cook together at home?","w":3},
+"https://test-english.com/listening/c1/sleep-tourism-rest-or-stress-c1-english-listening-test/":{"id":"c1l07","n":10,"q":"What helps you fall asleep on a busy night?","w":3},
+"https://test-english.com/listening/c1/a-perfect-democracy-c1-english-listening-test/":{"id":"c1l08","n":10,"q":"How should our family decide where to go on a day trip?","w":3},
+"https://test-english.com/listening/c1/operation-cat-drop-c1-english-listening-test/":{"id":"c1l09","n":10,"q":"Have you ever solved one problem and accidentally created another?","w":3},
 "https://test-english.com/reading/c1/a-walk-gone-wrong-c1-english-reading-test/":{"id":"c1r02","n":11,"q":"What would you pack for a long walk, just to be on the safe side?"},
 "https://test-english.com/reading/c1/how-ai-voice-cloning-is-changing-scams-c1-english-reading-test/":{"id":"c1r03","n":11,"q":"How would you check that a message really came from a friend?"},
 "https://test-english.com/reading/c1/kidfluencers-growing-up-online-c1-english-reading/":{"id":"c1r04","n":11,"q":"Should parents ask their children before posting photos of them?"}};
@@ -4134,8 +4494,10 @@ function apiFlag(name, pin, missionId, itemId, note) {
 // in the app, parents send feedback, the teacher reviews missions, and the admin sees a funnel per family.
 
 var PILOT = { joinsPerDay: 15, maxKids: 5, feedbackPerDay: 5, teacherFlagsPerDay: 200 };
-// The grade a parent picks sets the level the in-app level test starts from.
-var GRADE_LEVEL = { 3: 'a1', 4: 'a1', 5: 'a2', 6: 'a2', 7: 'b1', 8: 'b1', 9: 'b1-b2', 10: 'b1-b2', 11: 'b2', 12: 'b2' };
+// The grade a parent picks sets the level the in-app level test starts from: one level below the Israeli curriculum's
+// band for the grade (night review, finding 12: foundation to grade 6 ends near A2, intermediate 7-9 near B1,
+// proficiency 10-12 near B1+/B2), so the test climbs to her level instead of starting above it.
+var GRADE_LEVEL = { 3: 'a1', 4: 'a1', 5: 'a1', 6: 'a1', 7: 'a2', 8: 'a2', 9: 'b1', 10: 'b1', 11: 'b1-b2', 12: 'b1-b2' };
 
 function inviteOk(code) {
   var want = String(getSetting('InviteCode') || '').trim().toLowerCase();
@@ -4150,17 +4512,16 @@ function apiJoinCheck(code) {
   return { ok: ok };
 }
 
-// data: { family, parent, parentPin, email, consent, kids: [{ name, grade }] }
+// data: { family, parent, email, consent, kids: [{ name, grade }] }. The parents' code (6 digits) is made here; a
+// parentPin an old copy of the app still sends is ignored (it used to be the parent's choice, and "taken" told codes apart).
 function apiJoin(code, data) {
   ensureSetup();
   if (!inviteOk(code)) throw new Error('הקישור הזה כבר לא פעיל. בקשו קישור חדש ממי ששלח לכם.');
   data = data || {};
   var clean = function (s, max) { return String(s || '').replace(/[<>"]/g, '').replace(/\s+/g, ' ').trim().slice(0, max); };
   var family = clean(data.family, 40), parentName = clean(data.parent, 40), email = clean(data.email, 80);
-  var parentPin = String(data.parentPin || '').trim();
   if (!family) throw new Error('כתבו שם משפחה');
   if (!parentName) throw new Error('כתבו את השם שלכם');
-  if (!/^\d{4}$/.test(parentPin)) throw new Error('קוד ההורה צריך להיות 4 ספרות');
   if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error('כתובת המייל לא נראית תקינה');
   if (data.consent !== true) throw new Error('צריך לאשר את תנאי הפרטיות כדי להמשיך');
   // A school kid sends a grade (3 to 12); a Chacho's Nest kid (Nest.js) sends her age (2 to 7) instead.
@@ -4174,15 +4535,15 @@ function apiJoin(code, data) {
 
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
-  var id, out = [];
+  var id, out = [], parentPin;
   try {
     var gs = readTableUncached('Groups'), t = today();
     if (gs.filter(function (g) { return String(g.Joined || '').slice(0, 10) === t; }).length >= PILOT.joinsPerDay) throw new Error('הגענו למכסת ההרשמות להיום. נסו שוב מחר.');
-    if (String(parentPin) === String(getSetting('AdminPIN')) || gs.some(function (g) { return String(g.ParentPIN) === parentPin; })) throw new Error('הקוד הזה תפוס. בחרו 4 ספרות אחרות.');
     var name = family, n = 2;
     while (gs.some(function (g) { return String(g.Name).toLowerCase() === name.toLowerCase(); })) name = family + ' ' + (n++);
     var ids = gs.map(function (g) { return String(g.Id); });
-    do { id = Math.random().toString(36).slice(2, 8); } while (ids.indexOf(id) >= 0);
+    do { id = randomId(); } while (ids.indexOf(id) >= 0);
+    parentPin = newParentCode();
     // The version of the privacy notice the parent agreed to (Safety.js NOTICE); an old copy of the app sends none: version 1,
     // so the family sees the new notice once in the parents' area.
     var at = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm'), cv = Number(data.consentV) === NOTICE.v ? NOTICE.v : 1;
@@ -4255,7 +4616,7 @@ function apiFeedback(pin, text, score) {
 function apiTeacherFlag(code, missionId, itemId, note) {
   ensureSetup();
   var want = String(getSetting('TeacherCode') || '').trim();
-  checkPin('teacher', !!want && String(code || '').trim() === want);
+  checkPin('teacher', !!want && sameSecret(code, want));
   missionId = String(missionId || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 12);
   itemId = cleanIds([itemId], 1)[0] || '';
   note = String(note || '').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 500);
@@ -4269,7 +4630,7 @@ function apiTeacherFlag(code, missionId, itemId, note) {
 function apiTeacherCheck(code) {
   ensureSetup();
   var want = String(getSetting('TeacherCode') || '').trim();
-  checkPin('teacher', !!want && String(code || '').trim() === want);
+  checkPin('teacher', !!want && sameSecret(code, want));
   auditOpen('teacher', 'teacher', '');
   return { ok: true };
 }
@@ -4307,7 +4668,9 @@ function apiPilotStats(pin) {
       firstMission: all.filter(function (k) { return k.missions > 0; }).length, active7: all.filter(function (k) { return k.last7 >= 4; }).length },
     feedback: fb.slice(-12).reverse().map(function (f) { return { group: f.Group, date: f.Date, score: f.Score, text: f.Text }; }),
     chat: chatBoard(t),
+    items: itemStats(12, 5),
     reports: reportsBoard(), notice: NOTICE.v,
+    measure: pilotMeasure(),
     teacherFlags: flags.filter(function (f) { return f.Girl === 'Teacher'; }).length,
     teacherCode: String(getSetting('TeacherCode') || ''),
     base: String(getSetting('PublicUrl') || ''),
@@ -4321,7 +4684,7 @@ function apiPilotInvite(pin, open, code) {
   if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can change this');
   code = String(code || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 24);
   if (code) setSetting('InviteCode', code);
-  if (!getSetting('InviteCode')) setSetting('InviteCode', Math.random().toString(36).slice(2, 8));
+  if (!getSetting('InviteCode')) setSetting('InviteCode', randomId());
   setSetting('InviteOpen', open ? 'yes' : 'no');
   audit('admin', 'admin', '', 'invite link', (open ? 'opened' : 'closed') + (code ? ', new code' : ''));
   return apiPilotStats(pin);
@@ -4370,7 +4733,7 @@ function apiParentSetAge(pin, name, choice) {
     lock.releaseLock();
   }
   audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'kid age', kid.Name + ': ' + label);
-  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
+  return parentView(access);
 }
 
 // Deletes a kid's assignments for days she did not play (a played day keeps its row, so the history stays).
@@ -4457,7 +4820,9 @@ function chatInfo(kid, t) {
     week: wk.length,
     weekVoice: wk.filter(function (r) { return Number(r.Voice) > 0; }).length,
     voiceDays: Object.keys(days).length,
-    best: best
+    best: best,
+    // The recast step after an answer that fits nothing (night review, finding 5); Settings.TalkRecast = off turns it off.
+    recast: String(getSetting('TalkRecast') || '').toLowerCase() !== 'off'
   };
 }
 
@@ -4529,16 +4894,20 @@ function auditOpen(role, who, group) {
   audit(role, who, group, 'open', row.Detail);
 }
 
-// Writes the opens waiting in the cache to the Audit tab, in one write.
+// Writes the opens and the wrong PINs waiting in the cache to the Audit tab, in one write.
 function auditFlush() {
+  opsFlush();   // the feature counts and the phones' error reports (Ops.js) wait the same way
   var lock = LockService.getScriptLock(), q;
   try {
     if (!lock.tryLock(5000)) return;
     try {
       var c = CacheService.getScriptCache();
       q = JSON.parse(c.get('AQ') || '[]');
+      var w = JSON.parse(c.get('AW') || '{}');
+      Object.keys(w).forEach(function (k) { q.push(auditWrongRow(w[k])); });
+      q.sort(function (x, y) { return x.Timestamp < y.Timestamp ? -1 : x.Timestamp > y.Timestamp ? 1 : 0; });
       if (!q.length) return;
-      c.remove('AQ');
+      c.remove('AQ'); c.remove('AW');
     } finally { lock.releaseLock(); }
     var sh = sheet('Audit'), head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
     sh.getRange(sh.getLastRow() + 1, 1, q.length, head.length).setValues(q.map(function (r) {
@@ -4578,14 +4947,37 @@ function perfSummary() {
 }
 var PERF_PARTS = null;
 
-// A wrong PIN or code (checkPin keys: 'girl:<name>', 'parent', 'teacher').
-function auditPin(key, fails) {
-  var detail = fails >= 8 ? 'locked for 15 minutes' : 'attempt ' + fails;
+// A wrong PIN or code for a name that exists (checkPin keys: 'girl:<name>', 'parent:<family id>', 'admin', 'teacher'; made-up
+// names keep nothing). Not written during the call (finding 6: a write per wrong try): the tries of one name wait in the
+// cache under AW, memory only on Cloudflare, and auditFlush writes one line per name: how many tries, and the lock.
+function auditPin(key, fails, rule) {
+  var role = key, who = '', group = '', action = 'wrong PIN';
   if (key.indexOf('girl:') === 0) {
     var kid = findGirl(key.slice(5));
-    return audit('kid', kid ? kid.Name : key.slice(5), kid ? groupOf(kid) : '', kid ? 'wrong PIN' : 'unknown name', detail, false);
-  }
-  audit(key, '', '', key === 'teacher' ? 'wrong code' : 'wrong PIN', detail, false);
+    if (!kid) return;
+    role = 'kid'; who = kid.Name; group = groupOf(kid);
+  } else if (key.indexOf('parent:') === 0) {
+    var g = findGroup(key.slice(7));
+    if (!g) return;
+    role = 'parent'; who = g.Name; group = String(g.Id); action = 'wrong code';
+  } else if (key === 'admin') action = 'wrong passphrase';
+  else if (key === 'teacher') action = 'wrong code';
+  var lock = LockService.getScriptLock();
+  try {
+    if (lock.tryLock(1500)) {
+      try {
+        var c = CacheService.getScriptCache(), w = JSON.parse(c.get('AW') || '{}');
+        var e = w[key] || (w[key] = { at: new Date().toISOString(), date: today(), role: role, who: who, group: group, action: action, n: 0, device: REQ_DEV });
+        e.n++;
+        if (fails >= rule.max) e.locked = Math.round(rule.sec / 60);
+        if (Object.keys(w).length <= 200) { c.put('AW', JSON.stringify(w), 21600); return; }
+      } finally { lock.releaseLock(); }
+    }
+  } catch (err) {}
+}
+function auditWrongRow(e) {
+  var detail = (e.n === 1 ? '1 try' : e.n + ' tries') + (e.locked ? ', then locked for ' + (e.locked >= 120 ? e.locked / 60 + ' hours' : e.locked + ' minutes') : '');
+  return { Timestamp: e.at, Date: e.date, Role: e.role, Who: e.who, Group: e.group, Action: e.action, Detail: detail, Ok: 'no', Device: e.device || '' };
 }
 
 // A join screen opened from a closed or wrong invite link (once an hour per code, so a reload adds nothing).
@@ -4679,7 +5071,7 @@ function apiAudit(pin, days) {
   var split = {};
   Object.keys(devices).forEach(function (k) { split[devices[k]] = (split[devices[k]] || 0) + 1; });
   return {
-    days: days, from: from, today: t, perf: perfSummary(),
+    days: days, from: from, today: t, perf: perfSummary(), health: healthInfo(), errors: errSummary(days),
     events: ev.slice(0, AUDIT.max).map(function (e) { e.family = gname[e.group] || ''; return e; }),
     more: Math.max(0, ev.length - AUDIT.max),
     families: Object.keys(fams).map(function (id) {
@@ -4697,7 +5089,8 @@ function apiAudit(pin, days) {
 // (src/NestIndex.js, written by tools/nest-index.js from docs/nest/nest.js): a unit is four days (n04 new words,
 // n04.b move, n04.c song and story, n04.d games) and a review is one (r02). No level test, no link out.
 
-var NEST = { points: 15, latePoints: 12, minTotal: 1, maxTotal: 40, maxSeconds: 3600, ages: [2, 7], detailMax: 800 };
+var NEST = { points: 15, latePoints: 12, minTotal: 1, maxTotal: 40, maxSeconds: 3600, ages: [2, 7], detailMax: 800,
+  perDayMax: 3, cap: [20, 30, 40], timeMax: 7200 };
 var NEST_DAY = /^[nr]\d\d(\.[bcd])?$/, NEST_DETAIL = /^[a-z0-9-]+:[01](,[a-z0-9-]+:[01])*$/;
 
 function isNest(kid) { return !!kid && String(kid.Level || '').trim().toLowerCase() === 'nest'; }
@@ -4751,19 +5144,59 @@ function nestInfo(kid, t, assigned, logs) {
     // Days played (distinct dates with a Nest row): a flower each in the home's garden.
     days: logs.filter(function (l) { return l.Section === 'nest'; }).map(function (l) { return String(l.Date); }).filter(function (d, i, a) { return a.indexOf(d) === i; }).length,
     perDay: perDay,
-    // Minutes a day in Chacho's arcade (the parent sets it; 0 = no limit). The phone counts the minutes.
+    // Minutes a day in Chacho's arcade (the parent sets it, inside the day's screen time). The phone counts the minutes.
     arcadeMin: nestArcadeMin(kid),
+    // Screen time (finding 15): a hard cap a day across lessons, replays, the playground and the arcade. capMax by age, the
+    // parent may set less (Girls.NestMin); used = the seconds the phones reported today (apiNestTime, the most of them).
+    cap: nestCap(kid), capMax: nestCapMax(age), used: nestUsed(kid, t),
     // One more lesson: once the day's own is done, the next day of the program while the parent's daily number allows.
-    next: done && (!perDay || today < perDay) ? String(nestNext(kid, logs).url).slice(5) : null
+    next: done && today < perDay ? String(nestNext(kid, logs).url).slice(5) : null
   };
 }
 
-// Lessons a day (Girls.NestPerDay, set by the parent): 1 when empty, 0 = no limit.
+// Lessons a day (Girls.NestPerDay, set by the parent): 1 when empty, at most NEST.perDayMax. There is no "no limit" any more
+// (finding 15, 2026-11-01): an old 0 counts as the most.
 function nestPerDay(kid) {
   var v = String(kid.NestPerDay == null ? '' : kid.NestPerDay).trim();
   if (v === '') return 1;
   var n = Math.round(Number(v));
-  return n >= 0 && n <= 9 ? n : 1;
+  return n >= 1 && n <= NEST.perDayMax ? n : n === 0 || n > NEST.perDayMax ? NEST.perDayMax : 1;
+}
+
+// ---------- Screen time a day (the night review, finding 15) ----------
+// AAP and WHO: under an hour a day for ages 2 to 5, less is better, with a grown-up. The Nest stops for the day after
+// 20 minutes (ages 2 and 3), 30 (4 and 5) or 40 (6 and 7); the parent may choose less (Girls.NestMin), never more and never
+// "no limit". The phone counts the minutes (every lesson, replay, playground game and arcade game) and tells the server
+// now and then (apiNestTime), so a second phone or tablet knows how much is left.
+function nestCapMax(age) { return age <= 3 ? NEST.cap[0] : age <= 5 ? NEST.cap[1] : NEST.cap[2]; }
+function nestCap(kid) {
+  var max = nestCapMax(nestAge(kid)), v = String(kid.NestMin == null ? '' : kid.NestMin).trim(), n = Math.round(Number(v));
+  return v !== '' && n >= 5 && n < max ? n : max;
+}
+// Girls.NestTime = "<date> <seconds>": the most any phone reported for that day.
+function nestUsed(kid, t) {
+  var p = String(kid.NestTime || '').split(' ');
+  return p[0] === t ? Math.max(0, Math.round(Number(p[1])) || 0) : 0;
+}
+function apiNestTime(name, pin, seconds) {
+  var kid = auth(name, pin);
+  if (!isNest(kid)) throw new Error('Unknown activity');
+  var t = today(), s = Math.max(0, Math.min(NEST.timeMax, Math.round(Number(seconds)) || 0)), was = nestUsed(kid, t);
+  // One cell, and only when it grows: the phone sends one every few minutes at most (Cloudflare counts rows written).
+  if (s > was) setGirlFields(kid.Name, { NestTime: t + ' ' + s });
+  return { used: Math.max(s, was), cap: nestCap(kid) };
+}
+function apiParentNestMin(pin, name, n) {
+  ensureSetup();
+  var access = parentAccess(pin);
+  var kid = findGirl(name);
+  if (!kid || !isNest(kid) || (!access.isAdmin && groupOf(kid) !== String(access.group.Id))) throw new Error('Unknown kid');
+  var max = nestCapMax(nestAge(kid));
+  n = Math.round(Number(n));
+  if (!(n >= 5 && n <= max)) throw new Error('בחרו כמה דקות ביום');
+  setGirlFields(kid.Name, { NestMin: n === max ? '' : n });
+  audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest minutes a day', kid.Name + ': ' + n);
+  return parentView(access);
 }
 
 function apiParentNestPerDay(pin, name, n) {
@@ -4772,18 +5205,20 @@ function apiParentNestPerDay(pin, name, n) {
   var kid = findGirl(name);
   if (!kid || !isNest(kid) || (!access.isAdmin && groupOf(kid) !== String(access.group.Id))) throw new Error('Unknown kid');
   n = Math.round(Number(n));
-  if (!(n >= 0 && n <= 9)) throw new Error('בחרו כמה שיעורים ביום');
+  if (n === 0) n = NEST.perDayMax;   // an old copy of the app still offers "no limit"
+  if (!(n >= 1 && n <= NEST.perDayMax)) throw new Error('בחרו כמה שיעורים ביום');
   setGirlFields(kid.Name, { NestPerDay: n });
-  audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest lessons a day', kid.Name + ': ' + (n || 'no limit'));
-  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
+  audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest lessons a day', kid.Name + ': ' + n);
+  return parentView(access);
 }
 
-// Minutes a day in Chacho's arcade (Girls.NestArcadeMin, set by the parent): 15 when empty, 0 = no limit.
+// Minutes a day in Chacho's arcade (Girls.NestArcadeMin, set by the parent): 15 when empty, never more than the day's screen
+// time. An old 0 ("no limit", before 2026-11-01) is the day's screen time.
 function nestArcadeMin(kid) {
-  var v = String(kid.NestArcadeMin == null ? '' : kid.NestArcadeMin).trim();
-  if (v === '') return 15;
+  var v = String(kid.NestArcadeMin == null ? '' : kid.NestArcadeMin).trim(), cap = nestCap(kid);
+  if (v === '') return Math.min(15, cap);
   var n = Math.round(Number(v));
-  return n >= 0 && n <= 60 ? n : 15;
+  return n >= 1 && n <= 60 ? Math.min(n, cap) : n === 0 ? cap : Math.min(15, cap);
 }
 
 function apiParentNestArcade(pin, name, n) {
@@ -4792,10 +5227,11 @@ function apiParentNestArcade(pin, name, n) {
   var kid = findGirl(name);
   if (!kid || !isNest(kid) || (!access.isAdmin && groupOf(kid) !== String(access.group.Id))) throw new Error('Unknown kid');
   n = Math.round(Number(n));
-  if (!(n >= 0 && n <= 60)) throw new Error('בחרו כמה דקות ביום');
+  if (n === 0) n = nestCap(kid);   // an old copy of the app still offers "no limit": the day's screen time
+  if (!(n >= 1 && n <= 60)) throw new Error('בחרו כמה דקות ביום');
   setGirlFields(kid.Name, { NestArcadeMin: n });
-  audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest arcade minutes', kid.Name + ': ' + (n || 'no limit'));
-  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
+  audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest arcade minutes', kid.Name + ': ' + n);
+  return parentView(access);
 }
 
 // Settings.NestAll: the names (comma separated, or 'all') whose Nest home shows every unit and day now, as free play.
@@ -4843,7 +5279,7 @@ function apiNestResult(name, pin, date, unitId, correct, total, seconds, detail)
       // One more lesson today: the day's own is logged, this is the next day of the program, and the parent allows it.
       var perDay = nestPerDay(kid), todays = mine.filter(function (l) { return l.Date === t && l.Section === 'nest'; }).length;
       var next = nestNext(kid, mine);
-      if (date !== t || !todays || (perDay && todays >= perDay) || next.url !== 'nest:' + unitId) return free();
+      if (date !== t || !todays || todays >= perDay || next.url !== 'nest:' + unitId) return free();
       a = next;
     } else if (mine.some(function (l) { return l.Date === date; })) return free();
     entry = {
@@ -4863,127 +5299,241 @@ function apiNestResult(name, pin, date, unitId, correct, total, seconds, detail)
 
 // ---- src/NestIndex.js ----
 // Generated by tools/nest-index.js from docs/nest/nest.js. Do not edit by hand.
-// Chacho's Nest days in teaching order: [day id, title, 1 = review].
+// Coco's Nest days in teaching order: [day id, title, 1 = review, Hebrew title].
 var NEST_UNITS = [
-  ['n01', 'Hello, Chacho!', 0],
-  ['n01.b', 'Hello, Chacho!', 0],
-  ['n01.c', 'Hello, Chacho!', 0],
-  ['n01.d', 'Hello, Chacho!', 0],
-  ['n02', 'Colors', 0],
-  ['n02.b', 'Colors', 0],
-  ['n02.c', 'Colors', 0],
-  ['n02.d', 'Colors', 0],
-  ['r01', 'Review', 1],
-  ['n03', 'One to six', 0],
-  ['n03.b', 'One to six', 0],
-  ['n03.c', 'One to six', 0],
-  ['n03.d', 'One to six', 0],
-  ['n04', 'On the farm', 0],
-  ['n04.b', 'On the farm', 0],
-  ['n04.c', 'On the farm', 0],
-  ['n04.d', 'On the farm', 0],
-  ['r02', 'Review', 1],
-  ['n05', 'My family', 0],
-  ['n05.b', 'My family', 0],
-  ['n05.c', 'My family', 0],
-  ['n05.d', 'My family', 0],
-  ['n06', 'My face', 0],
-  ['n06.b', 'My face', 0],
-  ['n06.c', 'My face', 0],
-  ['n06.d', 'My face', 0],
-  ['r03', 'Review', 1],
-  ['n07', 'Fruit', 0],
-  ['n07.b', 'Fruit', 0],
-  ['n07.c', 'Fruit', 0],
-  ['n07.d', 'Fruit', 0],
-  ['n08', 'Toys', 0],
-  ['n08.b', 'Toys', 0],
-  ['n08.c', 'Toys', 0],
-  ['n08.d', 'Toys', 0],
-  ['r04', 'Review', 1],
-  ['n09', 'Feelings', 0],
-  ['n09.b', 'Feelings', 0],
-  ['n09.c', 'Feelings', 0],
-  ['n09.d', 'Feelings', 0],
-  ['n10', 'More colors', 0],
-  ['n10.b', 'More colors', 0],
-  ['n10.c', 'More colors', 0],
-  ['n10.d', 'More colors', 0],
-  ['r05', 'Review', 1],
-  ['n11', 'Seven to ten', 0],
-  ['n11.b', 'Seven to ten', 0],
-  ['n11.c', 'Seven to ten', 0],
-  ['n11.d', 'Seven to ten', 0],
-  ['n12', 'Wild animals', 0],
-  ['n12.b', 'Wild animals', 0],
-  ['n12.c', 'Wild animals', 0],
-  ['n12.d', 'Wild animals', 0],
-  ['r06', 'Review', 1],
-  ['n13', 'Clothes', 0],
-  ['n13.b', 'Clothes', 0],
-  ['n13.c', 'Clothes', 0],
-  ['n13.d', 'Clothes', 0],
-  ['n14', 'Let\'s move!', 0],
-  ['n14.b', 'Let\'s move!', 0],
-  ['n14.c', 'Let\'s move!', 0],
-  ['n14.d', 'Let\'s move!', 0],
-  ['r07', 'Review', 1],
-  ['n15', 'My body', 0],
-  ['n15.b', 'My body', 0],
-  ['n15.c', 'My body', 0],
-  ['n15.d', 'My body', 0],
-  ['n16', 'Food and drinks', 0],
-  ['n16.b', 'Food and drinks', 0],
-  ['n16.c', 'Food and drinks', 0],
-  ['n16.d', 'Food and drinks', 0],
-  ['r08', 'Review', 1],
-  ['n17', 'Sky and weather', 0],
-  ['n17.b', 'Sky and weather', 0],
-  ['n17.c', 'Sky and weather', 0],
-  ['n17.d', 'Sky and weather', 0],
-  ['n18', 'My house', 0],
-  ['n18.b', 'My house', 0],
-  ['n18.c', 'My house', 0],
-  ['n18.d', 'My house', 0],
-  ['r09', 'Review', 1],
-  ['n19', 'People who help', 0],
-  ['n19.b', 'People who help', 0],
-  ['n19.c', 'People who help', 0],
-  ['n19.d', 'People who help', 0],
-  ['n20', 'Things that go', 0],
-  ['n20.b', 'Things that go', 0],
-  ['n20.c', 'Things that go', 0],
-  ['n20.d', 'Things that go', 0],
-  ['r10', 'Review', 1],
-  ['n21', 'More clothes', 0],
-  ['n21.b', 'More clothes', 0],
-  ['n21.c', 'More clothes', 0],
-  ['n21.d', 'More clothes', 0],
-  ['n22', 'What are they doing?', 0],
-  ['n22.b', 'What are they doing?', 0],
-  ['n22.c', 'What are they doing?', 0],
-  ['n22.d', 'What are they doing?', 0],
-  ['r11', 'Review', 1],
-  ['n23', 'Outside', 0],
-  ['n23.b', 'Outside', 0],
-  ['n23.c', 'Outside', 0],
-  ['n23.d', 'Outside', 0],
-  ['n24', 'Things at home', 0],
-  ['n24.b', 'Things at home', 0],
-  ['n24.c', 'Things at home', 0],
-  ['n24.d', 'Things at home', 0],
-  ['r12', 'Review', 1]
+  ['n01', 'Hello, Chacho!', 0, 'שלום, צ׳אצ׳ו!'],
+  ['n01.b', 'Hello, Chacho!', 0, 'שלום, צ׳אצ׳ו!'],
+  ['n01.c', 'Hello, Chacho!', 0, 'שלום, צ׳אצ׳ו!'],
+  ['n01.d', 'Hello, Chacho!', 0, 'שלום, צ׳אצ׳ו!'],
+  ['n02', 'Colors', 0, 'צבעים'],
+  ['n02.b', 'Colors', 0, 'צבעים'],
+  ['n02.c', 'Colors', 0, 'צבעים'],
+  ['n02.d', 'Colors', 0, 'צבעים'],
+  ['r01', 'Review', 1, 'חוזרים על הכול'],
+  ['n03', 'One to six', 0, 'סופרים עד שש'],
+  ['n03.b', 'One to six', 0, 'סופרים עד שש'],
+  ['n03.c', 'One to six', 0, 'סופרים עד שש'],
+  ['n03.d', 'One to six', 0, 'סופרים עד שש'],
+  ['n04', 'On the farm', 0, 'בחווה'],
+  ['n04.b', 'On the farm', 0, 'בחווה'],
+  ['n04.c', 'On the farm', 0, 'בחווה'],
+  ['n04.d', 'On the farm', 0, 'בחווה'],
+  ['r02', 'Review', 1, 'חוזרים על הכול'],
+  ['n05', 'My family', 0, 'המשפחה שלי'],
+  ['n05.b', 'My family', 0, 'המשפחה שלי'],
+  ['n05.c', 'My family', 0, 'המשפחה שלי'],
+  ['n05.d', 'My family', 0, 'המשפחה שלי'],
+  ['n06', 'My face', 0, 'הפנים שלי'],
+  ['n06.b', 'My face', 0, 'הפנים שלי'],
+  ['n06.c', 'My face', 0, 'הפנים שלי'],
+  ['n06.d', 'My face', 0, 'הפנים שלי'],
+  ['r03', 'Review', 1, 'חוזרים על הכול'],
+  ['n07', 'Fruit', 0, 'פירות'],
+  ['n07.b', 'Fruit', 0, 'פירות'],
+  ['n07.c', 'Fruit', 0, 'פירות'],
+  ['n07.d', 'Fruit', 0, 'פירות'],
+  ['n08', 'Toys', 0, 'צעצועים'],
+  ['n08.b', 'Toys', 0, 'צעצועים'],
+  ['n08.c', 'Toys', 0, 'צעצועים'],
+  ['n08.d', 'Toys', 0, 'צעצועים'],
+  ['r04', 'Review', 1, 'חוזרים על הכול'],
+  ['n09', 'Feelings', 0, 'רגשות'],
+  ['n09.b', 'Feelings', 0, 'רגשות'],
+  ['n09.c', 'Feelings', 0, 'רגשות'],
+  ['n09.d', 'Feelings', 0, 'רגשות'],
+  ['n10', 'More colors', 0, 'עוד צבעים'],
+  ['n10.b', 'More colors', 0, 'עוד צבעים'],
+  ['n10.c', 'More colors', 0, 'עוד צבעים'],
+  ['n10.d', 'More colors', 0, 'עוד צבעים'],
+  ['r05', 'Review', 1, 'חוזרים על הכול'],
+  ['n11', 'Seven to ten', 0, 'סופרים עד עשר'],
+  ['n11.b', 'Seven to ten', 0, 'סופרים עד עשר'],
+  ['n11.c', 'Seven to ten', 0, 'סופרים עד עשר'],
+  ['n11.d', 'Seven to ten', 0, 'סופרים עד עשר'],
+  ['n12', 'Wild animals', 0, 'חיות בטבע'],
+  ['n12.b', 'Wild animals', 0, 'חיות בטבע'],
+  ['n12.c', 'Wild animals', 0, 'חיות בטבע'],
+  ['n12.d', 'Wild animals', 0, 'חיות בטבע'],
+  ['r06', 'Review', 1, 'חוזרים על הכול'],
+  ['n13', 'Clothes', 0, 'בגדים'],
+  ['n13.b', 'Clothes', 0, 'בגדים'],
+  ['n13.c', 'Clothes', 0, 'בגדים'],
+  ['n13.d', 'Clothes', 0, 'בגדים'],
+  ['n14', 'Let\'s move!', 0, 'זזים!'],
+  ['n14.b', 'Let\'s move!', 0, 'זזים!'],
+  ['n14.c', 'Let\'s move!', 0, 'זזים!'],
+  ['n14.d', 'Let\'s move!', 0, 'זזים!'],
+  ['r07', 'Review', 1, 'חוזרים על הכול'],
+  ['n15', 'My body', 0, 'הגוף שלי'],
+  ['n15.b', 'My body', 0, 'הגוף שלי'],
+  ['n15.c', 'My body', 0, 'הגוף שלי'],
+  ['n15.d', 'My body', 0, 'הגוף שלי'],
+  ['n16', 'Food and drinks', 0, 'אוכל ושתייה'],
+  ['n16.b', 'Food and drinks', 0, 'אוכל ושתייה'],
+  ['n16.c', 'Food and drinks', 0, 'אוכל ושתייה'],
+  ['n16.d', 'Food and drinks', 0, 'אוכל ושתייה'],
+  ['r08', 'Review', 1, 'חוזרים על הכול'],
+  ['n17', 'Sky and weather', 0, 'שמיים ומזג אוויר'],
+  ['n17.b', 'Sky and weather', 0, 'שמיים ומזג אוויר'],
+  ['n17.c', 'Sky and weather', 0, 'שמיים ומזג אוויר'],
+  ['n17.d', 'Sky and weather', 0, 'שמיים ומזג אוויר'],
+  ['n18', 'My house', 0, 'הבית שלי'],
+  ['n18.b', 'My house', 0, 'הבית שלי'],
+  ['n18.c', 'My house', 0, 'הבית שלי'],
+  ['n18.d', 'My house', 0, 'הבית שלי'],
+  ['r09', 'Review', 1, 'חוזרים על הכול'],
+  ['n19', 'People who help', 0, 'אנשים שעוזרים'],
+  ['n19.b', 'People who help', 0, 'אנשים שעוזרים'],
+  ['n19.c', 'People who help', 0, 'אנשים שעוזרים'],
+  ['n19.d', 'People who help', 0, 'אנשים שעוזרים'],
+  ['n20', 'Things that go', 0, 'נוסעים וטסים'],
+  ['n20.b', 'Things that go', 0, 'נוסעים וטסים'],
+  ['n20.c', 'Things that go', 0, 'נוסעים וטסים'],
+  ['n20.d', 'Things that go', 0, 'נוסעים וטסים'],
+  ['r10', 'Review', 1, 'חוזרים על הכול'],
+  ['n21', 'More clothes', 0, 'עוד בגדים'],
+  ['n21.b', 'More clothes', 0, 'עוד בגדים'],
+  ['n21.c', 'More clothes', 0, 'עוד בגדים'],
+  ['n21.d', 'More clothes', 0, 'עוד בגדים'],
+  ['n22', 'What are they doing?', 0, 'מה הם עושים?'],
+  ['n22.b', 'What are they doing?', 0, 'מה הם עושים?'],
+  ['n22.c', 'What are they doing?', 0, 'מה הם עושים?'],
+  ['n22.d', 'What are they doing?', 0, 'מה הם עושים?'],
+  ['r11', 'Review', 1, 'חוזרים על הכול'],
+  ['n23', 'Outside', 0, 'בחוץ'],
+  ['n23.b', 'Outside', 0, 'בחוץ'],
+  ['n23.c', 'Outside', 0, 'בחוץ'],
+  ['n23.d', 'Outside', 0, 'בחוץ'],
+  ['n24', 'Things at home', 0, 'דברים בבית'],
+  ['n24.b', 'Things at home', 0, 'דברים בבית'],
+  ['n24.c', 'Things at home', 0, 'דברים בבית'],
+  ['n24.d', 'Things at home', 0, 'דברים בבית'],
+  ['r12', 'Review', 1, 'חוזרים על הכול']
 ];
 
-// ---- src/Relay.js ----
-// The move to Cloudflare (specs/cloudflare.md). Nothing here does anything until the cutover night: the Script Property
-// CF_MODE is empty. The two admin calls work in every mode, so the move can be watched and undone from outside.
-//   ''        normal
-//   'freeze'  every other call is refused for a few minutes (the last copy of the data is being taken)
-//   'relay'   every other call is passed to CF_URL (the new server) and its answer comes back; nothing is written here.
-//             Phones that still run an old copy of the app (pointing at this address) keep working this way.
+// ---- src/Learned.js ----
+// What a kid learned, in one plain Hebrew sentence for the parents (the night review, finding 14, 2026-11-01): the parents'
+// kid card, the 21:00 summary and the weekly email all use learnedLine(). Built from the rows the parents' view already
+// reads (Log, Games, Chats; kidRows is the request memo), the mission index (Hebrew topic name `he`, new words `w`) and the
+// Nest index (the unit's Hebrew title), so it costs no extra sheet read per kid.
+// The Hebrew rules: numbers next to words, never a dash between numbers; English words stay as they
+// are and the app puts them in <bdi>.
 
-var CF_ADMIN = { apiCfExport: 1, apiCfMode: 1 };
+// A topic's Hebrew name when the mission has none yet (missions get `he` from docs/missions/*.js).
+var SECTION_HE = { grammar: 'דקדוק', vocabulary: 'אוצר מילים', listening: 'האזנה', reading: 'קריאה', writing: 'כתיבה',
+  'use-of-english': 'שימוש בשפה', level: 'מבחן רמה' };
+
+// The level is the track the practice is built for, not a measured CEFR result (finding 12): "מסלול A2" plus what it means.
+var LEVEL_TRACK_HE = {
+  a1: 'מילים ראשונות ומשפטים קצרים על עצמי, על המשפחה ועל היום יום',
+  a2: 'משפטים פשוטים על דברים מוכרים: בית הספר, תחביבים, קניות ומה עשינו אתמול',
+  b1: 'לספר על חוויה, להסביר תוכנית ולהביע דעה בשיחה פשוטה',
+  'b1-b2': 'שלב מעבר: טקסטים ארוכים יותר ושיחה על נושאים פחות מוכרים',
+  b2: 'להבין טקסטים ארוכים ולדבר בשטף על הרבה נושאים',
+  c1: 'שפה עשירה ומדויקת: רמזים, סגנון וטקסטים מורכבים'
+};
+function levelTrack(level) {
+  if (!LEVEL_TRACK_HE[level]) return null;
+  return { label: LEVEL_LABEL[level], he: LEVEL_TRACK_HE[level] };
+}
+
+// "משימה אחת" / "3 משימות": Hebrew counts with the number before the word, one in words.
+function heCount(n, one, many) { return n === 1 ? one : n + ' ' + many; }
+
+function nestTitleHe(dayId) {
+  var id = String(dayId || '').split('.')[0], u = nestUnits().filter(function (x) { return x[0] === id; })[0];
+  return u ? (u[3] || u[1]) : '';
+}
+
+// The sentence for a set of dates (a week, or one day), without the "השבוע:" in front. { text, any }.
+function learnedLine(kid, dates) {
+  var inDates = function (r) { return dates.indexOf(String(r.Date)) >= 0; };
+  var logs = kidRows('Log', kid.Name).filter(inDates);
+  var games = kidRows('Games', kid.Name).filter(function (g) { return inDates(g) && Number(g.Total) > 0; });
+  var parts = [], hard = '';
+  if (isNest(kid)) {
+    var lessons = logs.filter(function (l) { return l.Section === 'nest'; }), units = [], found = {}, missed = {};
+    lessons.forEach(function (l) {
+      var u = nestTitleHe(l.Mission);
+      if (u && units.indexOf(u) < 0) units.push(u);
+      String(l.Detail || '').split(',').forEach(function (x) {
+        var p = x.split(':');
+        if (!p[0]) return;
+        if (p[1] === '1') found[p[0]] = (found[p[0]] || 0) + 1; else if (p[1] === '0') missed[p[0]] = (missed[p[0]] || 0) + 1;
+      });
+    });
+    var words = Object.keys(found).concat(Object.keys(missed)).filter(function (w, i, a) { return a.indexOf(w) === i; });
+    if (lessons.length) parts.push(heCount(lessons.length, 'שיעור אחד בקן', 'שיעורים בקן') + (units.length ? ' (' + units.slice(0, 3).join(', ') + ')' : ''));
+    if (words.length) parts.push(heCount(words.length, 'מילה אחת באנגלית', 'מילים באנגלית'));
+    var practice = Object.keys(missed).filter(function (w) { return missed[w] > (found[w] || 0); }).slice(0, 3);
+    if (practice.length) hard = 'עוד מתאמנים על ' + practice.join(', ');
+  } else {
+    var tasks = logs.filter(function (l) { return l.Section !== 'level' && l.Section !== 'nest'; }), topics = [], newWords = 0, low = null;
+    tasks.forEach(function (l) {
+      var m = l.Mission ? missionOf(l.URL) : null;
+      var topic = (m && m.he) || SECTION_HE[l.Section] || '';
+      if (topic && topics.indexOf(topic) < 0) topics.push(topic);
+      if (m && m.w) newWords += Number(m.w) || 0;
+      var pct = l.Percent === '' || l.Percent == null ? null : Number(l.Percent);
+      if (pct != null && pct < 70 && (!low || pct < low.pct)) low = { pct: pct, topic: topic };
+    });
+    if (logs.some(function (l) { return l.Section === 'level'; })) parts.push('מבחן רמה');
+    if (tasks.length) parts.push(heCount(tasks.length, 'משימה אחת', 'משימות') + (topics.length ? ' (' + topics.slice(0, 3).join(', ') + ')' : ''));
+    if (newWords) parts.push(heCount(newWords, 'מילה חדשה אחת', 'מילים חדשות'));
+    if (games.length) parts.push(heCount(games.length, 'סבב משחק אחד', 'סבבי משחק'));
+    var chats = kidRows('Chats', kid.Name).filter(inDates);
+    if (chats.length) parts.push(heCount(chats.length, 'שיחה אחת עם צ׳אצ׳ו', 'שיחות עם צ׳אצ׳ו'));
+    if (low && low.topic && tasks.length > 1) hard = 'הכי קשה: ' + low.topic;
+  }
+  if (!parts.length) return { text: '', any: false };
+  return { text: parts.join(', ') + '.' + (hard ? ' ' + hard + '.' : ''), any: true };
+}
+
+// The week's sentence for the parents' card and the weekly email: "השבוע: 3 משימות (...), 8 מילים חדשות. הכי קשה: ...".
+function learnedWeek(kid, t) {
+  var dates = weekDates(t).filter(function (d) { return d <= t; }), r = learnedLine(kid, dates);
+  return r.any ? 'השבוע: ' + r.text : 'השבוע עוד אין תרגול.';
+}
+function learnedDay(kid, t) {
+  var r = learnedLine(kid, [t]);
+  return r.any ? r.text : 'היום עוד אין תרגול.';
+}
+
+// The weekly email for a family, in Hebrew, right to left: each kid's sentence and track.
+function learnedEmailHtml(g) {
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var bidi = function (s) { return esc(s).replace(/([A-Za-z][A-Za-z0-9'’+.\- ]*[A-Za-z0-9+])/g, '<bdi>$1</bdi>'); };
+  var rows = g.girls.map(function (d) {
+    var tr = d.track;
+    return '<div style="margin:0 0 14px"><b><bdi>' + esc(d.girl.name) + '</bdi></b><br>' + bidi(d.learned || '') +
+      (d.nest ? '' : '<br><span style="color:#555">' + 'ימי תרגול השבוע: ' + d.stats.weekDone + ' מתוך ' + d.stats.weekTotal + '</span>') +
+      (tr ? '<br><span style="color:#555">מסלול <bdi>' + esc(tr.label) + '</bdi>: ' + esc(tr.he) + '</span>' : '') + '</div>';
+  }).join('');
+  return '<div dir="rtl" lang="he" style="text-align:right;font-family:Arial,sans-serif;font-size:15px;line-height:1.6">' +
+    '<h3 style="margin:0 0 12px">' + esc(g.name) + ': מה למדנו השבוע</h3>' + rows +
+    '<p><a href="' + esc(g.link) + '">לפתוח את <bdi>English with Chacho</bdi></a></p></div>';
+}
+
+// ---- src/Relay.js ----
+// The move to Cloudflare (specs/cloudflare.md), done on 2026-10-30. The Script Property CF_MODE:
+//   ''        normal
+//   'freeze'  every call is refused for a few minutes (the last copy of the data is being taken)
+//   'relay'   every call is passed to CF_URL (the new server) and its answer comes back; nothing is written here.
+//             Phones that still run an old copy of the app (pointing at this address) keep working this way.
+// Since the night review (2026-11-01, finding 1) none of this is a web call: apiCfMode and apiCfExport were open to anyone
+// with the 4-digit admin PIN, and could point the relay (every PIN of an old copy) and the nightly copy (the server's
+// admin token) at another address. Run them from the Apps Script editor instead (Run > cfModeRelay, cfModeNormal,
+// cfModeFreeze), and the relay, the nightly copy and the mode only ever talk to CF_HOME (or a host in the Script
+// Property CF_HOSTS, comma separated).
+
+var CF_HOME = 'coco.coachkrispel.com';
+
+function cfHostOk(url) {
+  var m = /^https:\/\/([^\/:?#]+)(\/|$)/.exec(String(url || ''));
+  if (!m) return false;
+  var host = m[1].toLowerCase(), extra = String(PropertiesService.getScriptProperties().getProperty('CF_HOSTS') || '').toLowerCase();
+  return host === CF_HOME || extra.split(',').map(function (s) { return s.trim(); }).filter(String).indexOf(host) >= 0;
+}
 
 function cfMode() {
   var c = CacheService.getScriptCache(), hit = c.get('CFMODE');
@@ -4995,23 +5545,26 @@ function cfMode() {
 }
 
 // Called by doPost before anything else: an answer when this call is frozen or relayed, null to go on as usual.
+// Relayed calls carry X-Coco-Relay (the Script Property CF_RELAY_KEY, the Worker's RELAY_KEY): they all come from Google's
+// addresses, so the new server counts wrong PINs from them in one generous bucket instead of per address (Auth.js LOCK).
 function cfIntercept(req, body) {
-  if (CF_ADMIN[req.fn]) return null;
   var m = cfMode();
   if (m.mode === 'freeze') return JSON.stringify({ ok: false, error: 'Chacho is moving to a faster home. Back in a few minutes!' });
   if (m.mode === 'relay' && m.url) {
-    var r = UrlFetchApp.fetch(m.url, { method: 'post', contentType: 'text/plain;charset=utf-8', payload: body, muteHttpExceptions: true });
+    if (!cfHostOk(m.url)) return JSON.stringify({ ok: false, error: 'The server is busy, try again' });
+    var key = PropertiesService.getScriptProperties().getProperty('CF_RELAY_KEY');
+    var r = UrlFetchApp.fetch(m.url, { method: 'post', contentType: 'text/plain;charset=utf-8', payload: body, muteHttpExceptions: true,
+      headers: key ? { 'X-Coco-Relay': key } : {} });
     if (r.getResponseCode() === 200) return r.getContentText();
     return JSON.stringify({ ok: false, error: 'The server is busy, try again' });
   }
   return null;
 }
 
-// Every sheet (values as getValues() gives them, Dates as {"$d": ms}) and every Script Property, for the import into
-// the new server. The admin's PIN only.
-function apiCfExport(pin) {
-  if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can do this');
-  // Only while frozen (the cutover's few minutes): the export holds every PIN and the push signing key.
+// Every sheet (values as getValues() gives them, Dates as {"$d": ms}) and every Script Property, for an import into
+// the new server. From the Apps Script editor only (not a web call).
+function cfExport() {
+  // Only while frozen (a cutover's few minutes): the export holds every PIN and the push signing key.
   if (cfMode().mode !== 'freeze') throw new Error('Freeze first');
   var ss = SpreadsheetApp.getActive(), names = [], sheets = {};
   ss.getSheets().forEach(function (sh) {
@@ -5028,22 +5581,30 @@ function apiCfExport(pin) {
   return { names: names, sheets: sheets, props: PropertiesService.getScriptProperties().getProperties(), at: Date.now() };
 }
 
-// mode: '', 'freeze' or 'relay' (with the new server's /api address and its admin token). Relay also stops this
+// mode: '', 'freeze' or 'relay' (with the new server's /api address and the token of its export). Relay also stops this
 // script's own reminders (the new server sends them) and starts the nightly copy back into this sheet (cfMirror);
-// '' puts the reminders back.
-function apiCfMode(pin, mode, url, token) {
-  if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can do this');
+// '' puts the reminders back. The token goes whenever the mode or the address changes: a token is only ever kept for the
+// address it was given with (set it again with the mode, or in Project Settings > Script Properties as CF_TOKEN).
+function cfSetMode(mode, url, token) {
+  mode = String(mode || '');
   if (['', 'freeze', 'relay'].indexOf(mode) < 0) throw new Error('Unknown mode');
   if (mode === 'relay' && !/^https:\/\/[^\s]+\/api$/.test(String(url || ''))) throw new Error('The relay needs the /api address');
-  var p = PropertiesService.getScriptProperties();
+  if (mode === 'relay' && !cfHostOk(url)) throw new Error('Not the app\'s own server: ' + url);
+  var p = PropertiesService.getScriptProperties(), was = cfMode();
+  if (mode !== 'relay' || String(url) !== was.url || was.mode !== 'relay') p.deleteProperty('CF_TOKEN');
   p.setProperty('CF_MODE', mode);
   p.setProperty('CF_URL', mode === 'relay' ? String(url) : '');
   if (mode === 'relay' && token) p.setProperty('CF_TOKEN', String(token));
   cfTriggers(mode === 'relay');
   CacheService.getScriptCache().remove('CFMODE');
-  audit('admin', 'admin', '', 'cloudflare', mode || 'normal', true);
+  audit('owner', 'editor', '', 'cloudflare', mode || 'normal', true);
   return cfMode();
 }
+// Run from the editor (Run > ...). The relay to the app's own server keeps CF_TOKEN only if it already pointed there;
+// otherwise set CF_TOKEN (the Worker's EXPORT_TOKEN) in Project Settings > Script Properties afterwards.
+function cfModeRelay() { return cfSetMode('relay', 'https://' + CF_HOME + '/api'); }
+function cfModeNormal() { return cfSetMode(''); }
+function cfModeFreeze() { return cfSetMode('freeze'); }
 
 var CF_JOBS = ['dailyReminder', 'lastCallReminder', 'parentSummary', 'weeklySummary', 'warmCache', 'cfMirror'];
 
@@ -5058,6 +5619,7 @@ function cfTriggers(moved) {
 function cfMirror() {
   var p = PropertiesService.getScriptProperties(), url = p.getProperty('CF_URL'), token = p.getProperty('CF_TOKEN');
   if (!url || !token) return 'no relay';
+  if (!cfHostOk(url)) throw new Error('Not the app\'s own server: ' + url);   // the token never leaves for another address
   var r = UrlFetchApp.fetch(url.replace(/\/api$/, '/admin/export'), { headers: { 'X-Admin-Token': token }, muteHttpExceptions: true });
   if (r.getResponseCode() !== 200) throw new Error('export ' + r.getResponseCode());
   var data = JSON.parse(r.getContentText()).data;
@@ -5072,7 +5634,7 @@ function cfWriteSheets(data) {
     var rows = data.sheets[n] || [], sh = ss.getSheetByName(n) || ss.insertSheet(n);
     var w = rows.reduce(function (m, r) { return Math.max(m, r.length); }, 1);
     var values = rows.map(function (r) {
-      var line = r.map(function (v) { return v && typeof v === 'object' && v.$d !== undefined ? new Date(v.$d) : v; });
+      var line = r.map(function (v) { return v && typeof v === 'object' && v.$d !== undefined ? new Date(v.$d) : sheetSafe(v); });
       while (line.length < w) line.push('');
       return line;
     });
@@ -5086,10 +5648,11 @@ function cfWriteSheets(data) {
 // ---- src/Admin.js ----
 // The admin's Data card (specs/cloudflare.md): the fields the owner used to change by hand in the sheet (a PIN, a level,
 // redeemed points, the old daily link, a family's code or goal, a setting). After the move to Cloudflare the sheet is
-// a nightly copy, so these edits happen here. Admin PIN only; every change goes to the audit trail (PINs masked).
+// a nightly copy, so these edits happen here. The admin's passphrase typed (not a remembered phone's session); every change
+// goes to the audit trail (PINs masked).
 
 var EDIT = {
-  Girls: { key: 'Name', fields: ['PIN', 'Level', 'Age', 'Group', 'Email', 'Redeemed', 'Missions', 'PetName', 'NestPerDay', 'NestArcadeMin'] },
+  Girls: { key: 'Name', fields: ['PIN', 'Level', 'Age', 'Group', 'Email', 'Redeemed', 'Missions', 'PetName', 'NestPerDay', 'NestArcadeMin', 'NestMin'] },
   Groups: { key: 'Id', fields: ['Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email', 'Friends'] },
   Settings: { key: 'Key', fields: ['Value'] }
 };
@@ -5099,7 +5662,7 @@ var EDIT_SECRET = { PIN: 1, ParentPIN: 1, AdminPIN: 1 };
 
 function editAdmin(pin) {
   ensureSetup();
-  if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can do this');
+  if (!parentAccess(pin, { typed: true }).isAdmin) throw new Error('Only the admin can do this');
 }
 
 function apiAdminData(pin) {
@@ -5130,12 +5693,12 @@ function editCheck(table, key, field, value) {
     if (field === 'Level' && LEVELS.indexOf(v) < 0 && v !== 'nest') throw new Error('Unknown level');
     if (field === 'Group' && !groups().some(function (g) { return String(g.Id) === v; })) throw new Error('No such family');
     if (field === 'Missions' && v !== '' && v !== 'no') throw new Error('Missions is empty or no');
-    if (['Age', 'Redeemed', 'NestPerDay', 'NestArcadeMin'].indexOf(field) >= 0) numeric();
+    if (['Age', 'Redeemed', 'NestPerDay', 'NestArcadeMin', 'NestMin'].indexOf(field) >= 0) numeric();
   }
   if (table === 'Groups') {
     if (field === 'ParentPIN') {
-      if (v !== '' && !/^\d{4}$/.test(v)) throw new Error('A parent code has 4 digits (or empty: admin only)');
-      if (v && (v === String(getSetting('AdminPIN')) || groups().some(function (g) { return String(g.Id) !== key && String(g.ParentPIN) === v; }))) throw new Error('This code is taken');
+      // 6 digits (new codes); a code opens its own family only, so it is never compared with another one (Auth.js).
+      if (v !== '' && !/^\d{6}$/.test(v)) throw new Error('A parent code has 6 digits (or empty: admin only)');
     }
     if (field === 'Name' && !v) throw new Error('A family needs a name');
     if (field === 'Goal') numeric();
@@ -5189,7 +5752,7 @@ function apiAdminEdit(pin, table, key, changes) {
 // Columns that hold a kid's name, and columns that hold a family (group) id.
 var KID_COLS = { Girls: ['Name'], Games: ['Girl'], Review: ['Girl'], Gates: ['Girl'], Assignments: ['Girl'], Log: ['Girl'], Push: ['Girl'],
   Bonus: ['Girl'], Shop: ['Girl'], Wardrobe: ['Girl'], Words: ['Girl'], Flags: ['Girl'], Placements: ['Girl'], Chats: ['Girl'],
-  Duos: ['A', 'B'], Duels: ['Host', 'Guest'], Audit: ['Who'], Blocks: ['Girl', 'Blocked'], Reports: ['Girl', 'About'] };
+  Duos: ['A', 'B'], Duels: ['Host', 'Guest'], Audit: ['Who'], Blocks: ['Girl', 'Blocked'], Reports: ['Girl', 'About'], Usage: ['Girl'], Errors: ['Girl'] };
 // Feedback: Who is the family id ('admin' for the admin); its Group column is the family's name, for reading the tab.
 var GROUP_COLS = { Groups: ['Id'], Rewards: ['Group'], ParentPush: ['Who'], Feedback: ['Who'], Audit: ['Group'], Plans: ['Group'], Reports: ['Group'] };
 // Tabs with nothing about a kid or a family (test/sim.js checks that every other tab is in the lists above).
@@ -5265,7 +5828,7 @@ function eraseFamily(t) {
 function apiDeleteData(pin, groupId, kidName, confirm) {
   ensureSetup();
   if (['DELETE', 'מחיקה'].indexOf(String(confirm || '').trim()) < 0) throw new Error('Type the word to confirm');
-  var access = parentAccess(pin);
+  var access = parentAccess(pin, { typed: true });   // a remembered phone types the code again (finding 9)
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);
   var t, rows;
@@ -5283,7 +5846,7 @@ function apiDeleteData(pin, groupId, kidName, confirm) {
 // Everything kept about the family, as readable rows per tab (the parent's own copy).
 function apiExportData(pin, groupId) {
   ensureSetup();
-  var access = parentAccess(pin), t = privacyTarget(access, groupId, '');
+  var access = parentAccess(pin, { typed: true }), t = privacyTarget(access, groupId, '');
   var names = {}, gid = String(t.group.Id), out = {};
   t.kids.forEach(function (k) { names[k] = 1; });
   Object.keys(HEADERS).forEach(function (table) {
@@ -5618,6 +6181,308 @@ function inactiveSweep() {
   return out;
 }
 
+// ---- src/Ops.js ----
+// Operations: measuring the pilot and keeping the server healthy (night review 2026-11-01, findings 16 and 20).
+// - Feature use (specs/pilot.md, "Measuring the pilot"): the phone counts which parts a kid opened today and sends the
+//   counts with her next call; they wait in the cache and auditFlush writes them, one tiny row per kid, day and feature
+//   (tab Usage). Our own server only, nothing third party (store rule 1).
+// - The pilot's measures for the admin's Pilot card: the north star (practice days a week), D1/D7/D30 retention by
+//   sign-up week, feature use and the pilot gate (PILOT_GATE).
+// - The phones' error reports (tab Errors, 30 days): a short message, where, the device label and the app version;
+//   the kid's name only when the call that carried it was hers. Shown on the admin's Audit card.
+// - Health (specs/cloudflare.md, "Backups"): the age of the last nightly backup and of the sheet copy, and today's use of the
+//   free plan, from the properties the Worker writes (worker/api/index.js). The admin hears by push when a copy is older
+//   than 30 hours; the Audit card shows it all, in orange from 60% of a free limit.
+// - sheetSafe: the guard against formulas in text copied into the Google Sheet (cfWriteSheets in Relay.js).
+
+// The parts of the app the phone counts (useNote in Index.html sends these ids).
+var USE_FEATURES = { mission: 'Mission', review: 'Mission review', game: 'Games', talk: 'Talk with Chacho', duel: 'Word Duel',
+  boss: 'Boss Battle', talktap: 'Talk & Tap', tug: 'Tug of War', shop: 'Shop', studio: 'Studio', words: 'My words',
+  journey: 'Journey tab', play: 'Play tab', pet: 'Pet tab', me: 'Me tab', test: 'Level test', gate: 'Gate challenge',
+  nest: 'Nest lesson', playground: 'Nest playground' };
+// Calls whose first argument is the kid's name and that check her PIN: only these carry her counts.
+var USE_CALLS = { apiDashboard: 1, apiGameResult: 1, apiMissionResult: 1, apiChatResult: 1, apiNestResult: 1, apiShop: 1 };
+var OPS = { errKeepDays: 30, errPerDay: 300, queueMax: 2000, healthHours: 30, warnShare: 0.6 };
+// The pilot's written gate (specs/pilot.md): checked in the window from..to. At least week4Share% of the kids practise on
+// week4Days days or more in their fourth week, and the parents' NPS (from the Feedback stars) is at least nps.
+var PILOT_GATE = { from: '2026-11-23', to: '2026-11-27', week4Days: 2, week4Share: 60, nps: 30, northStar: 4 };
+
+// Called by doPost after every call: the counts and error reports the phone sent with it.
+function opsNote(req, ok) {
+  if (!req) return;
+  var kid = null;
+  try { if (ok && USE_CALLS[req.fn]) kid = findGirl(String((req.args || [])[0] || '')) || null; } catch (e) {}
+  if (kid && req.use) useNote(kid, req.use);
+  if (req.err) errNote(kid, req.err, req.v);
+}
+
+// A small queue in the cache (kept over a restart on Cloudflare: the AQ prefix, platform/gas.js).
+function opsQueue(key, change, empty) {
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(1500)) return;
+  try {
+    var c = CacheService.getScriptCache(), q;
+    try { q = JSON.parse(c.get(key) || 'null') || empty; } catch (e) { q = empty; }
+    c.put(key, JSON.stringify(change(q)), 21600);
+  } finally { lock.releaseLock(); }
+}
+function opsTake(key, empty) {
+  var lock = LockService.getScriptLock(), q = empty;
+  if (!lock.tryLock(5000)) return empty;
+  try {
+    var c = CacheService.getScriptCache();
+    try { q = JSON.parse(c.get(key) || 'null') || empty; } catch (e) { q = empty; }
+    c.remove(key);
+  } finally { lock.releaseLock(); }
+  return q;
+}
+
+// use = { 'yyyy-MM-dd': { feature: opens } }, at most the last 3 days.
+function useNote(kid, use) {
+  try {
+    if (!use || typeof use !== 'object') return;
+    var t = today(), from = addDays(t, -3), add = {};
+    Object.keys(use).slice(0, 5).forEach(function (d) {
+      var day = use[d];
+      if (!/^\d{4}-\d\d-\d\d$/.test(d) || d < from || d > t || !day || typeof day !== 'object') return;
+      Object.keys(day).forEach(function (f) {
+        var n = Math.floor(Number(day[f]));
+        if (USE_FEATURES.hasOwnProperty(f) && n > 0) add[d + '|' + kid.Name + '|' + f] = Math.min(n, 50);
+      });
+    });
+    var keys = Object.keys(add);
+    if (!keys.length) return;
+    opsQueue('AQU', function (q) {
+      var size = Object.keys(q).length;
+      keys.forEach(function (k) { if (q[k] || size < OPS.queueMax) { if (!q[k]) size++; q[k] = (q[k] || 0) + add[k]; } });
+      return q;
+    }, {});
+  } catch (e) { console.error(e); }
+}
+
+// No personal data: addresses lose their query and #part (a kid's personal link carries her PIN), emails go.
+function errClean(s, max) {
+  return String(s == null ? '' : s)
+    .replace(/https?:\/\/[^\s)'"]+/g, function (u) { return u.replace(/[?#].*$/, '').replace(/^https?:\/\/[^\/]+/, ''); })
+    .replace(/[^\s@]+@[^\s@]+\.[^\s@]+/g, '(email)').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, max);
+}
+
+// errs = [{ msg, where, at }] (the phone sends at most 5 at a time and 10 a day); at most errPerDay rows a day in all.
+function errNote(kid, errs, v) {
+  try {
+    if (!Array.isArray(errs) || !errs.length) return;
+    var c = CacheService.getScriptCache(), dk = 'EC:' + today(), n = Number(c.get(dk)) || 0;
+    if (n >= OPS.errPerDay) return;
+    var rows = errs.slice(0, 5).map(function (e) {
+      e = e || {};
+      var at = Number(e.at), now = Date.now();
+      return { Timestamp: new Date(at > now - 3 * 86400000 && at <= now ? at : now).toISOString(), Date: today(), Girl: kid ? kid.Name : '',
+        Where: errClean(e.where, 60), Message: errClean(e.msg, 200), Device: REQ_DEV, App: errClean(v, 12) };
+    }).filter(function (r) { return r.Message; });
+    if (!rows.length) return;
+    c.put(dk, String(n + rows.length), 86400);
+    opsQueue('AQE', function (q) { return q.concat(rows).slice(-200); }, []);
+  } catch (e) { console.error(e); }
+}
+
+// Called by auditFlush: the waiting counts and error reports, one write per tab.
+function opsFlush() {
+  try {
+    var u = opsTake('AQU', {});
+    opsAppend('Usage', Object.keys(u).map(function (k) {
+      var p = k.split('|');
+      return { Date: p[0], Girl: p.slice(1, -1).join('|'), Feature: p[p.length - 1], Opens: u[k] };
+    }));
+    opsAppend('Errors', opsTake('AQE', []));
+  } catch (e) { console.error(e); }
+}
+function opsAppend(table, rows) {
+  if (!rows.length) return;
+  var sh = sheet(table);
+  if (!sh) return;
+  var head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  sh.getRange(sh.getLastRow() + 1, 1, rows.length, head.length).setValues(rows.map(function (r) {
+    return head.map(function (h) { return h === 'Timestamp' ? new Date(r.Timestamp) : r[h] === undefined ? '' : r[h]; });
+  }));
+  invalidate(table);
+}
+
+// Nightly (platformTick): error reports older than 30 days go.
+function opsSweep() {
+  var limit = addDays(today(), -OPS.errKeepDays), rows = readTable('Errors');
+  if (!rows.length || String(rows[0].Date).slice(0, 10) >= limit) return 0;
+  return eraseRows('Errors', function (o) { return String(o.Date instanceof Date ? fmt(o.Date) : o.Date).slice(0, 10) < limit; });
+}
+
+// The admin's Audit card: the phones' errors of the last `days` days, the same message counted once with how often.
+function errSummary(days) {
+  var from = addDays(today(), 1 - days), g = {};
+  readTable('Errors').forEach(function (r) {
+    var d = String(r.Date).slice(0, 10);
+    if (d < from) return;
+    var k = r.Where + '|' + r.Message, x = g[k] = g[k] || { msg: String(r.Message), where: String(r.Where), n: 0, last: '', app: '', kids: {}, devices: {} };
+    x.n++;
+    if (d >= x.last) { x.last = d; x.app = String(r.App || ''); }
+    if (r.Girl) x.kids[r.Girl] = 1;
+    if (r.Device) x.devices[r.Device] = 1;
+  });
+  var list = Object.keys(g).map(function (k) { var x = g[k]; return { msg: x.msg, where: x.where, n: x.n, last: x.last, app: x.app, kids: Object.keys(x.kids).length, devices: Object.keys(x.devices) }; });
+  list.sort(function (a, b) { return b.n - a.n || (a.last < b.last ? 1 : -1); });
+  return { total: list.reduce(function (s, x) { return s + x.n; }, 0), list: list.slice(0, 20) };
+}
+
+// ---------- Health ----------
+
+function healthInfo() {
+  var p = PropertiesService.getScriptProperties(), now = Date.now(), onCf = typeof PLATFORM !== 'undefined';
+  var hours = function (ms) { return ms ? Math.round((now - ms) / 360000) / 10 : null; };
+  var parse = function (k) { try { return JSON.parse(p.getProperty(k) || 'null'); } catch (e) { return null; } };
+  var backup = parse('backup:last');
+  var copyAt = Date.parse(p.getProperty(onCf ? 'export:last' : 'CF_MIRROR_AT') || '') || 0;
+  var use = onCf ? parse('use:' + new Date(now).toISOString().slice(0, 10)) : null;
+  var warn = [];
+  if (onCf) {
+    if (!backup) warn.push('No nightly backup yet (the first runs after 02:00).');
+    else if (hours(backup.at) > OPS.healthHours) warn.push('The last backup is ' + Math.round(hours(backup.at)) + ' hours old.');
+    if (!copyAt) warn.push('The sheet copy has not run yet.');
+    else if (hours(copyAt) > OPS.healthHours) warn.push('The sheet copy is ' + Math.round(hours(copyAt)) + ' hours old.');
+  }
+  var out = { server: onCf ? 'cloudflare' : 'apps script', hours: OPS.healthHours, warn: warn,
+    backup: backup ? { day: backup.day, at: backup.at, hours: hours(backup.at), bytes: backup.bytes, rows: backup.rows } : null,
+    copy: copyAt ? { at: copyAt, hours: hours(copyAt) } : null, use: null };
+  if (use) {
+    var lim = use.limits || { api: 100000, rows: 100000 };
+    out.use = { calls: use.api || 0, rows: use.rows || 0, errors: use.errors || 0, callsPct: Math.round(100 * (use.api || 0) / lim.api),
+      rowsPct: Math.round(100 * (use.rows || 0) / lim.rows), limits: lim, at: use.at || null };
+    if (out.use.callsPct >= OPS.warnShare * 100) warn.push("Today's server calls are at " + out.use.callsPct + '% of the free plan.');
+    if (out.use.rowsPct >= OPS.warnShare * 100) warn.push("Today's rows written are at " + out.use.rowsPct + '% of the free plan.');
+  }
+  return out;
+}
+
+// Once a day (platformTick, 10:00): a push to the admin when the backup or the sheet copy is older than 30 hours.
+function healthCheck() {
+  var h = healthInfo(), late = h.warn.filter(function (w) { return /backup|copy/.test(w); });
+  if (late.length) notifyAdmin({ title: 'Chacho server: a copy is late', body: late.join(' ') });
+  return late.length;
+}
+
+// The admin's light check when the admin view opens (the Audit card shows the details).
+function apiHealth(pin) {
+  ensureSetup();
+  if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can see this');
+  var h = healthInfo();
+  h.errors = errSummary(1).total;
+  return h;
+}
+
+// ---------- The pilot's measures (the admin's Pilot card) ----------
+
+// Days with practice per kid: a task or mission (Log), a game round (Games), a talk with Chacho (Chats).
+function practiceDays() {
+  var active = {};
+  var add = function (name, d) { d = String(d || '').slice(0, 10); if (name && d) (active[name] = active[name] || {})[d] = 1; };
+  readTable('Log').forEach(function (l) { add(l.Girl, l.DoneOn || l.Date); });
+  readTable('Games').forEach(function (g) { add(g.Girl, g.Date); });
+  readTable('Chats').forEach(function (r) { add(r.Girl, r.Date); });
+  return active;
+}
+
+// A kid's first pilot day: her family's Joined day, or Settings.PilotFrom for a family from before the invite link.
+function pilotStarts() {
+  var from = String(getSetting('PilotFrom') || today()).slice(0, 10), gs = {};
+  groups().forEach(function (g) { gs[String(g.Id)] = String(g.Joined || from).slice(0, 10); });
+  return readTable('Girls').map(function (k) { return { name: k.Name, start: gs[groupOf(k)] || from, before: !gs[groupOf(k)] || gs[groupOf(k)] === from, nest: isNest(k) }; });
+}
+
+function pilotMeasure() {
+  var t = today(), active = practiceDays(), kids = pilotStarts();
+  var count = function (k, a, b) { return Object.keys(active[k.name] || {}).filter(function (d) { return d >= a && d <= b; }).length; };
+  var any = function (k, a, b) { return count(k, a, b) > 0; };
+
+  // North star: practice days in the last 7 days (kids in the pilot for 7 days or more), and per week (Sunday to Saturday).
+  var last7 = kids.filter(function (k) { return k.start <= addDays(t, -6); }).map(function (k) { return count(k, addDays(t, -6), t); });
+  var sunday = addDays(t, -parseDate(t).getDay()), weeks = [];
+  for (var w = 5; w >= 0; w--) {
+    var a = addDays(sunday, -7 * w), b = addDays(a, 6), inw = kids.filter(function (k) { return k.start <= a; });
+    if (!inw.length) continue;
+    var days = inw.map(function (k) { return count(k, a, b); });
+    weeks.push({ from: a, to: b, partial: b > t, kids: inw.length, avg: Math.round(10 * days.reduce(function (s, x) { return s + x; }, 0) / inw.length) / 10,
+      atTarget: days.filter(function (x) { return x >= PILOT_GATE.northStar; }).length });
+  }
+
+  // Retention by sign-up week: D1 = practised the day after, D7 = on a day 7 to 13, D30 = on a day 30 to 36. A kid
+  // counts only once her window is over.
+  var cohorts = {};
+  kids.forEach(function (k) {
+    var wk = addDays(k.start, -parseDate(k.start).getDay());
+    var c = cohorts[wk] = cohorts[wk] || { week: wk, kids: 0, d1: [0, 0], d7: [0, 0], d30: [0, 0] };
+    c.kids++;
+    [['d1', 1, 1], ['d7', 7, 13], ['d30', 30, 36]].forEach(function (x) {
+      var a = addDays(k.start, x[1]), b = addDays(k.start, x[2]);
+      if (b >= t) return;
+      c[x[0]][1]++;
+      if (any(k, a, b)) c[x[0]][0]++;
+    });
+  });
+
+  // Feature use from the Usage tab: kids who opened each part and how often, last 7 and 28 days.
+  var use = {};
+  Object.keys(USE_FEATURES).forEach(function (f) { use[f] = { id: f, label: USE_FEATURES[f], kids7: {}, opens7: 0, kids28: {}, opens28: 0 }; });
+  readTable('Usage').forEach(function (r) {
+    var u = use[r.Feature], d = String(r.Date).slice(0, 10), n = Number(r.Opens) || 0;
+    if (!u || d > t) return;
+    if (d > addDays(t, -28)) { u.kids28[r.Girl] = 1; u.opens28 += n; }
+    if (d > addDays(t, -7)) { u.kids7[r.Girl] = 1; u.opens7 += n; }
+  });
+  var features = Object.keys(use).map(function (f) {
+    var u = use[f];
+    return { id: f, label: u.label, kids7: Object.keys(u.kids7).length, opens7: u.opens7, kids28: Object.keys(u.kids28).length, opens28: u.opens28 };
+  }).sort(function (a, b) { return b.kids28 - a.kids28 || b.opens28 - a.opens28; });
+
+  // The gate: kids with four full weeks, practising week4Days+ days in days 21 to 27; NPS from each family's latest stars.
+  var done4 = kids.filter(function (k) { return addDays(k.start, 27) < t; });
+  var still = done4.filter(function (k) { return count(k, addDays(k.start, 21), addDays(k.start, 27)) >= PILOT_GATE.week4Days; }).length;
+  var latest = {};
+  readTable('Feedback').forEach(function (f) { if (f.Who !== 'admin' && Number(f.Score) > 0) latest[f.Who] = Number(f.Score); });
+  var scores = Object.keys(latest).map(function (k) { return latest[k]; });
+  var nps = scores.length ? Math.round(100 * (scores.filter(function (s) { return s === 5; }).length - scores.filter(function (s) { return s <= 3; }).length) / scores.length) : null;
+  var share = done4.length ? Math.round(100 * still / done4.length) : null;
+  var pass = share !== null && share >= PILOT_GATE.week4Share && nps !== null && nps >= PILOT_GATE.nps;
+  var state = t < PILOT_GATE.from ? 'before' : t <= PILOT_GATE.to ? 'open' : 'after';
+
+  return {
+    northStar: { target: PILOT_GATE.northStar, kids: last7.length, avg: last7.length ? Math.round(10 * last7.reduce(function (s, x) { return s + x; }, 0) / last7.length) / 10 : null,
+      atTarget: last7.filter(function (x) { return x >= PILOT_GATE.northStar; }).length, weeks: weeks },
+    cohorts: Object.keys(cohorts).sort().map(function (k) { return cohorts[k]; }),
+    features: features,
+    gate: { from: PILOT_GATE.from, to: PILOT_GATE.to, state: state, week4Days: PILOT_GATE.week4Days, target: PILOT_GATE.week4Share, npsTarget: PILOT_GATE.nps,
+      kids: done4.length, still: still, share: share, nps: nps, answers: scores.length, pass: pass }
+  };
+}
+
+// ---------- Random codes ----------
+
+// A random number in [0, 1) from the platform's random UUID (crypto on both servers), for PINs, codes and ids that must not
+// be guessable (night review 2026-11-01, finding 23: Math.random is predictable). Math.random stays for game seeds.
+function secureRandom() {
+  var h = Utilities.getUuid().replace(/-/g, '');
+  return parseInt(h.slice(0, 12), 16) / 281474976710656;
+}
+function secureCode(n) {
+  var s = '';
+  while (s.length < n) s += Math.floor(secureRandom() * 36).toString(36);
+  return s;
+}
+
+// ---------- The sheet ----------
+
+// Text copied into the Google Sheet (the nightly copy, cfWriteSheets in Relay.js) that starts with = + - @ or a tab or
+// return would be read as a formula there: a leading ' keeps it text (Sheets hides the ' and getValues() leaves it out).
+function sheetSafe(v) {
+  return typeof v === 'string' && /^[=+\-@\t\r]/.test(v) ? "'" + v : v;
+}
+
 // ---- platform/overrides.js ----
 // Platform overrides: run after src/*.js, in the same scope (platform/build.js appends this file inside the server
 // closure; test/sim.js loads it after the sources when SIM_PLATFORM=1). PLATFORM is given by the host.
@@ -5724,6 +6589,8 @@ function platformTick() {
   if (h) job('dailyReminder:' + h, h, function () { dailyReminder(h); });
   job('parentSummary', Number(getSetting('ParentSummaryHour')), parentSummary);
   job('retentionSweep', 3, retentionSweep);
+  job('opsSweep', 3, opsSweep);
+  job('healthCheck', 10, healthCheck);
   try { auditFlush(); } catch (e) { console.error('auditFlush: ' + ((e && e.message) || e)); }
   return ran;
 }
@@ -5732,12 +6599,12 @@ function platformPushTtl() { return PUSH_TTL; }
 
 // 4. The relay (src/Relay.js) belongs to Apps Script: here it never relays, and its admin calls refuse.
 cfIntercept = function () { return null; };
-apiCfExport = function () { throw new Error('Not on this server: use /admin/export'); };
-apiCfMode = function () { throw new Error('Not on this server'); };
+cfExport = function () { throw new Error('Not on this server: use /admin/export'); };
+cfSetMode = function () { throw new Error('Not on this server'); };
 cfMirror = function () { throw new Error('Not on this server'); };
 
   return {
-    doPost: doPost, tick: platformTick, removeSubscriptions: removeSubscriptions, ensureSetup: ensureSetup, notifyAdmin: notifyAdmin,
+    doPost: doPost, tick: platformTick, adminPassSet: adminPassSet, removeSubscriptions: removeSubscriptions, ensureSetup: ensureSetup, notifyAdmin: notifyAdmin,
     pushTtl: platformPushTtl, startRequest: function () { TABLES = {}; },
     eval: PLATFORM.allowEval ? function (s) { return eval(s); } : null
   };

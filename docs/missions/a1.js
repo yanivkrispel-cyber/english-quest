@@ -1313,7 +1313,7 @@ window.EQ_MISSIONS.a1 = [
 },
 // Month 2 (2026-11-01): the next topics of each section, about four more weeks.
 {
-  id: 'a1g10', url: 'https://test-english.com/grammar-points/a1/whose-possessive-s/', type: 'grammar',
+  id: 'a1g10', type: 'grammar',
   title: 'Whose? It\'s Maya\'s', kid: 'Whose is it?', he: 'של מי זה? (whose, \'s)',
   dinner: 'Whose plate has the most colours tonight?',
   hook: { q: 'Whose eggs are the biggest of all the birds?', o: ['The ostrich\'s', 'The eagle\'s', 'The penguin\'s'], a: 0,
@@ -1354,7 +1354,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g11', url: 'https://test-english.com/grammar-points/a1/at-in-on-prepositions-time/', type: 'grammar',
+  id: 'a1g11', type: 'grammar',
   title: 'at, in, on: time', kid: 'When is it?', he: 'מילות זמן: at, in, on',
   dinner: 'What is your favourite day of the week, and why?',
   hook: { q: 'In Israel, in which month is the shortest day of the year?', o: ['June', 'December', 'April'], a: 1,
@@ -1391,7 +1391,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g12', url: 'https://test-english.com/grammar-points/a1/at-in-on-prepositions-of-place/', type: 'grammar',
+  id: 'a1g12', type: 'grammar',
   title: 'at, in, on: place', kid: 'Where is it?', he: 'איפה זה? at, in, on למקום',
   dinner: 'Where do you like to be on a hot day?',
   hook: { q: 'Where do almost all penguins live?', o: ['In the south of the world', 'At the North Pole', 'In the desert'], a: 0,
@@ -1428,7 +1428,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g13', url: 'https://test-english.com/grammar-points/a1/can-cant/', type: 'grammar',
+  id: 'a1g13', type: 'grammar',
   title: 'can, can\'t', kid: 'What can you do?', he: 'יכול או לא יכול: can, can\'t',
   dinner: 'What is something new you can do this year?',
   hook: { q: 'Which of these animals can\'t jump?', o: ['A kangaroo', 'An elephant', 'A frog'], a: 1,
@@ -1466,7 +1466,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g14', url: 'https://test-english.com/grammar-points/a1/present-continuous/', type: 'grammar',
+  id: 'a1g14', type: 'grammar',
   title: 'I\'m doing, she\'s doing', kid: 'What are you doing now?', he: 'מה קורה עכשיו? (present continuous)',
   dinner: 'What is everyone doing right now, at this table?',
   hook: { q: 'Right now, is the Earth moving?', o: ['Yes, it is.', 'No, it isn\'t.'], a: 0,
@@ -1503,7 +1503,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g15', url: 'https://test-english.com/grammar-points/a1/present-simple-present-continuous/', type: 'grammar',
+  id: 'a1g15', type: 'grammar',
   title: 'I play or I\'m playing?', kid: 'Every day or right now?', he: 'כל יום או עכשיו? (simple / continuous)',
   dinner: 'What do you usually do after school, and what are you doing this evening?',
   hook: { q: 'What do young sunflowers do every day?', o: ['They turn to follow the sun', 'They close at twelve o\'clock', 'They change colour'], a: 0,
@@ -1541,7 +1541,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g16', url: 'https://test-english.com/grammar-points/a1/imperative-sit-dont-talk/', type: 'grammar',
+  id: 'a1g16', type: 'grammar',
   title: 'Sit down! Don\'t run!', kid: 'Mix it, cut it, try it!', he: 'הוראות: Sit down! Don\'t run!',
   dinner: 'What can you cook or make, and what are the steps?',
   hook: { q: 'What do you need to make popcorn?', o: ['Corn', 'Rice', 'Potatoes'], a: 0,
@@ -1579,7 +1579,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g17', url: 'https://test-english.com/grammar-points/a1/was-were/', type: 'grammar',
+  id: 'a1g17', type: 'grammar',
   title: 'was, were', kid: 'Where were you?', he: 'היה, היו: was, were',
   dinner: 'What was the best part of your day today?',
   hook: { q: 'Long ago, woolly mammoths were alive. What were they covered in?', o: ['Long hair', 'Feathers', 'Scales'], a: 0,
@@ -1616,7 +1616,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1v06', url: 'https://test-english.com/vocabulary/a1/days-months-seasons-a1-english-vocabulary/', type: 'vocabulary',
+  id: 'a1v06', type: 'vocabulary',
   title: 'Days, months and seasons', kid: 'Days and months', he: 'ימים, חודשים ועונות',
   dinner: 'What is your favourite season, and why?',
   hook: { q: 'How many days are there in February, most years?', o: ['28', '30', '31'], a: 0,
@@ -1667,7 +1667,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1v07', url: 'https://test-english.com/vocabulary/a1/food-and-meals-a1-english-vocabulary/', type: 'vocabulary',
+  id: 'a1v07', type: 'vocabulary',
   title: 'Food and meals', kid: 'Yummy food', he: 'אוכל וארוחות',
   dinner: 'What is on your plate tonight? Can you name three things in English?',
   hook: { q: 'Which fruit has its seeds on the outside?', o: ['The strawberry', 'The apple', 'The orange'], a: 0,
@@ -1717,7 +1717,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1v08', url: 'https://test-english.com/vocabulary/a1/countries-and-nationalities-a1-english-vocabulary/', type: 'vocabulary',
+  id: 'a1v08', type: 'vocabulary',
   title: 'Countries and nationalities', kid: 'Around the world', he: 'מדינות ולאומים',
   dinner: 'Which country\'s food would you like to try?',
   hook: { q: 'Which country has the most people in the world?', o: ['India', 'Italy', 'The USA'], a: 0,
@@ -1768,7 +1768,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1v09', url: 'https://test-english.com/vocabulary/a1/shops-and-shopping-a1-english-vocabulary/', type: 'vocabulary',
+  id: 'a1v09', type: 'vocabulary',
   title: 'Shops and shopping', kid: 'Let\'s go shopping!', he: 'חנויות וקניות',
   dinner: 'If you had your own shop, what would it sell?',
   hook: { q: 'When did a supermarket first give people shopping trolleys?', o: ['In 1937', 'In 1837', 'In 2007'], a: 0,
@@ -1818,7 +1818,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1u05', url: 'https://test-english.com/use-of-english/a1/a1-english-test-5-text-multiple-choice-gaps/', type: 'use-of-english',
+  id: 'a1u05', type: 'use-of-english',
   title: 'A goat at the beach', kid: 'A goat at the beach!', he: 'חדשות: עז בחוף הים',
   dinner: 'Which animal would you take to the beach, and what would it do there?',
   hook: { q: 'Can goats climb trees?', o: ['Yes, they can.', 'No, they can\'t.'], a: 0,
@@ -1854,7 +1854,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1u06', url: 'https://test-english.com/use-of-english/a1/a1-english-test-6-multiple-choice-questions/', type: 'use-of-english',
+  id: 'a1u06', type: 'use-of-english',
   title: 'A snowman in Eilat', kid: 'Snow in Eilat?', he: 'חדשות: איש שלג באילת',
   dinner: 'What would you do on a snowy day?',
   hook: { q: 'Does it ever snow in Jerusalem?', o: ['Yes, sometimes, in winter.', 'No, never.'], a: 0,
@@ -1888,7 +1888,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l10', url: 'https://test-english.com/listening/a1/the-house-my-favourite-room-a1-english-listening-test/', type: 'listening',
+  id: 'a1l10', type: 'listening',
   title: 'My favourite room', kid: 'My favourite room', he: 'הבית: החדר האהוב עליי',
   dinner: 'Which room in our home do you like best, and why?',
   hook: { q: 'An igloo is a house made of…', o: ['snow', 'wood', 'glass'], a: 0,
@@ -1945,7 +1945,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l11', url: 'https://test-english.com/listening/a1/whats-your-job-a1-english-listening-test/', type: 'listening',
+  id: 'a1l11', type: 'listening',
   title: 'What\'s your job?', kid: 'Jobs Day at school', he: 'מה העבודה שלך? מקצועות',
   dinner: 'What job would you like to do one day, and why?',
   hook: { q: 'In 1963, Valentina Tereshkova was the first woman to go to…', o: ['space', 'the North Pole', 'the top of Mount Everest'], a: 0,
@@ -2005,7 +2005,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l12', url: 'https://test-english.com/listening/a1/invitations-would-you-like-to-a1-english-listening-test/', type: 'listening',
+  id: 'a1l12', type: 'listening',
   title: 'Would you like to come?', kid: 'Come to my party!', he: 'הזמנות: Would you like to...?',
   dinner: 'Who would you like to invite for a fun day out, and where would you go?',
   hook: { q: 'At a beach in Israel, which flag means "You can swim here"?', o: ['white', 'red', 'black'], a: 0,
@@ -2061,7 +2061,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l13', url: 'https://test-english.com/listening/a1/what-did-you-do-last-weekend-a1-english-listening-test/', type: 'listening',
+  id: 'a1l13', type: 'listening',
   title: 'What did you do last weekend?', kid: 'My fun weekend', he: 'מה עשיתם בסוף השבוע? (Past simple)',
   dinner: 'What was the best part of your weekend?',
   hook: { q: 'Who was the first person to walk on the Moon, in 1969?', o: ['Neil Armstrong', 'Yuri Gagarin', 'Isaac Newton'], a: 0,
@@ -2118,7 +2118,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l14', url: 'https://test-english.com/listening/a1/ordering-at-the-restaurant-a1-listening-test/', type: 'listening',
+  id: 'a1l14', type: 'listening',
   title: 'Lunch at the café', kid: 'Lunch at the café', he: 'מזמינים אוכל במסעדה',
   dinner: 'If you had a café, what would you put on the menu?',
   hook: { q: 'Hummus is made mostly from…', o: ['chickpeas', 'potatoes', 'rice'], a: 0,
@@ -2177,7 +2177,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l15', url: 'https://test-english.com/listening/a1/free-time-listening-test/', type: 'listening',
+  id: 'a1l15', type: 'listening',
   title: 'Free time', kid: 'What do you do for fun?', he: 'שעות הפנאי: מה עושים בזמן החופשי',
   dinner: 'What is your favourite thing to do on a free afternoon?',
   hook: { q: 'Where do people think the first kites were made?', o: ['in China', 'in Brazil', 'in England'], a: 0,
@@ -2230,7 +2230,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l16', url: 'https://test-english.com/listening/a1/city-transport-a1-english-listening-test/', type: 'listening',
+  id: 'a1l16', type: 'listening',
   title: 'City transport', kid: 'Bus, train or bike?', he: 'תחבורה בעיר: אוטובוס, רכבת, אופניים',
   dinner: 'What is the best way to get around our town, and why?',
   hook: { q: 'In which city did the first underground train in the world start, in 1863?', o: ['London', 'Paris', 'New York'], a: 0,
@@ -2284,7 +2284,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l17', url: 'https://test-english.com/listening/a1/describing-people-a1-english-listening-test/', type: 'listening',
+  id: 'a1l17', type: 'listening',
   title: 'Describing people', kid: 'Where is my friend?', he: 'מתארים אנשים: שיער, עיניים, בגדים',
   dinner: 'Can you describe a friend, so I can guess who it is?',
   hook: { q: 'What eye colour do most people in the world have?', o: ['brown', 'blue', 'green'], a: 0,
@@ -2338,7 +2338,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1r05', url: 'https://test-english.com/reading/a1/my-life-abroad-a1-english-reading-test/', type: 'reading',
+  id: 'a1r05', type: 'reading',
   title: 'My life abroad', kid: 'A year in Japan', he: 'החיים שלי בחו״ל: שנה ביפן',
   dinner: 'If we lived in another country for a year, which country would you choose?',
   hook: { q: 'In many schools in Japan, who cleans the classrooms?', o: ['the students', 'the teachers', 'robots'], a: 0,
@@ -2380,7 +2380,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1r06', url: 'https://test-english.com/reading/a1/top-things-that-i-do-a1-english-reading-test/', type: 'reading',
+  id: 'a1r06', type: 'reading',
   title: 'Top things that I do', kid: 'My top five things', he: 'הדברים שהכי כיף לי לעשות',
   dinner: 'What are your top three things to do, and which one is number one?',
   hook: { q: 'How many pieces are there on a chess board at the start of a game?', o: ['32', '16', '64'], a: 0,
@@ -2422,7 +2422,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1r07', url: 'https://test-english.com/reading/a1/a-day-in-the-life-of-an-airline-pilot-a1-english-reading-test/', type: 'reading',
+  id: 'a1r07', type: 'reading',
   title: 'A day in the life of a pilot', kid: 'Flying a big plane', he: 'יום בחיים של טייסת מטוסי נוסעים',
   dinner: 'Which city would you like to fly to, and why?',
   hook: { q: 'How high do big passenger planes usually fly?', o: ['about 10 kilometres', 'about 1 kilometre', 'about 100 kilometres'], a: 0,
@@ -2464,7 +2464,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1r08', url: 'https://test-english.com/reading/a1/daily-routines-sportswoman/', type: 'reading',
+  id: 'a1r08', type: 'reading',
   title: 'A sportswoman\'s day', kid: 'A swimmer\'s busy day', he: 'סדר היום של ספורטאית',
   dinner: 'Which sport would you like to try, and why?',
   hook: { q: 'How long is an Olympic swimming pool?', o: ['50 metres', '25 metres', '100 metres'], a: 0,
@@ -2506,7 +2506,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1u07', url: 'https://test-english.com/use-of-english/a1/a1-english-test-7-text-with-multiple-choice-gaps/', type: 'use-of-english',
+  id: 'a1u07', type: 'use-of-english',
   title: 'Speedy wins the race', kid: 'A very fast tortoise?', he: 'חדשות מצחיקות: צב במרוץ',
   dinner: 'If you had a pet tortoise, what name would you give it?',
   hook: { q: 'How long can a giant tortoise live?', o: ['more than 100 years', 'about 10 years', 'about 30 years'], a: 0,
@@ -2542,7 +2542,7 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1u08', url: 'https://test-english.com/use-of-english/a1/a1-english-test-8-multiple-choice-questions/', type: 'use-of-english',
+  id: 'a1u08', type: 'use-of-english',
   title: 'The giant watermelon', kid: 'The giant watermelon', he: 'חדשות מצחיקות: האבטיח הענק',
   dinner: 'What is your favourite fruit on a hot day?',
   hook: { q: 'How much of a watermelon is water?', o: ['about 92%', 'about 50%', 'about 20%'], a: 0,

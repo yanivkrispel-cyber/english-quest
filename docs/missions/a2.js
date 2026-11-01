@@ -1349,7 +1349,7 @@ window.EQ_MISSIONS.a2 = [
 },
 // Month 2 (2026-11-01): the next topics of each section, about four more weeks.
 {
-  id: 'a2g10', url: 'https://test-english.com/grammar-points/a2/defining-relative-clauses-who-which-that-where/', type: 'grammar',
+  id: 'a2g10', type: 'grammar',
   title: 'Who, which, that, where', kid: 'The one who...', he: 'משפטי זיקה: who, which, that, where',
   dinner: 'Who is a person that always makes you laugh?',
   hook: { q: 'Which of these is a mammal that lays eggs?', o: ['The platypus', 'The dolphin', 'The bat'], a: 0,
@@ -1389,7 +1389,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2g11', url: 'https://test-english.com/grammar-points/a2/present-perfect/', type: 'grammar',
+  id: 'a2g11', type: 'grammar',
   title: 'Present perfect: have done', kid: 'Have you ever...?', he: 'Present perfect: have / has + V3',
   dinner: 'What is something new that you have learned this week?',
   hook: { q: 'Which machine has travelled farther from Earth than anything else people have made?', o: ['Voyager 1, a space probe', 'The International Space Station', 'A jumbo jet'], a: 0,
@@ -1428,7 +1428,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2g12', url: 'https://test-english.com/grammar-points/a2/present-perfect-or-past-simple/', type: 'grammar',
+  id: 'a2g12', type: 'grammar',
   title: 'Have you ever, or when?', kid: 'Ever, or when?', he: 'Present perfect או past simple?',
   dinner: 'What is the most interesting place you have ever been to, and when did you go?',
   hook: { q: 'When did people first reach the top of Mount Everest, the highest mountain in the world?', o: ['In 1923', 'In 1953', 'In 1993'], a: 1,
@@ -1468,7 +1468,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2g13', url: 'https://test-english.com/grammar-points/a2/something-anything-nothing-etc/', type: 'grammar',
+  id: 'a2g13', type: 'grammar',
   title: 'Something, anything, nothing', kid: 'Something or nothing?', he: 'something, anything, nothing ועוד',
   dinner: 'Is there anything new you would like to learn this year?',
   hook: { q: 'Can anything get out of a black hole?', o: ['Nothing can, not even light.', 'Only light can.', 'Everything can, slowly.'], a: 0,
@@ -1507,7 +1507,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2g14', url: 'https://test-english.com/grammar-points/a2/comparative-superlative-adjectives-adverbs/', type: 'grammar',
+  id: 'a2g14', type: 'grammar',
   title: 'Bigger, the biggest, faster', kid: 'Faster, fastest!', he: 'השוואה: er, more, the most ותארי פועל',
   dinner: 'What is the funniest film you have ever seen?',
   hook: { q: 'What is the biggest animal that has ever lived on Earth?', o: ['The blue whale', 'The biggest dinosaur', 'The African elephant'], a: 0,
@@ -1547,7 +1547,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2g15', url: 'https://test-english.com/grammar-points/a2/too-too-much-too-many-enough/', type: 'grammar',
+  id: 'a2g15', type: 'grammar',
   title: 'Too, too much, too many, enough', kid: 'Too much or enough?', he: 'too, too much, too many, enough',
   dinner: 'Do you think kids have enough time to play after school?',
   hook: { q: 'Why can\'t fish live in the Dead Sea?', o: ['The water is too salty.', 'The water is too cold.', 'The water is too deep.'], a: 0,
@@ -1587,7 +1587,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2g16', url: 'https://test-english.com/grammar-points/a2/much-many-little-few-some-any/', type: 'grammar',
+  id: 'a2g16', type: 'grammar',
   title: 'Much, many, a little, a few', kid: 'How much? How many?', he: 'much, many, a little, a few, some, any',
   dinner: 'Do you spend a lot of time outside, or only a little?',
   hook: { q: 'How much of all the water on Earth is fresh water (not salty)?', o: ['About 3 in every 100 litres', 'About 30 in every 100 litres', 'About 70 in every 100 litres'], a: 0,
@@ -1626,7 +1626,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2g17', url: 'https://test-english.com/grammar-points/a2/most-most-of-the-most/', type: 'grammar',
+  id: 'a2g17', type: 'grammar',
   title: 'Most, most of, the most', kid: 'Most of us!', he: 'most, most of, the most',
   dinner: 'What do you like the most about the weekend?',
   hook: { q: 'Most of the Earth\'s surface is covered by…', o: ['water', 'land', 'ice'], a: 0,
@@ -1666,7 +1666,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2v06', url: 'https://test-english.com/vocabulary/a2/housework-a2-english-vocabulary/', type: 'vocabulary',
+  id: 'a2v06', type: 'vocabulary',
   title: 'Housework', kid: 'Helping at home', he: 'עבודות בית',
   dinner: 'Which job at home do you like doing the most?',
   hook: { q: 'One of the first vacuum cleaners (London, 1901) was so big that…', o: ['horses pulled it, and it stayed in the street', 'ten people carried it', 'it was as tall as a house'], a: 0,
@@ -1719,7 +1719,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2v07', url: 'https://test-english.com/vocabulary/a2/towns-and-cities-a2-english-vocabulary/', type: 'vocabulary',
+  id: 'a2v07', type: 'vocabulary',
   title: 'Towns and cities', kid: 'Around the town', he: 'בעיר: מקומות ודרכים',
   dinner: 'If you could build one new place in our town, what would it be?',
   hook: { q: 'In the old centre of Venice, in Italy, there are no cars. How do people get around?', o: ['by boat and on foot', 'by train', 'by underground'], a: 0,
@@ -1770,7 +1770,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2v08', url: 'https://test-english.com/vocabulary/a2/common-phrasal-verbs-a2-english-vocabulary/', type: 'vocabulary',
+  id: 'a2v08', type: 'vocabulary',
   title: 'Common phrasal verbs', kid: 'Wake up, get up!', he: 'פעלים עם מילה קטנה (phrasal verbs)',
   dinner: 'What time do you usually wake up, and what time do you get up?',
   hook: { q: 'Before alarm clocks were cheap, some towns in Britain had "knocker-uppers". What was their job?', o: ['to tap on windows and wake people up', 'to turn on the street lights', 'to give back lost keys'], a: 0,
@@ -1821,7 +1821,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2v09', url: 'https://test-english.com/vocabulary/a2/the-weather-a2-english-vocabulary/', type: 'vocabulary',
+  id: 'a2v09', type: 'vocabulary',
   title: 'The weather', kid: 'What\'s the weather like?', he: 'מזג האוויר',
   dinner: 'What is your favourite kind of weather, and why?',
   hook: { q: 'Which is hotter: a flash of lightning or the surface of the Sun?', o: ['the lightning', 'the surface of the Sun', 'they are the same'], a: 0,
@@ -1872,7 +1872,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2u05', url: 'https://test-english.com/use-of-english/a2/a2-english-test-5-text-with-multiple-choice-gaps/', type: 'use-of-english',
+  id: 'a2u05', type: 'use-of-english',
   title: 'The tortoise in the library', kid: 'Speedy the tortoise', he: 'חדשות מצחיקות: הצב שהגיע לספרייה',
   dinner: 'If you had a very slow pet, what funny name would you give it?',
   hook: { q: 'How long can a giant tortoise live?', o: ['about 15 years', 'about 40 years', 'more than 150 years'], a: 2,
@@ -1907,7 +1907,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2u06', url: 'https://test-english.com/use-of-english/a2/a2-english-test-6-multiple-choice-questions/', type: 'use-of-english',
+  id: 'a2u06', type: 'use-of-english',
   title: 'The seagull with sunglasses', kid: 'A bird with style', he: 'חדשות מצחיקות: השחף ומשקפי השמש',
   dinner: 'What is the funniest thing you have ever seen at the beach?',
   hook: { q: 'Some birds can stay in the air for months without landing. Which bird holds the record?', o: ['the common swift', 'the seagull', 'the parrot'], a: 0,
@@ -1941,7 +1941,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2l10', url: 'https://test-english.com/listening/a2/shopping-for-clothes-a2-english-listening-test/', type: 'listening',
+  id: 'a2l10', type: 'listening',
   title: 'The perfect jacket', kid: 'Finding the right jacket', he: 'קונים בגדים: מידה, צבע ומדידה', dinner: 'What is your favourite piece of clothing, and why?',
   hook: { q: 'Why is a T-shirt called a T-shirt?', o: ['It looks like the letter T.', 'It was first made for tennis.', 'It was first made for tea time.'], a: 0,
     reveal: 'Because *it looks like the letter T* when you put it flat on a table: the long body and two short sleeves.' },
@@ -1998,7 +1998,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2l11', url: 'https://test-english.com/listening/a2/new-years-resolutions-a2-english-listening-test/', type: 'listening',
+  id: 'a2l11', type: 'listening',
   title: 'Big plans for the school year', kid: 'Our plans for this year', he: 'תוכניות לשנה עם be going to', dinner: 'What is one new thing you are going to try this year?',
   hook: { q: 'In Israel, the school year usually starts on…', o: ['1 September', '1 January', '1 June'], a: 0,
     reveal: 'Usually on *1 September*! A new school year is a great time for new plans and goals.' },
@@ -2053,7 +2053,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2l12', url: 'https://test-english.com/listening/a2/talking-about-films-listening-test/', type: 'listening',
+  id: 'a2l12', type: 'listening',
   title: 'Movie night', kid: 'Which film shall we watch?', he: 'מדברים על סרטים: סוגים ודעות', dinner: 'What is the funniest film you have ever seen?',
   hook: { q: 'How many pictures does a normal cinema film show every second?', o: ['24', '2', '240'], a: 0,
     reveal: '*24 pictures every second*! They change so fast that our eyes see moving pictures.' },
@@ -2105,7 +2105,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2l13', url: 'https://test-english.com/listening/a2/future-plans-listening-test/', type: 'listening',
+  id: 'a2l13', type: 'listening',
   title: 'Plans for the weekend', kid: 'Big plans for Saturday', he: 'תוכניות: going to, will והווה מתמשך', dinner: 'What is something fun you are doing next weekend?',
   hook: { q: 'Birds fly over Israel on their way between Europe and Africa. About how many birds is that every year?', o: ['about 5 thousand', 'about 5 million', 'about 500 million'], a: 2,
     reveal: 'Experts think it is about *500 million*, in the spring and in the autumn! Israel is on one of the busiest bird "roads" in the world.' },
@@ -2160,7 +2160,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2l14', url: 'https://test-english.com/listening/a2/if-i-were-a-millionaire-second-conditional-a2-english-listening-test/', type: 'listening',
+  id: 'a2l14', type: 'listening',
   title: 'What if? A show of big ideas', kid: 'If I had a magic wand', he: 'אילו... If I had…, I would…', dinner: 'If you could have any animal as a pet, which would you choose?',
   hook: { q: 'Which bird can stay in the air for months without landing?', o: ['the common swift', 'the chicken', 'the penguin'], a: 0,
     reveal: 'The *common swift*! Scientists found that some swifts stay in the air for about ten months. They eat flying insects up there.' },
@@ -2215,7 +2215,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2l15', url: 'https://test-english.com/listening/a2/the-city-where-i-live-listening-test/', type: 'listening',
+  id: 'a2l15', type: 'listening',
   title: 'My city: Haifa', kid: 'Welcome to my city!', he: 'העיר שלי: חיפה', dinner: 'What is the best place in our town, and why?',
   hook: { q: 'Haifa has a small underground train that goes up and down Mount Carmel. How many stations does it have?', o: ['6', '16', '60'], a: 0,
     reveal: 'Only *6*! The Carmelit opened in 1959, and it is one of the smallest underground railways in the world.' },
@@ -2269,7 +2269,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2l16', url: 'https://test-english.com/listening/a2/my-friends-listening-test/', type: 'listening',
+  id: 'a2l16', type: 'listening',
   title: 'Best friends', kid: 'Friends are the best', he: 'החברים שלי: אופי ומראה', dinner: 'What do you like doing most with your friends?',
   hook: { q: 'Scientists think that some cows have a best friend. What happens when two best friends are together?', o: ['They are calmer.', 'They eat less.', 'They sleep all day.'], a: 0,
     reveal: 'They are *calmer*! In one study in England, cows\' hearts beat more slowly with their favourite friend than with a cow they didn\'t know.' },
@@ -2325,7 +2325,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2l17', url: 'https://test-english.com/listening/a2/what-were-you-doing-at-the-time-of-the-murder-past-tenses-a2-english-listening-test/', type: 'listening',
+  id: 'a2l17', type: 'listening',
   title: 'The mystery of the missing cake', kid: 'Where is the class cake?', he: 'תעלומה: past continuous ו-past simple', dinner: 'What were you doing at seven o\'clock this morning?',
   hook: { q: 'In the stories, where does the famous detective Sherlock Holmes live?', o: ['221B Baker Street', '10 Downing Street', '1 Main Street'], a: 0,
     reveal: 'At *221B Baker Street* in London! Sherlock Holmes is made up, but today a Sherlock Holmes museum on Baker Street has the number 221B on its door.' },
@@ -2381,7 +2381,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2r05', url: 'https://test-english.com/reading/a2/should-kids-help-with-household-chores-a2-english-reading-test/', type: 'reading',
+  id: 'a2r05', type: 'reading',
   title: 'Chores: yes or no?', kid: 'Should kids help at home?', he: 'האם ילדים צריכים לעזור בבית?', dinner: 'Which job at home do you think is the most important?',
   hook: { q: 'The first big vacuum cleaner in London, in 1901, was enormous. How did it get to people\'s homes?', o: ['A horse pulled it.', 'A boy carried it.', 'It came by boat.'], a: 0,
     reveal: '*A horse pulled it!* Hubert Cecil Booth\'s machine stayed in the street, and long pipes went into the house through the windows.' },
@@ -2422,7 +2422,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2r06', url: 'https://test-english.com/reading/a2/three-popular-inventions-from-the-1920s-reading-test/', type: 'reading',
+  id: 'a2r06', type: 'reading',
   title: 'Three inventions from the 1920s', kid: 'Old ideas we still love', he: 'שלוש המצאות משנות ה-20', dinner: 'Which invention could you not live without?',
   hook: { q: 'In the 1920s, a new machine brought music and news into people\'s homes. What was it?', o: ['the radio', 'the television', 'the computer'], a: 0,
     reveal: '*The radio*! The first radio stations started in the early 1920s, and soon many families listened together in the evening.' },
@@ -2463,7 +2463,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2r07', url: 'https://test-english.com/reading/a2/a-really-popular-summer-festival-in-the-uk-a2-english-reading-test/', type: 'reading',
+  id: 'a2r07', type: 'reading',
   title: 'Carnival in the streets of London', kid: 'A giant street party', he: 'פסטיבל קיץ ענק בלונדון', dinner: 'What would a perfect festival in our town have?',
   hook: { q: 'In the 1940s, people in Trinidad and Tobago made steel drums for music from…', o: ['old oil barrels', 'old bicycles', 'wood'], a: 0,
     reveal: 'From *old oil barrels*! The drums are called steel pans, and today steel bands play them all over the world.' },
@@ -2503,7 +2503,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2r08', url: 'https://test-english.com/reading/a2/three-experiences-i-have-had-a2-english-reading-test/', type: 'reading',
+  id: 'a2r08', type: 'reading',
   title: 'Three things I\'ve done', kid: 'Ella\'s three big moments', he: 'שלוש חוויות שלי (present perfect)', dinner: 'What is the most exciting thing you have ever done?',
   hook: { q: 'The Ramon Crater in the Negev is about 40 kilometres long. How did it form?', o: ['Water and wind, over millions of years', 'A meteorite hit the Earth', 'People dug it'], a: 0,
     reveal: '*Water and wind*, over millions of years! It isn\'t from a meteorite: it\'s a special kind of valley called a makhtesh.' },
@@ -2544,7 +2544,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2u07', url: 'https://test-english.com/use-of-english/a2/a2-english-test-7-text-with-multiple-choice-gaps/', type: 'use-of-english',
+  id: 'a2u07', type: 'use-of-english',
   title: 'The giant watermelon', kid: 'A watermelon as big as me', he: 'חדשות מצחיקות: האבטיח הענק', dinner: 'If you had a garden, what would you grow?',
   hook: { q: 'About how much of a watermelon is water?', o: ['about 50%', 'about 70%', 'about 92%'], a: 2,
     reveal: 'About *92%*! That is why it is so good on a hot day. Today\'s story is about a very big one. The story is made up!' },
@@ -2578,7 +2578,7 @@ window.EQ_MISSIONS.a2 = [
   ]
 },
 {
-  id: 'a2u08', url: 'https://test-english.com/use-of-english/a2/a2-english-test-8-multiple-choice-questions/', type: 'use-of-english',
+  id: 'a2u08', type: 'use-of-english',
   title: 'The robot that went for a walk', kid: 'The runaway robot', he: 'חדשות מצחיקות: הרובוט שיצא לטיול', dinner: 'If you had a robot helper, what job would you give it?',
   hook: { q: 'The word "robot" first appeared in…', o: ['a play in 1920', 'a science book in 1820', 'a film in 1990'], a: 0,
     reveal: 'In *a play in 1920*! The Czech writer Karel Čapek used it, and the idea for the word came from his brother Josef. Today\'s story is made up!' },

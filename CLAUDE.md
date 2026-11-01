@@ -269,7 +269,10 @@ top-level name starts with nk/NK, and nest-check fails on a name shared with Ind
 `test/nest-games.html?all` (lists screens that scroll) or `?unit=n07&game=give&age=4`. A new audio folder needs its path in
 `run_worker_first` (wrangler.jsonc), or Safari plays nothing.
 **Chacho is a he** (Hebrew: צ׳אצ׳ו אומר, שואל). Nest pictures are clay stickers made for the app (`tools/NEST-ART.md`), never emoji.
-**The Nest kid hears no Hebrew** (owner, 2026-10-27): Chacho (Chatterbox, `specs/voice.md`) shows each game; Hebrew is text for grown-ups only.
+**Hebrew in the Nest: decided, coming** (owner, 2026-10-31): Chacho will say short Hebrew *instructions* only, never translations,
+off from age 6 (package B, voice samples first), built on its own branch. Until it lands the kid hears only English: Chacho (Chatterbox,
+`specs/voice.md`) shows each game, and Hebrew is text for grown-ups. Grown-ups only, screen time and no numbers for Nest kids
+(2026-11-01): `specs/nest.md`; parents' weekly sentence: `src/Learned.js`.
 
 The audit trail (built 2026-10-27, spec `specs/audit.md`, server `src/Audit.js`, tab Audit, SETUP v19): opens, wrong PINs,
 grown-ups' changes and hand edits in the sheet, with a coarse device label the app sends (`dev` in every call); the admin's

@@ -190,7 +190,8 @@ function nkHome(d){
   if (book) book.onclick = e => { e.stopPropagation(); nkhPause(); nkStickers(); };
   const art = document.getElementById('nkh-art');
   if (art) art.onclick = e => { e.stopPropagation(); nkAlbum(); };
-  document.getElementById('nkh-who').onclick = e => { e.stopPropagation(); nkHomeStop(); nestSwitch(); nestPlay(['en-bye']); };
+  // Who is playing: grown-ups only (a long press, then the sum; nkGateBind in play.js).
+  nkGateBind(document.getElementById('nkh-who'), () => { nkHomeStop(); nestSwitch(); nestPlay(['en-bye']); });
   window.addEventListener('resize', nkhLayout);
   document.addEventListener('visibilitychange', nkhVisible);
   NKH.beat = setInterval(nkhBeat, 250);

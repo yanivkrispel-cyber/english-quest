@@ -4,7 +4,7 @@
 // goes to the audit trail (PINs masked).
 
 var EDIT = {
-  Girls: { key: 'Name', fields: ['PIN', 'Level', 'Age', 'Group', 'Email', 'Redeemed', 'Missions', 'PetName', 'NestPerDay', 'NestArcadeMin'] },
+  Girls: { key: 'Name', fields: ['PIN', 'Level', 'Age', 'Group', 'Email', 'Redeemed', 'Missions', 'PetName', 'NestPerDay', 'NestArcadeMin', 'NestMin'] },
   Groups: { key: 'Id', fields: ['Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email', 'Friends'] },
   Settings: { key: 'Key', fields: ['Value'] }
 };
@@ -45,7 +45,7 @@ function editCheck(table, key, field, value) {
     if (field === 'Level' && LEVELS.indexOf(v) < 0 && v !== 'nest') throw new Error('Unknown level');
     if (field === 'Group' && !groups().some(function (g) { return String(g.Id) === v; })) throw new Error('No such family');
     if (field === 'Missions' && v !== '' && v !== 'no') throw new Error('Missions is empty or no');
-    if (['Age', 'Redeemed', 'NestPerDay', 'NestArcadeMin'].indexOf(field) >= 0) numeric();
+    if (['Age', 'Redeemed', 'NestPerDay', 'NestArcadeMin', 'NestMin'].indexOf(field) >= 0) numeric();
   }
   if (table === 'Groups') {
     if (field === 'ParentPIN') {

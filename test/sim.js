@@ -66,7 +66,7 @@ if (PLATFORM_MODE) {
 }
 vm.createContext(ctx);
 const strict = PLATFORM_MODE ? '"use strict";' : '';
-for (const f of ['Catalog.js', 'Code.js', 'Auth.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Relay.js', 'Admin.js', 'Privacy.js', 'Safety.js', 'Ops.js']) if (f !== 'NestIndex.js' || fs.existsSync('src/' + f)) vm.runInContext(strict + fs.readFileSync('src/' + f, 'utf8'), ctx, { filename: f });
+for (const f of ['Catalog.js', 'Code.js', 'Auth.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js', 'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Learned.js', 'Relay.js', 'Admin.js', 'Privacy.js', 'Safety.js', 'Ops.js']) if (f !== 'NestIndex.js' || fs.existsSync('src/' + f)) vm.runInContext(strict + fs.readFileSync('src/' + f, 'utf8'), ctx, { filename: f });
 if (PLATFORM_MODE) vm.runInContext(fs.readFileSync('platform/overrides.js', 'utf8'), ctx, { filename: 'overrides.js' });
 // Each call is a fresh request: per-request table memo resets, CacheService persists.
 // The scenarios send many invites in one real hour: the hourly limit on invites (Safety.js contactLimit) is reset before
@@ -245,6 +245,12 @@ run("apiGameResult('Aviv','2694','listen','a2',3,5,[],[])");
 run('parentSummary()');
 console.log('summary with games:', JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/dad2')")));
 run('weeklySummary()');
+{
+  // The parents' sentence (src/Learned.js): a task of the week by its Hebrew topic, the game rounds, the day's version.
+  const s = run("apiParent('1234')").groups[0].girls.find(k => k.girl.name === 'Aviv').learned, day = run("learnedDay(findGirl('Aviv'), '2026-10-25')");
+  const ok = /^השבוע: משימה אחת \(דקדוק\), סבב משחק אחד\.$/.test(s) && /^משימה אחת \(דקדוק\), סבב משחק אחד\.$/.test(day);
+  console.log((ok ? 'ok: ' : 'FAIL: ') + 'the week and the day in one Hebrew sentence | ' + s + ' | ' + day);
+}
 
 // ---- new kids: the level test comes first ----
 ctx.__day = '2026-10-26';
@@ -1405,13 +1411,37 @@ d = run(`apiNestResult('${TALI}', '${tali.PIN}', '${today}', '${units[1][0]}', 6
 check('one more lesson is logged, the program moves on, and the week still shows the day\'s own lesson',
   d.justEarned === 15 && sheets.Log.rows.filter(r => r[1] === TALI).length === 2 && d.nest.played.includes(units[1][0]) && d.nest.next === null
   && d.week.find(w => w.isToday).percent === Math.round(3 / 8 * 100), JSON.stringify([d.justEarned, d.nest.next, d.week.find(w => w.isToday).percent]));
+run(`apiParentNestPerDay(__fc('7788'), '${TALI}', 0)`);
+check('"no limit" lessons from an old copy of the app is three a day', run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.perDay === 3);
+fails('ten lessons a day', () => run(`apiParentNestPerDay(__fc('7788'), '${TALI}', 10)`));
 run(`apiParentNestPerDay(__fc('7788'), '${TALI}', 1)`);
+// Screen time a day (finding 15): 20 / 30 / 40 minutes by age, the parent may set less, never more; the phones report.
+{
+  const n = run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest, o7 = run(`apiDashboard('${OMER}', '${omer.PIN}')`).nest;
+  check('screen time: 30 minutes at age 4, 40 at age 7, nothing used yet', n.cap === 30 && n.capMax === 30 && o7.cap === 40 && n.used === 0, JSON.stringify([n.cap, n.capMax, o7.cap, n.used]));
+  fails('more minutes than the age allows', () => run(`apiParentNestMin(__fc('7788'), '${TALI}', 45)`));
+  fails('screen time from another family', () => run(`apiParentNestMin(__fc('0000'), '${TALI}', 20)`));
+  run(`apiParentNestMin(__fc('7788'), '${TALI}', 20)`);
+  const n2 = run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest;
+  check('the parent lowers it to 20, the arcade stays inside it, and it is audited', n2.cap === 20 && n2.arcadeMin <= 20
+    && sheets.Audit.rows.some(r => r.join('|').includes('nest minutes a day') && r.join('|').includes(TALI + ': 20')), JSON.stringify([n2.cap, n2.arcadeMin]));
+  check('the phone reports the minutes; the most of the day is kept', run(`apiNestTime('${TALI}', '${tali.PIN}', 300)`).used === 300
+    && run(`apiNestTime('${TALI}', '${tali.PIN}', 120)`).used === 300 && run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.used === 300);
+  fails('screen time for a school kid', () => run(`apiNestTime('${GAL}', '${gal.PIN}', 60)`));
+  run(`apiParentNestMin(__fc('7788'), '${TALI}', 30)`);
+  check('back to the most for her age clears the column', !girl(TALI).NestMin && run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.cap === 30);
+  // What she learned, in Hebrew (src/Learned.js): the parents' card and the summaries share the sentence.
+  const p = run("apiParent(__fc('7788'))"), kid = p.groups[0].girls.find(g => g.girl.name === TALI), gk = p.groups[0].girls.find(g => g.girl.name === GAL);
+  check('the parents see a Hebrew sentence of the Nest week', /^השבוע: (שיעור אחד בקן|\d+ שיעורים בקן) \(שלום, צ׳אצ׳ו!/.test(kid.learned) && /עוד מתאמנים על yes/.test(kid.learned) && !kid.track, kid.learned);
+  check('a school kid with no practice yet, and her level as a track (grade 5 starts at A1 since the night review)', gk.learned === 'השבוע עוד אין תרגול.' && gk.track && gk.track.label === 'A1' && /משפטים קצרים/.test(gk.track.he), JSON.stringify([gk.learned, gk.track]));
+  check('no dash between numbers in the sentence', !/\d\s*[-–—]\s*\d/.test(kid.learned));
+}
 // Chacho's arcade (specs/nest.md, stage C): 15 minutes a day by default; the parent sets 0 (no limit) to 60, audited.
 check('the arcade has 15 minutes a day by default', d.nest.arcadeMin === 15, JSON.stringify(d.nest.arcadeMin));
 fails('arcade minutes from another family', () => run(`apiParentNestArcade(__fc('0000'), '${TALI}', 30)`));
 fails('arcade minutes out of range', () => run(`apiParentNestArcade(__fc('7788'), '${TALI}', 90)`));
 run(`apiParentNestArcade(__fc('7788'), '${TALI}', 0)`);
-check('the parent turns the arcade limit off', run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.arcadeMin === 0);
+check('"no limit" from an old copy of the app is the day\'s screen time', run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.arcadeMin === 30);
 run(`apiParentNestArcade(__fc('7788'), '${TALI}', 30)`);
 check('half an hour, and it is in the audit trail', run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.arcadeMin === 30
   && sheets.Audit.rows.some(r => r.join('|').includes('nest arcade minutes') && r.join('|').includes(TALI + ': 30')));
