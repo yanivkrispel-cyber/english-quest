@@ -1273,5 +1273,140 @@ window.EQ_MISSIONS.c1 = [
   use: [
     { k: 'type', q: 'When a family\'s income depends on the videos, the line between playing and working becomes ___.', a: ['blurred'], why: 'blurred = not clear any more.' }
   ]
+},
+// ---- The Writer's Desk (writing days) ----
+{
+  id: 'c1w01', url: 'https://test-english.com/writing/c1/a-problem-solution-essay-c1-english-writing/', type: 'writing',
+  title: 'Problem and solution', dinner: 'What is one small change that could make our town cleaner?',
+  hook: { q: 'How much plastic ends up in the oceans every year?', o: ['Millions of tonnes', 'A few kilos', 'About a hundred tonnes'], a: 0,
+    reveal: 'Scientists estimate that *millions of tonnes* of plastic reach the oceans every year.' },
+  learn: { kind: 'rule', title: 'Problems and solutions', form: ['One major problem is ...', 'This leads to ...', 'One effective solution would be ...'],
+    lines: ['State the problem: *One major problem is* that ...', 'Show the effect: *This leads to* ... / *As a result*, ...',
+      'Offer a solution: *One effective solution would be* to ...'],
+    ex: ['*One major problem is* that many people use plastic bags only once.', '*One effective solution would be* to charge for every bag.'],
+    he: 'חיבור בעיה ופתרון: מציגים בעיה (One major problem is), תוצאה (This leads to) ופתרון (One effective solution would be to...).' },
+  steps: [
+    { name: 'Problem language', items: [
+      { k: 'mc', q: 'One major problem ___ that cities are getting hotter.', o: ['is', 'are', 'being'], a: 0, why: 'one problem → is.' },
+      { k: 'mc', q: 'This ___ to more traffic jams.', o: ['leads', 'causes', 'results'], a: 0, why: 'lead to; cause has no to; result in.' },
+      { k: 'mc', q: 'One effective solution would be ___ more trees.', o: ['to plant', 'planting to', 'plant'], a: 0, why: 'would be + to + verb.' },
+      { k: 'tf', q: '"As a result, fewer people use public transport."', a: true, why: 'As a result introduces an effect.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'This could be solved by improving public transport.', why: 'could be solved by + -ing.' },
+      { k: 'spot', s: 'The government should *encouraging* people to recycle.', fix: 'encourage', why: 'should + verb.' },
+      { k: 'mc', q: 'Which sentence offers a solution?', o: ['Parks could offer free water stations.', 'Plastic is everywhere.', 'This is a big problem.'], a: 0,
+        why: 'could + an action = a solution.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Many families throw away a lot of food. Describe the problem and suggest a solution.', tip: 'The problem, its effect, a solution.',
+      n: [2, 3], len: [30, 85],
+      need: [{ t: 'State the problem', any: ['problem', 'issue'] },
+        { t: 'Suggest a solution', any: ['solution', 'could', 'should', 'would be to'] }],
+      model: 'One major problem is that many families buy more food than they need, so a lot of it is thrown away. This leads to wasted money and more rubbish. One effective solution would be to plan meals for the week and freeze leftovers.',
+      why: 'Problem, effect, solution: one sentence each.', he: 'בעיה, תוצאה, פתרון: משפט לכל אחד.' }
+  ]
+},
+{
+  id: 'c1w02', url: 'https://test-english.com/writing/c1/describing-visual-data-c1-english-writing/', type: 'writing',
+  title: 'Describe the data', dinner: 'What do you think most kids do in their free time?',
+  hook: { q: 'Which word describes a number going up very fast?', o: ['Soared', 'Dipped', 'Levelled off'], a: 0,
+    reveal: 'Numbers that rise fast *soar*; a small fall is a *dip*; when they stop changing they *level off*.' },
+  learn: { kind: 'rule', title: 'Describing data', form: ['The survey shows ...', 'The majority of ...', 'twice as many ... as ...'],
+    lines: ['Introduce it: *The chart shows* how ... / *According to the survey*, ...', 'Big and small: *the majority of* / *only a small minority*.',
+      'Compare: sport (40%) was *far more popular than* reading (10%); *twice as many* chose music *as* art.'],
+    ex: ['*The chart shows* what students do after class.', '*Twice as many* students chose sport *as* music.'],
+    he: 'מתארים נתונים: מה הגרף מראה, הרוב והמיעוט (the majority, a minority), והשוואות (twice as many as, more popular than).' },
+  steps: [
+    { name: 'Data language', items: [
+      { k: 'mc', q: 'The chart ___ how teenagers spend their free time.', o: ['shows', 'says', 'tells'], a: 0, why: 'A chart shows.' },
+      { k: 'mc', q: 'The ___ of students chose sport.', o: ['majority', 'most', 'many'], a: 0, why: 'the majority of = most of.' },
+      { k: 'mc', q: 'Twice as many students chose music ___ art.', o: ['as', 'than', 'like'], a: 0, why: 'twice as many ... as ...' },
+      { k: 'tf', q: '"Only a small minority preferred reading."', a: true, why: 'a small minority = only a few.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'Sport was far more popular than reading.', why: 'far more + adjective + than.' },
+      { k: 'spot', s: 'The number of players *rised* sharply in summer.', fix: 'rose', why: 'rise → rose (irregular).' },
+      { k: 'mc', q: 'Sport 40%, music 20%. Which sentence is correct?', o: ['Sport is twice as popular as music.', 'They are about the same.', 'Music is more popular.'], a: 0,
+        why: '40 is twice 20.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'A survey of 100 kids: sport 40%, screens 30%, music 20%, reading 10%. Describe the results.', tip: 'Say what it shows, then compare.',
+      n: [2, 3], len: [30, 85],
+      need: [{ t: 'Introduce the data (The survey shows...)', any: ['the survey shows', 'the chart shows', 'the results show', 'according to', 'the survey found'] },
+        { t: 'Compare (more than, twice as, the most popular...)', any: ['more than', 'twice as', 'times as', 'the majority', 'most popular', 'less popular', 'fewer', 'compared'] }],
+      model: 'The survey shows how 100 kids spend their free time. Sport is the most popular activity at 40%, and it is four times as popular as reading, at only 10%. Screens come second with 30%, followed by music.',
+      why: 'What the data is about, the biggest result, and a comparison.', he: 'על מה הנתונים, התוצאה הגדולה, והשוואה.' }
+  ]
+},
+{
+  id: 'c1w03', url: 'https://test-english.com/writing/c1/an-advanced-essay-c1-english-writing/', type: 'writing',
+  title: 'A strong argument', dinner: 'Should museums be free for everyone?',
+  hook: { q: 'What makes an essay convincing?', o: ['Clear arguments with examples', 'Very long sentences', 'Lots of rare words'], a: 0,
+    reveal: '*Clear arguments with examples* convince readers, not long words.' },
+  learn: { kind: 'rule', title: 'Building an argument', form: ['It is often argued that ...', 'Not only ... but also ...', 'Consequently, ...'],
+    lines: ['Introduce a view: *It is often argued that* ...', 'Add weight: *Not only* do museums teach, *but* they *also* ...',
+      'Show the result: *Consequently*, ... / *Therefore*, ...'],
+    ex: ['*It is often argued that* museums should be free.', '*Not only* do they teach history, *but* they *also* bring people together.'],
+    he: 'It is often argued that להצגת טענה, Not only... but also להוספה (בתחילת משפט: Not only do they), ו-Consequently לתוצאה.' },
+  steps: [
+    { name: 'Essay language', items: [
+      { k: 'mc', q: 'Not only ___ free museums educate people, but they also attract tourists.', o: ['do', 'are', 'does'], a: 0,
+        why: 'Not only at the start: do + subject + verb.' },
+      { k: 'mc', q: 'It is often ___ that technology makes us lonely.', o: ['argued', 'argue', 'arguing'], a: 0, why: 'It is often argued that...' },
+      { k: 'mc', q: 'Tickets are expensive. ___, many families never visit.', o: ['Consequently', 'Nevertheless', 'Meanwhile'], a: 0, why: 'Consequently = as a result.' },
+      { k: 'tf', q: '"Nevertheless, there are strong arguments against this view."', a: true, why: 'Nevertheless = even so.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'Therefore, entrance should be free for children.', why: 'Therefore, + the conclusion.' },
+      { k: 'spot', s: 'This would *benefits* families with less money.', fix: 'benefit', why: 'would + verb (no s).' },
+      { k: 'mc', q: 'Which is the most formal?', o: ['Consequently, fewer people visit.', 'So, like, fewer people go.', 'Fewer people go, you know.'], a: 0,
+        why: 'Consequently is formal essay language.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Should museums be free for everyone? Write a short argument.', tip: 'Use It is often argued that, Not only ... but also, or Consequently.',
+      n: [2, 3], len: [30, 85],
+      need: [{ t: 'Use essay language (Not only, Consequently...)', any: ['it is often argued', 'not only', 'consequently', 'therefore', 'moreover', 'nevertheless'] },
+        { t: 'Give your own view', any: ['i believe', 'i think', 'in my view', 'in my opinion', 'personally'] }],
+      model: 'It is often argued that museums should be free for everyone. Not only do free museums help children learn about history and art, but they also bring families together. Consequently, I believe that entrance should be free, at least for young people.',
+      why: 'A view, a stronger point with Not only, and your conclusion.', he: 'טענה, חיזוק עם Not only, ומסקנה שלכם.' }
+  ]
+},
+{
+  id: 'c1w04', url: 'https://test-english.com/writing/c1/how-to-write-a-proposal-c1-english-writing/', type: 'writing',
+  title: 'A proposal', dinner: 'If you could add one thing to our neighbourhood, what would it be?',
+  hook: { q: 'Who is a proposal written for?', o: ['People who decide', 'Only your friends', 'Nobody'], a: 0,
+    reveal: 'A proposal is written for *people who decide*, like a town council, to persuade them.' },
+  learn: { kind: 'rule', title: 'Writing a proposal', form: ['The aim of this proposal is to ...', 'I propose that ...', 'This would ...'],
+    lines: ['Start with the aim: *The aim of this proposal is to* suggest ...', 'Suggest: *I propose that* ... / *I recommend* + -ing',
+      'Show the benefit: *This would* give young people ...'],
+    ex: ['*The aim of this proposal is to* suggest a new reading corner.', '*This would* give everyone a quiet place to read.'],
+    he: 'הצעה: מטרה (The aim of this proposal is to), ההצעה עצמה (I propose that), והתועלת (This would...).' },
+  steps: [
+    { name: 'Proposal language', items: [
+      { k: 'mc', q: 'The aim of this proposal is ___ a new youth centre.', o: ['to suggest', 'suggesting', 'suggest'], a: 0, why: 'The aim is + to + verb.' },
+      { k: 'mc', q: 'I recommend ___ a water fountain in the park.', o: ['installing', 'to install', 'install'], a: 0, why: 'recommend + -ing.' },
+      { k: 'mc', q: 'This ___ encourage more young people to exercise.', o: ['would', 'would to', 'will to'], a: 0, why: 'would + verb.' },
+      { k: 'tf', q: '"I propose that we create a quiet study room."', a: true, why: 'I propose that + a sentence.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'This would benefit everyone in the community.', why: 'This would + the benefit.' },
+      { k: 'spot', s: 'The aim of this proposal is to *suggesting* a bike path.', fix: 'suggest', why: 'to + verb: to suggest.' },
+      { k: 'mc', q: 'Which is the best title for a proposal?', o: ['Proposal for a new skate park', 'My amazing idea!!!', 'Hello everyone'], a: 0,
+        why: 'A proposal has a clear, formal title.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write a short proposal to your town council: something new for young people in your area.', tip: 'Say the aim, what you propose, and why it would help.',
+      n: [2, 3], len: [30, 85],
+      need: [{ t: 'State the aim', any: ['the aim of this proposal', 'the purpose of this proposal', 'this proposal'] },
+        { t: 'Make the proposal (I propose, I recommend)', any: ['i propose', 'i recommend', 'i suggest'] },
+        { t: 'Show the benefit (This would...)', any: ['this would', 'it would', 'would help', 'would give', 'would allow'] }],
+      model: 'The aim of this proposal is to suggest a small skate park next to the community centre. I propose that it should have ramps for beginners and benches for parents. This would give young people a safe place to meet and stay active.',
+      why: 'The aim, the proposal and the benefit.', he: 'מטרה, ההצעה, והתועלת.' }
+  ]
 }
 ];

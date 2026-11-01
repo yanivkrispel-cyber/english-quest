@@ -1310,5 +1310,126 @@ window.EQ_MISSIONS.a1 = [
     { k: 'type', q: 'In Britain, cars drive on the ___.', a: ['left'], why: 'In Britain, cars drive on the left.',
       he: 'בבריטניה נוהגים בצד שמאל של הכביש, הפוך מישראל.' }
   ]
+},
+// ---- The Writer's Desk (writing days) ----
+{
+  id: 'a1w01', url: 'https://test-english.com/writing/a1/writing-about-my-family/', type: 'writing',
+  title: 'My family', dinner: 'Who in our family makes you laugh the most?',
+  hook: { q: 'In English, what do we call your mum\'s brother?', o: ['Uncle', 'Cousin', 'Grandpa'], a: 0,
+    reveal: 'Your mum\'s brother is your *uncle*. His children are your *cousins*.' },
+  learn: { kind: 'rule', title: 'Writing about a person', form: ['This is my ...', 'He / She is ...', 'He / She likes ...'],
+    lines: ['Start with who it is: *This is my* sister.', 'Say one thing about them: *She is* ten. *He is* funny.',
+      'Say what they like: *She likes* cats. (he / she → like*s*)'],
+    ex: ['*This is my* brother. *He likes* football.', 'My grandma *is* very kind.'],
+    he: 'מתחילים במי זה (This is my...), ואחר כך משפט אחד או שניים עליו. זוכרים: he / she likes, עם s בסוף.' },
+  steps: [
+    { name: 'Family words', items: [
+      { k: 'mc', q: 'My dad\'s mother is my ___.', o: ['grandma', 'aunt', 'sister'], a: 0, why: 'Your dad\'s mother (or your mum\'s mother) is your grandma.' },
+      { k: 'mc', q: 'This is my sister. ___ is nine.', o: ['She', 'He', 'It'], a: 0, why: 'sister → she.' },
+      { k: 'mc', q: 'My brother ___ pizza.', o: ['likes', 'like', 'liking'], a: 0, why: 'he / she → likes (with s).' },
+      { k: 'tf', q: '"he is my cousin."', a: false, fix: 'He is my cousin.', why: 'A sentence starts with a capital letter: He.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'This is my little brother.', why: 'This is + my + who.' },
+      { k: 'spot', s: 'My aunt *live* in Haifa.', fix: 'lives', why: 'my aunt = she → lives.' },
+      { k: 'build', s: 'She likes cats and dogs.', why: 'She + likes + what she likes.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write about one person in your family.', tip: 'Write my mum, my brother or my grandpa. No names needed.',
+      frame: 'This is my ___. ___ is very ___.', fill: ['big sister', 'She', 'funny'], model: 'This is my big sister. She is very funny.',
+      len: [3, 14], need: [{ t: 'Use He or She', any: ['he', 'she'] }], ideas: ['mum', 'dad', 'brother', 'She', 'He', 'kind'],
+      why: 'First say who it is, then one thing about them.', he: 'כותבים מי זה, ואז He או She ומילה שמתארת: funny, kind, tall.' }
+  ]
+},
+{
+  id: 'a1w02', url: 'https://test-english.com/writing/a1/writing-about-my-daily-routine/', type: 'writing',
+  title: 'My day', dinner: 'What is the best part of your day?',
+  hook: { q: 'How many hours a night do kids from 6 to 12 need to sleep?', o: ['About 5', 'About 7', 'About 10'], a: 2,
+    reveal: 'Kids from 6 to 12 need about *9 to 12 hours* of sleep. So go to bed early!' },
+  learn: { kind: 'rule', title: 'Your day in order', form: ['First,', 'Then', 'After that,'],
+    lines: ['For every day, use the present simple: I *get up*, I *have* breakfast.', 'Put things in order: *First*, ... *Then* ... *After that*, ...',
+      'Times: *at* seven o\'clock, *in* the morning, *in* the evening.'],
+    ex: ['*First*, I get up at seven.', '*Then* I have breakfast.'],
+    he: 'כדי לספר על היום משתמשים בהווה פשוט (I get up), ובמילים שמסדרות: First, Then, After that. שעה: at seven.' },
+  steps: [
+    { name: 'When and in what order', items: [
+      { k: 'mc', q: 'I get up ___ seven o\'clock.', o: ['at', 'in', 'on'], a: 0, why: 'A time → at.' },
+      { k: 'mc', q: 'I read a book ___ the evening.', o: ['in', 'at', 'on'], a: 0, why: 'in the morning, in the afternoon, in the evening.' },
+      { k: 'mc', q: '___, I get up. Then I have breakfast.', o: ['First', 'After', 'Then'], a: 0, why: 'First → the first thing you do.' },
+      { k: 'tf', q: '"I brush my teeth after breakfast."', a: true, why: 'I + brush: the present simple, for every day.' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'After that, I play with my friends.', why: 'After that, + what comes next.' },
+      { k: 'spot', s: 'I *eats* dinner at seven.', fix: 'eat', why: 'I → eat (no s).' },
+      { k: 'build', s: 'I go to bed at nine.', why: 'I + go to bed + at + the time.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write about your morning: two things you do.', tip: 'Put them in order.',
+      frame: 'First, I ___. Then I ___.', fill: ['get up at seven', 'have breakfast'], model: 'First, I get up at seven. Then I have breakfast.',
+      len: [2, 16], ideas: ['get up', 'get dressed', 'eat', 'wash my face', 'at seven'],
+      why: 'First and Then put your day in order.', he: 'כותבים שני דברים שאתם עושים בבוקר, לפי הסדר.' }
+  ]
+},
+{
+  id: 'a1w03', url: 'https://test-english.com/writing/a1/my-hobby-a1-english-writing/', type: 'writing',
+  title: 'My hobby', dinner: 'What hobby would you like to try one day?',
+  hook: { q: 'Which is the most popular sport in the world?', o: ['Football', 'Tennis', 'Swimming'], a: 0,
+    reveal: '*Football*! Billions of people play it or watch it.' },
+  learn: { kind: 'rule', title: 'like + -ing', form: ['I like', 'verb + ing'],
+    lines: ['To talk about a hobby: I *like* draw*ing*. I *love* swimm*ing*.', 'Say when: *on* Fridays, *after* school, *every* day.',
+      'Say why with *because*: I like it *because* it is fun.'],
+    ex: ['I *love* danc*ing*.', 'I play the guitar *every* day.'],
+    he: 'אחרי like או love מוסיפים ing לפועל: I like reading. כדי להסביר למה: because.' },
+  steps: [
+    { name: 'Hobby words', items: [
+      { k: 'mc', q: 'I like ___ pictures.', o: ['drawing', 'draw', 'draws'], a: 0, why: 'like + verb-ing.' },
+      { k: 'mc', q: 'I play basketball ___ Tuesdays.', o: ['on', 'in', 'at'], a: 0, why: 'Days → on.' },
+      { k: 'mc', q: 'I love reading ___ it is fun.', o: ['because', 'but', 'or'], a: 0, why: 'because → the reason.' },
+      { k: 'tf', q: '"I like swim."', a: false, fix: 'I like swimming.', why: 'like + swimming (verb + ing).' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'My hobby is playing the guitar.', why: 'My hobby is + verb-ing.' },
+      { k: 'spot', s: 'I *likes* cooking with my dad.', fix: 'like', why: 'I → like (no s).' },
+      { k: 'build', s: 'I go swimming every Friday.', why: 'go + swimming, then when.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write about your hobby and why you like it.',
+      frame: 'My hobby is ___. I like it because ___.', fill: ['dancing', 'it is fun'], model: 'My hobby is dancing. I like it because it is fun.',
+      len: [2, 16], ideas: ['drawing', 'football', 'reading', 'music', 'it is fun'],
+      why: 'because tells us why you like it.', he: 'כותבים את התחביב, ואחרי because את הסיבה.' }
+  ]
+},
+{
+  id: 'a1w04', url: 'https://test-english.com/writing/a1/essay-about-my-neighbourhood-a1-english-writing/', type: 'writing',
+  title: 'Near my home', dinner: 'What is your favourite place near our home?',
+  hook: { q: 'Which city in Israel is next to the Red Sea?', o: ['Eilat', 'Haifa', 'Tiberias'], a: 0,
+    reveal: '*Eilat*! It has beaches and a coral reef with colourful fish.' },
+  learn: { kind: 'rule', title: 'There is, there are', form: ['There is + a ...', 'There are + two ...'],
+    lines: ['One thing: *There is* a park near my home.', 'Two or more: *There are* two shops.', 'Say where: *near* my home, *next to* the park.'],
+    ex: ['*There is* a big park near my home.', '*There are* lots of trees.'],
+    he: 'There is לדבר אחד, There are לכמה דברים. near = ליד, next to = צמוד ל.' },
+  steps: [
+    { name: 'There is or there are?', items: [
+      { k: 'mc', q: '___ a playground near my home.', o: ['There is', 'There are', 'It are'], a: 0, why: 'a playground = one → There is.' },
+      { k: 'mc', q: 'There are three ___ near the park.', o: ['shops', 'shop', 'a shop'], a: 0, why: 'three → shops (more than one).' },
+      { k: 'mc', q: 'The bus stop is ___ to the shop.', o: ['next', 'near', 'in'], a: 0, why: 'next to = right beside.' },
+      { k: 'tf', q: '"There are a big park."', a: false, fix: 'There is a big park.', why: 'a park = one → There is.' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'There is a pizza place near my home.', why: 'There is + a + what + where.' },
+      { k: 'spot', s: 'There *is* lots of trees in the park.', fix: 'are', why: 'lots of trees = many → There are.' },
+      { k: 'build', s: 'I like the park near my home.', why: 'I like + the place.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write about a place near your home that you like.', tip: 'A park, a shop or a beach. No need for its name.',
+      frame: 'There is a ___ near my home. I like it because ___.', fill: ['big park', 'I play there with my friends'],
+      model: 'There is a big park near my home. I like it because I play there with my friends.',
+      len: [3, 18], ideas: ['park', 'beach', 'playground', 'shop', 'it is fun'],
+      why: 'There is says what is there; because says why you like it.', he: 'כותבים מה יש ליד הבית ולמה אתם אוהבים את המקום.' }
+  ]
 }
 ];
