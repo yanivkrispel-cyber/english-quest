@@ -23,9 +23,9 @@ const words = s => String(s || '').trim().split(/\s+/).filter(Boolean).length;
 // The app's matcher, from Index.html, so the check is the app's behaviour exactly.
 function appMatcher() {
   const html = fs.readFileSync(path.join(ROOT, 'src/Index.html'), 'utf8').split('\r\n').join('\n');
-  const i = html.indexOf('const CHAT_NUM'), j = html.indexOf('\n}\n', html.indexOf('function chatMatch('));
+  const i = html.indexOf('const CHAT_NUM'), j = html.indexOf('\n', html.indexOf('const CHAT_CLOSE'));
   if (i < 0 || j < 0) throw new Error('talk matcher not found in Index.html');
-  return new vm.Script(html.slice(i, j + 2) + '; ({ talkNorm: chatNorm, talkMatch: chatMatch, TALK_MIN: CHAT_MIN })').runInNewContext({});
+  return new vm.Script(html.slice(i, j + 1) + '; ({ talkNorm: chatNorm, talkMatch: chatMatch, TALK_MIN: CHAT_MIN, enough: chatEnough, models: chatModels })').runInNewContext({});
 }
 
 function load() {
@@ -50,6 +50,9 @@ function clips(s) {
     out.push([s.id + '-' + (i + 1) + 'c', u.c]);
     (u.a || []).forEach((b, j) => out.push([s.id + '-' + (i + 1) + 'r' + (j + 1), b.r]));
     out.push([s.id + '-' + (i + 1) + 'o', u.o]);
+    // The models Chacho says in a recast (night review, finding 5): the turn's m, else each tile.
+    if (u.m) out.push([s.id + '-' + (i + 1) + 'm', u.m]);
+    else (u.t || []).forEach((t, k) => out.push([s.id + '-' + (i + 1) + 't' + (k + 1), t]));
   });
   out.push([s.id + '-e', s.end]);
   return out;
@@ -108,6 +111,14 @@ function check() {
           tileHits.add(r.b);
         });
         if (A.length > 1 && tileHits.size < 2) w('all tiles go to one branch');
+        // Every turn has a model answer for the recast: its m, else the tiles (each one long enough to count as an answer).
+        if (u.m != null) {
+          if (typeof u.m !== 'string' || !u.m.trim() || words(u.m) > T_MAX[level]) e('m (the model answer) empty or longer than ' + T_MAX[level] + ' words');
+          else if (A.length && app.talkMatch(u, u.m).b < 0) e('m "' + u.m + '" fits no branch');
+        }
+        const models = app.models(u);
+        if (!models.length) e('no model answer (m or tiles)');
+        if (!A.length) models.forEach(t => { if (!app.enough(u, app.talkMatch(u, t).n, level)) e('model "' + t + '" is too short to count as an answer'); });
         const X = u.x || [];
         if (X.length < (A.length ? 4 : 2)) e('x: at least ' + (A.length ? 4 : 2) + ' sample answers');
         const hitB = new Set();

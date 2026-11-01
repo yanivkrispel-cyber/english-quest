@@ -1940,7 +1940,7 @@ window.EQ_TALK.a1 = (window.EQ_TALK.a1 || []).concat([
           { k: ['tired sleepy'], r: "Tired? Here is some water. Good job!" },
           { k: ['happy good great excited proud amazing super fine'], r: "Me too! We are a great team!" }
         ],
-        o: "You are a star! Well done!",
+        o: "Thank you for telling me! What a race!",
         t: ["I feel happy!", "I am tired.", "I feel great!"],
         x: [["happy", 1], ["i feel very happy", 1], ["tired", 0], ["i am tired and happy", 0], ["hungry", -1], ["great", 1]]
       }

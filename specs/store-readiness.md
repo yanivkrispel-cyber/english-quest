@@ -62,7 +62,8 @@ with the sheet as a nightly copy. Retention on Cloudflare: the audit trail 180 d
   the phone's memory only, plays it back once in a parrot's voice and drops it: never written to storage, never sent, no
   speech recognition, the microphone off before the replay.
 - Parent / family: family name, parent's first name, parent PIN, optional email, consent date.
-- Activity: tasks and missions with scores and time spent, game rounds, missed items for review, gate challenges,
+- Activity: tasks and missions with scores and time spent, game rounds (with the ids of the items missed and answered right,
+  for the review and the item stats), items for review, gate challenges (with their item ids),
   level tests, duels and their answers, duo streaks, shop purchases (coins), what the pet wears, saved words, bonus XP.
   Chacho's Nest: the day played and, for each word of the day, whether it was found on the first try (Log.Detail, for the
   review days); deleted with the kid's Log rows.

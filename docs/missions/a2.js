@@ -131,7 +131,7 @@ window.EQ_MISSIONS.a2 = [
     { name: 'Match', items: [
       { k: 'mc', q: 'She is very good ___ maths.', o: ['at', 'in', 'of'], a: 0, why: 'good at something.' },
       { k: 'mc', q: 'Are you afraid ___ the dark?', o: ['of', 'from', 'at'], a: 0, why: 'afraid of. (Not afraid from!)', he: 'בעברית "מפחד מ...", אבל באנגלית afraid of.' },
-      { k: 'mc', q: 'We waited ___ an hour, but the bus didn\'t come.', o: ['for', 'to', 'on'], a: 0, why: 'wait for something or someone.' },
+      { k: 'mc', q: 'We waited ___ the bus for an hour, but it didn\'t come.', o: ['for', 'to', 'on'], a: 0, why: 'wait for something or someone.' },
       { k: 'mc', q: 'Who does this phone belong ___?', o: ['to', 'of', 'at'], a: 0, why: 'belong to someone.' }
     ] },
     { name: 'Play', items: [
@@ -214,7 +214,8 @@ window.EQ_MISSIONS.a2 = [
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
     { w: 'messy', d: 'not tidy, things everywhere' },
     { w: 'friendly', d: 'nice and kind to people' },
-    { w: 'noisy', d: 'making a lot of noise' }
+    { w: 'noisy', d: 'making a lot of noise' },
+    { w: 'generous', d: 'happy to give and share' }
   ], predict: { q: 'Ben has two new roommates at summer camp. Does he like them?', o: ['Yes, both of them', 'One yes, one not so much', 'No, neither of them'] } },
   show: { cast: 'Maya and Ben, two friends. Ben is at summer camp.', names: { M: 'Maya', B: 'Ben' }, voices: { M: 'af_heart', B: 'bm_george' },
     parts: [
@@ -262,7 +263,7 @@ window.EQ_MISSIONS.a2 = [
   id: 'a2l02', url: 'https://test-english.com/listening/a2/checking-into-a-hotel-a2-english-listening-test/', type: 'listening',
   title: 'Checking into a hotel', dinner: 'If we stay in a hotel, what will you ask at reception?',
   hook: { q: 'One of the biggest hotels in the world is in Malaysia. About how many rooms does it have?', o: ['About 700', 'About 7,000', 'About 70,000'], a: 1,
-    reveal: 'About *7,000*! The First World Hotel in Malaysia has more than 7,000 rooms. Imagine the line at reception!' },
+    reveal: 'About *7,000*! The First World Hotel in Malaysia has more than 7,000 rooms. Imagine the queue at reception!' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
     { w: 'reception', d: 'the desk where you arrive at a hotel' },
     { w: 'a booking', d: 'a room that you reserved before' },
@@ -284,7 +285,7 @@ window.EQ_MISSIONS.a2 = [
         ['G', 'Thank you. What time is breakfast?'],
         ['R', 'Breakfast is from seven to ten, in the restaurant next to the pool.']
       ], items: [
-        { k: 'type', q: 'His room number is ___.', a: ['214', 'two hundred and fourteen', 'two one four'], why: '"You are in room 214, on the second floor."' },
+        { k: 'type', q: 'His room number is ___.', a: ['214', 'two hundred and fourteen', 'two hundred fourteen', 'two one four'], why: '"You are in room 214, on the second floor."' },
         { k: 'mc', q: 'When can he have breakfast?', o: ['from 7 to 10', 'from 6 to 9', 'from 8 to 11'], a: 0, why: '"Breakfast is from seven to ten."' },
         { k: 'mc', q: 'Where is the restaurant?', o: ['next to the pool', 'on the second floor', 'next to the lift'], a: 0, why: '"in the restaurant next to the pool"' }
       ] },
@@ -604,7 +605,7 @@ window.EQ_MISSIONS.a2 = [
       { k: 'mc', q: '"I can\'t open this jar." "Give it to me. I ___ help you."', o: ['will', 'going to', 'am go to'], a: 0, why: 'An offer, decided now → I\'ll (I will) help you.' }
     ] },
     { name: 'Complete', items: [
-      { k: 'type', q: 'I promise I ___ tell anyone your secret.', hint: '(won\'t / am not going to)', a: ['won\'t', 'will not'], why: 'A promise → will: I won\'t tell anyone.' },
+      { k: 'type', q: 'I promise I ___ tell anyone your secret.', hint: '(won\'t / am not going to)', a: ['won\'t', 'will not', 'am not going to', '\'m not going to'], why: 'A promise → will: I won\'t tell anyone.' },
       { k: 'tf', q: '"Next summer I will to learn to surf."', a: false, fix: 'Next summer I will learn to surf.', why: 'After will there is no to: will learn.',
         he: 'אחרי will בא הפועל בלי to: will learn. אבל going to כן צריך to: going to learn.' },
       { k: 'mc', q: 'I think Brazil ___ win the World Cup.', o: ['will', 'is going', 'are going'], a: 0, why: 'I think + your opinion about the future → will.' },
@@ -953,7 +954,7 @@ window.EQ_MISSIONS.a2 = [
     ] },
   steps: [
     { name: 'Listen again', items: [
-      { k: 'type', clip: 0, q: 'I take out the ___ every evening.', a: ['rubbish'], why: 'rubbish = British English for trash: old food, paper and things you throw away.' },
+      { k: 'type', clip: 0, q: 'I take out the ___ every evening.', a: ['rubbish', 'trash', 'garbage'], why: 'rubbish = British English for trash: old food, paper and things you throw away.' },
       { k: 'hear', say: 'I load the dishwasher after dinner.', q: 'When does she do it?', o: ['after dinner', 'before school', 'on Saturdays'], a: 0, why: 'after dinner.' },
       { k: 'sort', q: 'Where do you do this chore?', g: ['in the kitchen', 'in your bedroom'],
         w: [['load the dishwasher', 0], ['wash the dishes', 0], ['set the table', 0], ['make your bed', 1], ['tidy your desk', 1], ['put away your clothes', 1]],

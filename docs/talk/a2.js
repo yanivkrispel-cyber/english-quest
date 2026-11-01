@@ -1082,7 +1082,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
           { k: ['clever smart hard hardworking working'], r: "Clever and hard-working! A great mix." },
           { k: ['shy quiet calm'], r: "Quiet people are often great listeners. Lovely." }
         ],
-        o: "Great words! You sound like a lovely person.",
+        o: "Thank you for telling me! I like learning about you.",
         t: ["I am kind and funny.", "I am clever and hard-working.", "I am a bit shy."],
         x: [["i am kind and funny", 0], ["funny", 0], ["i am kind", 1], ["i am a honest", 1], ["clever", 2], ["hard working", 2], ["a bit shy", 3], ["i don't know", -1], ["tall", -1]]
       },
@@ -1596,7 +1596,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
           { k: ['math maths science history geography computer planet space animal'], r: "Ooh, interesting! Lessons like that can be very useful." },
           { k: ['nothing not know remember'], r: "That's okay! Today you learned new things with me." }
         ],
-        o: "That is really useful! Well done.",
+        o: "Thank you for telling me! Learning new things is fun.",
         t: ["I learned new English words.", "I learned to swim.", "I learned about the planets."],
         x: [["i learned new english words", 0], ["english", 0], ["i learned to swim", 1], ["about the planets", 2], ["math", 2], ["i don't remember", 3], ["nothing", 3], ["to be nice", -1]]
       },

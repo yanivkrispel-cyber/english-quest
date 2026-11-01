@@ -279,7 +279,7 @@ window.EQ_MISSIONS.a1 = [
       ] },
       { lines: [
         ['M', 'What does Sara like?'],
-        ['L', 'She likes drawing. She draws animals. Her cats are really good!'],
+        ['L', 'She likes drawing. She draws animals. Her cat drawings are really good!'],
         ['M', 'And is there a funny boy in your class?'],
         ['L', 'Yes, Ben! He has glasses, and he tells jokes all the time.']
       ], items: [
@@ -600,7 +600,7 @@ window.EQ_MISSIONS.a1 = [
     { name: 'Where does it go?', items: [
       { k: 'mc', q: 'Choose the right sentence:', o: ['I often watch films.', 'I watch often films.', 'I often films watch.'], a: 0, why: 'before the main verb: often watch.' },
       { k: 'tf', q: '"She is never late."', a: true, why: 'after is: is never.' },
-      { k: 'type', q: 'We ___ eat pizza on Fridays. It\'s our favourite!', hint: '(usually / never)', a: ['usually'], why: 'It\'s our favourite → usually.' },
+      { k: 'type', q: 'We ___ eat pizza on Fridays. It\'s our favourite!', hint: '(usually / never)', a: ['usually', 'always', 'often'], why: 'It\'s our favourite → usually.' },
       { k: 'tf', q: '"He always is happy."', a: false, fix: 'He is always happy.', why: 'after is: is always.' }
     ] },
     { name: 'Build it', items: [
@@ -636,7 +636,7 @@ window.EQ_MISSIONS.a1 = [
     ] },
     { name: 'Fix it', items: [
       { k: 'tf', q: '"Me like ice cream."', a: false, fix: 'I like ice cream.', why: 'before the verb → I.' },
-      { k: 'type', q: 'Our teacher is great. We all like ___.', hint: '(she / her)', a: ['her'], why: 'after the verb → her.' },
+      { k: 'type', q: 'Our teacher, Mrs Cohen, is great. We all like ___.', hint: '(she / her)', a: ['her'], why: 'after the verb → her.' },
       { k: 'tf', q: '"Can you help me, please?"', a: true, why: 'after help → me.' },
       { k: 'mc', q: 'I love this song. Listen to ___!', o: ['it', 'its', 'she'], a: 0, why: 'the song = it; after to → it.' }
     ] },

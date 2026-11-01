@@ -1302,6 +1302,9 @@ svg.pa{display:block;overflow:visible}
 .ctsum{margin-top:4px}
 .ctintro{direction:rtl;text-align:center;font-family:system-ui,'Segoe UI',Arial,sans-serif;font-size:13.5px;color:var(--faint);line-height:1.5}
 .ctflag{margin:-2px 0 2px 46px}
+.cb.ctalt{padding-left:46px;margin-top:-2px}
+.cb.ctalt span{background:rgba(255,255,255,.55);font-weight:600;font-size:14px;color:var(--muted)}
+.cb.ctalt b{color:var(--ink)}
 .chatcard .coco-face{width:60px;height:60px;object-fit:contain;flex:none;filter:drop-shadow(0 8px 8px rgba(38,40,80,.2))}
 @media (prefers-reduced-motion:reduce){.ctmic.ready,.ctmic.listening,.ctdots i{animation:none}}
 /* The play frame (the games, the missions, the gate challenge, duels): a full-screen app with no page scrolling.
@@ -3526,7 +3529,7 @@ const WARMUP = { vocabulary: 'match', listening: 'listen', grammar: 'build', rea
 const warmupGame = d => { const t = d.week.find(w => w.isToday); return WARMUP[t && t.section] || 'match'; };
 const GAMES_DEFAULT = { todayRounds: 0, todayXp: 0, dayCap: 60, weekRounds: 0, weekAvg: null, total: 0, recent: {}, review: [] };
 
-const BANK_V = 2, ROUND = 5;
+const BANK_V = 3, ROUND = 5;
 const LV_ORDER = ['a1', 'a2', 'b1', 'b2', 'c1'];
 const NEXT_LV = { a1: 'a2', a2: 'b1', b1: 'b2', b2: 'c1' };
 let bankPromise = null, bankIndex = null, G = null;
@@ -3554,6 +3557,24 @@ function bankItems(B, game, lv){
   }
   return (B[game][lv] || []).map((x, i) => ({ id: game[0] + ':' + lv + ':' + i, data: x, lv }));
 }
+// The held-out bank (B.gate, night review finding 12): the gate challenge and the progress check only, never the games
+// (itemById does not know these ids, so they cannot come back in a round). Ids: gm match, gl listen, gb build, gs spot,
+// gt "Type it" (a spot item with a one-word fix, which she types).
+function heldItems(B, game, lv){
+  const H = (B.gate || {})[lv] || {};
+  if (game === 'match') return (H.match || []).map(([w, def]) => ({ id: 'gm:' + lv + ':' + idKey(w), kind: 'def', word: w, def, lv, held: true }));
+  if (game === 'type') return (H.spot || []).map((x, i) => ({ id: 'gt:' + lv + ':' + i, data: x, lv, held: true })).filter(x => /^[A-Za-z'-]+$/.test(x.data[1] || ''));
+  return (H[game] || []).map((x, i) => ({ id: 'g' + game[0] + ':' + lv + ':' + i, data: x, lv, held: true }));
+}
+// Two definitions that say nearly the same thing (improve / recover): never options of one question, never in one round.
+const DEF_SKIP = ' a an the to of or and for in on at with something someone you your it is be that who which very ';
+const defWords = d => String(d).toLowerCase().replace(/[^a-z ]+/g, ' ').split(' ').filter(w => w && DEF_SKIP.indexOf(' ' + w + ' ') < 0);
+function defClash(a, b){
+  const x = defWords(a), y = defWords(b);
+  if (!x.length || !y.length) return false;
+  const same = x.filter(w => y.indexOf(w) >= 0).length;
+  return same / Math.min(x.length, y.length) >= 0.6;
+}
 function itemById(B, id){
   if (!bankIndex) {
     bankIndex = {};
@@ -3578,7 +3599,9 @@ function makeRound(B, game){
   const taken = new Set(due.map(x => x.id)), seen = store.get(seenKey()) || [];
   let fresh = shuffle(pool.filter(x => !taken.has(x.id) && seen.indexOf(x.id) < 0));
   if (fresh.length + due.length < ROUND) fresh = fresh.concat(shuffle(pool.filter(x => !taken.has(x.id) && fresh.indexOf(x) < 0)));
-  const items = due.concat(fresh).slice(0, ROUND);
+  const items = [];
+  due.concat(fresh).forEach(x => { if (items.length < ROUND && !(x.def && items.some(y => y.def && defClash(x.def, y.def)))) items.push(x); });
+  if (items.length < ROUND) due.concat(fresh).forEach(x => { if (items.length < ROUND && items.indexOf(x) < 0) items.push(x); });
   const recent = (dash.games.recent || {})[game] || [], nxt = levels.length === 1 ? NEXT_LV[levels[0]] : null;
   if (nxt && recent.length >= 2 && recent.slice(-2).every(p => p >= 90)) {
     const extra = shuffle(bankItems(B, game, nxt))[0];
@@ -3591,7 +3614,8 @@ function makeRound(B, game){
 const prepare = (B, game, x, rnd) => Object.assign(prepareItem(B, game, x, rnd), { game });
 function prepareItem(B, game, x, rnd){
   if (game === 'match') {
-    const others = x.kind === 'pic' ? B.pics[x.topic].filter(w => w !== x.word) : B.match[x.lv].map(m => m[0]).filter(w => w !== x.word);
+    const list = x.held ? B.gate[x.lv].match : B.match[x.lv];
+    const others = x.kind === 'pic' ? B.pics[x.topic].filter(w => w !== x.word) : list.filter(m => m[0] !== x.word && !defClash(m[1], x.def)).map(m => m[0]);
     return Object.assign({ answer: x.word, options: shuffle([x.word].concat(shuffle(others, rnd).slice(0, 3)), rnd) }, x);
   }
   if (game === 'listen') {
@@ -3688,7 +3712,7 @@ function renderItem(){
   if (!G) return;
   if (G.i >= G.items.length) return finishRound();
   G.locked = false; G.built = [];
-  const it = G.items[G.i], n = G.items.length, game = it.game, info = GAME_INFO[game];
+  const it = G.items[G.i], n = G.items.length, game = it.game, info = GAME_INFO[game] || TYPE_INFO;
   let body;
   if (game === 'match') {
     body = `<div class="glass qcard">${it.kind === 'pic'
@@ -3705,11 +3729,15 @@ function renderItem(){
     body = `<div class="qprompt" style="text-align:center">Tap the words in the right order</div>
       <div class="slots" id="slots"></div>
       <div class="bank" id="bank">${it.order.map(k => `<button class="tok" data-k="${k}">${esc(it.words[k])}</button>`).join('')}</div>`;
+  } else if (game === 'type') {
+    body = `<div class="glass qcard"><div class="qprompt">This word is wrong. Type the right word!</div>
+      <div class="sentence">${it.tokens.map((t, k) => `<button class="tok${k === it.wrong ? ' wrongpick' : ''}" data-k="${k}" tabindex="-1">${esc(t)}</button>`).join('')}</div>
+      <input class="mtype mt-s" id="gtype" type="text" enterkeyhint="go" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="The right word"></div>`;
   } else {
     body = `<div class="glass qcard"><div class="qprompt">One word is wrong. Tap it!</div>
       <div class="sentence">${it.tokens.map((t, k) => `<button class="tok" data-k="${k}">${esc(t)}</button>`).join('')}</div></div>`;
   }
-  const hint = { match: 'Hmm… which one is it?', listen: 'Listen carefully!', build: 'Let\'s build it together!', spot: 'Can you find it?' }[game];
+  const hint = { match: 'Hmm… which one is it?', listen: 'Listen carefully!', build: 'Let\'s build it together!', spot: 'Can you find it?', type: 'Type it in!' }[game];
   app.innerHTML = `<div class="gscreen gplay" id="gs">
     <div class="gtop"><button class="btn btn-glass icon-btn" id="gquit" title="Stop">${icon('x')}</button>
       <div style="flex:1;min-width:0"><h2>${G.duel ? G.duel.title : G.place ? (G.place.form === 'A' ? 'Level test' : 'Progress check') : G.gate ? 'Gate challenge' : info.name}</h2><div class="sub" style="font-size:12px;margin:0">${G.duel
@@ -3721,13 +3749,14 @@ function renderItem(){
       <div class="react">${dash.pet ? petArt(dash.pet, 'thinking', 'gpet', { id: 'gpet' }) : ''}
         <div class="bubble" id="fb">${hint}</div></div>
       <div id="explain"></div>
-      <div class="gslot" id="gnext">${game === 'build' ? `<button class="btn btn-primary btn-block" id="check" disabled>Check ${icon('check')}</button>`
+      <div class="gslot" id="gnext">${game === 'build' || game === 'type' ? `<button class="btn btn-primary btn-block" id="check"${game === 'build' ? ' disabled' : ''}>Check ${icon('check')}</button>`
         : `<button class="btn btn-glass btn-block" disabled>Next ${icon('arrow-right')}</button>`}</div>
       ${G.duel && DU && DU.boss ? bossAssist() : ''}${G.duel && DU && DU.live ? reactionsBar() : ''}
     </div>
   </div>`;
   document.getElementById('gs').onclick = onGameClick;
   if (game === 'build') holdSlots();
+  if (game === 'type') { const el = document.getElementById('gtype'); el.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('check').click(); } }; }
   if (G.duel) duelAfterRender();
   if (game === 'listen') setTimeout(() => sayIt(false), 300);
 }
@@ -3765,6 +3794,17 @@ function onGameClick(e){
     document.getElementById('slots').innerHTML = G.built.map(x => `<button class="tok placed" data-k="${x}">${esc(it.words[x])}</button>`).join('');
     document.getElementById('check').disabled = G.built.length !== it.words.length;
     return;
+  }
+  if (t.id === 'check' && it.game === 'type') {
+    const el = document.getElementById('gtype'), v = el ? el.value : '';
+    if (!msNorm(v)) { if (el) el.focus(); return; }
+    const ok = sameAnswer(v, it.fix);
+    el.disabled = true; t.disabled = true;
+    el.style.borderColor = ok ? '#34d399' : '#fb7185';
+    const w = app.querySelector('.sentence .tok[data-k="' + it.wrong + '"]');
+    w.classList.remove('wrongpick'); w.classList.add('fixed');
+    w.innerHTML = '<s>' + esc(it.tokens[it.wrong]) + '</s>' + esc(fixedWord(it));
+    return answered(ok, `<b>${esc(fixedSentence(it))}</b><br>${esc(it.tip)}`);
   }
   if (t.id === 'check') {
     const ok = G.built.map(x => it.words[x]).join(' ') === it.sentence;
@@ -4110,6 +4150,29 @@ function chatMatch(turn, text){
   const said = chatNorm(text), n = said.trim() ? said.trim().split(' ').length : 0;
   return { b: n ? (turn.a || []).findIndex(x => chatFits(said, x)) : -1, n };
 }
+// The model answers of a turn (night review, finding 5): its own `m`, else its tiles. A recast shows and says the closest one.
+const chatModels = turn => turn.m ? [turn.m] : (turn.t || []);
+const chatWords = s => chatNorm(s).trim().split(' ').filter(Boolean);
+// Enough for voice XP when no branch fits: the level's minimum, and at A1 and A2 one word more when every model is a
+// sentence (3+ words), so a lone keyword is not taken as the answer to a question that wants a sentence.
+function chatEnough(turn, n, level){
+  const ms = chatModels(turn), sentence = ms.length && ms.every(m => chatWords(m).length >= 3);
+  return n >= (CHAT_MIN[level] || 2) + (sentence && (level === 'a1' || level === 'a2') ? 1 : 0);
+}
+// How much of a model she said: the share of its words that are in what she said (0..1).
+function chatNear(model, text){
+  const said = chatNorm(text), w = chatWords(model);
+  return w.length ? w.filter(x => said.indexOf(' ' + x + ' ') >= 0).length / w.length : 0;
+}
+// The model closest to what she said (the first one on a tie): { k: its place, text }.
+function chatModel(turn, text){
+  const ms = chatModels(turn);
+  let k = 0;
+  ms.forEach((m, i) => { if (chatNear(m, text) > chatNear(ms[k], text)) k = i; });
+  return { k, text: ms[k] || '' };
+}
+// Said back after a recast: close enough when most of the model's words are there.
+const CHAT_CLOSE = 0.6;
 
 const MISSIONS_V = 4, MS_PARTS = ['Hook', 'Learn', 'Practice', 'Use it', 'Finish'];
 const MS_TYPES = { grammar: ['Grammar Lab', 7], vocabulary: ['Word Pack', 7], listening: ['Radio Show', 8], reading: ['Story Cards', 8],
@@ -4171,6 +4234,24 @@ const msQid = n => 'x:' + MS.id + ':' + (n + 1);
 // The real question id of a screen (a review screen keeps the id it has in its own mission).
 const msQidOf = sc => MS.review ? 'x:' + sc.id + ':' + (sc.qn + 1) : msQid(sc.q0);
 const msNorm = s => String(s || '').toLowerCase().replace(/[\u2018\u2019]/g, '\'').replace(/[.!?,;:"]+/g, ' ').replace(/\s+/g, ' ').trim();
+// One spelling for words that British and American English spell differently (colour/color, realise/realize, centre/center,
+// travelled/traveled, grey/gray...), so a typed answer counts in either (night review, finding 19).
+const SPELL_OUR = /^(colo|favo|flavo|hono|humo|labo|neighbo|behavio|harbo|rumo|savo|endeavo|armo|vapo|odo|glamo|paralo|splendo|cando|clamo|rigo|vigo)ur/;
+const SPELL_LL = /^(travel|cancel|model|label|level|fuel|dial|signal|jewel|marvel|quarrel|total|counsel|channel|tunnel|equal|panel|pedal|rival|shovel|snorkel|yodel)l(ed|ing|er|ers)$/;
+const SPELL_WORD = { grey: 'gray', mum: 'mom', mummy: 'mommy', programme: 'program', programmes: 'programs', tyre: 'tire', tyres: 'tires',
+  jewellery: 'jewelry', pyjamas: 'pajamas', cosy: 'cozy', cosier: 'cozier', sceptical: 'skeptical', catalogue: 'catalog', dialogue: 'dialog',
+  licence: 'license', defence: 'defense', offence: 'offense', practise: 'practice', practised: 'practiced', practising: 'practicing',
+  aeroplane: 'airplane', aluminium: 'aluminum', cheque: 'check', moustache: 'mustache', plough: 'plow', storey: 'story', kerb: 'curb',
+  enrol: 'enroll', fulfil: 'fulfill', skilful: 'skillful', willful: 'wilful', ageing: 'aging', judgement: 'judgment', analyse: 'analyze', analysed: 'analyzed' };
+// Words spelled -ise everywhere (otherwise, surprise): a typed "otherwize" stays wrong.
+const SPELL_ISE = /^(advis|advertis|aris|chastis|compris|compromis|demis|despis|devis|disguis|enterpris|excis|exercis|expertis|franchis|improvis|incis|merchandis|otherwis|premis|promis|revis|supervis|surmis|surpris|televis|nois|rais|prais|cruis|bruis|concis|precis|paradis|treatis|wis|ris)/;
+const spellKey = s => String(s || '').split(' ').map(w => {
+  w = SPELL_WORD[w] || w;
+  if (SPELL_OUR.test(w)) w = w.replace(/our/, 'or');
+  const ll = SPELL_LL.exec(w); if (ll) w = ll[1] + ll[2];
+  return (SPELL_ISE.test(w) ? w : w.replace(/(\w{3,})is(e|ed|es|ing|ation|ations|er|ers)$/, '$1iz$2')).replace(/(\w{2,})ys(e|ed|es|ing)$/, '$1yz$2').replace(/(\w{2,}[bt])re$/, '$1er').replace(/(\w{2,}[bt])res$/, '$1ers');
+}).join(' ');
+const sameAnswer = (a, b) => spellKey(msNorm(a)) === spellKey(msNorm(b));
 const msSaved = w => { const p = store.get(msKey()); return p && w && w.mission && p.id === w.mission.id && p.date === w.date ? p : null; };
 const msMinutes = w => (MS_TYPES[w.section] || MS_TYPES.grammar)[1];
 
@@ -4621,7 +4702,7 @@ function msCheckType(){
   if (!sc || sc.t !== 'q' || MS.sub.done) return;
   const el = document.getElementById('mstype'), v = el ? el.value : '';
   if (!msNorm(v)) { if (el) el.focus(); return; }
-  return msDone(sc.it.a.some(a => msNorm(a) === msNorm(v)), { typed: v });
+  return msDone(sc.it.a.some(a => sameAnswer(a, v)), { typed: v });
 }
 function msRecord(n, ok){
   MS.res[n] = ok;
@@ -4818,11 +4899,18 @@ async function previewMission(id, label){
 // ---- Talk to Chacho: the talk screen (specs/talk.md) ----
 // Chacho says each line (a recording, or the phone's voice without one), the kid answers aloud with the mic button
 // (the phone's own speech recognition; nothing is recorded or sent but the words it heard), or with a tile. Every answer
-// moves the talk on; there is no wrong answer. A mission talk comes after Use it; a home scene once a day from home.
-const TALK_V = 6;
+// moves the talk on. A mission talk comes after Use it; a home scene once a day from home.
+// Feedback (night review, finding 5): a branch that fits gets its reply. When none fits, Chacho never praises the form:
+// a closed question, or too short an answer, gets a recast (Chacho says the closest model, "Now you say it!", one try by
+// voice or tile, then the talk goes on); an open question answered with enough words gets `o` and the closest model as
+// a quiet "Another way to say it". Voice XP only for a branch or an answer with enough words (chatEnough), or the model
+// said back. Settings.TalkRecast = off turns the recast step off (the model line stays).
+const TALK_V = 7;
 const CHAT_PET = {
   start: ['Your turn soon! Tap the mic and talk.', 'Talk to Chacho! I am right here.', 'Speak English with Chacho. You can do it!'],
-  voice: ['You said it!', 'Wow, great English!', 'Chacho understood you!', 'So cool! Keep going!', 'Yes! Out loud!'],
+  voice: ['You said it!', 'Out loud! Keep going!', 'Chacho heard you!', 'So cool! Keep going!', 'Yes! Out loud!'],
+  recast: ['Listen to Chacho, then say it too.', 'Say it with Chacho!', 'Your turn to say it!'],
+  back: ['Yes! Just like Chacho.', 'You said it!', 'Out loud! Great.'],
   tile: ['Nice pick! Next time, say it out loud.', 'Good one! Try the mic next time.', 'Nice! You can say it too.'],
   listen: ['I am listening too…', 'Shh… Chacho is listening.'],
   again: ['Try again, a little louder.', 'Speak close to the phone.'],
@@ -4831,7 +4919,11 @@ const CHAT_PET = {
 const CHAT_BANK = {
   again: "Sorry, I didn't catch that. Can you say it again?",
   more: 'Ooh, tell me a little more!',
-  tiles: 'Here are some ideas. Say one out loud, or tap it!'
+  tiles: 'Here are some ideas. Say one out loud, or tap it!',
+  recast: 'You can say it like this:',
+  turn: 'Now you say it!',
+  yes: 'Yes! Just like that.',
+  next: "Thank you! Let's go on."
 };
 let CT = null, ctAudio = null, ctRec = null;
 const chatLoads = {};
@@ -4867,7 +4959,8 @@ function chatScene(list, info){
 function chatOpen(s, opts){
   chatStop();
   CT = Object.assign({ s, i: 0, log: [], voice: 0, tiles: 0, said: [], tries: 0, more: false, tilesOn: false, he: false, mic: chatCanListen(),
-    phase: 'coco', t0: Date.now(), heard: {}, pet: chatPick(CHAT_PET.start) }, opts);
+    phase: 'coco', t0: Date.now(), heard: {}, pet: chatPick(CHAT_PET.start), saying: null, got: '',
+    recast: !(dash && dash.chat && dash.chat.recast === false) }, opts);
   if (!CT.mic) CT.tilesOn = true;
   chatRender();
   chatCoco(s.turns[0].c, chatClip(0, 'c'), () => chatAsk());
@@ -4880,11 +4973,12 @@ function chatRender(){
   const s = CT.s, u = chatTurn(), lv = (LEVELS.find(l => MS_FILES[l[0]] === CT.level) || [0, ''])[1];
   const end = CT.phase === 'end', listening = CT.phase === 'listen', busy = CT.phase === 'coco' || CT.phase === 'wait';
   const sub = 'Talk with Chacho · ' + esc(lv) + (end ? ' · done' : ' · ' + (CT.i + 1) + ' of ' + s.turns.length);
-  const bub = (b, k) => b.who === 'coco'
-    ? `<div class="cb coco"><img src="${cocoSrc(b.mood || 'happy')}" alt=""><span>${esc(b.text)}${b.clip ? ` <button class="ctsay" data-ctsay="${k}" title="Hear it again">${icon('speaker-high')}</button>` : ''}</span></div>
+  const bub = (b, k) => b.who === 'alt' ? `<div class="cb coco ctalt"><span>Another way to say it: <b>${esc(b.text)}</b></span></div>`
+    : b.who === 'coco'
+    ? `<div class="cb coco"><img src="${cocoSrc(b.mood || 'happy')}" alt=""><span>${b.model ? b.parts.map((p, i) => i === b.model ? '<b>' + esc(p[0]) + '</b>' : esc(p[0])).join(' ') : esc(b.text)}${b.clip || b.parts ? ` <button class="ctsay" data-ctsay="${k}" title="Hear it again">${icon('speaker-high')}</button>` : ''}</span></div>
        ${CT.preview && TEACHER && b.flag ? `<div class="row-flex ctflag" style="gap:6px"><button class="mflag" data-ctflag="${esc(b.flag)}">Something wrong here?</button></div>` : ''}`
     : `<div class="cb me"><span>${esc(b.text)}${b.tile ? '' : ` ${icon('microphone')}`}</span></div>`;
-  const tiles = !end && u && CT.tilesOn ? `<div class="cttiles">${u.t.map((t, k) => `<button class="opt" data-cttile="${k}"${busy ? ' disabled' : ''}>${esc(t)}</button>`).join('')}</div>` : '';
+  const tiles = !end && u && (CT.tilesOn || CT.saying) ? `<div class="cttiles">${(CT.saying ? [CT.saying.text] : u.t).map((t, k) => `<button class="opt" data-cttile="${k}"${busy ? ' disabled' : ''}>${esc(t)}</button>`).join('')}</div>` : '';
   const hint = !end && u && CT.he ? `<div class="mhe ct" dir="rtl" lang="he">${msHe(u.he)}</div>` : '';
   const note = !end && !CT.mic ? `<div class="sub ctnote">${icon('microphone-slash')} This phone can't listen here. Tap an answer, and say it out loud too!</div>` : '';
   const slot = end ? `<button class="btn btn-primary btn-block" id="ctdone">${CT.where === 'mission' ? 'Continue' : 'Finish'} ${icon('arrow-right')}</button>`
@@ -4935,8 +5029,8 @@ function chatClick(e){
   if (t.id === 'ctmic') return chatListen();
   if (t.id === 'ctideas') { CT.tilesOn = !CT.tilesOn || !CT.mic; return chatRender(); }
   if (t.id === 'cthe') { CT.he = !CT.he; return chatRender(); }
-  if (d.cttile != null && CT.phase === 'ask') return chatAnswer(chatTurn().t[Number(d.cttile)], 'tile');
-  if (d.ctsay != null) { const b = CT.log[Number(d.ctsay)]; if (b && CT.phase !== 'listen') chatPlay(b.text, b.clip); return; }
+  if (d.cttile != null && CT.phase === 'ask') return chatAnswer(CT.saying ? CT.saying.text : chatTurn().t[Number(d.cttile)], 'tile');
+  if (d.ctsay != null) { const b = CT.log[Number(d.ctsay)]; if (b && CT.phase !== 'listen') b.parts ? chatPlayAll(b.parts) : chatPlay(b.text, b.clip); return; }
   if (d.ctflag && CT.preview && TEACHER) {
     t.parentElement.innerHTML = '<input class="input" id="ctnote" placeholder="What is wrong? A short note" style="flex:1;min-width:0;height:36px"><button class="mflag" data-ctsend="' + esc(d.ctflag) + '">Send</button>';
     const n = document.getElementById('ctnote'); if (n) n.focus();
@@ -4955,6 +5049,17 @@ function chatCoco(text, clip, then, mood){
   CT.phase = 'coco';
   chatRender();
   chatPlay(text, clip, () => { if (CT) then(); });
+}
+// Several recorded parts in one bubble: [[text, clip], ...], played one after the other.
+function chatCocoAll(parts, then, mood, model){
+  CT.log.push({ who: 'coco', text: parts.map(p => p[0]).join(' '), parts, mood, model });
+  CT.phase = 'coco';
+  chatRender();
+  chatPlayAll(parts, () => { if (CT) then(); });
+}
+function chatPlayAll(parts, onEnd){
+  const next = i => i < parts.length ? chatPlay(parts[i][0], parts[i][1], () => next(i + 1)) : onEnd && onEnd();
+  next(0);
 }
 function chatAsk(){
   CT.phase = 'ask';
@@ -5032,6 +5137,7 @@ function chatListen(){
 }
 // Nothing heard: Chacho asks again; after the second time the ideas open.
 function chatMissed(){
+  if (CT.saying) return chatSaid('', 'voice');
   CT.tries++;
   CT.pet = chatPick(CHAT_PET.again);
   if (CT.tries >= 2 && !CT.tilesOn) { CT.tilesOn = true; return chatCoco(CHAT_BANK.tiles, 'bank-tiles', chatAsk, 'thinking'); }
@@ -5040,22 +5146,55 @@ function chatMissed(){
 
 // An answer (what the phone heard, or a tile): Chacho's reply for the branch that fits, then the next question.
 function chatAnswer(text, via){
+  if (CT.saying) return chatSaid(text, via);
   const u = chatTurn(), r = chatMatch(u, text);
   CT.log.push({ who: 'me', text, tile: via === 'tile' });
   if (via === 'voice' && r.b < 0 && r.n < CHAT_MIN[CT.level] && !CT.more) {
     CT.more = true;
     return chatCoco(CHAT_BANK.more, 'bank-more', chatAsk, 'thinking');
   }
-  if (via === 'voice') { CT.voice++; CT.said.push(text); buzz(true); CT.pet = chatPick(CHAT_PET.voice); }
-  else { CT.tiles++; CT.pet = chatPick(CHAT_PET.tile); }
+  // Voice counts when a branch fits or she said enough; a tile counts as a tile.
+  const ok = via === 'tile' || r.b >= 0 || chatEnough(u, r.n, CT.level);
+  if (via === 'voice' && ok) { CT.got = 'voice'; CT.voice++; CT.said.push(text); buzz(true); CT.pet = chatPick(CHAT_PET.voice); }
+  else if (via === 'tile') { CT.got = 'tile'; CT.tiles++; CT.pet = chatPick(CHAT_PET.tile); }
+  else CT.pet = chatPick(CHAT_PET.recast);
   const reply = r.b >= 0 ? u.a[r.b].r : u.o, clip = chatClip(CT.i, r.b >= 0 ? 'r' + (r.b + 1) : 'o');
   CT.tries = 0; CT.more = false; CT.he = false;
   if (CT.mic) CT.tilesOn = false;
+  // Nothing fits: a recast (closed question, or too little said), or the model as a quiet line (an open question).
+  const model = via === 'voice' && r.b < 0 ? chatModel(u, text) : null;
+  const near = model && chatNear(model.text, text) >= CHAT_CLOSE;
+  const recast = model && !near && CT.recast && ((u.a || []).length || !ok);
   chatCoco(reply, clip, () => {
-    CT.i++;
-    if (CT.i < CT.s.turns.length) return chatCoco(chatTurn().c, chatClip(CT.i, 'c'), chatAsk);
-    chatCoco(CT.s.end, CT.s.id + '-e', chatEnd, 'celebrate');
+    if (recast) return chatRecast(model);
+    if (model && !near) CT.log.push({ who: 'alt', text: model.text });
+    chatNext();
   }, 'happy');
+}
+// The recast: Chacho says the model, then "Now you say it!"; one try (voice or the model's tile), then the talk goes on.
+function chatRecast(model){
+  const u = chatTurn(), clip = u.m ? chatClip(CT.i, 'm') : chatClip(CT.i, 't' + (model.k + 1));
+  CT.saying = { text: model.text, clip };
+  chatCocoAll([[CHAT_BANK.recast, 'bank-recast'], [model.text, clip], [CHAT_BANK.turn, 'bank-turn']], chatAsk, 'thinking', 1);
+}
+function chatSaid(text, via){
+  const m = CT.saying;
+  CT.saying = null;
+  if (text) CT.log.push({ who: 'me', text, tile: via === 'tile' });
+  const back = via === 'tile' || (text && chatNear(m.text, text) >= CHAT_CLOSE);
+  if (back && !CT.got) {
+    if (via === 'tile') { CT.got = 'tile'; CT.tiles++; CT.pet = chatPick(CHAT_PET.tile); }
+    else { CT.got = 'voice'; CT.voice++; CT.said.push(text); buzz(true); CT.pet = chatPick(CHAT_PET.back); }
+  } else if (back && via === 'voice') { buzz(true); CT.pet = chatPick(CHAT_PET.back); }
+  if (CT.mic) CT.tilesOn = false;
+  CT.tries = 0;
+  if (back && via === 'voice') return chatCoco(CHAT_BANK.yes, 'bank-yes', chatNext, 'happy');
+  chatCoco(CHAT_BANK.next, 'bank-next', chatNext, 'happy');
+}
+function chatNext(){
+  CT.i++; CT.got = '';
+  if (CT.i < CT.s.turns.length) return chatCoco(chatTurn().c, chatClip(CT.i, 'c'), chatAsk);
+  chatCoco(CT.s.end, CT.s.id + '-e', chatEnd, 'celebrate');
 }
 
 function chatEnd(){
@@ -6876,8 +7015,11 @@ function trackBar(j){
 }
 
 function gateNote(j){
-  const g = j.gate, left = j.goal - j.stations;
+  const g = j.gate, left = j.goal - j.stations, m = j.mastery;
   if (g.state === 'open') return `The gate to ${esc(g.nextLabel)} is open!`;
+  // The stations are done, the gate waits for mastery (night review, finding 12).
+  if (g.state === 'locked' && j.stationsOk && m && !m.ok && !m.kept) return m.n < m.min ? `Play games and missions to open the gate`
+    : `Get ${m.need}% right in games and missions to open the gate (now ${m.pct}%)`;
   if (g.state === 'wait') return `The gate opens again on ${dayLabel(g.until)}`;
   if (g.state === 'top') return left > 0 ? `${plural(left, 'station')} to the summit` : 'You reached the summit!';
   // A high average opens the gate early.
@@ -7030,8 +7172,42 @@ function gateIntro(){
   document.getElementById('gstart').onclick = startGate;
 }
 
-// Questions from the next level (a B1+ gate mixes B1 and B2), new ones first.
-const GATE_MIX = [['match', 4], ['listen', 4], ['spot', 4], ['build', 3]];
+// Questions from the next level (a B1+ gate mixes B1 and B2), from the held-out bank the games never show (night review,
+// finding 12): ones she has not had in a gate first, so a retry gets fresh questions, then the ones she had longest ago.
+// The last one is Type it (she types the right word). Short of held-out items, the game bank fills in.
+const GATE_MIX = [['match', 4], ['listen', 4], ['spot', 3], ['build', 3], ['type', 1]];
+const TYPE_INFO = { name: 'Type it', icon: 'keyboard', tile: 't-uoe', desc: 'Type the right word' };
+const gseenKey = () => 'eq_gseen_' + (session ? session.name : '');
+// The held-out items she has had (this phone, and the gate tries the server knows), oldest first. Spot and Type it share a sentence.
+const heldBase = id => String(id).replace(/^g[st]:/, 'gs:');
+function heldSeen(){
+  const srv = (dash && dash.journey && dash.journey.gate && dash.journey.gate.seen) || [];
+  return srv.concat(store.get(gseenKey()) || []).map(heldBase);
+}
+function heldPick(B, game, levels, k, seen, taken){
+  const pool = shuffle([].concat(...levels.map(l => heldItems(B, game, l)))).filter(x => !taken.has(heldBase(x.id)));
+  const fresh = pool.filter(x => seen.indexOf(heldBase(x.id)) < 0);
+  const old = pool.filter(x => seen.indexOf(heldBase(x.id)) >= 0).sort((a, b) => seen.indexOf(heldBase(a.id)) - seen.indexOf(heldBase(b.id)));
+  const out = fresh.concat(old).slice(0, k);
+  out.forEach(x => taken.add(heldBase(x.id)));
+  return out;
+}
+function gateQuestions(B, levels){
+  const seen = heldSeen(), taken = new Set(), by = {};
+  // Type it first, so its sentence is not also a Spot it question.
+  GATE_MIX.slice().sort((a, b) => (b[0] === 'type') - (a[0] === 'type')).forEach(([game, k]) => {
+    let got = heldPick(B, game, levels, k, seen, taken);
+    if (got.length < k && game !== 'type') {
+      const ids = new Set(got.map(x => x.id));
+      got = got.concat(shuffle([].concat(...levels.map(l => bankItems(B, game, l))).filter(x => x.kind !== 'pic' && !ids.has(x.id))).slice(0, k - got.length));
+    }
+    if (got.length < k && game === 'type') got = got.concat(heldPick(B, 'spot', levels, k - got.length, seen, taken).map(x => Object.assign({}, x, { asSpot: true })));
+    by[game] = got;
+  });
+  const items = [];
+  GATE_MIX.forEach(([game]) => (by[game] || []).forEach(x => items.push(prepare(B, x.asSpot ? 'spot' : game, x))));
+  return items;
+}
 async function startGate(){
   const j = dash && dash.journey;
   if (!j || j.gate.state !== 'open') return renderMap();
@@ -7039,11 +7215,7 @@ async function startGate(){
   let B;
   try { B = await loadBank(); }
   catch(e){ toast(e.message, true); return renderMap(); }
-  const seen = store.get(seenKey()) || [], items = [];
-  GATE_MIX.forEach(([game, k]) => {
-    const pool = shuffle([].concat(...kidLevels(j.gate.next).map(l => bankItems(B, game, l))).filter(x => x.kind !== 'pic'));
-    pool.filter(x => seen.indexOf(x.id) < 0).concat(pool.filter(x => seen.indexOf(x.id) >= 0)).slice(0, k).forEach(x => items.push(prepare(B, game, x)));
-  });
+  const items = gateQuestions(B, kidLevels(j.gate.next));
   if (items.length !== j.gate.items) { toast('Could not prepare the challenge. Try again later.', true); return renderMap(); }
   G = { gate: true, items, i: 0, res: [], missed: [], right: [], built: [], locked: false };
   window.scrollTo(0, 0);
@@ -7052,11 +7224,15 @@ async function startGate(){
 
 function finishGate(){
   const R = { correct: G.res.filter(Boolean).length, total: G.res.length, missed: G.missed.slice(), right: G.right.slice() };
-  store.set(seenKey(), (store.get(seenKey()) || []).concat(G.items.map(x => x.id)).slice(-60));
+  heldKeep(G.items);
   G = null;
   saveGate(R);
 }
 
+function heldKeep(items){
+  const ids = items.map(x => x.id).filter(id => /^g/.test(id));
+  if (ids.length) store.set(gseenKey(), (store.get(gseenKey()) || []).filter(id => ids.indexOf(id) < 0).concat(ids).slice(-400));
+}
 async function saveGate(R){
   app.innerHTML = `<div class="gscreen"><div class="result">
       ${dash.pet ? `${petArt(dash.pet, 'thinking', 'pet-img')}` : ''}
@@ -7081,7 +7257,7 @@ async function saveGate(R){
       <h1>${r.correct}/${r.total}</h1>
       <h2>${r.correct >= g.need - 2 ? 'So close!' : 'Good try!'}</h2>
       <div class="sub" style="max-width:310px;margin:0">You need ${g.need} to open the gate. It opens again on <b>${g.until ? dayLabel(g.until) : 'another day'}</b>.
-        Until then, keep exploring ${esc(j.name)}: the questions you missed will come back in your games.</div>
+        Until then, keep exploring ${esc(j.name)}. Next time the gate asks new questions.</div>
       ${r.xp ? `<div class="saved">${icon('check')} +${r.xp} XP${dash.pet ? ' for ' + esc(dash.pet.name) : ''}</div>` : ''}
     </div>
     <div class="stack" style="gap:10px"><button class="btn btn-primary btn-block" id="gmap">${icon('map-trifold')} Back to the map</button>
@@ -7297,15 +7473,20 @@ function openWatch(){
 // Hebrew screens for parents (dir="rtl"); the kids' side stays in English.
 
 // The in-app level test: adaptive blocks of five game items (Match it, Hear it, Spot it, Build it and one more). 4 or 5
-// right moves up a level, 2 or fewer moves down, 3 stops there; at most five blocks. Form A uses half of the items and
-// the retest (form B) the other half, so the second test has new questions.
+// right moves up a level, 2 or fewer moves down, 3 stops there, but never before two blocks (a second block at the same
+// level); at most five blocks. Form A uses half of the game items; the retest (form B) uses the held-out bank the games
+// never show (night review, finding 12), so four weeks of practice do not inflate it.
 const PLACE_LV = ['a1', 'a2', 'b1', 'b2', 'c1'], PLACE_MAX = 5;
 const placeForm = (id, form) => (hashStr(id) % 2 === 0) === (form === 'A');
 const placeStartLv = lv => lv === 'b1-b2' ? 'b1' : PLACE_LV.indexOf(lv) >= 0 ? lv : 'a2';
+const PLACE_MIN = 2;
 function placeBlock(B, lv, form, n){
-  const items = [];
+  const items = [], seen = form === 'A' ? [] : heldSeen();
   ['match', 'listen', 'spot', 'build', n % 2 ? 'spot' : 'listen'].forEach(game => {
-    const pool = shuffle(bankItems(B, game, lv).filter(x => x.kind !== 'pic' && placeForm(x.id, form) && !G.place.used.has(x.id)));
+    const held = form === 'A' ? [] : heldItems(B, game, lv).filter(x => !G.place.used.has(x.id) && !G.place.used.has(heldBase(x.id)));
+    const fresh = shuffle(held.filter(x => seen.indexOf(heldBase(x.id)) < 0)).concat(shuffle(held.filter(x => seen.indexOf(heldBase(x.id)) >= 0)));
+    const pool = fresh.length ? fresh : shuffle(bankItems(B, game, lv).filter(x => x.kind !== 'pic' && placeForm(x.id, form) && !G.place.used.has(x.id)));
+    if (pool[0] && pool[0].held) G.place.used.add(heldBase(pool[0].id));
     if (pool[0]) { G.place.used.add(pool[0].id); items.push(prepare(B, game, pool[0])); }
   });
   return shuffle(items);
@@ -7347,18 +7528,27 @@ function placeNext(){
   let next = null;
   if (score >= 4 && k < PLACE_LV.length - 1 && !tried(PLACE_LV[k + 1])) next = PLACE_LV[k + 1];
   else if (score <= 2 && k > 0 && !tried(PLACE_LV[k - 1])) next = PLACE_LV[k - 1];
+  // Never a level from one block: a second one at the same level first.
+  if (!next && P.blocks.length < PLACE_MIN) next = P.lv;
   if (next && P.blocks.length < PLACE_MAX) {
     const more = placeBlock(P.B, next, P.form, P.blocks.length);
     if (more.length >= 4) {
       P.lv = next; G.items = G.items.concat(more);
-      toast(score >= 4 ? 'Great! A little harder now.' : 'Let\'s try a few different ones.');
+      toast(next === P.blocks[P.blocks.length - 1].lv ? 'A few more, please!' : score >= 4 ? 'Great! A little harder now.' : 'Let\'s try a few different ones.');
       return renderItem();
     }
   }
   finishPlacement();
 }
-// The level: the highest block with 3 of 5 or more. A strong B1 with a near miss at B2, or a bare pass at B2, is B1+.
-function placeLevel(blocks){
+// The level: the highest level with 3 of 5 or more (two blocks at one level count together). A strong B1 with a near miss
+// at B2, or a bare pass at B2, is B1+.
+function placeLevel(list){
+  const blocks = [];
+  list.forEach(b => {
+    const s = blocks.find(x => x.lv === b.lv);
+    if (!s) return blocks.push(Object.assign({}, b));
+    s.n += b.n; s.right += b.right; s.score = Math.round(s.right * 5 / Math.max(1, s.n));
+  });
   const ok = blocks.filter(b => b.score >= 3).map(b => PLACE_LV.indexOf(b.lv));
   if (!ok.length) return 'a1';
   const top = PLACE_LV[Math.max(...ok)], at = blocks.find(b => b.lv === top), b2 = blocks.find(b => b.lv === 'b2');
@@ -7371,7 +7561,8 @@ function finishPlacement(){
   G.items.forEach((x, k) => { if (k < G.res.length) { const s = by[x.game] = by[x.game] || [0, 0]; s[1]++; if (G.res[k]) s[0]++; } });
   const R = { form: P.form, level: placeLevel(P.blocks), correct: G.res.filter(Boolean).length, total: G.res.length,
     detail: { start: P.start, blocks: P.blocks, games: by } };
-  store.set(seenKey(), (store.get(seenKey()) || []).concat(G.items.map(x => x.id)).slice(-60));
+  store.set(seenKey(), (store.get(seenKey()) || []).concat(G.items.map(x => x.id).filter(id => !/^g/.test(id))).slice(-60));
+  heldKeep(G.items);
   G = null;
   savePlacement(R);
 }
@@ -7681,6 +7872,19 @@ function placementLine(g){
 }
 
 // ---------- The admin's pilot board ----------
+// An item of the game bank or the held-out bank (or a mission question) in a few words, for the item stats.
+function itemLabel(id){
+  const B = window.EQ_GAMES, [k, lv, n] = String(id).split(':');
+  if (!B || !lv) return id;
+  const held = k.length === 2 && k[0] === 'g', game = { m: 'match', p: 'match', l: 'listen', b: 'build', s: 'spot', t: 'spot' }[held ? k[1] : k];
+  let x = null;
+  if (k === 'x') return 'Mission ' + lv + ' · question ' + n;
+  if (k === 'p') return 'Picture: ' + lv.replace(/_/g, ' ');
+  if (game === 'match') x = ((held ? (B.gate[lv] || {}).match : B.match[lv]) || []).find(m => idKey(m[0]) === n);
+  else x = ((held ? (B.gate[lv] || {})[game] : B[game] && B[game][lv]) || [])[Number(n)];
+  const text = !x ? '' : typeof x === 'string' ? x : x[0];
+  return (held ? 'Gate ' : '') + ({ match: 'Match', listen: 'Hear', build: 'Build', spot: k === 'gt' ? 'Type' : 'Spot' })[game] + ' ' + lv.toUpperCase() + ' · ' + (text || id);
+}
 function pilotCard(){
   return `<div class="glass panel" id="pilotcard"><div class="row-flex between"><h2>Pilot</h2><button class="btn btn-glass btn-sm" id="pilotload">${icon('chart-bar')} Show</button></div>
     <div class="sub mt-s" style="font-size:13px">Families in the app (the ones from before the link count from Settings.PilotFrom): the funnel, activity per week, feedback and the teacher's notes.</div></div>`;
@@ -7690,7 +7894,7 @@ async function pilotLoad(pin, open, code){
   const card = document.getElementById('pilotcard');
   card.innerHTML = '<div class="spinner"></div>';
   let s;
-  try { s = open == null ? await call('apiPilotStats', pin) : await call('apiPilotInvite', pin, open, code || ''); }
+  try { s = open == null ? await call('apiPilotStats', pin) : await call('apiPilotInvite', pin, open, code || ''); await loadBank().catch(() => null); }
   catch(e){ card.innerHTML = '<div class="sub">' + esc(e.message) + '</div>'; return; }
   // The public app address from Settings; the page's own address when testing locally.
   const base = /^https?:/.test(s.base || '') && !/^(localhost|127.)/.test(location.hostname) ? s.base : location.origin + location.pathname;
@@ -7709,6 +7913,9 @@ async function pilotLoad(pin, open, code){
     ${s.chat && s.chat.length ? `<div class="label mt">Talk with Chacho · ${s.chat.filter(k => k.week >= 3).length} of ${s.chat.length} talk aloud 3+ days this week</div>
     <div class="stack mt-s" style="gap:6px">${s.chat.map(k => `<div class="soft" style="padding:8px 12px;border-radius:12px;font-size:13px"><div class="row-flex between"><b>${esc(k.name)}</b>
       <span>${k.talks} talks · ${k.voicePct}% aloud · mic ${k.micPct}% · days ${k.week} (last week ${k.lastWeek})</span></div>${k.said ? `<div class="sub" style="font-size:12px">"${esc(k.said)}"</div>` : ''}</div>`).join('')}</div>` : ''}
+    ${s.items && s.items.items && s.items.items.length ? `<div class="label mt">Hardest items · first try right (5+ answers)</div>
+    <div class="stack mt-s" style="gap:6px">${s.items.items.map(e => `<div class="soft row-flex between" style="padding:8px 12px;border-radius:12px;font-size:13px;gap:10px">
+      <span style="min-width:0">${esc(itemLabel(e.id))}</span><b style="flex:none">${e.right}/${e.n}</b></div>`).join('')}</div>` : ''}
     <div class="label mt">Teacher review · ${s.teacherFlags} notes</div>
     <div class="sub" style="font-size:12px;word-break:break-all" dir="ltr">${esc(tlink)}</div>
     <button class="btn btn-glass btn-sm mt-s" data-copy="${esc(tlink)}">${icon('copy')} Copy teacher link</button>
