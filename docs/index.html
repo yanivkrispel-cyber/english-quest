@@ -5316,8 +5316,6 @@ document.addEventListener('focusout', () => setTimeout(kbdFit, 60));
 // sentence of the mission aloud, twice; the phone times each reading (its own speech recognition, the words it heard
 // only) and shows the words a minute, kindly. Nothing is kept or sent. Only when her parent's microphone switch is on
 // (micAllowed) and the phone can listen; otherwise the step is not there. ----
-// The parent's microphone switch for this kid (night review package B adds it per kid). Until it is merged: off.
-function micAllowed(kid){ return false; }
 // The sentence: the mission's own `say`, or the first example of its card, its first word's example, the first line
 // of the show or of the story, the Writer's Desk model. One sentence of 4 to 16 words, or none.
 function msSayText(m){
