@@ -1655,7 +1655,7 @@ button.soft[disabled],button.glass[disabled]{opacity:.6}
 <div id="app"><div class="wait"><div class="spinner"></div><div class="sub">Getting your day ready…</div></div></div>
 
 <script>
-window.onerror = (m, src, l, c) => { document.getElementById('app').insertAdjacentHTML('beforeend', '<div class="glass panel" style="margin-top:12px;color:#be123c">Error: ' + m + ' @' + l + ':' + c + '</div>'); };
+window.onerror = (m, src, l, c) => { const d = document.createElement('div'); d.className = 'glass panel'; d.style.cssText = 'margin-top:12px;color:#be123c'; d.textContent = 'Error: ' + m + ' @' + l + ':' + c; document.getElementById('app').appendChild(d); };
 </script>
 <script>
 const app = document.getElementById('app');
@@ -7267,14 +7267,13 @@ async function boot(){
   s.close();
   try { performance.mark('eq-open'); } catch(e){}
 }
-// Is this open's first screen on the phone already (a remembered kid's dashboard, or a remembered parent's view)?
+// Is this open's first screen on the phone already (a remembered kid's dashboard)? A remembered parent's view is not a
+// first screen any more: it opens from the lock button (finding 9, shared tablets).
 function localOpen(){
   const qs = new URLSearchParams(location.search);
   if (['missions', 'nest', 'talk', 'join', 'duel'].some(k => qs.has(k))) return false;
   const saved = store.get('eq_auth'), kept = saved && store.get(dashKey(saved.name));
-  if (saved) return !!(kept && kept.girl && kept.week);
-  const par = store.get('eq_admin') && store.get('eq_par');
-  return !!(par && par.groups);
+  return !!(saved && kept && kept.girl && kept.week);
 }
 // How long this open took to show its first screen (not the wait screen), kept on the phone and sent with the next
 // dashboard call for the admin's Audit card: "1.4s saved" (from the phone), "server", "offline", or "20s wait" when the
@@ -7434,7 +7433,7 @@ async function renderJoin(code){
       ${ok === null ? `<button class="btn btn-primary btn-block" id="jagain">${icon('arrows-clockwise')} נסו שוב</button>` : ''}
       <button class="btn btn-glass btn-block" id="jhave">${icon('lock-simple')} כבר נרשמתם? כניסה עם קוד ההורה</button></div>`;
     const b = document.getElementById('jagain'); if (b) b.onclick = () => renderJoin(code);
-    document.getElementById('jhave').onclick = () => pinPad(null, true);
+    document.getElementById('jhave').onclick = () => parentSignIn(undefined, () => location.reload());
     return;
   }
   JOIN = JOIN || store.get('eq_join') || { kids: [{ name: '', grade: '' }], consent: false };
@@ -7486,7 +7485,7 @@ function joinWelcome(){
     if (!JOIN.consent) return toast('צריך לסמן את האישור כדי להמשיך', true);
     joinStep('form');
   };
-  document.getElementById('jhave').onclick = () => pinPad(null, true);
+  document.getElementById('jhave').onclick = () => parentSignIn(undefined, joinWelcome);
 }
 function joinForm(){
   const kidRow = (k, i) => `<div class="row-flex" style="gap:8px">
@@ -7504,15 +7503,14 @@ function joinForm(){
       <h2>ההורה</h2>
       <input class="input" id="jpar" placeholder="השם שלך" value="${esc(JOIN.parent || '')}" autocomplete="given-name">
       <input class="input" id="jfam" placeholder="שם המשפחה" value="${esc(JOIN.family || '')}" autocomplete="family-name">
-      <input class="input" id="jpin" inputmode="numeric" maxlength="4" placeholder="קוד הורה: 4 ספרות שתבחרו" value="${esc(JOIN.parentPin || '')}" dir="ltr" style="text-align:right">
-      <div class="sub" style="font-size:12px">הקוד היחיד שצריך לזכור. איתו נכנסים לאזור ההורים מכל טלפון, ושם יש גם את הקישורים של הילדים. כדאי קוד שהילדים לא יודעים.</div>
+      <div class="sub" style="font-size:12px">בסיום תקבלו קוד הורה של 6 ספרות. איתו ועם שם המשפחה נכנסים לאזור ההורים מכל טלפון, ושם יש גם את הקישורים של הילדים.</div>
       <input class="input" id="jmail" type="email" placeholder="מייל לסיכום שבועי (לא חובה)" value="${esc(JOIN.email || '')}" dir="ltr" style="text-align:right">
     </div>
     <button class="btn btn-primary btn-block" id="jsend">${icon('check')} סיום</button>
   </div>`;
   const keep = () => {
     JOIN.family = document.getElementById('jfam').value; JOIN.parent = document.getElementById('jpar').value;
-    JOIN.parentPin = document.getElementById('jpin').value.replace(/\D/g, ''); JOIN.email = document.getElementById('jmail').value;
+    JOIN.email = document.getElementById('jmail').value;
     app.querySelectorAll('[data-kname]').forEach(el => { JOIN.kids[el.dataset.kname].name = el.value; });
     app.querySelectorAll('[data-kgrade]').forEach(el => { JOIN.kids[el.dataset.kgrade].grade = el.value; });
     joinKeep();
@@ -7529,10 +7527,9 @@ function joinForm(){
     if (kids.some(k => !/^[A-Za-z][A-Za-z .'-]*$/.test(k.name.trim()))) return toast('כתבו את שמות הילדים באותיות באנגלית', true);
     if (kids.some(k => !k.grade)) return toast('בחרו גיל או כיתה לכל ילד', true);
     if (!JOIN.parent.trim() || !JOIN.family.trim()) return toast('כתבו את השם שלכם ואת שם המשפחה', true);
-    if (!/^\d{4}$/.test(JOIN.parentPin)) return toast('קוד ההורה צריך להיות 4 ספרות', true);
     const b = document.getElementById('jsend'); b.disabled = true; b.innerHTML = '<span class="mini-spin"></span> פותחים…';
     try {
-      const r = await call('apiJoin', JOIN.code, { family: JOIN.family, parent: JOIN.parent, parentPin: JOIN.parentPin, email: JOIN.email,
+      const r = await call('apiJoin', JOIN.code, { family: JOIN.family, parent: JOIN.parent, email: JOIN.email,
         consent: true, kids: kids.map(k => /^a\d$/.test(k.grade) ? { name: k.name.trim(), age: Number(k.grade.slice(1)) } : { name: k.name.trim(), grade: Number(k.grade) }) });
       const fam = { groupId: r.groupId, family: r.family, link: r.link, parentPin: r.parentPin, kids: r.kids, code: JOIN.code };
       store.set('eq_family', fam); store.set('eq_group', r.groupId); store.del('eq_join');
@@ -7577,7 +7574,7 @@ function familyPage(fam){
     </div>
     <div class="glass panel" style="display:grid;gap:8px">
       <h2>אזור ההורים</h2>
-      <div class="sub">רואים מה כל ילד עשה, מפעילים סיכום ב-21:00, ושולחים שוב קישור אם צריך. הקוד שלכם: <b dir="ltr">${esc(fam.parentPin)}</b></div>
+      <div class="sub">רואים מה כל ילד עשה, מפעילים סיכום ב-21:00, ושולחים שוב קישור אם צריך. נכנסים עם שם המשפחה <bdi>${esc(fam.family)}</bdi> והקוד שלכם: <b dir="ltr">${esc(fam.parentPin)}</b>. כדאי לשמור אותו, ולא לספר לילדים.</div>
       <button class="btn btn-primary btn-block" id="jparent">${icon('lock-simple')} כניסה לאזור ההורים</button>
     </div>
     <div class="glass panel"><details><summary><b>איך שמים את האפליקציה במסך הבית</b> ▾</summary>
@@ -7590,7 +7587,7 @@ function familyPage(fam){
   app.querySelectorAll('[data-here]').forEach(b => b.onclick = () => { const k = fam.kids[b.dataset.here]; kidHere(fam.groupId, k.name, k.pin); });
   document.getElementById('jparent').onclick = () => {
     store.set('eq_group', fam.groupId);
-    parent(fam.parentPin, true, true);
+    parent('g:' + fam.groupId + ':' + fam.parentPin, true, true);
   };
   const again = document.getElementById('jagain2');
   if (again) again.onclick = () => {
@@ -7620,23 +7617,29 @@ function bindPrivacy(pin){
   const card = document.getElementById('pvcard');
   if (!card) return;
   document.getElementById('pvexport').onclick = async () => {
-    const b = document.getElementById('pvexport'); b.disabled = true;
+    const b = document.getElementById('pvexport'), cred = await typedCred(pin);
+    if (!cred) return;
+    b.disabled = true;
     try {
-      const data = await call('apiExportData', pin, '');
+      const data = await call('apiExportData', cred, '');
+      parTyped = cred;
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
       a.download = 'english-with-coco-data.json';
       document.body.appendChild(a); a.click(); a.remove();
       toast('הקובץ ירד לטלפון');
-    } catch(e){ toast(e.message, true); }
+    } catch(e){ toast(parentErr(e, true), true); }
     b.disabled = false;
   };
   document.getElementById('pvdelete').onclick = async () => {
     const who = document.getElementById('pvwho').value, word = document.getElementById('pvconfirm').value.trim();
     if (word !== 'מחיקה') return toast('כדי למחוק, כתבו את המילה: מחיקה', true);
-    const b = document.getElementById('pvdelete'); b.disabled = true;
+    const b = document.getElementById('pvdelete'), cred = await typedCred(pin);
+    if (!cred) return;
+    b.disabled = true;
     try {
-      const r = await call('apiDeleteData', pin, '', who, word);
+      const r = await call('apiDeleteData', cred, '', who, word);
+      parTyped = cred;
       if (r.deleted === 'family') {
         try { Object.keys(localStorage).filter(k => k.startsWith('eq_')).forEach(k => localStorage.removeItem(k)); } catch(e){}
         card.innerHTML = '<h2>המשפחה נמחקה</h2><div class="sub">כל הנתונים של המשפחה נמחקו מהשרת. תודה שהייתם איתנו.</div>';
@@ -7645,7 +7648,7 @@ function bindPrivacy(pin){
         toast('נמחק');
         parentFresh(pin, true);
       }
-    } catch(e){ b.disabled = false; toast(e.message, true); }
+    } catch(e){ b.disabled = false; toast(parentErr(e, true), true); }
   };
 }
 function feedbackCard(){
@@ -7741,12 +7744,14 @@ const DATA_LABEL = { ParentPIN: 'Parent code', GoalReward: 'Goal reward', PetNam
 const DATA_TABLES = { Girls: 'Kids', Groups: 'Families', Settings: 'Settings' };
 const DATA_HINT = { Missions: 'empty = Today\'s Mission, no = test-english.com', Friends: 'empty = plays with other families, no = only its own',
   Redeemed: 'points spent on rewards' };
+// A remembered phone types the passphrase first (Admin.js wants it typed); the card then works with what was typed.
 async function dataLoad(pin){
-  const card = document.getElementById('datacard');
+  const card = document.getElementById('datacard'), cred = await typedCred(pin);
+  if (!cred) return;
   card.innerHTML = '<div class="spinner"></div>';
-  try { DATA.data = await call('apiAdminData', pin); }
-  catch(e){ card.innerHTML = '<div class="sub">' + esc(e.message) + '</div>'; return; }
-  dataRender(pin);
+  try { DATA.data = await call('apiAdminData', cred); parTyped = cred; }
+  catch(e){ card.innerHTML = '<div class="sub">' + esc(parentErr(e, false)) + '</div>'; return; }
+  dataRender(cred);
 }
 function dataRender(pin){
   const d = DATA.data, t = d[DATA.table], card = document.getElementById('datacard');
@@ -8361,9 +8366,9 @@ async function start(){
     return;
   }
   if (saved && await login(saved.name, saved.pin, true)) return;
-  const par = !saved && admin && store.get('eq_par');
-  if (par && par.groups) { openSrc = 'saved'; renderParent(par, admin); parentFresh(admin); return; }
-  if (!saved && admin && await parent(admin, true)) return;
+  // A remembered parent no longer opens the parents' area by itself (a shared tablet, finding 9): the lock button does, in
+  // one tap (parentEntry). A phone that remembered the code itself trades it once for a session.
+  if (admin && !isToken(admin)) parentMigrate(admin);
   await loadHome();
 }
 
@@ -8422,7 +8427,7 @@ function signIn(){
     login(k.name, k.pin, false, true).then(ok => { if (!ok) signIn(); });
   });
   document.getElementById('siname').onkeydown = e => { if (e.key === 'Enter') go(); };
-  document.getElementById('pbtn').onclick = () => { call('apiWarm').catch(() => {}); pinPad(null); };
+  document.getElementById('pbtn').onclick = parentEntry;
 }
 
 function home(){
@@ -8457,7 +8462,7 @@ function home(){
     if (k) { loading(); return login(k.name, k.pin, false, true).then(ok => { if (!ok) pinPad(k.name); }); }
     pinPad(b.dataset.name);
   });
-  document.getElementById('pbtn').onclick = () => { call('apiWarm').catch(() => {}); pinPad(null); };
+  document.getElementById('pbtn').onclick = parentEntry;
 }
 
 // "Not your family?" on the kids' picker: the phone forgets the remembered family (a parent who tried another family's
@@ -8471,19 +8476,19 @@ function switchFamily(){
 }
 
 // ---------- PIN ----------
-function pinPad(name, he){
+function pinPad(name){
   let pin = '', remember = true;
-  const isParent = !name, ask = he ? 'הקוד של 4 ספרות שבחרתם בהרשמה' : 'Enter your 4-digit PIN';
+  const ask = 'Enter your 4-digit PIN';
   app.innerHTML = `
   <div class="glass panel">
     <div class="row-flex between">
-      <button class="btn btn-glass icon-btn" id="back">${icon('arrow-left')}</button>
-      ${isParent ? '' : petFace(((pub && pub.girls) || []).find(x => x.name === name)?.pet, colorOf(name), name)}
+      <button class="btn btn-glass icon-btn" id="back" aria-label="Back">${icon('arrow-left')}</button>
+      ${petFace(((pub && pub.girls) || []).find(x => x.name === name)?.pet, colorOf(name), name)}
       <span style="width:46px"></span>
     </div>
     <div style="text-align:center" class="mt">
-      <h1>${he ? 'כניסת הורים' : isParent ? 'Parent' : 'Hi ' + esc(name)}</h1>
-      <div class="sub" id="pinsub"${he ? ' dir="rtl" lang="he"' : ''}>${ask}</div>
+      <h1>${'Hi ' + esc(name)}</h1>
+      <div class="sub" id="pinsub">${ask}</div>
     </div>
     <div class="dots" id="dots">${'<div class="dot"></div>'.repeat(4)}</div>
     <div class="pad">
@@ -8491,14 +8496,14 @@ function pinPad(name, he){
       <span></span><button class="btn btn-glass" data-k="0">0</button><button class="btn btn-glass" data-k="del">${icon('backspace')}</button>
     </div>
     <div class="row-flex between mt" style="padding:0 6px">
-      <span class="sub" style="margin:0"${he ? ' dir="rtl" lang="he"' : ''}>${he ? 'לזכור אותי בטלפון הזה' : 'Remember me on this phone'}</span>
-      <div class="toggle" id="rem"></div>
+      <span class="sub" style="margin:0">Remember me on this phone</span>
+      <div class="toggle" id="rem" role="switch" aria-checked="true" aria-label="Remember me on this phone"></div>
     </div>
   </div>`;
   const dots = document.getElementById('dots'), pad = app.querySelector('.pad'), sub = document.getElementById('pinsub');
   const paint = () => dots.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('on', i < pin.length));
-  document.getElementById('back').onclick = () => he ? (JOIN ? joinWelcome() : location.reload()) : pub ? home() : signIn();
-  document.getElementById('rem').onclick = e => { remember = !remember; e.currentTarget.classList.toggle('off', !remember); };
+  document.getElementById('back').onclick = () => pub ? home() : signIn();
+  document.getElementById('rem').onclick = e => { remember = !remember; e.currentTarget.classList.toggle('off', !remember); e.currentTarget.setAttribute('aria-checked', remember); };
   app.querySelectorAll('.pad button').forEach(b => b.onclick = async () => {
     const k = b.dataset.k;
     if (k === 'del') pin = pin.slice(0,-1); else if (pin.length < 4) pin += k;
@@ -8506,7 +8511,7 @@ function pinPad(name, he){
     if (pin.length === 4) {
       pad.classList.add('busy'); dots.classList.add('pulse');
       sub.innerHTML = '<span class="mini-spin"></span>Checking…';
-      const ok = isParent ? await parent(pin, false, remember) : await login(name, pin, false, remember);
+      const ok = await login(name, pin, false, remember);
       if (!ok) { pad.classList.remove('busy'); dots.classList.remove('pulse'); sub.textContent = ask; dots.classList.remove('shake'); void dots.offsetWidth; dots.classList.add('shake'); pin = ''; paint(); }
     }
   });
@@ -8993,20 +8998,199 @@ function confetti(){
 }
 
 // ---------- Parent ----------
-async function parent(pin, silent, remember){
+// cred: what src/Auth.js parentAccess takes: 'g:<family id>:<code>', 'n:<family name>:<code>', a session 'pt.…' or the
+// admin's passphrase. "Remember me" keeps the session the server gives (eq_admin, 30 days), never the code.
+async function parent(cred, silent, remember){
+  const he = !isAdminCred(cred);
   try {
     if (silent) loading();
-    const p = await (silent ? callBy(12000, 'apiParent', pin) : call('apiParent', pin));
-    if (remember) store.set('eq_admin', pin);
-    renderParent(p, pin);
+    const p = await (silent ? callBy(12000, 'apiParent', cred) : call('apiParent', cred));
+    if (!isToken(cred)) parTyped = cred;
+    if (remember && p.token) {
+      store.set('eq_admin', p.token);
+      if (!p.isAdmin && p.groups[0]) store.set('eq_group', p.groups[0].id);
+    }
+    renderParent(p, cred);
     return true;
   } catch(e){
-    // A silent open that did not get through keeps the parent remembered; only a refused PIN forgets it.
+    // A silent open that did not get through keeps the parent remembered; only a refused code forgets it.
     if (silent && !e.app) { offlineStart(e); return true; }
-    if (silent) { store.del('eq_admin'); store.del('eq_par'); }
-    else toast(e.message.includes('PIN') ? 'Wrong PIN' : e.message, true);
+    if (silent) { if (isToken(cred)) { store.del('eq_admin'); store.del('eq_par'); } }
+    else toast(parentErr(e, he), true);
     return false;
   }
+}
+const isToken = c => /^pt\./.test(String(c || ''));
+const tokenId = t => isToken(t) ? String(t).split('.').slice(1, -2).join('.') : '';
+const isAdminCred = c => isToken(c) ? tokenId(c) === 'admin' : !/^[gn]:/.test(String(c || ''));
+function parentErr(e, he){
+  const m = String((e && e.message) || '');
+  if (/Wrong PIN/.test(m)) return he ? 'הקוד לא נכון' : 'Wrong passphrase';
+  if (/Type the code again/.test(m)) return he ? 'צריך להקליד שוב את הקוד' : 'Type the passphrase again';
+  if (he && /Too many/.test(m)) return /15 minutes/.test(m) ? 'יותר מדי ניסיונות. נסו שוב בעוד רבע שעה' : /6 hours/.test(m) ? 'יותר מדי ניסיונות. נסו שוב בעוד 6 שעות' : 'יותר מדי ניסיונות. נסו שוב בעוד שעה';
+  return m;
+}
+// The code typed in this visit (memory only): deleting, downloading, the kids' codes and links and the Data card need it
+// on a remembered phone (src/Auth.js opts.typed).
+let parTyped = null;
+async function typedCred(pin){
+  if (!isToken(pin)) return pin;
+  return parTyped || askCode(pin);
+}
+function askCode(tok){
+  const admin = tokenId(tok) === 'admin';
+  return new Promise(res => {
+    const ov = document.createElement('div');
+    ov.className = 'overlay';
+    ov.innerHTML = `<div class="sheet glass"${admin ? '' : ' dir="rtl" lang="he"'}>
+      <div class="row-flex between"><span class="label">${admin ? 'Your passphrase, again' : 'שוב את קוד ההורה'}</span>
+        <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x" aria-label="${admin ? 'Close' : 'סגירה'}">${icon('x')}</button></div>
+      <div class="sub mt-s" style="font-size:13px">${admin ? 'The Data card, deleting, downloading and the PINs need it, also on a phone that remembers you.' : 'למחיקה, להורדת הנתונים ולקודים ולקישורים של הילדים צריך את הקוד, גם בטלפון שזוכר אתכם.'}</div>
+      <input class="input mt" id="acin" type="password" ${admin ? 'autocomplete="current-password" autocapitalize="none" spellcheck="false" aria-label="Passphrase"' : 'inputmode="numeric" maxlength="6" autocomplete="off" aria-label="קוד ההורה"'} dir="ltr">
+      <button class="btn btn-primary btn-block mt" id="acgo">${icon('check')} ${admin ? 'Continue' : 'המשך'}</button>
+    </div>`;
+    document.body.appendChild(ov);
+    const inp = ov.querySelector('#acin');
+    setTimeout(() => inp.focus(), 60);
+    const done = v => { ov.remove(); res(v); };
+    ov.onclick = e => { if (e.target === ov) done(null); };
+    ov.querySelector('#x').onclick = () => done(null);
+    const go = () => {
+      const v = inp.value.trim();
+      if (!v) return inp.focus();
+      done(admin ? v : 'g:' + tokenId(tok) + ':' + v.replace(/\D/g, ''));
+    };
+    ov.querySelector('#acgo').onclick = go;
+    inp.onkeydown = e => { if (e.key === 'Enter') go(); };
+  });
+}
+
+// The lock button. A remembered phone opens the parents' area in one tap (its saved view at once, fresh data after);
+// otherwise the sign-in.
+function parentEntry(){
+  const t = store.get('eq_admin');
+  if (!isToken(t)) return parentSignIn();
+  const par = store.get('eq_par');
+  if (par && par.groups) { renderParent(par, t); parentFresh(t); return; }
+  loading();
+  call('apiParent', t).then(p => renderParent(p, t), e => {
+    if (e.app) { store.del('eq_admin'); store.del('eq_par'); return parentSignIn(); }
+    toast(e.message, true); pub ? home() : signIn();
+  });
+}
+// Phones that remembered the code itself (before 2026-11-01) trade it once, quietly, for a session: first as the code of
+// the family this phone knows, then as the admin's old 4-digit PIN.
+async function parentMigrate(code){
+  const forget = () => { store.del('eq_admin'); store.del('eq_par'); };
+  const keep = p => { if (p.token) { store.set('eq_admin', p.token); keepParent(p); } else forget(); };
+  try { return keep(await call('apiParent', 'g:' + (store.get('eq_group') || '') + ':' + code)); }
+  catch(e){ if (!e.app) return; }
+  try { keep(await call('apiParent', code)); }
+  catch(e){ if (e.app || /Service update/.test(e.raw || '')) forget(); }
+}
+
+// The parents' sign-in (Hebrew): the family and its code (a code opens its own family only). The family is the one on
+// the kids' page (the link's ?g=, the family this phone remembers, or the default family); a phone that knows none asks
+// for the family's name. New codes have 6 digits (the pad sends at 6); older 4-digit codes use the check key.
+function parentFamily(){
+  if (pub && pub.group) return { id: String(pub.group.id), name: pub.group.name };
+  const g = groupId();
+  return g ? { id: g, name: '' } : null;
+}
+function parentSignIn(fam, back){
+  if (fam === undefined) fam = parentFamily();
+  back = back || (() => pub ? home() : signIn());
+  let pin = '', remember = true;
+  const ask = 'הקוד שקיבלתם בהרשמה';
+  app.innerHTML = `
+  <div class="glass panel he" dir="rtl" lang="he">
+    <div class="row-flex between">
+      <button class="btn btn-glass icon-btn" id="back" aria-label="חזרה">${icon('arrow-right')}</button>
+      <span class="tile t-grammar">${icon('lock-simple', 'duotone')}</span>
+      <button class="btn btn-glass icon-btn" id="psadmin" aria-label="Admin" title="Admin">${icon('crown-simple')}</button>
+    </div>
+    <div style="text-align:center" class="mt">
+      <h1>כניסת הורים</h1>
+      <div class="sub" id="pinsub">${ask}</div>
+    </div>
+    ${fam ? `<div class="row-flex mt-s" style="justify-content:center;gap:8px;flex-wrap:wrap">
+        <span class="chip">${icon('users-three')} ${fam.name ? `<bdi>${esc(fam.name)}</bdi>` : 'המשפחה מהקישור'}</span>
+        <button class="btn btn-glass btn-sm" id="psother">משפחה אחרת?</button></div>`
+      : `<label class="label mt" for="psfam" style="display:block">שם המשפחה</label>
+        <input class="input mt-s" id="psfam" placeholder="כמו שנרשמתם, למשל כהן" autocomplete="off" dir="auto">`}
+    <div class="dots" id="dots" dir="ltr">${'<div class="dot"></div>'.repeat(6)}</div>
+    <div class="pad" dir="ltr">
+      ${[1,2,3,4,5,6,7,8,9].map(n => `<button class="btn btn-glass" data-k="${n}">${n}</button>`).join('')}
+      <button class="btn btn-glass" data-k="ok" id="psok" aria-label="כניסה">${icon('check')}</button><button class="btn btn-glass" data-k="0">0</button><button class="btn btn-glass" data-k="del" aria-label="מחיקת ספרה">${icon('backspace')}</button>
+    </div>
+    <div class="row-flex between mt" style="padding:0 6px">
+      <span class="sub" style="margin:0">לזכור אותי בטלפון הזה (30 יום)</span>
+      <div class="toggle" id="rem" role="switch" aria-checked="true" aria-label="לזכור אותי בטלפון הזה"></div>
+    </div>
+  </div>`;
+  const dots = document.getElementById('dots'), pad = app.querySelector('.pad'), sub = document.getElementById('pinsub'), okKey = document.getElementById('psok');
+  const paint = () => {
+    dots.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('on', i < pin.length));
+    okKey.classList.toggle('btn-primary', pin.length >= 4); okKey.classList.toggle('btn-glass', pin.length < 4);
+  };
+  document.getElementById('back').onclick = back;
+  const other = document.getElementById('psother');
+  if (other) other.onclick = () => parentSignIn(null, back);
+  document.getElementById('psadmin').onclick = () => adminSignIn(() => parentSignIn(fam, back));
+  document.getElementById('rem').onclick = e => { remember = !remember; e.currentTarget.classList.toggle('off', !remember); e.currentTarget.setAttribute('aria-checked', remember); };
+  const go = async () => {
+    if (pin.length < 4) return toast('הקוד הוא 6 ספרות (או 4, בקוד ישן)', true);
+    let cred;
+    if (fam) cred = 'g:' + fam.id + ':' + pin;
+    else {
+      const n = document.getElementById('psfam').value.trim();
+      if (!n) { toast('כתבו את שם המשפחה', true); return document.getElementById('psfam').focus(); }
+      cred = 'n:' + n + ':' + pin;
+    }
+    pad.classList.add('busy'); dots.classList.add('pulse');
+    sub.innerHTML = '<span class="mini-spin"></span>בודקים…';
+    if (await parent(cred, false, remember)) return;
+    pad.classList.remove('busy'); dots.classList.remove('pulse'); sub.textContent = ask;
+    dots.classList.remove('shake'); void dots.offsetWidth; dots.classList.add('shake'); pin = ''; paint();
+  };
+  app.querySelectorAll('.pad button').forEach(b => b.onclick = () => {
+    const k = b.dataset.k;
+    if (k === 'ok') return go();
+    if (k === 'del') pin = pin.slice(0, -1); else if (pin.length < 6) pin += k;
+    paint();
+    if (pin.length === 6) go();
+  });
+}
+// The admin (English): the passphrase. It is long, so the phone's keyboard, not the pad.
+function adminSignIn(back){
+  let remember = true;
+  app.innerHTML = `
+  <div class="glass panel">
+    <div class="row-flex between">
+      <button class="btn btn-glass icon-btn" id="back" aria-label="Back">${icon('arrow-left')}</button>
+      <span class="tile t-vocab">${icon('crown-simple', 'duotone')}</span>
+      <span style="width:46px"></span>
+    </div>
+    <div style="text-align:center" class="mt"><h1>Admin</h1><div class="sub">Your passphrase</div></div>
+    <input class="input mt" id="adpass" type="password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" dir="ltr" aria-label="Passphrase">
+    <div class="row-flex between mt" style="padding:0 6px">
+      <span class="sub" style="margin:0">Remember me on this phone (30 days)</span>
+      <div class="toggle" id="rem" role="switch" aria-checked="true" aria-label="Remember me on this phone"></div>
+    </div>
+    <button class="btn btn-primary btn-block mt" id="adgo">${icon('sign-in')} Sign in</button>
+  </div>`;
+  const inp = document.getElementById('adpass'), btn = document.getElementById('adgo');
+  document.getElementById('back').onclick = back;
+  document.getElementById('rem').onclick = e => { remember = !remember; e.currentTarget.classList.toggle('off', !remember); e.currentTarget.setAttribute('aria-checked', remember); };
+  const go = async () => {
+    const v = inp.value.trim();
+    if (!v) return inp.focus();
+    btn.disabled = true; btn.innerHTML = '<span class="mini-spin"></span>Checking…';
+    if (await parent(v, false, remember)) return;
+    btn.disabled = false; btn.innerHTML = icon('sign-in') + ' Sign in'; inp.select();
+  };
+  btn.onclick = go;
+  inp.onkeydown = e => { if (e.key === 'Enter') go(); };
 }
 // The parents' view of a remembered parent stays on the phone (eq_par; signing out deletes it): the next open shows it at
 // once and this brings fresh data. It is drawn again only if the parent has not touched the screen yet (or tapped
@@ -9019,11 +9203,14 @@ function parentFresh(pin, manual){
   const b = document.getElementById('refresh');
   if (b) { b.classList.add('spin'); b.classList.remove('off'); }
   return parSync = call('apiParent', pin).then(p => {
-    const here = store.get('eq_admin') === pin && document.getElementById('parentview');
+    const here = parCur === pin && document.getElementById('parentview');
     if (here && (manual || !parTouched)) { const y = window.scrollY; renderParent(p, pin); window.scrollTo(0, y); }
-    else if (store.get('eq_admin') === pin) keepParent(p);
+    else if (parRemembered(p)) keepParent(p);
   }).catch(e => {
-    if (e.app && /PIN/.test(e.message)) { store.del('eq_admin'); store.del('eq_par'); toast('Please sign in again', true); return loadHome(); }
+    if (e.app && /PIN/.test(e.message)) {
+      if (isToken(pin)) { store.del('eq_admin'); store.del('eq_par'); }
+      parTyped = null; toast(PHE ? 'צריך להיכנס שוב' : 'Please sign in again', true); return loadHome();
+    }
     const r = document.getElementById('refresh');
     if (r) { r.classList.add('off'); r.title = 'Could not update. Showing what is saved on this phone.'; }
     if (manual) toast(e.message, true);
@@ -9032,7 +9219,16 @@ function parentFresh(pin, manual){
     const r = document.getElementById('refresh'); if (r) r.classList.remove('spin');
   });
 }
-const keepParent = p => store.set('eq_par', Object.assign({}, p, { created: null }));
+// What stays on the phone: the view as a session sees it, without the kids' codes or a family code.
+const keepParent = p => {
+  const c = JSON.parse(JSON.stringify(Object.assign({}, p, { created: null, token: undefined })));
+  c.locked = true;
+  (c.groups || []).forEach(g => { delete g.parentPin; (g.girls || []).forEach(k => { delete k.pin; }); });
+  store.set('eq_par', c);
+};
+// Is this view the account this phone remembers (eq_admin's session)?
+const parRemembered = p => { const id = tokenId(store.get('eq_admin')); return !!id && (p.isAdmin ? id === 'admin' : !!p.groups[0] && String(p.groups[0].id) === id); };
+let parCur = null;
 
 async function copyText(text){
   try { await navigator.clipboard.writeText(text); }
@@ -9083,7 +9279,7 @@ function accHead(tileCls, ic, title, sub){
 function groupBlock(g, p, i){
   const done = g.girls.reduce((a, k) => a + k.stats.weekDone, 0), total = g.girls.reduce((a, k) => a + k.stats.weekTotal, 0);
   const sub = (PHE ? `${g.girls.length === 1 ? 'ילד אחד' : g.girls.length + ' ילדים'} · ${done}/${total} השבוע` : `${g.girls.length} ${g.girls.length === 1 ? 'kid' : 'kids'} · ${done}/${total} this week`) +
-    (p.isAdmin ? (g.parentPin ? ` · ${icon('key')} ${esc(g.parentPin)}` : ' · admin only') : '');
+    (p.isAdmin ? (g.parentPin ? ` · ${icon('key')} ${esc(g.parentPin)}` : p.locked ? '' : ' · admin only') : '');
   return accordion('g:' + g.id, accOpen('g:' + g.id, p.groups.length === 1),
     accHead('t-grammar', 'users-three', esc(g.name), sub), groupBody(g, p, i));
 }
@@ -9227,8 +9423,8 @@ let PHE = false;
 const T = (en, he) => PHE ? he : en;
 function renderParent(p, pin){
   PHE = !p.isAdmin;
-  parTouched = false;
-  if (store.get('eq_admin') === pin) keepParent(p);
+  parTouched = false; parCur = pin;
+  if (parRemembered(p)) keepParent(p);
   app.innerHTML = `
   <div class="stack" id="parentview"${PHE ? ' dir="rtl" lang="he"' : ''}>
     <div class="row-flex between">
@@ -9239,6 +9435,9 @@ function renderParent(p, pin){
       </div>
     </div>
     ${createdCard(p.created)}
+    ${p.locked ? `<div class="glass panel row-flex between" style="gap:10px">
+      <div class="sub" style="margin:0;font-size:13px">${T('PINs and personal links are hidden on a phone that remembers you.', 'בטלפון שזוכר אתכם, הקודים והקישורים האישיים של הילדים מוסתרים.')}</div>
+      <button class="btn btn-glass btn-sm" id="unlock" style="flex:none">${icon('key')} ${T('Show', 'הצגה')}</button></div>` : ''}
     ${p.groups.map((g, i) => groupBlock(g, p, i)).join('')}
     ${notifyCard(p)}
     ${p.isAdmin ? pilotCard() + auditCard() + dataCard() + settingsCard(p) + manageCard(p) : feedbackCard() + privacyCard(p)}
@@ -9254,7 +9453,9 @@ function renderParent(p, pin){
   const al = document.getElementById('auditload'); if (al) al.onclick = () => auditLoad(pin);
   const dl = document.getElementById('dataload'); if (dl) dl.onclick = () => dataLoad(pin);
   document.getElementById('refresh').onclick = () => parentFresh(pin, true);
-  document.getElementById('logout').onclick = () => { store.del('eq_admin'); store.del('eq_par'); loadHome(); };
+  document.getElementById('logout').onclick = () => { store.del('eq_admin'); store.del('eq_par'); parTyped = null; parCur = null; loadHome(); };
+  const un = document.getElementById('unlock');
+  if (un) un.onclick = async () => { const c = await typedCred(pin); if (c) parent(c, false, false); };
   app.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(b.dataset.copy));
   app.querySelectorAll('[data-msg]').forEach(ta => {
     const i = ta.dataset.msg, wa = app.querySelector(`[data-wa="${i}"]`);

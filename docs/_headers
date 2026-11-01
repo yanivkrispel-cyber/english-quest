@@ -1,0 +1,11 @@
+# Security headers for the front end on Cloudflare (static assets; night review 2026-11-01, finding 20).
+# Nothing frames the app (test/tablet.html frames it on the local dev server only, which ignores this file).
+# The microphone is for the app itself (Talk with Chacho, the Nest); nothing else is asked for.
+# No Content-Security-Policy for scripts yet: the app is one page of inline scripts and styles (it would need
+# 'unsafe-inline'), so only frame-ancestors is set.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=(), usb=()
+  X-Frame-Options: DENY
+  Content-Security-Policy: frame-ancestors 'none'
