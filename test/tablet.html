@@ -9,7 +9,7 @@ iframe{border:0;transform-origin:0 0}
 b{display:block;margin:4px 0}
 pre{white-space:pre-wrap;margin:12px 0 0}
 </style>
-<!-- The app on tablets (served by test/dev-server.js: http://localhost:8787/test/tablet.html?screen=today|journey|play|game|mission|parent|picker|signin|nest|nest-meet|nest-phrase|nest-find|nest-move|nest-say|nest-done|nest-all|nest-living|nest-living-night|nest-living-many|nest-living-pet|gate|gate-type|talk-recast[&phones]).
+<!-- The app on tablets (served by test/dev-server.js: http://localhost:8787/test/tablet.html?screen=today|journey|play|game|mission|parent|parent-signin|parent-name|parent-family|parent-locked|parent-again|admin-signin|picker|signin|nest|nest-meet|nest-phrase|nest-find|nest-move|nest-say|nest-done|nest-all|nest-living|nest-living-night|nest-living-many|nest-living-pet|gate|gate-type|talk-recast[&phones]).
      Each frame is the page size the tablet script picks, scaled to the real screen and drawn at 0.42. -->
 <div class="row" id="row"></div>
 <pre id="out">Loading…</pre>
@@ -38,6 +38,14 @@ async function show(f){
   // nest-cheer freezes the right-answer moment half way instead of turning animations off.
   d.head.insertAdjacentHTML('beforeend', screen === 'nest-cheer' ? '<style>*,*::before,*::after{animation-play-state:paused!important;animation-delay:-.4s!important;transition:none!important}</style>' : '<style>*,*::before,*::after{animation:none!important;transition:none!important}</style>');
   if (screen === 'parent') await ev("parent('1234', false, false)");
+  // The parents' sign-in (src/Auth.js): parent-signin = from the kids' page (the family known), parent-name = a phone that
+  // knows no family, parent-family = the family's view (code 246810), parent-locked = the same from a remembered session,
+  // parent-again = the code asked again on it, admin-signin = the passphrase.
+  else if (screen === 'parent-signin') await ev("(async () => { pub = await call('apiPublic', ''); home(); parentSignIn(); })()");
+  else if (screen === 'parent-name') ev("pub = null; parentSignIn(null)");
+  else if (screen === 'admin-signin') ev("adminSignIn(() => {})");
+  else if (screen === 'parent-family') await ev("parent('g::246810', false, false)");
+  else if (screen.startsWith('parent-') && screen !== 'parent-family') await ev("(async () => { const p = await call('apiParent', 'g::246810'); renderParent(await call('apiParent', p.token), p.token); if (" + (screen === 'parent-again') + ") askCode(p.token); })()");
   // picker: the kids of the family with "Not your family? Switch"; signin: the screen that button opens.
   else if (screen === 'picker') await ev("(async () => { pub = await call('apiPublic', ''); home(); })()");
   else if (screen === 'signin') await ev("(async () => { pub = await call('apiPublic', ''); home(); document.getElementById('swfam').click(); })()");

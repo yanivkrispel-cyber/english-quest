@@ -2,7 +2,7 @@
 // mocked Google services from test/sim.js, behind a small HTTP server that also serves the app.
 //   node test/dev-server.js        ->  http://localhost:8787/test/dev.html (and on 127.0.0.1)
 // Use localhost and 127.0.0.1 for the two players, so each keeps its own sign-in. Kids: Aviv 2694 (A2),
-// Ziv 4821 (B2), Ron 7356 (B1); admin 1234. Every API call waits LATENCY ms (default 1200), about
+// Ziv 4821 (B2), Ron 7356 (B1); admin 1234; the family's parents 246810 (Auth.js: the family and its code). Every API call waits LATENCY ms (default 1200), about
 // what the real Apps Script takes. Nothing here touches the real sheet.
 // Seeded history (13 days): Aviv and Ziv have a 6-day duo streak (both practicing today makes 7, a
 // milestone) and a Hear it team quest (Ziv struggled with it last week); Ron and Aviv a 2-day one, and
@@ -24,6 +24,7 @@ run('apiPublic()');
 const PINS = { Ziv: '4821', Ron: '7356', Aviv: '2694' };
 sheets.Girls.rows.slice(1).forEach(r => { r[2] = PINS[r[0]]; });
 sheets.Settings.rows.forEach(r => { if (r[0] === 'AdminPIN') r[1] = '1234'; });
+sheets.Groups.rows[1][sheets.Groups.rows[0].indexOf('ParentPIN')] = '246810';
 run('clearCache()');
 const KIDS = [['Aviv', '2694', 'a2', 'monster', 'Fizz'], ['Ziv', '4821', 'b2', 'cat', 'Mochi'], ['Ron', '7356', 'b1', 'lion', 'Leo']];
 KIDS.forEach(k => {
@@ -140,8 +141,8 @@ http.createServer((req, res) => {
     req.on('end', () => {
       let out;
       try {
-        global.devCtx.__body = body;
-        out = global.devRun('doPost({postData:{contents:__body}}).getContent()');
+        global.devCtx.__body = body; global.devCtx.__ip = String(req.socket.remoteAddress || '').replace(/^::ffff:/, '');
+        out = global.devRun('doPost({postData:{contents:__body},ip:__ip}).getContent()');
       } catch (e) { out = JSON.stringify({ ok: false, error: String(e && e.message || e) }); }
       try { const fn = JSON.parse(body).fn; if (fn !== 'apiDuelPoll' && fn !== 'apiDuelHome') console.log(new Date().toISOString().slice(11, 19), fn, out.slice(0, 90)); } catch (e) {}
       setTimeout(() => { res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }); res.end(out); }, LATENCY);

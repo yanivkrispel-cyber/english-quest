@@ -61,7 +61,8 @@ with the sheet as a nightly copy. Retention on Cloudflare: the audit trail 180 d
   nothing is recorded or sent. The Nest's "Chacho repeats you" (`docs/nest/echo.js`) holds the kid's few seconds of voice in
   the phone's memory only, plays it back once in a parrot's voice and drops it: never written to storage, never sent, no
   speech recognition, the microphone off before the replay.
-- Parent / family: family name, parent's first name, parent PIN, optional email, consent date.
+- Parent / family: family name, parent's first name, parent code (6 digits, made by the server; older families keep 4),
+  optional email, consent date. The admin's passphrase is kept only as a salted hash (Script Property ADMIN_PASS).
 - Activity: tasks and missions with scores and time spent, game rounds (with the ids of the items missed and answered right,
   for the review and the item stats), items for review, gate challenges (with their item ids),
   level tests, duels and their answers, duo streaks, shop purchases (coins), what the pet wears, saved words, bonus XP.
@@ -71,12 +72,13 @@ with the sheet as a nightly copy. Retention on Cloudflare: the audit trail 180 d
 - Feedback and "Something wrong here?" notes.
 - Devices: push subscription endpoints and the browser's user-agent string.
 - Audit trail (tab Audit, `specs/audit.md`): when a kid, parent, admin or teacher opened the app (once per half hour),
-  wrong PIN attempts (not the PIN), grown-ups' changes, hand edits in the sheet (not PIN values), and a coarse device
+  wrong PIN attempts for names that exist (not the PIN; one line per name and flush, made-up names leave nothing), grown-ups' changes, hand edits in the sheet (not PIN values), and a coarse device
   label (iPhone / Android phone / Computer..., app or browser). A kid's or parent's open also carries how long that
   phone's previous open took to show its first screen ("1.4s saved"), a number and a word only (`specs/perf-phase2.md`).
 
-On the phone (local storage): the remembered kid and PIN, the group, the last dashboard, settings (sound, voice), the
-last parents' view of a parent who chose to be remembered (`eq_par`, deleted on sign-out), and how long the last open
+On the phone (local storage): the remembered kid and PIN, the group, the last dashboard, settings (sound, voice), a
+remembered parent's signed session (`eq_admin`, 30 days, never the code; void once the family code changes) and their last
+parents' view without the kids' codes (`eq_par`; both deleted on sign-out), and how long the last open
 took (`eq_open_m`). Chacho's
 Nest also keeps, on the phone only: how many times each game was played (Chacho shows a new game first), the microphone
 choice, the kid's last 12 colored pictures (which colors went where; no drawing, photo or sound), and the sticker book
@@ -89,6 +91,11 @@ seconds played on the phone (`eq_nest_arc_<kid>`), and the server keeps one numb
 loudness only; nothing is kept or sent.
 
 ## Known gaps before a store submission
+
+- Kids still sign in with a 4-digit PIN kept as it is in the sheet and in the kid's personal link (finding 7 of the night
+  review: a signed kid token and hashed PINs are not built). Wrong PINs are now limited per name and per address.
+- The family page right after sign-up (`eq_family`) keeps the new parent code and the kids' PINs on that phone until it is
+  left (so the parent can write the code down).
 
 - In-app deletion is built (`src/Privacy.js`, the parents' area card "הנתונים שלכם", 2026-10-30): a kid or the whole family,
   every tab and the audit trail; also a download of the family's data. Left: the admin cannot delete from the Data card yet

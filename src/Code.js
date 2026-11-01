@@ -157,7 +157,7 @@ function api() {
   apiJoinCheck: apiJoinCheck, apiJoin: apiJoin, apiPlacement: apiPlacement, apiFeedback: apiFeedback,
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
   apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade,
-  apiCfExport: apiCfExport, apiCfMode: apiCfMode, apiAdminData: apiAdminData, apiAdminEdit: apiAdminEdit,
+  apiAdminData: apiAdminData, apiAdminEdit: apiAdminEdit,
   apiDeleteData: apiDeleteData, apiExportData: apiExportData
   };
 }
@@ -176,13 +176,15 @@ function doPost(e) {
       return ContentService.createTextOutput(JSON.stringify({ ok: false, update: true, error: 'Please update the app' })).setMimeType(ContentService.MimeType.JSON);
     }
     REQ_DEV = cleanDev(req.dev);
+    REQ_IP = cleanIp(e.ip);
     REQ_OPEN = cleanOpen(req.open);
     PERF_PARTS = null;
     var t0 = Date.now();
     out = { ok: true, data: API[req.fn].apply(null, req.args || []) };
     perfNote(req.fn, Date.now() - t0, PERF_PARTS);
   } catch (err) {
-    out = { ok: false, error: String((err && err.message) || err) };
+    // update: an old copy of the app is asked to load the new one (Auth.js LEGACY_PARENT).
+    out = { ok: false, error: String((err && err.message) || err), update: err && err.update ? true : undefined };
   }
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }
@@ -190,19 +192,6 @@ function doPost(e) {
 // Link sent to the kids (WhatsApp, reminder emails): the public front end when set.
 function publicUrl() {
   return getSetting('PublicUrl') || getSetting('AppUrl');
-}
-
-// Brute-force guard: 8 wrong PINs for the same key lock it for 15 minutes.
-function checkPin(key, ok) {
-  var c = CacheService.getScriptCache(), k = 'F:' + key;
-  var fails = Number(c.get(k)) || 0;
-  if (fails >= 8) throw new Error('Too many attempts — try again in 15 minutes');
-  if (!ok) {
-    c.put(k, String(fails + 1), 900);
-    auditPin(key, fails + 1);
-    throw new Error('Wrong PIN');
-  }
-  if (fails) c.remove(k);
 }
 
 // ---------- Groups ----------
@@ -599,23 +588,19 @@ function apiGateResult(name, pin, correct, total, missed, right) {
   return dash;
 }
 
-// The admin PIN (Settings) sees every group; a group's ParentPIN sees only that group.
+// The admin (passphrase) sees every group; a family's code, with the family, sees only that family (Auth.js parentAccess).
+// Signing in with a code also gives the phone a session to remember instead of the code (token).
 function apiParent(pin) {
   ensureSetup();
   var access = parentAccess(pin);
   if (access.isAdmin) auditOpen('admin', 'admin', ''); else auditOpen('parent', access.group.Name, String(access.group.Id));
-  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
+  var data = parentView(access);
+  if (!access.token) data.token = sessionToken(access);
+  return data;
 }
 
-function parentAccess(pin) {
-  pin = String(pin).trim();
-  var isAdmin = pin === String(getSetting('AdminPIN')).trim();
-  var group = isAdmin ? null : groups().filter(function (g) { return String(g.ParentPIN || '').trim() && String(g.ParentPIN).trim() === pin; })[0];
-  checkPin('parent', isAdmin || !!group);
-  return { isAdmin: isAdmin, group: group };
-}
-
-function parentData(list, isAdmin, who) {
+// hide: a remembered phone's session (Auth.js): no kid's PIN, no family code; the parent types the code to see them.
+function parentData(list, isAdmin, who, hide) {
   var t = today();
   var logs = readTable('Log');
   var out = list.map(function (g) {
@@ -638,14 +623,14 @@ function parentData(list, isAdmin, who) {
       });
       d.email = k.Email;
       d.bought = shopBought(kidRows('Shop', k.Name), 3);
-      d.pin = String(k.PIN);
+      d.pin = hide ? undefined : String(k.PIN);
       return d;
     });
     return {
       id: id,
       name: g.Name,
       link: groupLink(id),
-      parentPin: isAdmin ? String(g.ParentPIN || '') : undefined,
+      parentPin: isAdmin && !hide ? String(g.ParentPIN || '') : undefined,
       email: g.Email,
       goal: {
         goal: Number(g.Goal) || 1500,
@@ -657,6 +642,7 @@ function parentData(list, isAdmin, who) {
   });
   return {
     isAdmin: !!isAdmin,
+    locked: !!hide,
     groups: out,
     sheetUrl: isAdmin ? SpreadsheetApp.getActive().getUrl() : null,
     sheetCopy: typeof PLATFORM !== 'undefined',   // on Cloudflare the sheet is a nightly copy (specs/cloudflare.md)
@@ -686,8 +672,8 @@ function apiAdminAddGroup(pin, name, email) {
   var id, parentPin;
   try {
     var ids = groups().map(function (g) { return String(g.Id); });
-    do { id = Math.random().toString(36).slice(2, 8); } while (ids.indexOf(id) >= 0);
-    parentPin = uniqueParentPin();
+    do { id = randomId(); } while (ids.indexOf(id) >= 0);
+    parentPin = newParentCode();
     appendRow('Groups', { Id: id, Name: name, ParentPIN: parentPin, Goal: 1500, GoalReward: 'Pizza party for the group', Email: String(email || '').trim() });
   } finally {
     lock.releaseLock();
@@ -738,28 +724,21 @@ function apiAdminSettings(pin, reminderHour, lastCallHour) {
   return apiParent(pin);
 }
 
-// The admin sets a family's parents' code (4 digits, unused by another family or the admin).
+// The admin sets a family's parents' code (6 digits). A code opens its own family only, so it need not be unique and is
+// never compared with another family's or the admin's (no "taken" answer to learn codes from). Old sessions end with it.
 function apiAdminParentPin(pin, groupId, newPin) {
   ensureSetup();
-  if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can change settings');
+  if (!parentAccess(pin, { typed: true }).isAdmin) throw new Error('Only the admin can change settings');
   newPin = String(newPin || '').trim();
-  if (!/^\d{4}$/.test(newPin)) throw new Error('A parents code is 4 digits');
+  if (!/^\d{6}$/.test(newPin)) throw new Error('A parents code is 6 digits');
   var gs = groups(), g = gs.filter(function (x) { return String(x.Id) === String(groupId); })[0];
   if (!g) throw new Error('Unknown family');
-  if (newPin === String(getSetting('AdminPIN')) || gs.some(function (x) { return x !== g && String(x.ParentPIN) === newPin; })) throw new Error('This code is taken');
   invalidate('Groups');
   var sh = sheet('Groups'), values = sh.getDataRange().getValues(), col = values[0].indexOf('ParentPIN');
   for (var i = 1; i < values.length; i++) if (String(values[i][0]) === String(g.Id)) sh.getRange(i + 1, col + 1).setValue(newPin);
   invalidate('Groups');
   audit('admin', 'admin', String(g.Id), 'parents code', g.Name);
   return { ok: true };
-}
-
-function uniqueParentPin() {
-  var taken = groups().map(function (g) { return String(g.ParentPIN); }).concat([String(getSetting('AdminPIN'))]);
-  var p;
-  do { p = randomPin(); } while (taken.indexOf(p) >= 0);
-  return p;
 }
 
 // ---------- Dashboard ----------
@@ -1091,7 +1070,7 @@ function ensureSetup() {
     clearCache();
 
     var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: PUBLIC_URL, PilotFrom: today(), ShopOpens: SHOP.opens, ShopEarly: '',
-      InviteCode: Math.random().toString(36).slice(2, 8), InviteOpen: 'no', TeacherCode: String(100000 + Math.floor(Math.random() * 900000)) };
+      InviteCode: randomId(), InviteOpen: 'no', TeacherCode: newTeacherCode() };
     Object.keys(defaults).forEach(function (k) { if (getSetting(k) === null) setSetting(k, defaults[k]); });
     if (getSetting('AppUrl') !== APP_URL) setSetting('AppUrl', APP_URL);
     // v18: the front end moved from GitHub Pages to its own address (the old one shows a "new home" screen).
@@ -1322,15 +1301,15 @@ function setSetting(key, value) {
   invalidate('Settings');
 }
 
+// A name nobody has is checked against the caller's address only (Auth.js checkPin): nothing is written for it.
 function auth(name, pin) {
   ensureSetup();
   var g = findGirl(name);
-  checkPin('girl:' + String(name).toLowerCase(), !!g && String(g.PIN).trim() === String(pin).trim());
+  checkPin('girl:' + String(name).toLowerCase(), !!g && sameSecret(g.PIN, pin), LOCK.name, !g);
   duelSeen(g.Name);
   return g;
 }
 
-function randomPin() { return String(1000 + Math.floor(Math.random() * 9000)); }
 
 // ---------- Date helpers (yyyy-MM-dd strings, Asia/Jerusalem) ----------
 

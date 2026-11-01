@@ -248,13 +248,16 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | apiChatResult(name, pin, talk, turns, voice, tiles, mic, said, seconds) | kid | Talk with Chacho (`specs/talk.md`): save a talk's summary and give the bonus (3 XP aloud, 1 a tile, +3 all aloud; 30 a day) |
 | apiTugCheck / apiTugSave | kid | Tug of War on one phone: checks the second kid's PIN once (returns a 2-day token the phone keeps instead of her PIN), then saves both results (a save id makes a save sent twice count once) |
 | apiPushSubscribe / apiPushMessage | kid / service worker | Register a device / text of the pending notification |
-| apiParent(pin) | parent / admin | Overview of the groups this PIN may see |
+| apiParent(cred) | parent / admin | Overview of the groups this credential may see (`src/Auth.js`: `g:<family id>:<code>`, `n:<family name>:<code>`, a session `pt.…`, or the admin's passphrase); a typed code also returns a 30-day session `token`; a session sees no kid PINs (`locked`) |
 | apiParentPushSubscribe / Prefs / Test | parent / admin | Parent notifications on this phone |
 | apiAdminAddGroup / AddKid / Settings / TestPush | admin | Management |
 | apiNestResult(name, pin, date, day, correct, total, seconds, detail) | kid | A Chacho's Nest session; the day's own session logs the day (15 points) and each word's first try (`detail`, "cat:1,dog:0"), anything else is free play |
 | apiAudit(pin, days) | admin | The audit timeline (1 to 30 days) with a summary per family and the device split |
 
-Wrong PINs: 8 attempts per name (or for parent PINs) lock it for 15 minutes.
+Wrong PINs (`src/Auth.js`): 8 attempts per kid, family or the teacher lock it for 15 minutes; the admin's passphrase 20 in 6 hours
+(and 5 an hour per address); 50 wrong tries an hour from one address (`Settings.IpFailLimit`) block that address, whatever
+names it tries (calls relayed by Apps Script share one bucket of 500). Names that do not exist keep nothing (no lockout key, no
+audit line). Deleting, downloading, the kids' codes and the admin's Data card need the code typed, not a remembered session.
 
 ## Deploy
 

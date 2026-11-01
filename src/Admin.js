@@ -1,6 +1,7 @@
 // The admin's Data card (specs/cloudflare.md): the fields the owner used to change by hand in the sheet (a PIN, a level,
 // redeemed points, the old daily link, a family's code or goal, a setting). After the move to Cloudflare the sheet is
-// a nightly copy, so these edits happen here. Admin PIN only; every change goes to the audit trail (PINs masked).
+// a nightly copy, so these edits happen here. The admin's passphrase typed (not a remembered phone's session); every change
+// goes to the audit trail (PINs masked).
 
 var EDIT = {
   Girls: { key: 'Name', fields: ['PIN', 'Level', 'Age', 'Group', 'Email', 'Redeemed', 'Missions', 'PetName', 'NestPerDay', 'NestArcadeMin'] },
@@ -13,7 +14,7 @@ var EDIT_SECRET = { PIN: 1, ParentPIN: 1, AdminPIN: 1 };
 
 function editAdmin(pin) {
   ensureSetup();
-  if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can do this');
+  if (!parentAccess(pin, { typed: true }).isAdmin) throw new Error('Only the admin can do this');
 }
 
 function apiAdminData(pin) {
@@ -48,8 +49,8 @@ function editCheck(table, key, field, value) {
   }
   if (table === 'Groups') {
     if (field === 'ParentPIN') {
-      if (v !== '' && !/^\d{4}$/.test(v)) throw new Error('A parent code has 4 digits (or empty: admin only)');
-      if (v && (v === String(getSetting('AdminPIN')) || groups().some(function (g) { return String(g.Id) !== key && String(g.ParentPIN) === v; }))) throw new Error('This code is taken');
+      // 6 digits (new codes); a code opens its own family only, so it is never compared with another one (Auth.js).
+      if (v !== '' && !/^\d{6}$/.test(v)) throw new Error('A parent code has 6 digits (or empty: admin only)');
     }
     if (field === 'Name' && !v) throw new Error('A family needs a name');
     if (field === 'Goal') numeric();
