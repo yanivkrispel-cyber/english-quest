@@ -2,8 +2,10 @@
 // in the app, parents send feedback, the teacher reviews missions, and the admin sees a funnel per family.
 
 var PILOT = { joinsPerDay: 15, maxKids: 5, feedbackPerDay: 5, teacherFlagsPerDay: 200 };
-// The grade a parent picks sets the level the in-app level test starts from.
-var GRADE_LEVEL = { 3: 'a1', 4: 'a1', 5: 'a2', 6: 'a2', 7: 'b1', 8: 'b1', 9: 'b1-b2', 10: 'b1-b2', 11: 'b2', 12: 'b2' };
+// The grade a parent picks sets the level the in-app level test starts from: one level below the Israeli curriculum's
+// band for the grade (night review, finding 12: foundation to grade 6 ends near A2, intermediate 7-9 near B1,
+// proficiency 10-12 near B1+/B2), so the test climbs to her level instead of starting above it.
+var GRADE_LEVEL = { 3: 'a1', 4: 'a1', 5: 'a1', 6: 'a1', 7: 'a2', 8: 'a2', 9: 'b1', 10: 'b1', 11: 'b1-b2', 12: 'b1-b2' };
 
 function inviteOk(code) {
   var want = String(getSetting('InviteCode') || '').trim().toLowerCase();
@@ -172,6 +174,7 @@ function apiPilotStats(pin) {
       firstMission: all.filter(function (k) { return k.missions > 0; }).length, active7: all.filter(function (k) { return k.last7 >= 4; }).length },
     feedback: fb.slice(-12).reverse().map(function (f) { return { group: f.Group, date: f.Date, score: f.Score, text: f.Text }; }),
     chat: chatBoard(t),
+    items: itemStats(12, 5),
     teacherFlags: flags.filter(function (f) { return f.Girl === 'Teacher'; }).length,
     teacherCode: String(getSetting('TeacherCode') || ''),
     base: String(getSetting('PublicUrl') || ''),

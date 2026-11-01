@@ -6,6 +6,7 @@
 //   listen: [spoken text, question ('' = "Which word do you hear?"), answer, wrong, wrong, wrong]
 //   build:  a sentence to put back in order
 //   spot:   [sentence with the wrong word in *stars*, correction ('' = delete it), short tip]
+//   gate:   held-out items per level (the four formats) for the gate challenge and the progress check, never in the games
 //   talk:   Talk & Tap words by level and topic: [word, don't say, don't say]; starters: help per topic
 window.EQ_GAMES = {
 pics: {
@@ -44,7 +45,7 @@ match: {
     ['lunch', 'The meal you eat in the middle of the day.'], ['nurse', 'A person who looks after sick people in a hospital.'],
     ['bakery', 'A shop that sells bread and cakes.'], ['passport', 'A small book you need to travel to another country.'],
     ['ticket', 'A piece of paper that lets you get on a bus or into a cinema.'], ['weekend', 'Saturday and Sunday.'],
-    ['holiday', 'Time when you don\'t go to school or work.'], ['neighbour', 'A person who lives next to you.'],
+    ['holiday', 'Days off school or work, often for a trip or a festival.'], ['neighbour', 'A person who lives next to you.'],
     ['cousin', 'The child of your aunt or uncle.'], ['uncle', 'The brother of your mother or father.'],
     ['island', 'Land with water all around it.'], ['mountain', 'A very high hill.'],
     ['beach', 'The sandy place next to the sea.'], ['cheap', 'Not expensive.'],
@@ -69,7 +70,7 @@ match: {
     ['exhausted', 'Extremely tired.'], ['disappointed', 'Sad because something was not as good as you hoped.'],
     ['achieve', 'Succeed in doing something after hard work.'], ['avoid', 'Stay away from someone or something.'],
     ['complain', 'Say that you are not happy about something.'], ['recommend', 'Say that something is good and someone should try it.'],
-    ['improve', 'Get better, or make something better.'], ['persuade', 'Make someone agree to do something.'],
+    ['improve', 'Make something better, or become better at something.'], ['persuade', 'Make someone agree to do something.'],
     ['refuse', 'Say no to something you are asked to do.'], ['apologise', 'Say sorry.'],
     ['volunteer', 'A person who works without being paid.'], ['deadline', 'The time by which you must finish something.'],
     ['advice', 'An opinion about what someone should do.'], ['experience', 'Knowledge you get by doing something.'],
@@ -78,13 +79,13 @@ match: {
     ['ingredient', 'One of the foods you use to make a dish.'], ['receipt', 'A piece of paper that shows you paid for something.'],
     ['refund', 'Money given back when you return something.'], ['crowded', 'Full of people.'],
     ['convenient', 'Easy and useful for you.'], ['ordinary', 'Normal, not special.'],
-    ['independent', 'Able to do things without help.'], ['reliable', 'Someone you can trust to do what they say.'],
+    ['independent', 'Able to do things without help.'], ['reliable', 'Can be trusted to do what is expected.'],
     ['temperature', 'How hot or cold something is.'], ['impressive', 'Very good, so people admire it.'],
     ['nearly', 'Almost.'], ['suddenly', 'Quickly and without warning.'],
     ['eventually', 'In the end, after a long time.'], ['rarely', 'Not often.']
   ],
   b2: [
-    ['reluctant', 'Unwilling and slow to do something.'], ['recover', 'Get better after an illness.'],
+    ['reluctant', 'Unwilling and slow to do something.'], ['recover', 'Become healthy again after an illness.'],
     ['tedious', 'Boring because it goes on too long.'], ['vivid', 'Very bright, clear and detailed.'],
     ['fragile', 'Easily broken or damaged.'], ['frank', 'Honest and direct, even when it is unpleasant.'],
     ['eager', 'Wanting very much to do something.'], ['ambitious', 'Wanting very much to be successful.'],
@@ -145,13 +146,13 @@ listen: {
     ['I like apples, but I don\'t like bananas.', 'What doesn\'t she like?', 'Bananas', 'Apples', 'Oranges', 'Grapes'],
     ['Tom is ten years old.', 'How old is Tom?', '10', '12', '7', '20'],
     ['It is cold and it is raining.', 'What is the weather like?', 'Cold and rainy', 'Hot and sunny', 'Warm and windy', 'Snowy'],
-    ['My birthday is in May.', 'When is the birthday?', 'In May', 'In March', 'In June', 'In July'],
+    ['My birthday is in May.', 'When is his birthday?', 'In May', 'In March', 'In June', 'In July'],
     ['The book is on the table.', 'Where is the book?', 'On the table', 'Under the bed', 'In the bag', 'On the chair'],
     ['She can swim, but she can\'t ride a bike.', 'What can\'t she do?', 'Ride a bike', 'Swim', 'Run', 'Sing'],
     ['We have English on Tuesday.', 'When is English?', 'Tuesday', 'Thursday', 'Monday', 'Friday'],
     ['There are five people in my family.', 'How many people are in the family?', '5', '4', '3', '6'],
     ['I get up at seven.', 'When does he get up?', '7:00', '11:00', '6:00', '8:00'],
-    ['My favourite food is pizza.', 'What is the favourite food?', 'Pizza', 'Pasta', 'Chicken', 'Soup'],
+    ['My favourite food is pizza.', 'What is his favourite food?', 'Pizza', 'Pasta', 'Chicken', 'Soup'],
     ['The dog is under the chair.', 'Where is the dog?', 'Under the chair', 'On the bed', 'In the garden', 'Behind the door']
   ],
   a2: [
@@ -211,7 +212,7 @@ listen: {
     ['The museum is worth visiting, but it gets very crowded at weekends.', 'What is the problem at weekends?', 'Too many people', 'It is closed', 'Tickets are expensive', 'It is boring'],
     ['I\'ve been to Paris twice, but I\'ve never been to Rome.', 'Has he been to Rome?', 'No, never', 'Yes, twice', 'Yes, once', 'He lives there'],
     ['Could you turn the music down? I\'m trying to study.', 'What does she want?', 'Quieter music', 'Louder music', 'Different music', 'Help with studying'],
-    ['The shop assistant said the shoes were out of stock.', 'What did she find out?', 'There are no shoes left', 'The shoes are on sale', 'The shoes are too small', 'The shop is closed'],
+    ['The shop assistant said the shoes were out of stock.', 'What did she find out?', 'Those shoes are sold out', 'The shoes are on sale', 'The shoes are too small', 'The shop is closed'],
     ['We\'d better leave now, or we\'ll be late.', 'Why should they leave now?', 'So they aren\'t late', 'Because it\'s raining', 'Because they are tired', 'To catch a taxi'],
     ['My grandfather was born in Poland and moved to Israel when he was twenty.', 'Where was he born?', 'Poland', 'Israel', 'Portugal', 'Holland'],
     ['I can\'t stand waiting in long queues.', 'How does he feel about queues?', 'He hates them', 'He likes them', 'He doesn\'t mind them', 'He is used to them'],
@@ -258,7 +259,7 @@ listen: {
     ['I\'m on the fence about whether to take the job.', 'How does she feel?', 'Undecided', 'Excited', 'Sure she wants it', 'Angry'],
     ['He\'s been burning the candle at both ends lately.', 'What has he been doing?', 'Working too hard with little rest', 'Saving money', 'Cooking a lot', 'Sleeping a lot'],
     ['The new policy is a double-edged sword.', 'What does it mean?', 'It has good and bad effects', 'It is dangerous', 'It is very strong', 'It is about the army'],
-    ['Were it not for your help, I would never have finished.', 'What does the speaker say?', 'Your help made it possible', 'I finished without help', 'I didn\'t finish', 'I helped you'],
+    ['Had it not been for your help, I would never have finished.', 'What does the speaker say?', 'Your help made it possible', 'I finished without help', 'I didn\'t finish', 'I helped you'],
     ['She has a chip on her shoulder about not going to university.', 'How does she feel?', 'Resentful', 'Proud', 'Relaxed', 'Excited'],
     ['The proposal was met with a lukewarm response.', 'How did people react?', 'Without much enthusiasm', 'Very excitedly', 'Angrily', 'They loved it'],
     ['Under no circumstances should you open this door.', 'What does the speaker mean?', 'Never open the door', 'Open it carefully', 'Open it sometimes', 'Open it in an emergency'],
@@ -305,7 +306,7 @@ build: {
     'It was very cold last winter.', 'The test was easier than I thought.', 'He doesn\'t often play video games.',
     'Would you like some more cake?', 'I have to finish my homework first.', 'You shouldn\'t eat too many sweets.',
     'My dad was born in a small village.', 'Who is the oldest person in your family?', 'We didn\'t have any homework yesterday.',
-    'She is reading a book in her room.', 'How often do you go swimming?', 'The red dress is more expensive than the blue one.'
+    'She is reading a book in her room.', 'How often do you go swimming?', 'This dress is more expensive than the blue one.'
   ],
   b1: [
     'I have never been to Japan.', 'Have you ever eaten sushi?', 'She has lived here for five years.',
@@ -320,9 +321,9 @@ build: {
     'She is the most interesting person I know.', 'They were walking home when it started to snow.', 'I\'m not used to getting up so early.'
   ],
   b2: [
-    'If she had studied, she would have passed.', 'He told me that he had lost his keys.', 'They must have forgotten about the meeting.',
+    'If she had studied, she would have passed.', 'He told me that his keys had been stolen.', 'They must have forgotten about the meeting.',
     'I wish I had more time to read.', 'I wish I had listened to your advice.', 'We had our house painted last summer.',
-    'By the time we arrived, the film had started.', 'My sister, who lives in Berlin, is a doctor.', 'Having finished his work, he went home.',
+    'When we arrived, the film had already started.', 'My sister, who lives in Berlin, is a doctor.', 'Having finished his work, he went home.',
     'She is said to be the best player in the team.', 'You should have told me earlier.', 'I\'d rather you didn\'t smoke in here.',
     'The report will have been finished by Monday.', 'He asked me whether I had seen the film.', 'If I were rich, I would travel the world.',
     'Not knowing what to do, she called her mum.', 'It\'s time we went home.', 'The more you read, the more you learn.',
@@ -335,13 +336,13 @@ build: {
     'Never have I seen such a beautiful sunset.', 'What I need is a long holiday.', 'Not only did she win, but she also broke the record.',
     'Had I known, I would have come.', 'Rarely do we get such good weather.', 'It was Tom who broke the window.',
     'Little did they know what was coming.', 'No sooner had we sat down than it started to rain.', 'Under no circumstances should you open this door.',
-    'Were it not for your help, I would have failed.', 'It is essential that he be informed.', 'All I want is a bit of peace and quiet.',
+    'Had it not been for your help, I would have failed.', 'It is essential that he be informed.', 'All I want is a bit of peace and quiet.',
     'Only then did I realise my mistake.', 'So tired was she that she fell asleep at once.', 'Should you need anything, just let me know.',
     'The reason why I called is to apologise.', 'Hardly had I arrived when the phone rang.', 'Not until later did I understand.',
     'What surprised me most was his honesty.', 'Seldom have I heard such a moving speech.', 'Having been warned, they took extra care.',
     'The project, having been delayed twice, finally launched.', 'It is high time the government took action.', 'I would sooner leave than apologise to him.',
     'Much as I like him, I can\'t agree.', 'Try as she might, she couldn\'t open the jar.', 'Only by working together can we solve this.',
-    'The more I think about it, the less I like it.', 'On no account must you tell anyone.', 'It is not the money that matters to me.'
+    'The longer we waited, the more nervous we became.', 'On no account must you tell anyone.', 'It is not the money that matters to me.'
   ]
 },
 
@@ -357,7 +358,7 @@ spot: {
     ['*He* name is Tom.', 'His', 'he → his: his name'],
     ['We *goes* to school by bus.', 'go', 'we go, she goes'],
     ['There *is* three dogs in the garden.', 'are', 'there are + more than one'],
-    ['I like *play* football.', 'playing', 'like + -ing: I like playing'],
+    ['I like *play* football.', 'playing', 'like + -ing (or to): I like playing / I like to play'],
     ['*Do* she like apples?', 'Does', 'Does he / she / it ...?'],
     ['He *don\'t* like milk.', 'doesn\'t', 'he / she / it → doesn\'t'],
     ['The book is *in* the table.', 'on', 'on = on top of something'],
@@ -396,7 +397,7 @@ spot: {
     ['He is *badder* at maths than me.', 'worse', 'bad → worse → the worst'],
     ['What *do* you doing?', 'are', 'What are you doing?'],
     ['She is *sit* next to the window.', 'sitting', 'be + -ing: she is sitting'],
-    ['Can I have *a* water, please?', 'some', 'some water (you can\'t count water)'],
+    ['Can I have *a* rice, please?', 'some', 'some rice (you can\'t count rice)'],
     ['We must *to* wear a uniform.', '', 'must + verb, no "to"'],
     ['The film was very *interested*.', 'interesting', 'the film is interesting; I am interested'],
     ['I am *boring* in this lesson.', 'bored', 'I feel bored; the lesson is boring'],
@@ -480,22 +481,22 @@ spot: {
     ['Hardly had I arrived *than* the phone rang.', 'when', 'hardly ... when'],
     ['No sooner had we sat down *when* it started.', 'than', 'no sooner ... than'],
     ['It\'s high time we *leave*.', 'left', 'it\'s high time + past simple'],
-    ['It is essential that he *is* informed.', 'be', 'subjunctive: that he be'],
-    ['Were it not *of* your help, I would have failed.', 'for', 'were it not for'],
+    ['It is essential that he *being* informed.', 'be', 'subjunctive: that he be informed'],
+    ['Had it not been *of* your help, I would have failed.', 'for', 'had it not been for'],
     ['Should you *needed* anything, call me.', 'need', 'should + base verb'],
-    ['Try as she *may*, she couldn\'t open it.', 'might', 'past context: try as she might'],
-    ['The reason I called is *because* I wanted to apologise.', 'that', 'the reason ... is that (not because)'],
+    ['Try *like* she might, she couldn\'t open the jar.', 'as', 'try as she might = however hard she tried'],
+    ['The reason *of* my call is to apologise.', 'for', 'the reason for something'],
     ['I would sooner *to* leave than stay.', '', 'would sooner + base verb'],
     ['Had I *knew*, I would have come.', 'known', 'had + past participle'],
     ['Little did they *knew* what was coming.', 'know', 'did + base verb'],
-    ['Seldom *has* I heard such a speech.', 'have', 'I have'],
+    ['Little *does* they know what is coming.', 'do', 'Inversion: little do they know (do with they)'],
     ['What surprised me most *were* his honesty.', 'was', 'what ... was + singular'],
     ['All I want *are* some peace.', 'is', 'all I want is'],
-    ['She is one of those people who *is* always late.', 'are', 'who refers to "people" → are'],
+    ['No sooner had we arrived *when* it started to rain.', 'than', 'no sooner ... than'],
     ['Scarcely had we left *than* it rained.', 'when', 'scarcely ... when'],
     ['I\'d rather he *doesn\'t* know.', 'didn\'t', 'I\'d rather + past simple'],
     ['If only I *have* listened!', 'had', 'if only + past perfect for past regrets'],
-    ['Were I *know* the answer, I\'d tell you.', 'to know', 'were + subject + to + verb'],
+    ['Were he *come* tomorrow, we would be ready.', 'to come', 'were + subject + to + verb'],
     ['It\'s no use *complain* about it.', 'complaining', 'it\'s no use + -ing'],
     ['There\'s no point *argue* about it.', 'arguing', 'no point (in) + -ing'],
     ['He denied *take* the money.', 'taking', 'deny + -ing'],
@@ -508,6 +509,271 @@ spot: {
     ['Notwithstanding *of* the cost, they went ahead.', '', 'notwithstanding + noun'],
     ['The book, *that* I read last year, was brilliant.', 'which', 'non-defining clause: which']
   ]
+},
+
+gate: {
+  // Held-out items (night review, finding 12): the gate challenge and the progress check only; the games never show them.
+  // Same formats as above. A spot item with a one-word fix is also a "Type it" item (she types the fix). Check: games-check.
+  a1: {
+    match: [
+      ['window', 'You look through it to see outside.'],
+      ['garden', 'A place next to a house with grass and flowers.'],
+      ['hand', 'It has five fingers.'],
+      ['nose', 'It is in the middle of your face, and you smell with it.'],
+      ['ear', 'You listen to music and sounds with it.'],
+      ['table', 'You put your plate on it when you eat.'],
+      ['baby', 'A very young child.'],
+      ['eleven', 'Ten plus one.'],
+      ['Sunday', 'The day after Saturday.'],
+      ['young', 'Not old.'],
+      ['afternoon', 'The time between lunch and evening.'],
+      ['shop', 'A place where you buy things.']
+    ],
+    listen: [
+      ['My sister has got a small brown dog.', 'What colour is the dog?', 'Brown', 'Black', 'White', 'Grey'],
+      ['There are four chairs in the kitchen.', 'How many chairs are there?', '4', '3', '5', '14'],
+      ['I go to bed at nine o\'clock.', 'When does she go to bed?', '9:00', '7:00', '10:00', '9:30'],
+      ['My shoes are under the bed.', 'Where are the shoes?', 'Under the bed', 'On the bed', 'In the bag', 'Next to the door'],
+      ['My brother can play the drums.', 'What can the brother play?', 'The drums', 'The guitar', 'The piano', 'The violin'],
+      ['I like milk, but my sister likes juice.', 'What does the sister like?', 'Juice', 'Milk', 'Water', 'Tea'],
+      ['Our school is next to the park.', 'Where is the school?', 'Next to the park', 'Behind the park', 'In the park', 'Near the sea'],
+      ['My grandfather is seventy years old.', 'How old is the grandfather?', '70', '17', '60', '77'],
+      ['It is hot and sunny today.', 'What is the weather like today?', 'Hot and sunny', 'Cold and rainy', 'Snowy', 'Cloudy and cold'],
+      ['shirt', '', 'shirt', 'short', 'shut', 'skirt']
+    ],
+    build: [
+      'My father has got a green car.',
+      'Are there any eggs in the fridge?',
+      'My sister can\'t play tennis.',
+      'These apples are very sweet.',
+      'Does your mum drink coffee?',
+      'My brother doesn\'t eat fish.',
+      'They are my best friends.',
+      'How many pets have you got?'
+    ],
+    spot: [
+      ['My sister *have* got long hair.', 'has', 'he / she / it → has got'],
+      ['I *are* nine years old today.', 'am', 'I → am'],
+      ['*Has* you got a bike?', 'Have', 'you → have got'],
+      ['Look! There *is* two birds on the roof.', 'are', 'there are + more than one'],
+      ['Where *do* your sister live now?', 'does', 'Where does he / she live?'],
+      ['He can *runs* very fast.', 'run', 'can + verb with no s'],
+      ['I have three *box* of toys.', 'boxes', 'box → boxes (add es)'],
+      ['*Is* your parents at home now?', 'Are', 'more than one → are'],
+      ['The *mans* are in the car.', 'men', 'one man, two men'],
+      ['She has *a* orange cat.', 'an', 'an + vowel sound: an orange'],
+      ['Is *he* your sister?', 'she', 'a girl → she'],
+      ['What is *you* favourite colour?', 'your', 'you → your: your colour']
+    ]
+  },
+  a2: {
+    match: [
+      ['dentist', 'A doctor who looks after your teeth.'],
+      ['postcard', 'A card with a picture that you send from a holiday.'],
+      ['bridge', 'It goes over a river so you can cross it.'],
+      ['museum', 'A building where you can see old and interesting things.'],
+      ['lazy', 'Not wanting to work or do anything.'],
+      ['famous', 'Known by many people.'],
+      ['heavy', 'It weighs a lot and is hard to lift.'],
+      ['empty', 'With nothing inside.'],
+      ['towel', 'You use it to dry your body after a shower.'],
+      ['laugh', 'Make a happy sound when something is funny.'],
+      ['choose', 'Pick one thing from many.'],
+      ['lose', 'Not be able to find something.']
+    ],
+    listen: [
+      ['The swimming pool closes at half past eight.', 'When does the pool close?', '8:30', '8:00', '9:30', '7:30'],
+      ['I bought three notebooks and a ruler for school.', 'What did he buy?', '3 notebooks and a ruler', '2 notebooks and a ruler', '3 notebooks and a pen', '3 rulers and a notebook'],
+      ['My dad is cooking dinner, and my mum is reading the newspaper.', 'What is the mum doing?', 'Reading the newspaper', 'Cooking dinner', 'Watching TV', 'Washing the dishes'],
+      ['Noa is younger than her brother, but she is taller.', 'Who is taller?', 'Noa', 'Her brother', 'They are the same height', 'We don\'t know'],
+      ['We are going to fly to Eilat on Thursday.', 'How are they travelling?', 'By plane', 'By train', 'By car', 'By boat'],
+      ['I never drink coffee, but I sometimes have tea.', 'What does the speaker sometimes drink?', 'Tea', 'Coffee', 'Juice', 'Milk'],
+      ['The jacket was forty shekels, and the shoes were sixty.', 'How much were the shoes?', '60 shekels', '40 shekels', '100 shekels', '16 shekels'],
+      ['Yesterday it rained all morning, so we stayed inside.', 'Why did they stay inside?', 'It was raining', 'It was too hot', 'They were ill', 'They were tired'],
+      ['Go straight on and take the second street on the left.', 'Which street should you take?', 'The second on the left', 'The first on the left', 'The second on the right', 'The first on the right'],
+      ['Our flight is at six in the morning, so we need to leave home at three.', 'When do they need to leave home?', '3:00', '6:00', '9:00', '3:30']
+    ],
+    build: [
+      'Why are you wearing a coat?',
+      'Did your parents buy a car?',
+      'We are going to paint my room.',
+      'He is the funniest boy in our class.',
+      'How much water do you drink?',
+      'There aren\'t many apples left.',
+      'My dad is never late for work.',
+      'What did you buy at the market?'
+    ],
+    spot: [
+      ['We *swimmed* in the sea last summer.', 'swam', 'swim → swam'],
+      ['I *catched* a big fish yesterday.', 'caught', 'catch → caught'],
+      ['Did they *won* the match?', 'win', 'did + base verb'],
+      ['Be quiet! The baby is *sleep*.', 'sleeping', 'be + -ing for things happening now'],
+      ['Where *is* you going now?', 'are', 'you are + -ing'],
+      ['An elephant is *big* than a mouse.', 'bigger', 'big → bigger than'],
+      ['Today is the *hotter* day of the year.', 'hottest', 'the + -est: the hottest'],
+      ['There is too *many* sugar in this tea.', 'much', 'much + things you can\'t count'],
+      ['I go swimming *one* a week.', 'once', 'once a week = one time a week'],
+      ['Can I have some *breads*, please?', 'bread', 'bread is uncountable: no s'],
+      ['Yesterday we *are* at the beach.', 'were', 'past of are → were'],
+      ['She sings *beautiful*.', 'beautifully', 'how she sings → adverb: beautifully']
+    ]
+  },
+  b1: {
+    match: [
+      ['patient', 'Able to wait calmly without getting angry.'],
+      ['honest', 'Always telling the truth.'],
+      ['polite', 'Speaking and acting in a kind, respectful way.'],
+      ['remind', 'Help someone remember something.'],
+      ['afford', 'Have enough money to pay for something.'],
+      ['suggest', 'Give an idea for others to think about.'],
+      ['annoyed', 'A little angry about something.'],
+      ['skill', 'Something you can do well because you have practised.'],
+      ['audience', 'The people who watch a show or a concert.'],
+      ['destination', 'The place you are travelling to.'],
+      ['familiar', 'Known to you because you have seen it before.'],
+      ['deliver', 'Take letters or goods to a person or place.']
+    ],
+    listen: [
+      ['I\'ve worked at this café since last summer.', 'When did she start working there?', 'Last summer', 'This summer', 'Two summers ago', 'Last winter'],
+      ['If the tickets are too expensive, we\'ll watch the match at home.', 'Where will they watch it if tickets cost too much?', 'At home', 'At the stadium', 'At a friend\'s house', 'At school'],
+      ['My grandmother used to work as a nurse, but now she is retired.', 'What does the grandmother do now?', 'She doesn\'t work', 'She is a nurse', 'She is a doctor', 'She works part-time'],
+      ['The school trip has been put off until next month because of the heat.', 'Why was the trip moved?', 'It was too hot', 'It was raining', 'The bus broke down', 'Not enough students'],
+      ['You have to show your student card to get the discount.', 'What do you need for the discount?', 'A student card', 'A passport', 'Cash', 'A ticket'],
+      ['The boy who sits next to me in class has just moved here from Haifa.', 'Where did the boy come from?', 'Haifa', 'Netanya', 'Eilat', 'Ashdod'],
+      ['I\'ve already seen that film, so let\'s choose something else.', 'Why does he want a different film?', 'He has seen it before', 'He doesn\'t like films', 'It is too long', 'It is too scary'],
+      ['Our new kitchen was designed by my aunt.', 'Who designed the kitchen?', 'The aunt', 'The speaker', 'The uncle', 'A shop'],
+      ['You mustn\'t swim here when there is no lifeguard.', 'When is swimming not allowed?', 'When there is no lifeguard', 'In the morning', 'When it is windy', 'At weekends'],
+      ['I\'ll lend you my bike as long as you bring it back by six.', 'What must the friend do?', 'Bring it back by six', 'Buy a new bike', 'Ride with the speaker', 'Leave at six']
+    ],
+    build: [
+      'Have you ever ridden a camel?',
+      'She has just finished her project.',
+      'If I were taller, I would play basketball.',
+      'These shoes were made in Italy.',
+      'Did you use to have long hair?',
+      'That\'s the shop where I bought my bike.',
+      'You mustn\'t touch the hot oven.',
+      'Has anyone seen my keys?'
+    ],
+    spot: [
+      ['I have *went* to Eilat three times.', 'been', 'have been to a place'],
+      ['We have been friends *for* we were five.', 'since', 'since + a point in time'],
+      ['I haven\'t *finish* my homework yet.', 'finished', 'have + past participle'],
+      ['If I *see* him, I would tell him.', 'saw', 'second conditional: if + past simple'],
+      ['If it *rain* tomorrow, we\'ll stay at home.', 'rains', 'first conditional: if + present simple'],
+      ['I *use* to have a cat.', 'used', 'used to + verb for past habits'],
+      ['This bridge was *build* in 1920.', 'built', 'passive: was + past participle'],
+      ['The cakes *are* made by my uncle yesterday.', 'were', 'past passive: were + past participle'],
+      ['This is the park *which* we play football.', 'where', 'where for places'],
+      ['Now that she is in high school, she *have* to wear a uniform.', 'has', 'he / she → has to'],
+      ['While I *am* walking home, it started to rain.', 'was', 'past continuous: was + -ing'],
+      ['I have *knew* her for years.', 'known', 'know → knew → known']
+    ]
+  },
+  b2: {
+    match: [
+      ['punctual', 'Always arriving at the right time.'],
+      ['flexible', 'Able to change easily to suit new situations.'],
+      ['modest', 'Not talking much about your own achievements.'],
+      ['awkward', 'Uncomfortable and embarrassing.'],
+      ['distract', 'Take someone\'s attention away from what they are doing.'],
+      ['exaggerate', 'Make something sound bigger or worse than it really is.'],
+      ['reassure', 'Say something to make a worried person feel better.'],
+      ['shortage', 'A situation when there is not enough of something.'],
+      ['venue', 'The place where an event happens.'],
+      ['thoroughly', 'Completely and very carefully.'],
+      ['outcome', 'The final result of something.'],
+      ['setback', 'A problem that slows down your progress.']
+    ],
+    listen: [
+      ['If we had left on time, we wouldn\'t have got stuck in traffic.', 'What happened?', 'They left late and got stuck', 'They left on time', 'There was no traffic', 'They took the train'],
+      ['The lights are off. They must be asleep already.', 'What does the speaker think?', 'They are probably asleep', 'They are definitely awake', 'They are watching TV', 'They are cooking'],
+      ['She said she would be late because her bus had broken down.', 'Why will she be late?', 'Her bus broke down', 'She overslept', 'She missed the bus', 'There was a storm'],
+      ['I wish I\'d brought my camera; the view is amazing.', 'What does the speaker regret?', 'Not bringing a camera', 'Coming to the place', 'Bringing a camera', 'Missing the view'],
+      ['The new library is being built next to the old station.', 'What is happening to the library?', 'It is under construction', 'It has opened', 'It is closing down', 'It is moving away'],
+      ['He denied breaking the window, but nobody believed him.', 'What did he say?', 'He didn\'t break it', 'He broke it', 'Someone else saw it', 'He would fix it'],
+      ['I\'ll never forget meeting my favourite writer for the first time.', 'What is the speaker talking about?', 'A memory of meeting a writer', 'A plan to meet a writer', 'Forgetting to meet a writer', 'Writing a book'],
+      ['They might have taken the earlier train, but I\'m not sure.', 'How sure is the speaker?', 'Not sure', 'Completely sure', 'Sure they missed it', 'Sure they walked'],
+      ['If I hadn\'t moved here as a child, I wouldn\'t speak Hebrew so well now.', 'Why does the speaker speak Hebrew well?', 'He moved here as a child', 'He studied it at university', 'His parents are teachers', 'He moved here last year'],
+      ['Our flight was delayed, so we were given free meal vouchers.', 'What did they get?', 'Free meal vouchers', 'A free flight', 'Their money back', 'Hotel rooms']
+    ],
+    build: [
+      'If you had asked me, I would have helped.',
+      'If I had slept more, I wouldn\'t be so tired.',
+      'They told us not to touch anything.',
+      'The keys must have fallen out of my bag.',
+      'I wish I could speak French.',
+      'Has the parcel been delivered yet?',
+      'She stopped to buy some water.',
+      'I remember locking the front door.'
+    ],
+    spot: [
+      ['If he *has* known, he would have helped.', 'had', 'third conditional: if + had + past participle'],
+      ['If I had studied harder, I wouldn\'t *been* so worried now.', 'be', 'mixed conditional: would + be (now)'],
+      ['The results will be *announce* next week.', 'announced', 'passive: will be + past participle'],
+      ['She said she *will* call me the next day.', 'would', 'reported speech: will → would'],
+      ['He asked me if I *am* hungry.', 'was', 'reported speech: am → was'],
+      ['He *must* be hungry; he has just eaten a huge pizza.', 'can\'t', 'can\'t = I\'m sure it is not true'],
+      ['I wish I *have* a bigger room.', 'had', 'wish + past simple for now'],
+      ['If only I *haven\'t* told her the secret!', 'hadn\'t', 'if only + past perfect for past regrets'],
+      ['She is interested in *learn* Japanese.', 'learning', 'preposition + -ing'],
+      ['He suggested *go* to the beach.', 'going', 'suggest + -ing'],
+      ['It\'s not worth *wait* for the bus.', 'waiting', 'worth + -ing'],
+      ['The house *has* sold last week.', 'was', 'past passive: was + past participle']
+    ]
+  },
+  c1: {
+    match: [
+      ['frugal', 'Careful to spend very little money.'],
+      ['versatile', 'Able to do many different things well.'],
+      ['tangible', 'Real and able to be seen or touched.'],
+      ['compelling', 'So interesting or convincing that you pay attention.'],
+      ['obsolete', 'No longer used because something newer exists.'],
+      ['discrepancy', 'A difference between things that should be the same.'],
+      ['inadvertently', 'Without meaning to.'],
+      ['prevalent', 'Common in a particular place or time.'],
+      ['adverse', 'Harmful or unfavourable.'],
+      ['endorse', 'Publicly say that you support someone or something.'],
+      ['deteriorate', 'Become worse over time.'],
+      ['elusive', 'Difficult to find, catch or achieve.']
+    ],
+    listen: [
+      ['Not until the end of the film did I realise what the secret was.', 'When did the speaker understand?', 'At the end of the film', 'At the start of the film', 'Before the film', 'Never'],
+      ['Hardly had the game started when the lights went out.', 'When did the lights go out?', 'Just after the game started', 'Before the game', 'At half time', 'At the end'],
+      ['The decision was made on the spur of the moment.', 'How was the decision made?', 'Suddenly, without planning', 'After a long discussion', 'By a vote', 'Very slowly'],
+      ['Let\'s call it a day; we can finish tomorrow.', 'What does the speaker want?', 'To stop working for today', 'To phone someone', 'To start a new day', 'To work all night'],
+      ['His speech really struck a chord with the audience.', 'How did the audience react?', 'They felt connected to it', 'They were bored', 'They were confused', 'They left early'],
+      ['She has a lot on her plate at the moment.', 'What does it mean?', 'She is very busy', 'She is very hungry', 'She is cooking', 'She is bored'],
+      ['Were the bus to arrive late, we would miss the opening.', 'What would make them miss the opening?', 'A late bus', 'An early bus', 'Bad weather', 'Losing the tickets'],
+      ['It was the coach, not the players, who took the blame.', 'Who was blamed?', 'The coach', 'The players', 'Nobody', 'The fans'],
+      ['The results were nothing short of remarkable.', 'How were the results?', 'Truly remarkable', 'A little short', 'Disappointing', 'Average'],
+      ['Having missed the last bus, we had no choice but to walk.', 'Why did they walk?', 'They missed the last bus', 'They wanted exercise', 'It was a nice day', 'The bus was full']
+    ],
+    build: [
+      'Rarely does she lose her temper.',
+      'Only after the match did we hear the news.',
+      'It was my aunt who taught me to swim.',
+      'Had it not been for the map, we would have got lost.',
+      'The teacher recommended that he join the team.',
+      'Exhausted by the long walk, we went straight to bed.',
+      'Should the weather change, the trip will be postponed.',
+      'She made a significant contribution to the project.'
+    ],
+    spot: [
+      ['Never *did* I seen such a clear night sky.', 'have', 'never have I + past participle'],
+      ['Rarely *does* we get snow here.', 'do', 'rarely do we (we → do)'],
+      ['Had it not *be* for the rain, we would have won.', 'been', 'had it not been for'],
+      ['Only after the test *had* I realise my mistake.', 'did', 'only after ... did I + base verb'],
+      ['Not only *was* she bake the cake, but she also decorated it.', 'did', 'not only did she + base verb'],
+      ['It *were* my cousins who organised the party.', 'was', 'cleft sentence: it was ... who'],
+      ['The doctor recommended that she *rests* for a week.', 'rest', 'subjunctive: recommend that she rest'],
+      ['But for the map, we *will* have got lost.', 'would', 'but for ..., would have + past participle'],
+      ['Having *ate* lunch, we set off.', 'eaten', 'having + past participle'],
+      ['They *made* a blind eye to the problem.', 'turned', 'turn a blind eye'],
+      ['Everyone *raised* to the occasion on the big day.', 'rose', 'rise to the occasion (rose, not raised)'],
+      ['Only when the bell rang *do* we stop writing.', 'did', 'past: only when ... did we']
+    ]
+  }
 },
 
 talk: {

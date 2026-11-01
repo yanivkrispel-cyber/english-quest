@@ -284,11 +284,28 @@ while (J.stations < 30) {
   if (J.stations === 29) console.log('station 29:', J.gate.state, '(expect locked)');
   if (J.stations < 30) nextDay();
 }
-console.log('station 30 on', ctx.__day + ':', J.gate.state, '(expect open) | avg', J.avg, '| icons', J.done.length);
+// Mastery (night review, finding 12): 30 stations at 70% are not enough any more...
+console.log('station 30 on', ctx.__day + ':', J.gate.state, '(expect locked: mastery) | mastery', J.mastery.pct + '% of', J.mastery.n, 'need', J.mastery.need, '| avg', J.avg, '| icons', J.done.length);
+if (J.gate.state !== 'locked' || J.mastery.ok) console.log('FAIL: 30 stations at 70% opened the gate');
+// ...unless the stations rule was met before the rule started (an open gate stays open)...
+run("setSetting('GateMasteryFrom', '2099-01-01')");
+console.log('kept open before the rule:', jd().gate.state, '(expect open) | kept', jd().mastery.kept);
+if (jd().gate.state !== 'open') console.log('FAIL: a gate open before the mastery rule closed');
+run("setSetting('GateMasteryFrom', '')");
+// ...or until she shows mastery: 16 strong game rounds at her level make the last 80 questions 100%.
+for (let i = 0; i < 16; i++) run("apiGameResult('Aviv','2694','match','a2',5,5,[],[])");
+J = jd();
+console.log('after strong games:', J.gate.state, '(expect open) | mastery', J.mastery.pct + '%');
+if (J.gate.state !== 'open') console.log('FAIL: mastery did not open the gate');
 try { run("apiGateResult('Aviv','2694',12,14,[],[])"); } catch (e) { console.log('wrong item count ok:', e.message); }
 pushStatus = () => 201;
 pushLog.length = 0;
-let GR = run("apiGateResult('Aviv','2694',10,15,['m:b1:anxious','l:b1:0','s:b1:2','b:b1:4','m:b1:cancel'],['b:b1:1'])");
+let GR = run("apiGateResult('Aviv','2694',10,15,['m:b1:anxious','l:b1:0','s:b1:2','b:b1:4','m:b1:cancel','gm:b1:gadget','gt:b1:3'],['b:b1:1','gl:b1:2'])");
+{
+  const rv = (sheets.Review.rows.find(r => r[0] === 'Aviv') || [])[1] || '';
+  console.log('held-out gate items:', /(^| )g[mlbst]:/.test(rv) ? 'FAIL: in the review' : 'ok, not in the review', '| seen', JSON.stringify(GR.journey.gate.seen));
+  if (GR.journey.gate.seen.length !== 3) console.log('FAIL: the gate should know 3 held-out items it asked');
+}
 console.log('gate missed:', JSON.stringify(GR.gateResult), '| state', GR.journey.gate.state, 'until', GR.journey.gate.until, '| tries', GR.journey.gate.tries, '| level', GR.girl.level);
 console.log('missed items in review:', (sheets.Review.rows.find(r => r[0] === 'Aviv') || [])[1].split(' ').filter(x => x.indexOf(':b1:') > 0).length, '(expect 5) | parent push', pushLog.length, JSON.stringify(run("apiPushMessage('https://fcm.googleapis.com/fcm/send/dad2')")));
 try { run("apiGateResult('Aviv','2694',15,15,[],[])"); } catch (e) { console.log('wait ok:', e.message); }
@@ -331,6 +348,34 @@ L2 = run("apiGateResult('Lia','" + liaPin + "',12,15,[],[])").journey;
 console.log('lia passed 12/15:', L2.label, L2.name, L2.gate.state, '(expect top) | next', L2.gate.next);
 try { run("apiGateResult('Lia','" + liaPin + "',15,15,[],[])"); } catch (e) { console.log('no gate after the last world ok:', e.message); }
 console.log('gates rows:', sheets.Gates.rows.slice(1).map(r => r.slice(1).join(' ')).join(' / '));
+{
+  // The slow review (night review, finding 13): an item right the first time comes back after 7, 21 and 60 days.
+  const day0 = ctx.__day, box = id => { const m = run("readReview('Ron')")[id]; return m ? m.box + '@' + m.due : 'none'; };
+  run("apiGameResult('Ron','7356','match','b1',2,2,['m:b1:cancel'],['m:b1:achieve'])");
+  const a = box('m:b1:achieve'), b = box('m:b1:cancel');
+  console.log('slow review: right ->', a, '(expect 11@+7) | missed ->', b, '(expect 1@+1)');
+  if (a !== '11@' + run("addDays('" + day0 + "', 7)") || b !== '1@' + run("addDays('" + day0 + "', 1)")) console.log('FAIL: slow review boxes');
+  run("apiGameResult('Ron','7356','match','b1',1,1,[],['m:b1:achieve'])");
+  if (box('m:b1:achieve') !== a) console.log('FAIL: a slow item answered before it is due moved');
+  const due = run("dueReview('Ron', '" + run("addDays('" + day0 + "', 7)") + "')");
+  console.log('due on day 7:', due.join(' '), '(expect the missed one first)');
+  if (due[0] !== 'm:b1:cancel' || due.indexOf('m:b1:achieve') < 0) console.log('FAIL: due order');
+  ctx.__day = run("addDays('" + day0 + "', 7)");
+  run("apiGameResult('Ron','7356','match','b1',1,1,[],['m:b1:achieve'])");
+  console.log('right when due:', box('m:b1:achieve'), '(expect 12@+21)');
+  if (!/^12@/.test(box('m:b1:achieve'))) console.log('FAIL: slow box 12');
+  // At most 20 new slow items a day.
+  const ids = Array.from({ length: 30 }, (_, i) => 'l:b1:' + (100 + i));
+  for (let i = 0; i < 3; i++) run("apiGameResult('Ron','7356','listen','b1',10,10,[]," + JSON.stringify(ids.slice(i * 10, i * 10 + 10)) + ")");
+  const slowNew = Object.keys(run("readReview('Ron')")).filter(id => ids.indexOf(id) >= 0).length;
+  console.log('new slow items in a day:', slowNew, '(expect 20)');
+  if (slowNew !== 20) console.log('FAIL: the slow review cap');
+  ctx.__day = day0;
+  const st = run("itemStats(5, 1)");
+  console.log('item stats:', st.counted, 'items |', st.items.map(e => e.id + ' ' + e.right + '/' + e.n).join(', '));
+  if (!st.items.length || st.items[0].right / st.items[0].n > st.items[st.items.length - 1].right / st.items[st.items.length - 1].n) console.log('FAIL: item stats order');
+  if (!run("apiPilotStats('1234')").items) console.log('FAIL: no item stats on the pilot board');
+}
 
 // ---- play together: Word Duel and Challenge ----
 { // a block, so these names do not clash with the sections above
@@ -1103,7 +1148,7 @@ check('the Log row: measured score, the mission and its time', L && L.Mission ==
 check('points like any task: 10, +5 for 80%+, +3 on the day', R.justEarned === pts, R.justEarned + ' vs ' + pts);
 check('the day shows as done, with its time', R.week.find(w => w.date === day.date).done && R.week.find(w => w.date === day.date).seconds === 412);
 const rev = run("readReview('Tali')");
-check('the missed questions go to the review (only this mission\'s)', rev[q(3)] && rev[q(5)] && !rev['x:b1g01:2'] && !rev[q(1)], JSON.stringify(rev));
+check('the missed questions go to the review (only this mission\'s), a right one to the slow track', rev[q(3)] && rev[q(3)].box === 1 && rev[q(5)] && !rev['x:b1g01:2'] && rev[q(1)] && rev[q(1)].box === 11, JSON.stringify(rev));
 fails('the same day twice', () => tali('apiMissionResult', day.date, m1.id, good, m1.n, [], [], 300));
 // The parents' evening summary carries the dinner question.
 run("appendRow('ParentPush', { Who: 'admin', Endpoint: 'https://push.example/mission-admin', Created: new Date(), Agent: 'test', Instant: 'no' })");
@@ -1153,7 +1198,7 @@ const g = rows('Groups').find(x => x.Id === r.groupId);
 check('a family joins: group with its parent code, consent and join time', g && g.ParentPIN === '5566' && g.Consent && g.Joined && g.Parent === 'Dana', JSON.stringify(g));
 check('a taken kid name gets the family initial', r.kids[1].name === 'Tali L.' && r.kids[0].name === 'Shira', JSON.stringify(r.kids));
 const noa = rows('Girls').find(x => x.Name === 'Shira');
-check('the grade sets the starting level', noa.Level === 'a2' && rows('Girls').find(x => x.Name === 'Tali L.').Level === 'b1-b2');
+check('the grade sets the starting level, one below the curriculum band (grade 5 A1, grade 9 B1)', noa.Level === 'a1' && rows('Girls').find(x => x.Name === 'Tali L.').Level === 'b1');
 fails('a second family with the same parent code', () => J('friends', Object.assign({}, fam, { family: 'Cohen', kids: [{ name: 'Yael', grade: 4 }] })));
 const pp = run("apiParent('5566')").groups[0].girls;
 check('a parent sees each kid\'s code, to send her link again', pp.length === 2 && pp.every(k => /^\d{4}$/.test(k.pin)) && pp.find(k => k.girl.name === 'Shira').pin === r.kids[0].pin);
@@ -1305,7 +1350,7 @@ fails('an age outside 2 to 7 with no grade', () => run(`apiJoin('nestcode', ${JS
 const girl = n => run(`JSON.stringify(findGirl('${n}'))`) && JSON.parse(run(`JSON.stringify(findGirl('${n}'))`));
 const TALI = j.kids[0].name, OMER = j.kids[1].name, GAL = j.kids[2].name;
 const tali = girl(TALI), omer = girl(OMER), gal = girl(GAL);
-check('Nest kids keep their real age and the nest level', tali.Level === 'nest' && Number(tali.Age) === 4 && Number(omer.Age) === 7 && gal.Level === 'a2' && Number(gal.Age) === 11, [tali.Level, tali.Age, omer.Age, gal.Level, gal.Age].join(','));
+check('Nest kids keep their real age and the nest level', tali.Level === 'nest' && Number(tali.Age) === 4 && Number(omer.Age) === 7 && gal.Level === 'a1' && Number(gal.Age) === 11, [tali.Level, tali.Age, omer.Age, gal.Level, gal.Age].join(','));
 let d = run(`apiDashboard('${TALI}', '${tali.PIN}')`);
 check('a Nest kid has no level test, journey, talks, shop or duels', !d.levelTest && !d.journey && !d.chat && !d.shop.open && !d.duels, JSON.stringify({ lt: d.levelTest, j: !!d.journey, chat: !!d.chat, shop: d.shop.open, duels: !!d.duels }));
 check('her day is the first unit, with 2 pictures at age 4', d.nest && d.nest.today === units[0][0] && d.nest.choices === 2 && !d.nest.words && !d.nest.done, JSON.stringify(d.nest));

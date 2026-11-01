@@ -67,7 +67,7 @@ window.EQ_MISSIONS.bp = [
     ] },
     { name: 'Build it', items: [
       { k: 'build', s: 'Could you tell me where the station is?', why: 'where + the station + is.' },
-      { k: 'spot', s: 'Do you know *that* the shop is open today?', fix: 'if', why: 'A yes/no question inside → if, not that.' },
+      { k: 'spot', s: 'Do you know *that* the shop is open today or not?', fix: 'if', why: 'A yes/no question inside → if, not that.' },
       { k: 'build', s: 'Do you know what time it is?', why: 'what time + it + is.' }
     ] }
   ],
@@ -101,11 +101,11 @@ window.EQ_MISSIONS.bp = [
       { k: 'type', q: '"I went to the beach yesterday." "So ___ I!"', a: ['did'], why: 'went (past) → So did I.' },
       { k: 'tf', q: '"She doesn\'t eat meat, does she?"', a: true, why: 'A negative sentence → a positive tag: does she?' },
       { k: 'mc', q: '"I\'m not tired." "___ am I."', o: ['Neither', 'So', 'Either'], a: 0, why: 'To agree with a negative → Neither am I.' },
-      { k: 'type', q: 'It was a great film, ___ it?', a: ['wasn\'t', 'was not'], why: 'It was → wasn\'t it?' }
+      { k: 'type', q: 'It was a great film, ___ it?', a: ['wasn\'t'], why: 'It was → wasn\'t it?' }
     ] },
     { name: 'Build it', items: [
       { k: 'build', s: 'I didn\'t like the film, but my sister did.', why: 'did = liked the film. We don\'t repeat the whole idea.' },
-      { k: 'spot', s: 'You have a dog, *haven\'t* you?', fix: 'don\'t', why: 'In modern English, have (= own) takes do in the tag: You have a dog, don\'t you?' },
+      { k: 'spot', s: 'You have a dog, *haven\'t* you?', fix: 'don\'t', why: 'Have (= own) takes do in the tag today: You have a dog, don\'t you? (haven\'t you? sounds old-fashioned)' },
       { k: 'build', s: 'I do like your new haircut!', why: 'do + verb = emphasis: I really like it.' }
     ] }
   ],
@@ -344,7 +344,7 @@ window.EQ_MISSIONS.bp = [
       ], items: [
         { k: 'mc', q: 'Why did Josh and his friend fight?', o: ['because of a joke', 'because of money', 'because of a game'], a: 0, why: '"because of a stupid joke"' },
         { k: 'mc', q: 'What should Josh have done?', o: ['He should have said sorry.', 'He should have moved too.', 'He should have told a joke.'], a: 0, why: '"I should have said sorry when I had the chance."' },
-        { k: 'tf', q: 'Josh and his friend don\'t talk anymore.', a: false, fix: 'They talk now, but it\'s not the same.', why: '"We talk now, but it\'s not the same."' }
+        { k: 'tf', q: 'Josh and his friend don\'t talk any more.', a: false, fix: 'They talk now, but it\'s not the same.', why: '"We talk now, but it\'s not the same."' }
       ] },
       { lines: [
         ['H', 'Thank you both. So, what\'s the lesson?'],
