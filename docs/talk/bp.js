@@ -571,7 +571,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
         c: "I've noticed something: the more crackers I eat, the happier I get! What makes you happier, the more you do it?",
         he: "ככל שעושים יותר, כך שמחים יותר. למשל: The more I dance, the happier I feel.",
         a: [
-          { k: ['more_better more_good more_happy more_happier more_fun'], r: "The more you do it, the better you feel! Lovely answer." },
+          { k: ['more_better more_good more_happy more_happier more_fun'], r: "The more you do it, the better you feel! That is so true." },
           { k: ['happier happy fun funnier'], r: "That's wonderful. I can hear the smile in your voice." },
           { k: ['better faster stronger more'], r: "Yes! The more you practise, the better it gets." }
         ],

@@ -10,10 +10,13 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
       {
         c: "Ooh, that was a mission for experts! Imagine you're commentating on a match live. How would you describe the winning goal as it happens, in the present simple?",
         he: "תארו גול כמו שדר ספורט, בהווה פשוט. למשל: Levi takes the ball, he shoots, he scores!",
-        a: [],
-        o: "Goosebumps! Well, feather-bumps. You sound like a real commentator.",
+        a: [
+          { k: ["he_take she_take he_shoot she_shoot he_kick she_kick he_run she_run he_score she_score he_pass she_pass he_dribble she_dribble he_cross she_cross he_go she_go"], r: "And he takes the ball, he shoots, he scores! What a goal that would be." },
+          { k: ["takes shoots scores runs kicks dribbles crosses passes goes goal"], r: "Goosebumps! Well, feather-bumps. I can almost hear the crowd." }
+        ],
+        o: "What a moment that would be! I can almost hear the crowd.",
         t: ["Levi takes the ball, dribbles past two players and scores!", "She runs down the wing, crosses, and it's a goal!", "He shoots from thirty metres and the crowd goes wild!"],
-        x: [["he take the ball and he shoot and goal", -1], ["messi runs he kicks the ball and score", -1]]
+        x: [["he take the ball and he shoot and goal", 0], ["she run and she shoot", 0], ["messi runs he kicks the ball and scores", 1], ["the player takes the ball and scores", 1], ["i do not really like football", -1]]
       },
       {
         c: "My customers are forever asking me for green hats, and I'm always happy to help. Using always or constantly, what's a funny habit that someone you know has?",
@@ -367,7 +370,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
         c: "One more before I flutter off. Humans are among the best endurance runners on the planet. What's something that takes real endurance, but you think is worth it?",
         he: "מה דורש סיבולת אבל שווה את זה? למשל: Learning an instrument takes endurance, but it's worth it.",
         a: [],
-        o: "Well said! Most things worth doing take a little endurance. Even growing these feathers.",
+        o: "So true! Most things worth doing take a little endurance. Even growing these feathers.",
         t: ["Learning a musical instrument takes endurance, but it's worth it.", "Studying for exams takes endurance, but the results are worth it.", "Long hikes take endurance, but the views are worth it."],
         x: [["running a marathon is hard but worth", -1], ["learn english every day", -1]]
       }
@@ -669,7 +672,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
         c: "To wrap up, describe a book, film or game you love in one sentence, starting with Written by, Made by or Set in. What would you say?",
         he: "תארו ספר, סרט או משחק במשפט שמתחיל ב-Set in או Written by. למשל: Set in a magical school, it's my favourite.",
         a: [],
-        o: "Beautifully put! That sounds like something I'd enjoy too.",
+        o: "Ooh! That sounds like something I'd enjoy too.",
         t: ["Set in a magical school, Harry Potter is my favourite series.", "Made by a small team, this game is full of surprises.", "Set in the future, the film shows a world without cars."],
         x: [["set in space it is a cool game", -1], ["written by roald dahl matilda", -1]]
       }
@@ -1054,7 +1057,7 @@ window.EQ_TALK.c1 = (window.EQ_TALK.c1 || []).concat([
         c: "My last question. Doctor Hale says close relationships predict happiness better than intelligence does. In your opinion, what makes a friendship really close?",
         he: "מה הופך חברות לקרובה באמת? למשל: Trust, and knowing you can tell each other anything.",
         a: [],
-        o: "Beautifully said. A friendship like that is worth more than every hat in my shop.",
+        o: "How lovely. A friendship like that is worth more than every hat in my shop.",
         t: ["Trust, and knowing you can tell each other anything.", "Laughing together and being there when things are hard.", "Being honest with each other, even when it's difficult."],
         x: [["trust", -1], ["when you can talk about everything", -1]]
       }

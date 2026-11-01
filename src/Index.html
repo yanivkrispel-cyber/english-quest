@@ -1302,6 +1302,9 @@ svg.pa{display:block;overflow:visible}
 .ctsum{margin-top:4px}
 .ctintro{direction:rtl;text-align:center;font-family:system-ui,'Segoe UI',Arial,sans-serif;font-size:13.5px;color:var(--faint);line-height:1.5}
 .ctflag{margin:-2px 0 2px 46px}
+.cb.ctalt{padding-left:46px;margin-top:-2px}
+.cb.ctalt span{background:rgba(255,255,255,.55);font-weight:600;font-size:14px;color:var(--muted)}
+.cb.ctalt b{color:var(--ink)}
 .chatcard .coco-face{width:60px;height:60px;object-fit:contain;flex:none;filter:drop-shadow(0 8px 8px rgba(38,40,80,.2))}
 @media (prefers-reduced-motion:reduce){.ctmic.ready,.ctmic.listening,.ctdots i{animation:none}}
 /* The play frame (the games, the missions, the gate challenge, duels): a full-screen app with no page scrolling.
@@ -4110,6 +4113,29 @@ function chatMatch(turn, text){
   const said = chatNorm(text), n = said.trim() ? said.trim().split(' ').length : 0;
   return { b: n ? (turn.a || []).findIndex(x => chatFits(said, x)) : -1, n };
 }
+// The model answers of a turn (night review, finding 5): its own `m`, else its tiles. A recast shows and says the closest one.
+const chatModels = turn => turn.m ? [turn.m] : (turn.t || []);
+const chatWords = s => chatNorm(s).trim().split(' ').filter(Boolean);
+// Enough for voice XP when no branch fits: the level's minimum, and at A1 and A2 one word more when every model is a
+// sentence (3+ words), so a lone keyword is not taken as the answer to a question that wants a sentence.
+function chatEnough(turn, n, level){
+  const ms = chatModels(turn), sentence = ms.length && ms.every(m => chatWords(m).length >= 3);
+  return n >= (CHAT_MIN[level] || 2) + (sentence && (level === 'a1' || level === 'a2') ? 1 : 0);
+}
+// How much of a model she said: the share of its words that are in what she said (0..1).
+function chatNear(model, text){
+  const said = chatNorm(text), w = chatWords(model);
+  return w.length ? w.filter(x => said.indexOf(' ' + x + ' ') >= 0).length / w.length : 0;
+}
+// The model closest to what she said (the first one on a tie): { k: its place, text }.
+function chatModel(turn, text){
+  const ms = chatModels(turn);
+  let k = 0;
+  ms.forEach((m, i) => { if (chatNear(m, text) > chatNear(ms[k], text)) k = i; });
+  return { k, text: ms[k] || '' };
+}
+// Said back after a recast: close enough when most of the model's words are there.
+const CHAT_CLOSE = 0.6;
 
 const MISSIONS_V = 4, MS_PARTS = ['Hook', 'Learn', 'Practice', 'Use it', 'Finish'];
 const MS_TYPES = { grammar: ['Grammar Lab', 7], vocabulary: ['Word Pack', 7], listening: ['Radio Show', 8], reading: ['Story Cards', 8],
@@ -4818,11 +4844,18 @@ async function previewMission(id, label){
 // ---- Talk to Chacho: the talk screen (specs/talk.md) ----
 // Chacho says each line (a recording, or the phone's voice without one), the kid answers aloud with the mic button
 // (the phone's own speech recognition; nothing is recorded or sent but the words it heard), or with a tile. Every answer
-// moves the talk on; there is no wrong answer. A mission talk comes after Use it; a home scene once a day from home.
-const TALK_V = 6;
+// moves the talk on. A mission talk comes after Use it; a home scene once a day from home.
+// Feedback (night review, finding 5): a branch that fits gets its reply. When none fits, Chacho never praises the form:
+// a closed question, or too short an answer, gets a recast (Chacho says the closest model, "Now you say it!", one try by
+// voice or tile, then the talk goes on); an open question answered with enough words gets `o` and the closest model as
+// a quiet "Another way to say it". Voice XP only for a branch or an answer with enough words (chatEnough), or the model
+// said back. Settings.TalkRecast = off turns the recast step off (the model line stays).
+const TALK_V = 7;
 const CHAT_PET = {
   start: ['Your turn soon! Tap the mic and talk.', 'Talk to Chacho! I am right here.', 'Speak English with Chacho. You can do it!'],
-  voice: ['You said it!', 'Wow, great English!', 'Chacho understood you!', 'So cool! Keep going!', 'Yes! Out loud!'],
+  voice: ['You said it!', 'Out loud! Keep going!', 'Chacho heard you!', 'So cool! Keep going!', 'Yes! Out loud!'],
+  recast: ['Listen to Chacho, then say it too.', 'Say it with Chacho!', 'Your turn to say it!'],
+  back: ['Yes! Just like Chacho.', 'You said it!', 'Out loud! Great.'],
   tile: ['Nice pick! Next time, say it out loud.', 'Good one! Try the mic next time.', 'Nice! You can say it too.'],
   listen: ['I am listening too…', 'Shh… Chacho is listening.'],
   again: ['Try again, a little louder.', 'Speak close to the phone.'],
@@ -4831,7 +4864,11 @@ const CHAT_PET = {
 const CHAT_BANK = {
   again: "Sorry, I didn't catch that. Can you say it again?",
   more: 'Ooh, tell me a little more!',
-  tiles: 'Here are some ideas. Say one out loud, or tap it!'
+  tiles: 'Here are some ideas. Say one out loud, or tap it!',
+  recast: 'You can say it like this:',
+  turn: 'Now you say it!',
+  yes: 'Yes! Just like that.',
+  next: "Thank you! Let's go on."
 };
 let CT = null, ctAudio = null, ctRec = null;
 const chatLoads = {};
@@ -4867,7 +4904,8 @@ function chatScene(list, info){
 function chatOpen(s, opts){
   chatStop();
   CT = Object.assign({ s, i: 0, log: [], voice: 0, tiles: 0, said: [], tries: 0, more: false, tilesOn: false, he: false, mic: chatCanListen(),
-    phase: 'coco', t0: Date.now(), heard: {}, pet: chatPick(CHAT_PET.start) }, opts);
+    phase: 'coco', t0: Date.now(), heard: {}, pet: chatPick(CHAT_PET.start), saying: null, got: '',
+    recast: !(dash && dash.chat && dash.chat.recast === false) }, opts);
   if (!CT.mic) CT.tilesOn = true;
   chatRender();
   chatCoco(s.turns[0].c, chatClip(0, 'c'), () => chatAsk());
@@ -4880,11 +4918,12 @@ function chatRender(){
   const s = CT.s, u = chatTurn(), lv = (LEVELS.find(l => MS_FILES[l[0]] === CT.level) || [0, ''])[1];
   const end = CT.phase === 'end', listening = CT.phase === 'listen', busy = CT.phase === 'coco' || CT.phase === 'wait';
   const sub = 'Talk with Chacho · ' + esc(lv) + (end ? ' · done' : ' · ' + (CT.i + 1) + ' of ' + s.turns.length);
-  const bub = (b, k) => b.who === 'coco'
-    ? `<div class="cb coco"><img src="${cocoSrc(b.mood || 'happy')}" alt=""><span>${esc(b.text)}${b.clip ? ` <button class="ctsay" data-ctsay="${k}" title="Hear it again">${icon('speaker-high')}</button>` : ''}</span></div>
+  const bub = (b, k) => b.who === 'alt' ? `<div class="cb coco ctalt"><span>Another way to say it: <b>${esc(b.text)}</b></span></div>`
+    : b.who === 'coco'
+    ? `<div class="cb coco"><img src="${cocoSrc(b.mood || 'happy')}" alt=""><span>${esc(b.text)}${b.clip || b.parts ? ` <button class="ctsay" data-ctsay="${k}" title="Hear it again">${icon('speaker-high')}</button>` : ''}</span></div>
        ${CT.preview && TEACHER && b.flag ? `<div class="row-flex ctflag" style="gap:6px"><button class="mflag" data-ctflag="${esc(b.flag)}">Something wrong here?</button></div>` : ''}`
     : `<div class="cb me"><span>${esc(b.text)}${b.tile ? '' : ` ${icon('microphone')}`}</span></div>`;
-  const tiles = !end && u && CT.tilesOn ? `<div class="cttiles">${u.t.map((t, k) => `<button class="opt" data-cttile="${k}"${busy ? ' disabled' : ''}>${esc(t)}</button>`).join('')}</div>` : '';
+  const tiles = !end && u && (CT.tilesOn || CT.saying) ? `<div class="cttiles">${(CT.saying ? [CT.saying.text] : u.t).map((t, k) => `<button class="opt" data-cttile="${k}"${busy ? ' disabled' : ''}>${esc(t)}</button>`).join('')}</div>` : '';
   const hint = !end && u && CT.he ? `<div class="mhe ct" dir="rtl" lang="he">${msHe(u.he)}</div>` : '';
   const note = !end && !CT.mic ? `<div class="sub ctnote">${icon('microphone-slash')} This phone can't listen here. Tap an answer, and say it out loud too!</div>` : '';
   const slot = end ? `<button class="btn btn-primary btn-block" id="ctdone">${CT.where === 'mission' ? 'Continue' : 'Finish'} ${icon('arrow-right')}</button>`
@@ -4935,8 +4974,8 @@ function chatClick(e){
   if (t.id === 'ctmic') return chatListen();
   if (t.id === 'ctideas') { CT.tilesOn = !CT.tilesOn || !CT.mic; return chatRender(); }
   if (t.id === 'cthe') { CT.he = !CT.he; return chatRender(); }
-  if (d.cttile != null && CT.phase === 'ask') return chatAnswer(chatTurn().t[Number(d.cttile)], 'tile');
-  if (d.ctsay != null) { const b = CT.log[Number(d.ctsay)]; if (b && CT.phase !== 'listen') chatPlay(b.text, b.clip); return; }
+  if (d.cttile != null && CT.phase === 'ask') return chatAnswer(CT.saying ? CT.saying.text : chatTurn().t[Number(d.cttile)], 'tile');
+  if (d.ctsay != null) { const b = CT.log[Number(d.ctsay)]; if (b && CT.phase !== 'listen') b.parts ? chatPlayAll(b.parts) : chatPlay(b.text, b.clip); return; }
   if (d.ctflag && CT.preview && TEACHER) {
     t.parentElement.innerHTML = '<input class="input" id="ctnote" placeholder="What is wrong? A short note" style="flex:1;min-width:0;height:36px"><button class="mflag" data-ctsend="' + esc(d.ctflag) + '">Send</button>';
     const n = document.getElementById('ctnote'); if (n) n.focus();
@@ -4955,6 +4994,17 @@ function chatCoco(text, clip, then, mood){
   CT.phase = 'coco';
   chatRender();
   chatPlay(text, clip, () => { if (CT) then(); });
+}
+// Several recorded parts in one bubble: [[text, clip], ...], played one after the other.
+function chatCocoAll(parts, then, mood){
+  CT.log.push({ who: 'coco', text: parts.map(p => p[0]).join(' '), parts, mood });
+  CT.phase = 'coco';
+  chatRender();
+  chatPlayAll(parts, () => { if (CT) then(); });
+}
+function chatPlayAll(parts, onEnd){
+  const next = i => i < parts.length ? chatPlay(parts[i][0], parts[i][1], () => next(i + 1)) : onEnd && onEnd();
+  next(0);
 }
 function chatAsk(){
   CT.phase = 'ask';
@@ -5032,6 +5082,7 @@ function chatListen(){
 }
 // Nothing heard: Chacho asks again; after the second time the ideas open.
 function chatMissed(){
+  if (CT.saying) return chatSaid('', 'voice');
   CT.tries++;
   CT.pet = chatPick(CHAT_PET.again);
   if (CT.tries >= 2 && !CT.tilesOn) { CT.tilesOn = true; return chatCoco(CHAT_BANK.tiles, 'bank-tiles', chatAsk, 'thinking'); }
@@ -5040,22 +5091,55 @@ function chatMissed(){
 
 // An answer (what the phone heard, or a tile): Chacho's reply for the branch that fits, then the next question.
 function chatAnswer(text, via){
+  if (CT.saying) return chatSaid(text, via);
   const u = chatTurn(), r = chatMatch(u, text);
   CT.log.push({ who: 'me', text, tile: via === 'tile' });
   if (via === 'voice' && r.b < 0 && r.n < CHAT_MIN[CT.level] && !CT.more) {
     CT.more = true;
     return chatCoco(CHAT_BANK.more, 'bank-more', chatAsk, 'thinking');
   }
-  if (via === 'voice') { CT.voice++; CT.said.push(text); buzz(true); CT.pet = chatPick(CHAT_PET.voice); }
-  else { CT.tiles++; CT.pet = chatPick(CHAT_PET.tile); }
+  // Voice counts when a branch fits or she said enough; a tile counts as a tile.
+  const ok = via === 'tile' || r.b >= 0 || chatEnough(u, r.n, CT.level);
+  if (via === 'voice' && ok) { CT.got = 'voice'; CT.voice++; CT.said.push(text); buzz(true); CT.pet = chatPick(CHAT_PET.voice); }
+  else if (via === 'tile') { CT.got = 'tile'; CT.tiles++; CT.pet = chatPick(CHAT_PET.tile); }
+  else CT.pet = chatPick(CHAT_PET.recast);
   const reply = r.b >= 0 ? u.a[r.b].r : u.o, clip = chatClip(CT.i, r.b >= 0 ? 'r' + (r.b + 1) : 'o');
   CT.tries = 0; CT.more = false; CT.he = false;
   if (CT.mic) CT.tilesOn = false;
+  // Nothing fits: a recast (closed question, or too little said), or the model as a quiet line (an open question).
+  const model = via === 'voice' && r.b < 0 ? chatModel(u, text) : null;
+  const near = model && chatNear(model.text, text) >= CHAT_CLOSE;
+  const recast = model && !near && CT.recast && ((u.a || []).length || !ok);
   chatCoco(reply, clip, () => {
-    CT.i++;
-    if (CT.i < CT.s.turns.length) return chatCoco(chatTurn().c, chatClip(CT.i, 'c'), chatAsk);
-    chatCoco(CT.s.end, CT.s.id + '-e', chatEnd, 'celebrate');
+    if (recast) return chatRecast(model);
+    if (model && !near) CT.log.push({ who: 'alt', text: model.text });
+    chatNext();
   }, 'happy');
+}
+// The recast: Chacho says the model, then "Now you say it!"; one try (voice or the model's tile), then the talk goes on.
+function chatRecast(model){
+  const u = chatTurn(), clip = u.m ? chatClip(CT.i, 'm') : chatClip(CT.i, 't' + (model.k + 1));
+  CT.saying = { text: model.text, clip };
+  chatCocoAll([[CHAT_BANK.recast, 'bank-recast'], [model.text, clip], [CHAT_BANK.turn, 'bank-turn']], chatAsk, 'thinking');
+}
+function chatSaid(text, via){
+  const m = CT.saying;
+  CT.saying = null;
+  if (text) CT.log.push({ who: 'me', text, tile: via === 'tile' });
+  const back = via === 'tile' || (text && chatNear(m.text, text) >= CHAT_CLOSE);
+  if (back && !CT.got) {
+    if (via === 'tile') { CT.got = 'tile'; CT.tiles++; CT.pet = chatPick(CHAT_PET.tile); }
+    else { CT.got = 'voice'; CT.voice++; CT.said.push(text); buzz(true); CT.pet = chatPick(CHAT_PET.back); }
+  } else if (back && via === 'voice') { buzz(true); CT.pet = chatPick(CHAT_PET.back); }
+  if (CT.mic) CT.tilesOn = false;
+  CT.tries = 0;
+  if (back && via === 'voice') return chatCoco(CHAT_BANK.yes, 'bank-yes', chatNext, 'happy');
+  chatCoco(CHAT_BANK.next, 'bank-next', chatNext, 'happy');
+}
+function chatNext(){
+  CT.i++; CT.got = '';
+  if (CT.i < CT.s.turns.length) return chatCoco(chatTurn().c, chatClip(CT.i, 'c'), chatAsk);
+  chatCoco(CT.s.end, CT.s.id + '-e', chatEnd, 'celebrate');
 }
 
 function chatEnd(){
