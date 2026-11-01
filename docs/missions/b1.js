@@ -5,6 +5,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1g01', url: 'https://test-english.com/grammar-points/b1/present-simple-present-continuous/', type: 'grammar',
   title: 'Permanent or temporary?', dinner: 'What are you learning at school these days?',
+  kid: 'Always or just now?', he: 'הווה פשוט או מתמשך: קבוע או זמני',
   hook: { q: 'About how many languages do people speak in the world today?', o: ['About 700', 'About 7,000', 'About 70,000'], a: 1,
     reveal: 'About *7,000*! A fact uses the present simple: people *speak* about 7,000 languages. A change happening now uses the continuous: many small languages *are disappearing*.' },
   learn: { kind: 'rule', title: 'Present simple or continuous?',
@@ -46,6 +47,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1g02', url: 'https://test-english.com/grammar-points/b1/future-forms/', type: 'grammar',
   title: 'Talking about the future', dinner: 'What are you going to do this weekend?',
+  kid: 'Talking about the future', he: 'דרכים לדבר על העתיד',
   hook: { q: 'By 2050, about how many people will live on Earth, says the United Nations?', o: ['About 8 billion', 'About 9.7 billion', 'About 15 billion'], a: 1,
     reveal: 'About *9.7 billion*. A prediction from facts and numbers often uses *will* or *be going to*: the population *will grow*.' },
   learn: { kind: 'rule', title: 'Three ways to talk about the future',
@@ -83,6 +85,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1g03', url: 'https://test-english.com/grammar-points/b1/past-simple-present-perfect/', type: 'grammar',
   title: 'Finished time or up to now?', dinner: 'What is the most interesting thing you have ever done?',
+  kid: 'Done or up to now?', he: 'עבר פשוט או present perfect',
   hook: { q: 'When did a person walk on the Moon for the first time?', o: ['1959', '1969', '1979'], a: 1,
     reveal: 'In *1969*. Neil Armstrong *walked* on the Moon in 1969 (a finished time: past simple). Since then only twelve people *have walked* on the Moon (up to now: present perfect).' },
   learn: { kind: 'rule', title: 'Past simple or present perfect?',
@@ -120,6 +123,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1v01', url: 'https://test-english.com/vocabulary/b1/more-daily-routines-b1-english-vocabulary/', type: 'vocabulary',
   title: 'More daily routines', dinner: 'How do you unwind after a busy day?',
+  kid: 'More words for my day', he: 'מילים: עוד על שגרת היום',
   hook: { q: 'Doctors say teenagers need about how many hours of sleep a night?', o: ['6 to 7', '8 to 10', '11 to 12'], a: 1,
     reveal: '*8 to 10 hours*! But many teens stay up late and then *oversleep*. Today\'s words are about your daily routine.' },
   learn: { kind: 'words', title: 'Words for your day', words: [
@@ -167,6 +171,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1v02', url: 'https://test-english.com/vocabulary/b1/relationships-b1-english-vocabulary/', type: 'vocabulary',
   title: 'Friends and family', dinner: 'What do you and your best friend have in common?',
+  kid: 'Friends and family', he: 'מילים: חברים, משפחה ויחסים',
   hook: { q: 'A famous scientist says most people have about how many close friends at one time?', o: ['About 5', 'About 50', 'About 500'], a: 0,
     reveal: 'About *5*! The scientist Robin Dunbar says we have about 5 close friends, 15 good friends and 150 people we know well.' },
   learn: { kind: 'words', title: 'Words about people we love', words: [
@@ -214,6 +219,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1l01', url: 'https://test-english.com/listening/b1/working-while-travelling-the-world-b1-english-listening-test/', type: 'listening',
   title: 'Working around the world', dinner: 'Where would you like to work and travel one day?',
+  kid: 'Work and travel the world', he: 'האזנה: לעבוד ולטייל בעולם',
   hook: { q: 'With a "working holiday visa", young people can work while they travel. Up to what age, usually?', o: ['18', '30 or 35', '50'], a: 1,
     reveal: 'Usually up to *30 or 35*. With a working holiday visa, young people can travel and work in another country for about a year.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -270,6 +276,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1l02', url: 'https://test-english.com/listening/b1/where-did-you-stay-b1-english-listening-test/', type: 'listening',
   title: 'Where did you stay?', dinner: 'What was the best place you ever stayed on holiday?',
+  kid: 'Where did you stay?', he: 'האזנה: איפה ישנו בחופשה',
   hook: { q: 'Which of these is a real hotel?', o: ['A hotel made of ice in Sweden', 'A hotel on the Moon', 'A hotel inside a volcano'], a: 0,
     reveal: 'The *ice hotel* in Sweden is real! It is built again every winter, and even the beds are made of ice.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -323,6 +330,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1l03', url: 'https://test-english.com/listening/b1/stories-of-school-and-education-b1-english-listening-test/', type: 'listening',
   title: 'School stories', dinner: 'Who is a teacher who really helped you, and how?',
+  kid: 'School stories', he: 'האזנה: זיכרונות מבית הספר',
   hook: { q: 'In which country do children start school later than most, at age 7?', o: ['Finland', 'The UK', 'The USA'], a: 0,
     reveal: '*Finland*! Children there start school at 7, and Finland is famous for its great schools.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -374,6 +382,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1r01', url: 'https://test-english.com/reading/b1/travel-around-europe-in-5-stops-b1-english-reading-test/', type: 'reading',
   title: 'Five stops by train', dinner: 'If you could visit five cities in Europe, which would you choose?',
+  kid: 'Five stops by train', he: 'קריאה: מסע ברכבת בחמש ערים באירופה',
   hook: { q: 'Which European city has more bridges than Venice?', o: ['Amsterdam', 'Paris', 'London'], a: 0,
     reveal: '*Amsterdam* has more than 1,200 bridges, about three times as many as Venice!' },
   learn: { kind: 'intro', title: 'Before you read', line: 'Noa, 15, travelled around Europe by train with her family. She wrote about it on her blog.',
@@ -410,6 +419,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1u02', url: 'https://test-english.com/use-of-english/b1/b1-english-test-2-multiple-choice-questions/', type: 'use-of-english',
   title: 'The parrot who runs the shop', dinner: 'If our pet could talk, what do you think it would say?',
+  kid: 'The parrot who runs a shop', he: 'כתבה: תוכי שמנהל חנות',
   hook: { q: 'How many words can a clever parrot learn?', o: ['About 10', 'Hundreds, sometimes more', 'None, they only copy sounds'], a: 1,
     reveal: '*Hundreds*! A famous parrot called Puck knew about 1,700 words, a world record.' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a funny news story (it is made up!) and choose the right word for each gap.',
@@ -443,6 +453,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1g04', url: 'https://test-english.com/grammar-points/b1/present-perfect-simple-present-perfect-continuous/', type: 'grammar',
   title: 'How long or how many?', dinner: 'What have you been practising a lot recently?',
+  kid: 'How long or how many?', he: 'present perfect פשוט או מתמשך',
   hook: { q: 'How many hearts does an octopus have?', o: ['One', 'Two', 'Three'], a: 2,
     reveal: '*Three*! Scientists *have been studying* octopuses for many years (an activity up to now), and they *have found* some amazing things (a result).' },
   learn: { kind: 'rule', title: 'Present perfect simple or continuous?',
@@ -485,6 +496,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1g05', url: 'https://test-english.com/grammar-points/b1/during-for-while/', type: 'grammar',
   title: 'During, for or while?', dinner: 'What do you usually do during the summer holidays?',
+  kid: 'During, for or while?', he: 'during, for או while',
   hook: { q: 'Koalas are famous sleepers. Up to how many hours a day can they sleep?', o: ['About 8 hours', 'About 20 hours', 'About 2 hours'], a: 1,
     reveal: 'Up to about *20 hours*! Koalas sleep *for* most of the day, they eat leaves *during* the night, and they hardly move *while* they are awake.' },
   learn: { kind: 'rule', title: 'During, for and while',
@@ -523,6 +535,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1g06', url: 'https://test-english.com/grammar-points/b1/comparative-superlative-adjectives-adverbs/', type: 'grammar',
   title: 'Faster, better, the best', dinner: 'Who is the funniest person in our family, and why?',
+  kid: 'Faster, better, the best', he: 'השוואה: ערך יתרון וערך עליון',
   hook: { q: 'Which planet is the hottest in our solar system?', o: ['Mercury', 'Venus', 'Mars'], a: 1,
     reveal: '*Venus*! Mercury is *closer* to the Sun, but Venus is *hotter*, because its thick clouds keep the heat in. It is *the hottest* planet of all.' },
   learn: { kind: 'rule', title: 'Comparing things and actions',
@@ -561,6 +574,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1g07', url: 'https://test-english.com/grammar-points/b1/an-the-no-article/', type: 'grammar',
   title: 'A, an, the or nothing?', dinner: 'If you could visit any country in the world, which one would you choose?',
+  kid: 'A, an, the or nothing?', he: 'מילות היידוע: a, an, the',
   hook: { q: 'Which is the biggest ocean in the world?', o: ['The Atlantic', 'The Pacific', 'The Indian Ocean'], a: 1,
     reveal: '*The Pacific*! Oceans, seas and rivers take *the*: the Pacific, the Dead Sea, the Jordan. Most countries and continents take no article: Israel, Asia.' },
   learn: { kind: 'rule', title: 'A / an, the, or no article',
@@ -599,6 +613,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1g08', url: 'https://test-english.com/grammar-points/b1/another-other-others-the-other-the-others/', type: 'grammar',
   title: 'Another, other or the others?', dinner: 'If you could learn another language, which one would you choose?',
+  kid: 'Another, other, the others', he: 'another, other ו-the others',
   hook: { q: 'Apart from Earth, how many other planets are there in our solar system?', o: ['Five', 'Seven', 'Nine'], a: 1,
     reveal: '*Seven*! We live on one planet, and *the other* seven are Mercury, Venus, Mars, Jupiter, Saturn, Uranus and Neptune. Are there planets around *other* stars? Yes, thousands!' },
   learn: { kind: 'rule', title: 'Another, other, the other',
@@ -638,6 +653,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1g09', url: 'https://test-english.com/grammar-points/b1/can-could-be-able-to/', type: 'grammar',
   title: 'Can, could or be able to?', dinner: 'What can you do now that you couldn\'t do last year?',
+  kid: 'Can, could or able to?', he: 'יכולת: can, could, be able to',
   hook: { q: 'At about what age can most babies walk?', o: ['About 4 months', 'About 12 months', 'About 3 years'], a: 1,
     reveal: 'At about *12 months*. At four months a baby *can\'t* walk, but she *can* smile and laugh. Soon she *will be able to* run!' },
   learn: { kind: 'rule', title: 'Ability: can, could, be able to',
@@ -679,6 +695,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1u01', url: 'https://test-english.com/use-of-english/b1/b1-test-1/', type: 'use-of-english',
   title: 'The school that grows its lunch', dinner: 'If you had a garden, what would you like to grow in it?',
+  kid: 'The school that grows lunch', he: 'כתבה: בית ספר שמגדל את האוכל שלו',
   hook: { q: 'About how long does a sunflower take to grow from a seed into a big flower?', o: ['About 2 weeks', 'About 3 months', 'About 2 years'], a: 1,
     reveal: 'About *3 months*! And some sunflowers grow taller than a basketball hoop.' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a news story about a school garden (it is made up!) and choose the right word for each gap.',
@@ -713,6 +730,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1u03', url: 'https://test-english.com/use-of-english/b1/b1-english-test-3-text-multiple-choice-gaps/', type: 'use-of-english',
   title: 'The dog who takes the bus', dinner: 'If we had a dog, where would you take it every day?',
+  kid: 'A dog alone on the bus', he: 'כתבה: כלבה שנוסעת לבד באוטובוס',
   hook: { q: 'About how many words can an ordinary dog understand?', o: ['About 5', 'About 100', 'About 10,000'], a: 1,
     reveal: 'About *100*! One study found that an ordinary dog understands about 90 words, and a very clever dog called Chaser learned the names of more than 1,000 toys.' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a funny news story (it is made up!) and choose the right word for each gap.',
@@ -747,6 +765,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1u04', url: 'https://test-english.com/use-of-english/b1/b1-english-test-4-multiple-choice-questions/', type: 'use-of-english',
   title: 'The robot gardener', dinner: 'If you could build a robot, what job would it do for our family?',
+  kid: 'The robot gardener', he: 'כתבה: רובוט גנן',
   hook: { q: 'The word "robot" first came from a play. In which language?', o: ['Czech', 'Japanese', 'English'], a: 0,
     reveal: '*Czech*! In 1920 a play by the Czech writer Karel Čapek used the word "robot". In Czech, "robota" means hard work.' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a news story about a young inventor (it is made up!) and choose the right word for each gap.',
@@ -782,6 +801,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1v03', url: 'https://test-english.com/vocabulary/b1/education-b1-english-vocabulary/', type: 'vocabulary',
   title: 'School and studying', dinner: 'Which subject do you find the most interesting, and why?',
+  kid: 'School and studying', he: 'מילים: בית ספר ולימודים',
   hook: { q: 'In which country do many students have a summer holiday of about three months?', o: ['Italy', 'The UK', 'Japan'], a: 0,
     reveal: '*Italy*! Many Italian students have about three months off in the summer. In the UK it is about six weeks. Today\'s words are about school and studying.' },
   learn: { kind: 'words', title: 'Words for school', words: [
@@ -831,6 +851,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1v04', url: 'https://test-english.com/vocabulary/b1/money-b1-english-vocabulary/', type: 'vocabulary',
   title: 'Money matters', dinner: 'If you had 100 shekels, would you spend it or save it?',
+  kid: 'Money matters', he: 'מילים: כסף',
   hook: { q: 'What did people in some places use as money long ago?', o: ['Shells', 'Paper clips', 'Glass bottles'], a: 0,
     reveal: '*Shells*! Small shells were money in parts of Africa and Asia for hundreds of years. Today\'s words are about how we spend, save and borrow money.' },
   learn: { kind: 'words', title: 'Words about money', words: [
@@ -881,6 +902,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1v05', url: 'https://test-english.com/vocabulary/b1/work-b1-english-vocabulary/', type: 'vocabulary',
   title: 'The world of work', dinner: 'What job would you like to try for one day?',
+  kid: 'The world of work', he: 'מילים: עבודה ומקצועות',
   hook: { q: 'What is the most common kind of work in the world?', o: ['Farming', 'Teaching', 'Working in a shop'], a: 0,
     reveal: '*Farming*! About a quarter of all the workers in the world work on farms. Today\'s words are about jobs and work.' },
   learn: { kind: 'words', title: 'Words about work', words: [
@@ -930,6 +952,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1l04', url: 'https://test-english.com/listening/b1/personal-work-stories-b1-english-listening-test/', type: 'listening',
   title: 'Work stories', dinner: 'What job do you think you would be good at, and why?',
+  kid: 'Job Week on school radio', he: 'האזנה: סיפורים על עבודה',
   hook: { q: 'Ben and Jerry, the famous ice cream makers, learned to make ice cream how?', o: ['From a cheap course by post', 'At a famous cooking school', 'From their grandmother'], a: 0,
     reveal: 'From a *five-dollar course by post*! Then they opened a tiny ice cream shop in 1978. Everyone\'s work story starts somewhere.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -984,6 +1007,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1l05', url: 'https://test-english.com/listening/b1/talking-about-money-b1-english-listening-test/', type: 'listening',
   title: 'Pocket money talk', dinner: 'Should kids get pocket money for helping at home?',
+  kid: 'Pocket money talk', he: 'האזנה: פודקאסט על דמי כיס',
   hook: { q: 'Which country was the first to use paper money?', o: ['China', 'Italy', 'Egypt'], a: 0,
     reveal: '*China*, about a thousand years ago! Before that, people carried heavy coins.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1040,6 +1064,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1l06', url: 'https://test-english.com/listening/b1/famous-sports-cheating-scandals-b1-english-listening-test/', type: 'listening',
   title: 'Famous sports cheats', dinner: 'Why do you think some people cheat in sport?',
+  kid: 'Famous sports cheats', he: 'האזנה: רמאויות מפורסמות בספורט',
   hook: { q: 'In which year were the first modern Olympic Games?', o: ['1896', '1920', '1948'], a: 0,
     reveal: 'In *1896*, in Athens. Since then there have been thousands of great races, and, sadly, a few famous cheats.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1095,6 +1120,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1l07', url: 'https://test-english.com/listening/b1/weird-driving-rules-modal-verbs-b1-english-listening-test/', type: 'listening',
   title: 'Strange rules of the road', dinner: 'If you could make one new rule for our home, what would it be?',
+  kid: 'Strange rules of the road', he: 'האזנה: חוקי נהיגה מוזרים בעולם',
   hook: { q: 'In which of these countries do people drive on the left?', o: ['The UK', 'France', 'Israel'], a: 0,
     reveal: '*The UK*! In the UK, Japan, India and Australia you have to drive on the left. In Israel and France you drive on the right.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1155,6 +1181,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1l08', url: 'https://test-english.com/listening/b1/borough-market-b1-english-listening-test/', type: 'listening',
   title: 'A day at Borough Market', dinner: 'What food from another country would you like to try?',
+  kid: 'A day at a London market', he: 'האזנה: יום בשוק בלונדון',
   hook: { q: 'People have sold food at Borough Market in London for about how long?', o: ['About 1,000 years', 'About 100 years', 'About 50 years'], a: 0,
     reveal: 'About *1,000 years*! There was a market near London Bridge long ago, and today it is one of the most famous food markets in the world.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1211,6 +1238,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1l09', url: 'https://test-english.com/listening/b1/york-england-a-medieval-town-b1-english-listening-test/', type: 'listening',
   title: 'York, a medieval city', dinner: 'If you could visit any time in history, which would you choose?',
+  kid: 'A school trip to York', he: 'האזנה: טיול לעיר העתיקה יורק',
   hook: { q: 'Who lived in York about 1,100 years ago and called it Jorvik?', o: ['The Vikings', 'The Romans', 'The Greeks'], a: 0,
     reveal: 'The *Vikings*! Before them, the Romans built a town there and called it Eboracum.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1268,6 +1296,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1r02', url: 'https://test-english.com/reading/b1/why-your-coworkers-hate-you-b1-english-reading-test/', type: 'reading',
   title: 'Why your team gets annoyed', dinner: 'What makes someone a good person to work with?',
+  kid: 'Group project trouble', he: 'קריאה: מה מעצבן בעבודה בקבוצה',
   hook: { q: 'How fast do people decide what they think of a new face?', o: ['In less than a second', 'In about an hour', 'After a week'], a: 0,
     reveal: '*In less than a second*! One study found it takes about a tenth of a second. But in a team, what you *do* matters much more.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A school magazine asked students: what annoys you most in a group project? Here is what they said.',
@@ -1310,6 +1339,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1r03', url: 'https://test-english.com/reading/b1/unusual-and-wonderful-jobs-b1-english-reading-test/', type: 'reading',
   title: 'Unusual and wonderful jobs', dinner: 'Which unusual job would you love to do, and why?',
+  kid: 'Unusual and wonderful jobs', he: 'קריאה: עבודות מיוחדות ומפתיעות',
   hook: { q: 'Some people are paid to have fun at work. Which of these is a real job?', o: ['Water slide tester', 'Cloud counter', 'Rainbow painter'], a: 0,
     reveal: 'A *water slide tester* is a real job! Read about it, and about two more wonderful jobs.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A website for teens asked three people with unusual jobs to describe their work.',
@@ -1350,6 +1380,7 @@ window.EQ_MISSIONS.b1 = [
 {
   id: 'b1r04', url: 'https://test-english.com/reading/b1/how-led-lights-can-save-sea-turtles-lives-b1-english-reading-test/', type: 'reading',
   title: 'Green lights for sea turtles', dinner: 'What can our family do to help animals in the sea?',
+  kid: 'Lights that help sea turtles', he: 'קריאה: אורות שמצילים צבי ים',
   hook: { q: 'Sea turtles have lived on Earth for about how long?', o: ['More than 100 million years', 'About 10,000 years', 'About 1,000 years'], a: 0,
     reveal: '*More than 100 million years*! They swam in the sea at the time of the dinosaurs. Today, many kinds of sea turtle are in danger.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'Read about a simple idea that helps sea turtles, and about the turtles on Israel\'s beaches.',

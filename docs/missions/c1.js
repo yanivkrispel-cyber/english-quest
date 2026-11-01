@@ -5,6 +5,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1g01', url: 'https://test-english.com/grammar-points/c1/advanced-present-simple-and-present-continuous/', type: 'grammar',
   title: 'The present, for experts', dinner: 'What is someone in our family always doing that drives you mad?',
+  kid: 'The present, for experts', he: 'הווה פשוט ומתמשך, רמה מתקדמת',
   hook: { q: 'Which tense do football commentators use most to describe the action?', o: ['The present simple', 'The past perfect', 'The future continuous'], a: 0,
     reveal: '*The present simple*: "Cohen takes the ball, he shoots, he scores!" It makes the action feel immediate.' },
   learn: { kind: 'rule', title: 'Simple and continuous, beyond the basics',
@@ -45,6 +46,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1g02', url: 'https://test-english.com/grammar-points/c1/advanced-past-simple-past-continuous-past-perfect/', type: 'grammar',
   title: 'Telling stories in the past', dinner: 'What had you never done before this year?',
+  kid: 'Stories in the past', he: 'זמני עבר בסיפור, כולל past perfect',
   hook: { q: 'When Howard Carter opened Tutankhamun\'s tomb in 1922, about how long had it been closed?', o: ['About 300 years', 'About 3,300 years', 'About 33,000 years'], a: 1,
     reveal: 'About *3,300 years*! The tomb *had been* sealed since about 1323 BC, and Carter *had been searching* for it for years.' },
   learn: { kind: 'rule', title: 'Narrative tenses',
@@ -84,6 +86,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1g03', url: 'https://test-english.com/grammar-points/c1/advanced-modal-verbs-will-would-and-should/', type: 'grammar',
   title: 'will, would, should', dinner: 'What would you do every summer when you were younger?',
+  kid: 'will, would, should', he: 'הפעלים will, would, should',
   hook: { q: 'In Old English, the word "will" meant…', o: ['to want', 'to go', 'to be able'], a: 0,
     reveal: '*To want*! Before it became a future word, will meant to want. You still hear it in "free will" and "against her will".' },
   learn: { kind: 'rule', title: 'More than the future',
@@ -122,6 +125,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1v01', url: 'https://test-english.com/vocabulary/c1/feelings-and-reactions-c1-english-vocabulary/', type: 'vocabulary',
   title: 'Feelings and reactions', dinner: 'When were you last completely taken aback?',
+  kid: 'Feelings and reactions', he: 'מילים: רגשות ותגובות',
   hook: { q: 'Which emotion makes your face go red?', o: ['Embarrassment', 'Fear', 'Boredom'], a: 0,
     reveal: '*Embarrassment*! Blushing happens when the blood vessels in your face widen. Charles Darwin called it the most human of all expressions.' },
   learn: { kind: 'words', title: 'Precise words for feelings', words: [
@@ -169,6 +173,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1v02', url: 'https://test-english.com/vocabulary/c1/ways-of-walking-c1-english-vocabulary/', type: 'vocabulary',
   title: 'Ways of walking', dinner: 'How do you walk into school on a Monday morning?',
+  kid: 'Ways of walking', he: 'מילים: פעלים לסוגי הליכה',
   hook: { q: 'About how many bones are there in one human foot?', o: ['About 6', 'About 26', 'About 56'], a: 1,
     reveal: '*26*! About a quarter of all the bones in your body are in your feet. English also has a word for almost every way of walking.' },
   learn: { kind: 'words', title: 'Verbs that say how you walk', words: [
@@ -215,6 +220,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1l01', url: 'https://test-english.com/listening/c1/when-i-completely-embarrassed-myself-c1-english-listening-test/', type: 'listening',
   title: 'My most embarrassing moment', dinner: 'What is an embarrassing moment you can laugh about now?',
+  kid: 'My most awkward moment', he: 'האזנה: הרגע הכי מביך שלי',
   hook: { q: 'Psychologists say others notice our embarrassing moments much less than we think. What is this called?', o: ['The spotlight effect', 'The domino effect', 'The butterfly effect'], a: 0,
     reveal: '*The spotlight effect*! In one study, students wearing an embarrassing T-shirt thought half the room had noticed. In fact, only about a quarter had.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -268,6 +274,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1l02', url: 'https://test-english.com/listening/c1/why-is-walking-humans-superpower-c1-english-listening-test/', type: 'listening',
   title: 'Walking, our superpower', dinner: 'Do you think better when you walk or when you sit? Why?',
+  kid: 'Walking, our superpower', he: 'האזנה: הליכה, כוח העל של האדם',
   hook: { q: 'In a yearly race in Wales, people run against horses over about 35 km. Has a human ever won?', o: ['Yes, a few times', 'Never', 'Only on bicycles'], a: 0,
     reveal: '*Yes*! On hot days a human runner has beaten all the horses. Humans are among the best long-distance runners on the planet.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -313,6 +320,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1l03', url: 'https://test-english.com/listening/c1/when-you-cant-trust-who-you-hear-c1-english-listening-test/', type: 'listening',
   title: 'Can you trust that voice?', dinner: 'What secret word could our family use to stay safe?',
+  kid: 'Can you trust that voice?', he: 'האזנה: הונאות עם קולות מזויפים',
   hook: { q: 'In 2019, criminals used a fake voice of a boss to trick a company. About how much money did they get?', o: ['About $2,000', 'About $243,000', 'About $24 million'], a: 1,
     reveal: 'About *$243,000*! A manager in the UK sent the money because the voice on the phone sounded exactly like his boss.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -364,6 +372,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1r01', url: 'https://test-english.com/reading/c1/what-makes-us-laugh-c1-english-reading-test/', type: 'reading',
   title: 'What makes us laugh?', dinner: 'What made you laugh today?',
+  kid: 'What makes us laugh?', he: 'קריאה: מה מצחיק אותנו',
   hook: { q: 'Which animals make laughing sounds when researchers tickle them?', o: ['Rats', 'Fish', 'Snakes'], a: 0,
     reveal: '*Rats*! When scientists tickled them, they made high-pitched chirps, too high for us to hear, and came back for more.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A popular science article asks a simple question with a surprising answer: what makes us laugh?',
@@ -404,6 +413,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1g04', url: 'https://test-english.com/grammar-points/c1/advanced-modal-verbs-can-be-able-to-may-might/', type: 'grammar',
   title: 'can, be able to, may, might', dinner: 'What will you be able to do in five years that you can\'t do now?',
+  kid: 'can, may, might', he: 'יכולת ואפשרות: can, may, might',
   hook: { q: 'Which animal can survive being frozen almost solid in winter?', o: ['The wood frog', 'The goldfish', 'The rabbit'], a: 0,
     reveal: '*The wood frog*! In winter, about two-thirds of the water in its body *can* turn to ice and its heart stops. In spring it thaws and *is able to* hop away as if nothing had happened.' },
   learn: { kind: 'rule', title: 'Ability and possibility, beyond the basics',
@@ -447,6 +457,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1g05', url: 'https://test-english.com/grammar-points/c1/the-subjunctive-in-english-present-and-past/', type: 'grammar',
   title: 'The subjunctive', dinner: 'If you were the head teacher for a day, what would you change?',
+  kid: 'Wishes and demands', he: 'subjunctive: משאלות ודרישות',
   hook: { q: 'Which of these is correct in formal English, even though it looks strange?', o: ['The teacher insists that he be on time.', 'The teacher insist that he is on time.', 'The teacher insists that he been on time.'], a: 0,
     reveal: '*…that he be on time*! It\'s the subjunctive: after insist, demand or recommend, formal English uses the base form, for every person.' },
   learn: { kind: 'rule', title: 'Wishes, demands and unreal situations',
@@ -489,6 +500,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1g06', url: 'https://test-english.com/grammar-points/c1/the-perfect-tenses-forms-and-uses/', type: 'grammar',
   title: 'The perfect tenses', dinner: 'What will you have learnt by the end of this school year?',
+  kid: 'The perfect tenses', he: 'זמני ה-perfect',
   hook: { q: 'By the time you are 80, about how many years will you have spent asleep?', o: ['About 10', 'About 26', 'About 40'], a: 1,
     reveal: 'About *26 years*! By 80, you *will have slept* for about a third of your life. That\'s the future perfect.' },
   learn: { kind: 'rule', title: 'Looking back from a point in time',
@@ -531,6 +543,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1g07', url: 'https://test-english.com/grammar-points/c1/advanced-participle-clauses/', type: 'grammar',
   title: 'Participle clauses', dinner: 'What do you love doing most once your homework is finished?',
+  kid: 'Say more with fewer words', he: 'participle clauses: לקצר משפטים',
   hook: { q: 'Which is a shorter way to say "Because I didn\'t know the way, I asked a police officer"?', o: ['Not knowing the way, I asked a police officer.', 'Knowing not the way, I asked a police officer.', 'I not knowing the way asked a police officer.'], a: 0,
     reveal: '*Not knowing the way, …*: a participle clause! It packs the reason into one short phrase, and good writers love it.' },
   learn: { kind: 'rule', title: 'Saying more with fewer words',
@@ -573,6 +586,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1g08', url: 'https://test-english.com/grammar-points/c1/advanced-word-order/', type: 'grammar',
   title: 'Word order for effect', dinner: 'What is something you have never done but would love to try?',
+  kid: 'Word order for effect', he: 'סדר מילים להדגשה',
   hook: { q: 'Yoda in Star Wars says, "Powerful you have become." What is unusual about it?', o: ['The word order', 'The tense', 'The spelling'], a: 0,
     reveal: '*The word order*! Yoda moves *powerful* to the front. English usually doesn\'t, but at C1 you can move words for drama: *Never have I* seen such a thing!' },
   learn: { kind: 'rule', title: 'Inversion and adverb position',
@@ -614,6 +628,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1g09', url: 'https://test-english.com/grammar-points/c1/prepositions-position-and-advanced-patterns/', type: 'grammar',
   title: 'Prepositions in the right place', dinner: 'What are you most looking forward to this month?',
+  kid: 'Where prepositions go', he: 'מיקום מילות היחס במשפט',
   hook: { q: 'Is it wrong to end a sentence with a preposition, as in "Who are you talking to?"', o: ['No, it\'s natural English', 'Yes, always', 'Only in questions'], a: 0,
     reveal: '*No!* The "rule" was invented by writers who copied Latin grammar. A famous joke shows how silly it sounds: "That is the kind of nonsense up with which I will not put!"' },
   learn: { kind: 'rule', title: 'Where prepositions go, and what follows them',
@@ -653,6 +668,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1g10', url: 'https://test-english.com/grammar-points/c1/subject-verb-agreement-advanced-rules/', type: 'grammar',
   title: 'Singular or plural verb?', dinner: 'Which subject is the hardest for you this year, and why?',
+  kid: 'Singular or plural verb?', he: 'התאמה בין הנושא לפועל',
   hook: { q: 'In British English, which is correct about the football team: "England is winning" or "England are winning"?', o: ['Both', 'Only "is"', 'Only "are"'], a: 0,
     reveal: '*Both*! British commentators usually say "England *are* winning", thinking of the players. Americans prefer the singular.' },
   learn: { kind: 'rule', title: 'When the verb agrees, and with what',
@@ -692,6 +708,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1v03', url: 'https://test-english.com/vocabulary/c1/vague-language-imprecision-c1-english-vocabulary/', type: 'vocabulary',
   title: 'Being vague on purpose', dinner: 'Roughly how many hours did you spend outside this week, give or take?',
+  kid: 'Being vague on purpose', he: 'מילים: לדבר בכלליות בכוונה',
   hook: { q: 'Which of these is a real English word for "a lot, but I\'m not counting"?', o: ['umpteen', 'manyteen', 'lotsteen'], a: 0,
     reveal: '*Umpteen*! It probably began as soldiers\' slang more than a hundred years ago. "I\'ve told you umpteen times!" means very many times, and nobody knows exactly how many.' },
   learn: { kind: 'words', title: 'Words for when you can\'t (or won\'t) be exact', words: [
@@ -739,6 +756,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1v04', url: 'https://test-english.com/vocabulary/c1/idiomatic-infinitive-phrases-c1-english-vocabulary/', type: 'vocabulary',
   title: 'To cut a long story short', dinner: 'To be honest, what was the best part of your day?',
+  kid: 'To cut a long story short', he: 'ביטויים קבועים עם to',
   hook: { q: 'Which famous line from Shakespeare starts with "to" + a verb?', o: ['"To be, or not to be"', '"All the world\'s a stage"', '"Romeo, Romeo, wherefore art thou Romeo?"'], a: 0,
     reveal: '*"To be, or not to be"*: Hamlet\'s famous question. English loves phrases built on to + a verb, and many of them have become fixed expressions you hear every day.' },
   learn: { kind: 'words', title: 'Fixed phrases with to + verb', words: [
@@ -786,6 +804,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1v05', url: 'https://test-english.com/vocabulary/c1/adverb-adjective-collocations-c1-english-vocabulary/', type: 'vocabulary',
   title: 'Perfect pairs: adverb + adjective', dinner: 'What is wildly popular at your school right now?',
+  kid: 'Perfect pairs', he: 'מילים: צמדי adverb ו-adjective',
   hook: { q: 'People say "bitterly disappointed" but never "bitterly happy". Why?', o: ['Some words have favourite partners', 'It is a grammar rule about bitter', 'Bitter can only describe food'], a: 0,
     reveal: 'Words have *favourite partners*, called collocations. There is no rule behind them: we say "fast food" but "a quick shower". You simply learn the pairs, and they make your English sound natural.' },
   learn: { kind: 'words', title: 'Adverbs and their partners', words: [
@@ -834,6 +853,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1l04', url: 'https://test-english.com/listening/c1/social-medias-impact-on-teenage-brains-c1-english-listening-test/', type: 'listening',
   title: 'Social media and the teenage brain', dinner: 'Which app could you take a break from for a week?',
+  kid: 'Social media and your brain', he: 'האזנה: רשתות חברתיות ומוח המתבגר',
   hook: { q: 'In a study, teenagers looked at photos inside a brain scanner. What made their brain\'s reward centre most active?', o: ['Photos with lots of likes', 'Photos of food', 'Black and white photos'], a: 0,
     reveal: '*Photos with lots of likes*! In a 2016 study in Los Angeles, the same reward area that reacts to sweets or winning a prize became more active, and the teens were more likely to like a photo that already had many likes.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -886,6 +906,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1l05', url: 'https://test-english.com/listening/c1/too-intelligent-to-be-happy-c1-english-listening/', type: 'listening',
   title: 'Too clever to be happy?', dinner: 'What small thing made you happy this week?',
+  kid: 'Too clever to be happy?', he: 'האזנה: האם חכמים פחות מאושרים',
   hook: { q: 'Who first wrote "where ignorance is bliss, \'tis folly to be wise"?', o: ['The poet Thomas Gray, in 1742', 'Shakespeare, in Hamlet', 'Albert Einstein'], a: 0,
     reveal: '*The poet Thomas Gray*, in 1742, while watching boys play at his old school. People still say "ignorance is bliss" today. But are clever people really less happy?' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -938,6 +959,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1l06', url: 'https://test-english.com/listening/c1/are-we-eating-better-c1-english-listening/', type: 'listening',
   title: 'Are we eating better?', dinner: 'What dish would you like us to cook together at home?',
+  kid: 'Are we eating better?', he: 'האזנה: האם אנחנו אוכלים טוב יותר',
   hook: { q: 'Roughly how long does it take your stomach to tell your brain that you are full?', o: ['About 20 seconds', 'About 20 minutes', 'About 2 hours'], a: 1,
     reveal: 'About *20 minutes*! That is one reason why eating slowly helps you notice when you have had enough.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -995,6 +1017,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1l07', url: 'https://test-english.com/listening/c1/sleep-tourism-rest-or-stress-c1-english-listening-test/', type: 'listening',
   title: 'Sleep holidays: rest or stress?', dinner: 'What helps you fall asleep on a busy night?',
+  kid: 'Holidays just to sleep', he: 'האזנה: חופשות שינה',
   hook: { q: 'Which bird can sleep while it is flying?', o: ['The frigatebird', 'The chicken', 'The penguin'], a: 0,
     reveal: '*The frigatebird*! On flights over the ocean that can last for weeks, it takes tiny naps of about ten seconds while gliding, and sleeps less than an hour a day in total.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1045,6 +1068,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1l08', url: 'https://test-english.com/listening/c1/a-perfect-democracy-c1-english-listening-test/', type: 'listening',
   title: 'A perfect class vote?', dinner: 'How should our family decide where to go on a day trip?',
+  kid: 'A perfect class vote?', he: 'האזנה: הצבעה כיתתית על טיול',
   hook: { q: 'When honeybees need a new home, how do they choose it?', o: ['Scout bees "vote" by dancing for the best place', 'The queen decides alone', 'They follow the wind'], a: 0,
     reveal: '*Scout bees dance* for the places they have found. The best site attracts more and more dancers until the bees agree. Scientists call it a kind of bee democracy.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1100,6 +1124,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1l09', url: 'https://test-english.com/listening/c1/operation-cat-drop-c1-english-listening-test/', type: 'listening',
   title: 'Operation Cat Drop', dinner: 'Have you ever solved one problem and accidentally created another?',
+  kid: 'Operation Cat Drop', he: 'האזנה: מבצע הצנחת החתולים',
   hook: { q: 'What do we call it when a solution causes a new, unexpected problem?', o: ['An unintended consequence', 'A happy accident', 'A chain letter'], a: 0,
     reveal: '*An unintended consequence*. Today\'s story is one of the most famous examples, and it involves cats and parachutes.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1154,6 +1179,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1r02', url: 'https://test-english.com/reading/c1/a-walk-gone-wrong-c1-english-reading-test/', type: 'reading',
   title: 'A walk gone wrong', dinner: 'What would you pack for a long walk, just to be on the safe side?',
+  kid: 'A walk gone wrong', he: 'קריאה: טיול שהשתבש',
   hook: { q: 'If you get lost in the countryside, what is usually the safest thing to do?', o: ['Stay where you are and call for help', 'Keep walking until it gets dark', 'Split up to search faster'], a: 0,
     reveal: '*Stay where you are*. Rescue teams say it is far easier to find someone who stays in one place, and that is exactly what helped the walkers in today\'s story.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A short story: three teenagers set off on an easy afternoon walk, and one shortcut changes everything.',
@@ -1195,6 +1221,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1r03', url: 'https://test-english.com/reading/c1/how-ai-voice-cloning-is-changing-scams-c1-english-reading-test/', type: 'reading',
   title: 'When a voice can be copied', dinner: 'How would you check that a message really came from a friend?',
+  kid: 'When a voice can be copied', he: 'קריאה: שיבוט קולות בבינה מלאכותית',
   hook: { q: 'Which of these is a helpful use of voice cloning?', o: ['Letting people who lose their voice to illness speak in their own voice', 'Pretending to be someone\'s grandmother', 'Tricking a bank'], a: 0,
     reveal: '*Giving people their own voice back*. People who know an illness will take away their speech can record their voice in advance, and a computer can later speak with it. The same technology, sadly, also helps criminals.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A technology article explains how fake voices are made, why they fool us, and how to protect yourself.',
@@ -1236,6 +1263,7 @@ window.EQ_MISSIONS.c1 = [
 {
   id: 'c1r04', url: 'https://test-english.com/reading/c1/kidfluencers-growing-up-online-c1-english-reading/', type: 'reading',
   title: 'Kidfluencers: growing up online', dinner: 'Should parents ask their children before posting photos of them?',
+  kid: 'Kids who are online stars', he: 'קריאה: ילדים כוכבי רשת',
   hook: { q: 'In 2020, which country passed a law to protect children who earn money as online stars?', o: ['France', 'Japan', 'Brazil'], a: 0,
     reveal: '*France*! Part of what young online stars earn must be saved for them until they are adults, and they can later ask for their videos to be removed.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A magazine article looks at children who grow up as online stars, often with their parents behind the camera.',

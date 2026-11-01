@@ -18,7 +18,13 @@ function missionOf(url) {
 function missionView(kid, a, on) {
   if (!a || !on) return null;
   var m = missionOf(a.url);
-  return m ? { id: m.id, n: m.n } : null;
+  return m ? { id: m.id, n: m.n, kid: m.k || '', he: m.h || '' } : null;
+}
+
+// The mission's topic in Hebrew for parents (MissionIndex h, from the missions' he field), or '' (night review, finding 14).
+function missionHe(url) {
+  var m = missionOf(url);
+  return (m && m.h) || '';
 }
 
 // One finished mission. The app measures the score; the server checks that it fits the day's mission.

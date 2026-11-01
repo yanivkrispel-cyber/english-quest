@@ -50,8 +50,16 @@ it, choose), `find` (tap a word in the story), `gaps` (a text with several gaps;
 has `why`, shown after the answer; `he` (optional) is the Hebrew tip.
 
 The count of questions is fixed per mission (`msCount` in Index.html; `tools/missions-index.js` uses the same function
-and writes `src/MissionIndex.js`: catalog url -> id, questions, dinner question). After two mistakes in a row the next
-question shows a reminder card.
+and writes `src/MissionIndex.js`: catalog url -> id, questions, dinner question, `k` and `h`). After two mistakes in a
+row the next question shows a reminder card.
+
+Every mission has two more fields (night review 2026-11-01, findings 10 and 14), checked by `test/missions-check.js`:
+`kid`, the short title kids see instead of the catalog topic (at most 28 characters, simple English at the level, no
+adult framing, no period, unique in its level; "Who helps at home?" instead of "Do your kids help with household
+chores?"), and `he`, the topic in Hebrew for parents (at most 48 characters; "האזנה: מי עוזר בעבודות הבית"). The server
+hands both with the day (`missionView`: `mission.kid`, `mission.he`) and parents' code reads `missionHe(url)`. The
+mission screen's header shows `kid` too. For A1 and A2 the mission screens hide the running clock (the time is still
+measured and saved), and the Radio Show has "Show the words" after the first listen of a part.
 
 ## Saving
 
