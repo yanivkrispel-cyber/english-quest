@@ -17,7 +17,8 @@ pre{white-space:pre-wrap;margin:12px 0 0}
 const PHONES = [[360, 640, 'Small phone'], [390, 844, 'iPhone'], [430, 932, 'Big phone']];
 const TABLETS = [[768, 1024, 'iPad portrait'], [1024, 768, 'iPad landscape'], [820, 1180, 'iPad Air portrait'], [1180, 820, 'iPad Air landscape'], [800, 1280, 'Android tablet']];
 const SIZES = new URLSearchParams(location.search).has('phones') ? PHONES : TABLETS;
-const S = 0.42, screen = new URLSearchParams(location.search).get('screen') || 'today', out = document.getElementById('out');
+// &s=1: draw the frames at full size (to read the text in a screenshot).
+const S = Number(new URLSearchParams(location.search).get('s')) || 0.42, screen = new URLSearchParams(location.search).get('screen') || 'today', out = document.getElementById('out');
 const row = document.getElementById('row');
 // The layout size the tablet script in Index.html picks (tabletFit): 520 px wide in portrait, 640 px tall in landscape.
 const fitK = (w, h) => Math.max(1, Math.min(2, w > h ? h / 640 : w / 520));
@@ -38,6 +39,10 @@ async function show(f){
   // nest-cheer freezes the right-answer moment half way instead of turning animations off.
   d.head.insertAdjacentHTML('beforeend', screen === 'nest-cheer' ? '<style>*,*::before,*::after{animation-play-state:paused!important;animation-delay:-.4s!important;transition:none!important}</style>' : '<style>*,*::before,*::after{animation:none!important;transition:none!important}</style>');
   if (screen === 'parent') await ev("parent('1234', false, false)");
+  // Privacy and safety (specs/store-readiness.md): join = the sign-up notice (details open); family = the Hebrew parents' area
+  // (dev family code 1111: the re-consent card, then &to=<element id> scrolls to frcard, pvcard or a kid's card).
+  else if (screen === 'join') { ev("renderJoin('friends')"); await new Promise(r => setTimeout(r, 2500)); ev("document.querySelectorAll('details').forEach(x => x.open = true)"); }
+  else if (screen === 'family') { await ev("parent('1111', false, false)"); const to = new URLSearchParams(location.search).get('to'); await new Promise(r => setTimeout(r, 1500)); if (to) ev("(document.getElementById('" + to + "') || document.querySelector('" + to + "')).scrollIntoView()"); }
   // picker: the kids of the family with "Not your family? Switch"; signin: the screen that button opens.
   else if (screen === 'picker') await ev("(async () => { pub = await call('apiPublic', ''); home(); })()");
   else if (screen === 'signin') await ev("(async () => { pub = await call('apiPublic', ''); home(); document.getElementById('swfam').click(); })()");
@@ -71,6 +76,9 @@ async function show(f){
     await ev("(async () => { await login('Aviv', '2694', false, false); clearInterval(homeTimer); clearInterval(petLifeT); })()");
     if (screen === 'journey') ev("dashTab = 'journey'; renderDash()");
     if (screen === 'play') ev("dashTab = 'play'; renderDash()");
+    // talk: Talk with Chacho with the microphone off (the default); friend / block: the sheets for a kid of another family.
+    if (screen === 'talk') { await ev('startChat()'); await new Promise(r => setTimeout(r, 2500)); ev('chatStop(); CT.phase = "ask"; chatRender()'); }
+    if (screen === 'friend' || screen === 'block') { ev("dashTab = 'play'; renderDash()"); await new Promise(r => setTimeout(r, 2500)); ev(screen === 'friend' ? "inviteSheet('Noa')" : "blockSheet('Noa')"); }
     if (screen === 'game') await ev("startGame('match')");
     if (screen === 'mission') { await ev("loadMissions(MS_FILES['a2'])"); await ev("previewMission('a2g01', '')"); ev("MS.si = Math.min(4, MS.S.length - 1); MS.sub = {}; MS.guess = null; MS.drawn = -1; msRender()"); }
   }

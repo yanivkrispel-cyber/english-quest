@@ -7729,7 +7729,7 @@ function friendsCard(p){
   const f = s.friends, rows = [].concat(
     s.reports.map(r => `<div class="soft" style="padding:8px 12px;border-radius:12px;font-size:13px"><b><bdi>${esc(r.kid)}</bdi></b> דיווח/ה על <bdi>${esc(r.other)}</bdi>: ${esc(REPORT_HE[r.reason] || r.reason)} · ${fmtDate(r.date)}</div>`),
     s.blocks.map(b => `<div class="row-flex between soft" style="padding:8px 12px;border-radius:12px;font-size:13px;gap:8px"><span><b><bdi>${esc(b.kid)}</bdi></b> חסם/ה את <bdi>${esc(b.other)}</bdi> · ${fmtDate(b.date)}</span>
-      <button class="btn btn-glass btn-sm" data-unblock="${esc(b.kid)}" data-unother="${esc(b.other)}">ביטול החסימה</button></div>`));
+      <button class="btn btn-glass btn-sm" style="flex:none;white-space:nowrap" data-unblock="${esc(b.kid)}" data-unother="${esc(b.other)}">ביטול החסימה</button></div>`));
   return `<div class="glass panel he" dir="rtl" lang="he" id="frcard" style="display:grid;gap:10px">
     <h2>משחק עם ילדים ממשפחות אחרות</h2>
     <div class="sub" style="font-size:13px">כשזה דולק, הילדים יכולים להזמין למשחק ולקבל הזמנות מילדים במשפחות אחרות שגם הדליקו את זה. הם רואים רק את השם הפרטי ואת חיית המחמד, בלי שם משפחה ובלי "מחובר עכשיו", ואין צ׳אט חופשי: רק הזמנות ותגובות קבועות. בין האחים במשפחה המשחק תמיד פתוח.</div>
@@ -7745,7 +7745,7 @@ function micRow(g){
   return `<div class="mt-s he" dir="rtl" lang="he" style="display:grid;gap:6px">
     <div class="row-flex" style="gap:6px;flex-wrap:wrap;align-items:center"><span class="sub" style="margin:0;font-size:13px">מיקרופון בשיחה עם צ׳אצ׳ו:</span>
     ${[[false, 'כבוי'], [true, 'דולק']].map(([on, l]) => `<button class="btn btn-sm ${!!g.mic === on ? 'btn-primary' : 'btn-glass'}" data-mic="${on ? 1 : 0}" data-mickid="${esc(g.girl.name)}">${l}</button>`).join('')}</div>
-    <div class="sub" style="margin:0;font-size:12px">${g.mic ? 'דולק: ' : 'כבוי: עונים לצ׳אצ׳ו בכפתורים עם משפטים. כשדולק, '}שירות זיהוי הדיבור של הדפדפן הופך את הקול לטקסט (ב-<bdi>Chrome</bdi> ובאנדרואיד אצל <bdi>Google</bdi>, באייפון בדרך כלל אצל <bdi>Apple</bdi>), ובדפדפן שיודע לזהות בתוך המכשיר הקול לא יוצא ממנו. אצלנו נשמר רק הטקסט, 90 יום.</div></div>`;
+    <div class="sub" style="margin:0;font-size:12px">${g.mic ? 'דולק: ' : 'כבוי: עונים לצ׳אצ׳ו בכפתורים עם משפטים. כשדולק, '}שירות זיהוי הדיבור של הדפדפן הופך את הקול לטקסט: ב-<bdi>Chrome</bdi> ובאנדרואיד אצל <bdi>Google</bdi>, ובאייפון בדרך כלל אצל <bdi>Apple</bdi>. בדפדפן שיודע לזהות בתוך המכשיר, הקול לא יוצא ממנו. אצלנו נשמר רק הטקסט, 90 יום.</div></div>`;
 }
 const REMIND_HOURS = [14, 15, 16, 17, 18, 19, 20];
 function remindRow(g){
