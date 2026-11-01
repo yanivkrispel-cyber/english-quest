@@ -35,7 +35,8 @@ async function audit(f){
       await ev(`previewMission('${id}', '')`);
       const n = ev('MS.S.length');
       for (let si = 0; si < n - 1; si++) {
-        ev(`MS.si = ${si}; MS.sub = {}; MS.guess = null; MS.drawn = -1; msRender()`);
+        // A talk left running from the screen before would draw itself over this one later: stop it first.
+        ev(`chatStop(); CT = null; MS.si = ${si}; MS.sub = {}; MS.guess = null; MS.drawn = -1; msRender()`);
         const t = ev('MS.S[MS.si].t'), k = ev("MS.S[MS.si].it ? MS.S[MS.si].it.k : ''"), a = m();
         if (k === 'write') { kbd.push(await keyboard(f, id + '#' + si)); ev('MS.sub.checks = msWriteCheck(MS.S[MS.si].it, "", MS.S[MS.si].it.frame ? [""] : null)'); }
         if (t === 'say') ev('MS.sub.rounds = [{ wpm: 84, heard: 8 }, { wpm: 97, heard: 9 }]; msRender()');
@@ -61,11 +62,9 @@ async function keyboard(f, id){
   fld.dispatchEvent(new w.Event('input'));
   f.height = Math.round(H * .55);
   await pause(500);
-  // The other phone frame can take the focus while this one waits (a long run): give it back before measuring.
-  if (d.activeElement !== fld) { fld.focus(); await pause(150); }
   w.eval('kbdFit()');
   const r = el => el ? el.getBoundingClientRect() : null, btn = r(d.querySelector('#gnext')), box = r(fld);
-  const why = w.eval('JSON.stringify({ a: document.activeElement && document.activeElement.tagName, tall: kbdTall, h: visualViewport.height, wide: kbdWide })');
+  const why = w.eval('JSON.stringify({ a: document.activeElement && document.activeElement.tagName, tall: kbdTall, h: visualViewport.height, wide: kbdWide })') + (fld.isConnected ? '' : ' (the box was drawn again)');
   const res = { id, why, on: d.documentElement.classList.contains('kbd'), page: d.scrollingElement.scrollHeight - w.innerHeight,
     inSight: !!(btn && box && btn.bottom <= w.innerHeight + 1 && box.top >= 0 && box.bottom <= btn.top + 1) };
   fld.blur(); f.height = H; await pause(400); w.eval('kbdFit()');
