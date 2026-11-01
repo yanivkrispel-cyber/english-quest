@@ -261,6 +261,19 @@ function parentSummary() {
     var kids = who === 'admin' ? readTable('Girls') : kidsIn(who);
     if (!kids.length) return;
     var n = kids.filter(function (k) { return done[k.Name]; }).length;
+    // A family reads it in Hebrew: each kid's sentence of the day, the same words as the parents' view (src/Learned.js).
+    if (who !== 'admin') {
+      var lines = kids.map(function (k) {
+        var g = gated[k.Name], gate = g ? (g.Passed === 'yes' ? ' מסלול חדש: ' + LEVEL_LABEL[g.To] + '.' : ' שער: ' + g.Correct + ' מתוך ' + g.Total + '.') : '';
+        return k.Name + ': ' + learnedDay(k, t) + gate;
+      });
+      kids.forEach(function (k) {
+        var l = done[k.Name], m = l && l.Mission && l.Section !== 'nest' ? missionOf(l.URL) : null;
+        if (m && m.q && lines.length < kids.length + 3) lines.push('שאלה לארוחת הערב עם ' + k.Name + ': ' + m.q);
+      });
+      try { deliver(byWho[who], { title: 'היום: ' + n + ' מתוך ' + kids.length + ' תרגלו', body: lines.join('\n') }, 'ParentPush'); } catch (e) { console.error(e); }
+      return;
+    }
     var body = kids.map(function (k) {
       var l = done[k.Name], n = played[k.Name], du = duels[k.Name], g = gated[k.Name];
       var games = (n ? ' +' + n + (n === 1 ? ' game' : ' games') : '') + (du ? ' +' + du + (du === 1 ? ' game together' : ' games together') : '');

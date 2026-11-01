@@ -3,7 +3,8 @@
 // (src/NestIndex.js, written by tools/nest-index.js from docs/nest/nest.js): a unit is four days (n04 new words,
 // n04.b move, n04.c song and story, n04.d games) and a review is one (r02). No level test, no link out.
 
-var NEST = { points: 15, latePoints: 12, minTotal: 1, maxTotal: 40, maxSeconds: 3600, ages: [2, 7], detailMax: 800 };
+var NEST = { points: 15, latePoints: 12, minTotal: 1, maxTotal: 40, maxSeconds: 3600, ages: [2, 7], detailMax: 800,
+  perDayMax: 3, cap: [20, 30, 40], timeMax: 7200 };
 var NEST_DAY = /^[nr]\d\d(\.[bcd])?$/, NEST_DETAIL = /^[a-z0-9-]+:[01](,[a-z0-9-]+:[01])*$/;
 
 function isNest(kid) { return !!kid && String(kid.Level || '').trim().toLowerCase() === 'nest'; }
@@ -57,19 +58,59 @@ function nestInfo(kid, t, assigned, logs) {
     // Days played (distinct dates with a Nest row): a flower each in the home's garden.
     days: logs.filter(function (l) { return l.Section === 'nest'; }).map(function (l) { return String(l.Date); }).filter(function (d, i, a) { return a.indexOf(d) === i; }).length,
     perDay: perDay,
-    // Minutes a day in Chacho's arcade (the parent sets it; 0 = no limit). The phone counts the minutes.
+    // Minutes a day in Chacho's arcade (the parent sets it, inside the day's screen time). The phone counts the minutes.
     arcadeMin: nestArcadeMin(kid),
+    // Screen time (finding 15): a hard cap a day across lessons, replays, the playground and the arcade. capMax by age, the
+    // parent may set less (Girls.NestMin); used = the seconds the phones reported today (apiNestTime, the most of them).
+    cap: nestCap(kid), capMax: nestCapMax(age), used: nestUsed(kid, t),
     // One more lesson: once the day's own is done, the next day of the program while the parent's daily number allows.
-    next: done && (!perDay || today < perDay) ? String(nestNext(kid, logs).url).slice(5) : null
+    next: done && today < perDay ? String(nestNext(kid, logs).url).slice(5) : null
   };
 }
 
-// Lessons a day (Girls.NestPerDay, set by the parent): 1 when empty, 0 = no limit.
+// Lessons a day (Girls.NestPerDay, set by the parent): 1 when empty, at most NEST.perDayMax. There is no "no limit" any more
+// (finding 15, 2026-11-01): an old 0 counts as the most.
 function nestPerDay(kid) {
   var v = String(kid.NestPerDay == null ? '' : kid.NestPerDay).trim();
   if (v === '') return 1;
   var n = Math.round(Number(v));
-  return n >= 0 && n <= 9 ? n : 1;
+  return n >= 1 && n <= NEST.perDayMax ? n : n === 0 || n > NEST.perDayMax ? NEST.perDayMax : 1;
+}
+
+// ---------- Screen time a day (the night review, finding 15) ----------
+// AAP and WHO: under an hour a day for ages 2 to 5, less is better, with a grown-up. The Nest stops for the day after
+// 20 minutes (ages 2 and 3), 30 (4 and 5) or 40 (6 and 7); the parent may choose less (Girls.NestMin), never more and never
+// "no limit". The phone counts the minutes (every lesson, replay, playground game and arcade game) and tells the server
+// now and then (apiNestTime), so a second phone or tablet knows how much is left.
+function nestCapMax(age) { return age <= 3 ? NEST.cap[0] : age <= 5 ? NEST.cap[1] : NEST.cap[2]; }
+function nestCap(kid) {
+  var max = nestCapMax(nestAge(kid)), v = String(kid.NestMin == null ? '' : kid.NestMin).trim(), n = Math.round(Number(v));
+  return v !== '' && n >= 5 && n < max ? n : max;
+}
+// Girls.NestTime = "<date> <seconds>": the most any phone reported for that day.
+function nestUsed(kid, t) {
+  var p = String(kid.NestTime || '').split(' ');
+  return p[0] === t ? Math.max(0, Math.round(Number(p[1])) || 0) : 0;
+}
+function apiNestTime(name, pin, seconds) {
+  var kid = auth(name, pin);
+  if (!isNest(kid)) throw new Error('Unknown activity');
+  var t = today(), s = Math.max(0, Math.min(NEST.timeMax, Math.round(Number(seconds)) || 0)), was = nestUsed(kid, t);
+  // One cell, and only when it grows: the phone sends one every few minutes at most (Cloudflare counts rows written).
+  if (s > was) setGirlFields(kid.Name, { NestTime: t + ' ' + s });
+  return { used: Math.max(s, was), cap: nestCap(kid) };
+}
+function apiParentNestMin(pin, name, n) {
+  ensureSetup();
+  var access = parentAccess(pin);
+  var kid = findGirl(name);
+  if (!kid || !isNest(kid) || (!access.isAdmin && groupOf(kid) !== String(access.group.Id))) throw new Error('Unknown kid');
+  var max = nestCapMax(nestAge(kid));
+  n = Math.round(Number(n));
+  if (!(n >= 5 && n <= max)) throw new Error('בחרו כמה דקות ביום');
+  setGirlFields(kid.Name, { NestMin: n === max ? '' : n });
+  audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest minutes a day', kid.Name + ': ' + n);
+  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
 }
 
 function apiParentNestPerDay(pin, name, n) {
@@ -78,18 +119,20 @@ function apiParentNestPerDay(pin, name, n) {
   var kid = findGirl(name);
   if (!kid || !isNest(kid) || (!access.isAdmin && groupOf(kid) !== String(access.group.Id))) throw new Error('Unknown kid');
   n = Math.round(Number(n));
-  if (!(n >= 0 && n <= 9)) throw new Error('בחרו כמה שיעורים ביום');
+  if (n === 0) n = NEST.perDayMax;   // an old copy of the app still offers "no limit"
+  if (!(n >= 1 && n <= NEST.perDayMax)) throw new Error('בחרו כמה שיעורים ביום');
   setGirlFields(kid.Name, { NestPerDay: n });
-  audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest lessons a day', kid.Name + ': ' + (n || 'no limit'));
+  audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest lessons a day', kid.Name + ': ' + n);
   return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
 }
 
-// Minutes a day in Chacho's arcade (Girls.NestArcadeMin, set by the parent): 15 when empty, 0 = no limit.
+// Minutes a day in Chacho's arcade (Girls.NestArcadeMin, set by the parent): 15 when empty, never more than the day's screen
+// time. An old 0 ("no limit", before 2026-11-01) is the day's screen time.
 function nestArcadeMin(kid) {
-  var v = String(kid.NestArcadeMin == null ? '' : kid.NestArcadeMin).trim();
-  if (v === '') return 15;
+  var v = String(kid.NestArcadeMin == null ? '' : kid.NestArcadeMin).trim(), cap = nestCap(kid);
+  if (v === '') return Math.min(15, cap);
   var n = Math.round(Number(v));
-  return n >= 0 && n <= 60 ? n : 15;
+  return n >= 1 && n <= 60 ? Math.min(n, cap) : n === 0 ? cap : Math.min(15, cap);
 }
 
 function apiParentNestArcade(pin, name, n) {
@@ -98,9 +141,10 @@ function apiParentNestArcade(pin, name, n) {
   var kid = findGirl(name);
   if (!kid || !isNest(kid) || (!access.isAdmin && groupOf(kid) !== String(access.group.Id))) throw new Error('Unknown kid');
   n = Math.round(Number(n));
-  if (!(n >= 0 && n <= 60)) throw new Error('בחרו כמה דקות ביום');
+  if (n === 0) n = nestCap(kid);   // an old copy of the app still offers "no limit": the day's screen time
+  if (!(n >= 1 && n <= 60)) throw new Error('בחרו כמה דקות ביום');
   setGirlFields(kid.Name, { NestArcadeMin: n });
-  audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest arcade minutes', kid.Name + ': ' + (n || 'no limit'));
+  audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest arcade minutes', kid.Name + ': ' + n);
   return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
 }
 
@@ -149,7 +193,7 @@ function apiNestResult(name, pin, date, unitId, correct, total, seconds, detail)
       // One more lesson today: the day's own is logged, this is the next day of the program, and the parent allows it.
       var perDay = nestPerDay(kid), todays = mine.filter(function (l) { return l.Date === t && l.Section === 'nest'; }).length;
       var next = nestNext(kid, mine);
-      if (date !== t || !todays || (perDay && todays >= perDay) || next.url !== 'nest:' + unitId) return free();
+      if (date !== t || !todays || todays >= perDay || next.url !== 'nest:' + unitId) return free();
       a = next;
     } else if (mine.some(function (l) { return l.Date === date; })) return free();
     entry = {
