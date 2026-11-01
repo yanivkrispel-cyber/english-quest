@@ -1,4 +1,4 @@
-/* Phosphor Icons 2.1.1 (MIT, https://phosphoricons.com), cut to the 276 icons the app names by tools/icon_subset.js */
+/* Phosphor Icons 2.1.1 (MIT, https://phosphoricons.com), cut to the 285 icons the app names by tools/icon_subset.js */
 @font-face {
   font-family: "Phosphor-Bold";
   src: url("./Phosphor-Bold.woff2") format("woff2");
@@ -37,6 +37,9 @@
 }
 .ph-bold.ph-activity:before {
   content: "\e000";
+}
+.ph-bold.ph-airplane:before {
+  content: "\e002";
 }
 .ph-bold.ph-airplane-tilt:before {
   content: "\e5d6";
@@ -188,6 +191,9 @@
 .ph-bold.ph-chair:before {
   content: "\e950";
 }
+.ph-bold.ph-chalkboard-teacher:before {
+  content: "\e600";
+}
 .ph-bold.ph-chart-bar:before {
   content: "\e150";
 }
@@ -223,6 +229,9 @@
 }
 .ph-bold.ph-circle:before {
   content: "\e18a";
+}
+.ph-bold.ph-circle-dashed:before {
+  content: "\e602";
 }
 .ph-bold.ph-clipboard:before {
   content: "\e196";
@@ -470,6 +479,9 @@
 .ph-bold.ph-key:before {
   content: "\e2d6";
 }
+.ph-bold.ph-keyboard:before {
+  content: "\e2d8";
+}
 .ph-bold.ph-knife:before {
   content: "\e636";
 }
@@ -496,6 +508,9 @@
 }
 .ph-bold.ph-list:before {
   content: "\e2f0";
+}
+.ph-bold.ph-list-checks:before {
+  content: "\eadc";
 }
 .ph-bold.ph-list-numbers:before {
   content: "\e2f6";
@@ -578,6 +593,9 @@
 .ph-bold.ph-park:before {
   content: "\ecb2";
 }
+.ph-bold.ph-password:before {
+  content: "\e752";
+}
 .ph-bold.ph-path:before {
   content: "\e39c";
 }
@@ -595,6 +613,9 @@
 }
 .ph-bold.ph-pencil-simple:before {
   content: "\e3b4";
+}
+.ph-bold.ph-pencil-simple-line:before {
+  content: "\ebc6";
 }
 .ph-bold.ph-percent:before {
   content: "\e3b6";
@@ -704,6 +725,9 @@
 .ph-bold.ph-sign-out:before {
   content: "\e42a";
 }
+.ph-bold.ph-smiley-sad:before {
+  content: "\e43e";
+}
 .ph-bold.ph-sneaker-move:before {
   content: "\ed60";
 }
@@ -793,6 +817,9 @@
 }
 .ph-bold.ph-timer:before {
   content: "\e492";
+}
+.ph-bold.ph-tire:before {
+  content: "\edd2";
 }
 .ph-bold.ph-tooth:before {
   content: "\e9cc";

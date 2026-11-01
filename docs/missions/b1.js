@@ -1418,5 +1418,133 @@ window.EQ_MISSIONS.b1 = [
     { k: 'type', q: 'Nets with lights caught ___ turtles than nets without lights.', hint: '(few)', a: ['fewer'], why: 'few → fewer, for things you can count (turtles).',
       he: 'fewer לדברים שאפשר לספור (fewer turtles). less לדברים שלא סופרים (less water).' }
   ]
+},
+// ---- The Writer's Desk (writing days) ----
+{
+  id: 'b1w01', type: 'writing',
+  title: 'What do you think?', kid: 'What do you think?', he: 'כתיבה: מה אני חושב', dinner: 'Should kids have homework at the weekend? Why?',
+  hook: { q: 'Which country is famous for giving kids very little homework?', o: ['Finland', 'Japan', 'Brazil'], a: 0,
+    reveal: '*Finland*. Kids there get little homework and lots of time to play, and their schools are still among the best.' },
+  learn: { kind: 'rule', title: 'Giving your opinion', form: ['In my opinion,', 'because', 'For example,'],
+    lines: ['Say what you think: *In my opinion*, ... / *I think* ...', 'Give a reason: ... *because* ...', 'Add an example: *For example*, ...'],
+    ex: ['*In my opinion*, kids need free time *because* they get tired.', '*For example*, they can play outside.'],
+    he: 'בחיבור דעה: אומרים מה חושבים (In my opinion), נותנים סיבה (because) ודוגמה (For example).' },
+  steps: [
+    { name: 'Opinion words', items: [
+      { k: 'mc', q: '___ my opinion, phones at dinner are a bad idea.', o: ['In', 'On', 'At'], a: 0, why: 'In my opinion = what I think.' },
+      { k: 'mc', q: 'I think sport is important ___ it keeps you healthy.', o: ['because', 'so', 'but'], a: 0, why: 'because + the reason.' },
+      { k: 'mc', q: 'Kids need free time. ___, they can read or play outside.', o: ['For example', 'However', 'Because'], a: 0, why: 'For example → one example of the idea.' },
+      { k: 'tf', q: '"I am agree with you."', a: false, fix: 'I agree with you.', why: 'agree is a verb: I agree (no am).', he: 'בעברית "אני מסכים", ולכן קל לכתוב I am agree. נכון: I agree.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'In my opinion, we need more trees.', why: 'In my opinion, + what you think.' },
+      { k: 'spot', s: 'Some people *says* that video games are bad.', fix: 'say', why: 'people = they → say.' },
+      { k: 'mc', q: 'Which one gives a reason?', o: ['Because it helps us learn.', 'In my opinion.', 'For example, me.'], a: 0, why: 'because + a full reason.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Should kids have homework at the weekend? Give your opinion.', tip: 'Say what you think, give a reason and an example.',
+      n: [2, 3], len: [15, 50],
+      need: [{ t: 'Give your opinion (I think, In my opinion)', any: ['i think', 'in my opinion', 'i don\'t think', 'i believe'] },
+        { t: 'Give a reason with "because"', any: ['because'] }],
+      model: 'In my opinion, kids should not have homework at the weekend because they need rest. For example, they can play sports or visit their family.',
+      why: 'Opinion, reason, example: three small steps make a strong answer.', he: 'אומרים מה חושבים, למה (because), ודוגמה אחת.' }
+  ]
+},
+{
+  id: 'b1w02', type: 'writing',
+  title: 'Big news!', kid: 'Big news!', he: 'כתיבה: חדשות', dinner: 'What good news did you have this week?',
+  hook: { q: 'How do you start an email to a good friend?', o: ['Hi Maya!', 'Dear Sir or Madam,', 'To whom it may concern,'], a: 0,
+    reveal: 'To a friend we write *Hi* or *Hey*. *Dear Sir or Madam* is for people we don\'t know.' },
+  learn: { kind: 'rule', title: 'News in an email', form: ['Guess what?', 'I\'ve just ...', 'Write back soon!'],
+    lines: ['Start friendly: *Hi* Maya! *How are you?*', 'Give the news: *Guess what?* I*\'ve just* got a puppy! (have + just + a past form)',
+      'Add one detail, then end: *Write back soon!*'],
+    ex: ['*Guess what?* I*\'ve just* joined a basketball team.', '*Write back soon!*'],
+    he: 'במייל לחבר: פתיחה, החדשות (I\'ve just = הרגע, לא מזמן), פרט אחד, וסיום.' },
+  steps: [
+    { name: 'Friendly news', items: [
+      { k: 'mc', q: 'I\'ve just ___ a new bike!', o: ['got', 'get', 'getting'], a: 0, why: 'have + just + got.' },
+      { k: 'mc', q: '___ what? We won the game!', o: ['Guess', 'Think', 'Say'], a: 0, why: 'Guess what? = I have news for you!' },
+      { k: 'mc', q: 'How ___ you? I hope you are well.', o: ['are', 'is', 'do'], a: 0, why: 'How are you?' },
+      { k: 'tf', q: '"I have just finish my project."', a: false, fix: 'I have just finished my project.', why: 'have + finished.' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'Guess what? I have just got a puppy!', why: 'Guess what? + the news.' },
+      { k: 'spot', s: 'We\'ve just *start* a new art club.', fix: 'started', why: 'have + started.' },
+      { k: 'build', s: 'Write back soon and tell me your news!', why: 'A friendly ending.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write to a friend and tell them some good news.', tip: 'A new pet, a game you won, a trip... Start with Hi!',
+      n: [2, 3], len: [15, 50],
+      need: [{ t: 'Start with Hi, Hey or Dear', re: '^(hi|hey|hello|dear)\\b' },
+        { t: 'Use "have just" (I\'ve just...)', re: '(have|\'ve|has|\'s) just' }],
+      ideas: ['Guess what?', 'I\'ve just'],
+      model: 'Hi Maya! Guess what? I\'ve just got a puppy, and she is small, brown and very funny.',
+      why: 'Hi, the news with I\'ve just, and one detail.', he: 'פותחים ב-Hi, מספרים את החדשות עם I\'ve just ומוסיפים פרט אחד.' }
+  ]
+},
+{
+  id: 'b1w03', type: 'writing',
+  title: 'Story time', kid: 'Story time', he: 'כתיבה: סיפור קצר', dinner: 'What is the funniest thing that happened to you this year?',
+  hook: { q: 'Which tense do most stories use?', o: ['The past simple', 'The future', 'The present continuous'], a: 0,
+    reveal: 'Most stories happen in the *past*: a girl *opened* the door and *saw*...' },
+  learn: { kind: 'rule', title: 'A short story', form: ['First,', 'Suddenly,', 'In the end,'],
+    lines: ['Tell it in the past: I *opened*, I *saw*, it *was*.', 'Make it exciting: *Suddenly*, ...', 'Finish it: *In the end*, ... / *Finally*, ...'],
+    ex: ['*Suddenly*, I heard a strange noise.', '*In the end*, it was only my cat!'],
+    he: 'סיפור קצר כותבים בעבר. Suddenly מוסיף הפתעה, In the end סוגר את הסיפור.' },
+  steps: [
+    { name: 'Story words', items: [
+      { k: 'mc', q: 'When I opened the box, I ___ a tiny kitten.', o: ['saw', 'see', 'seen'], a: 0, why: 'see → saw (the past).' },
+      { k: 'mc', q: '___, the lights went out!', o: ['Suddenly', 'Usually', 'Every day'], a: 0, why: 'Suddenly = a surprise, very fast.' },
+      { k: 'mc', q: '___, we all laughed and went home.', o: ['In the end', 'Suddenly', 'Usually'], a: 0, why: 'In the end → how the story finishes.' },
+      { k: 'type', q: 'We ___ to the window to look.', hint: '(run)', a: ['ran'], why: 'run → ran.' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'Suddenly, my dog started to bark.', why: 'Suddenly, + what happened.' },
+      { k: 'spot', s: 'I *hear* a noise in the kitchen last night.', fix: 'heard', why: 'last night → the past: heard.' },
+      { k: 'tf', q: '"In the end, everyone was happy."', a: true, why: 'In the end + the past: a good way to finish.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Finish the story: "When I opened the door, I couldn\'t believe my eyes."', tip: 'What did you see? How did it end? Use the past.',
+      n: [2, 3], len: [15, 50],
+      need: [{ t: 'Use the past (saw, was, ran...)', re: '\\b(saw|was|were|went|ran|had|came|found|took|said|got|[a-z]+ed)\\b' },
+        { t: 'Use Suddenly, Then or In the end', any: ['suddenly', 'then', 'in the end', 'finally'] }],
+      model: 'There was a huge cake on the table, and my friends shouted Surprise! Suddenly, my dog jumped on the cake. In the end, we all laughed and ate the rest.',
+      why: 'The past, a surprise with Suddenly, and an ending.', he: 'כותבים בעבר מה ראיתם, מה קרה פתאום (Suddenly) ואיך זה נגמר.' }
+  ]
+},
+{
+  id: 'b1w04', type: 'writing',
+  title: 'Write a review', kid: 'Write a review', he: 'כתיבה: ביקורת', dinner: 'What is the best place we ever stayed at?',
+  hook: { q: 'Before people book a hotel, what do many of them read?', o: ['Reviews', 'Recipes', 'Poems'], a: 0,
+    reveal: 'Most people read *reviews* first. A good review helps others choose.' },
+  learn: { kind: 'rule', title: 'A review', form: ['The best thing was ...', 'The only problem was ...', 'I would recommend it'],
+    lines: ['Say what was great: *The best thing was* the pool.', 'Be fair: *The only problem was* the noise.', 'Finish: *I would recommend it* to families.'],
+    ex: ['*The best thing was* the breakfast.', '*I would recommend it* to my friends.'],
+    he: 'ביקורת טובה: מה היה הכי טוב, בעיה אחת אם הייתה, והמלצה בסוף (I would recommend it).' },
+  steps: [
+    { name: 'Review words', items: [
+      { k: 'mc', q: 'The rooms were clean and ___.', o: ['comfortable', 'comfort', 'comfortably'], a: 0, why: 'An adjective describes the rooms: comfortable.' },
+      { k: 'mc', q: 'The best thing ___ the swimming pool.', o: ['was', 'were', 'be'], a: 0, why: 'the best thing = it → was.' },
+      { k: 'mc', q: 'I would ___ this place to everyone.', o: ['recommend', 'recommended', 'recommending'], a: 0, why: 'would + verb: would recommend.' },
+      { k: 'tf', q: '"The food were delicious."', a: false, fix: 'The food was delicious.', why: 'food is one thing (you can\'t count it) → was.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'The only problem was the long queue.', why: 'The only problem was + the problem.' },
+      { k: 'spot', s: 'The view from our room was *amazed*.', fix: 'amazing', why: 'The view makes you amazed: it is amazing.' },
+      { k: 'mc', q: 'Which sentence is a fair review?', o: ['The room was small, but it was very clean.', 'Worst place ever!!!', 'I was there.'], a: 0,
+        why: 'A fair review gives the good and the bad, with details.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write a short review of a place you stayed at or visited, like a hotel, a campsite or a museum.',
+      tip: 'Say the best thing, one problem, and if you recommend it.', n: [2, 3], len: [15, 55],
+      need: [{ t: 'Say the best thing', any: ['the best thing', 'the best part', 'i loved', 'i liked', 'i really liked'] },
+        { t: 'Say if you recommend it', any: ['recommend'] }],
+      model: 'We stayed at a campsite near the Kinneret. The best thing was the lake, but the only problem was the mosquitoes. I would recommend it to families.',
+      why: 'The best thing, one problem, and a recommendation: a fair review.', he: 'כותבים מה היה הכי טוב, בעיה אחת, והאם ממליצים.' }
+  ]
 }
 ];

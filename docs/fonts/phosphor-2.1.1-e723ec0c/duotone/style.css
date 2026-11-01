@@ -1,4 +1,4 @@
-/* Phosphor Icons 2.1.1 (MIT, https://phosphoricons.com), cut to the 275 icons the app names by tools/icon_subset.js */
+/* Phosphor Icons 2.1.1 (MIT, https://phosphoricons.com), cut to the 284 icons the app names by tools/icon_subset.js */
 @font-face {
   font-family: "Phosphor-Duotone";
   src: url("./Phosphor-Duotone.woff2") format("woff2");
@@ -28,6 +28,14 @@
 }
 .ph-duotone.ph-acorn:after {
   content: "\eb9b";
+  margin-left: -1em;
+}
+.ph-duotone.ph-airplane:before {
+  content: "\e002";
+  opacity: 0.2;
+}
+.ph-duotone.ph-airplane:after {
+  content: "\e003";
   margin-left: -1em;
 }
 .ph-duotone.ph-airplane-tilt:before {
@@ -430,6 +438,14 @@
   content: "\e951";
   margin-left: -1em;
 }
+.ph-duotone.ph-chalkboard-teacher:before {
+  content: "\e600";
+  opacity: 0.2;
+}
+.ph-duotone.ph-chalkboard-teacher:after {
+  content: "\e601";
+  margin-left: -1em;
+}
 .ph-duotone.ph-chart-bar:before {
   content: "\e150";
   opacity: 0.2;
@@ -524,6 +540,14 @@
 }
 .ph-duotone.ph-circle:after {
   content: "\e18b";
+  margin-left: -1em;
+}
+.ph-duotone.ph-circle-dashed:before {
+  content: "\e602";
+  opacity: 0.2;
+}
+.ph-duotone.ph-circle-dashed:after {
+  content: "\e603";
   margin-left: -1em;
 }
 .ph-duotone.ph-clipboard:before {
@@ -1182,6 +1206,14 @@
   content: "\e2d7";
   margin-left: -1em;
 }
+.ph-duotone.ph-keyboard:before {
+  content: "\e2d8";
+  opacity: 0.2;
+}
+.ph-duotone.ph-keyboard:after {
+  content: "\e2d9";
+  margin-left: -1em;
+}
 .ph-duotone.ph-knife:before {
   content: "\e636";
   opacity: 0.2;
@@ -1252,6 +1284,14 @@
 }
 .ph-duotone.ph-list:after {
   content: "\e2f1";
+  margin-left: -1em;
+}
+.ph-duotone.ph-list-checks:before {
+  content: "\eadc";
+  opacity: 0.2;
+}
+.ph-duotone.ph-list-checks:after {
+  content: "\eadd";
   margin-left: -1em;
 }
 .ph-duotone.ph-list-numbers:before {
@@ -1470,6 +1510,14 @@
   content: "\ecb3";
   margin-left: -1em;
 }
+.ph-duotone.ph-password:before {
+  content: "\e752";
+  opacity: 0.2;
+}
+.ph-duotone.ph-password:after {
+  content: "\e753";
+  margin-left: -1em;
+}
 .ph-duotone.ph-path:before {
   content: "\e39c";
   opacity: 0.2;
@@ -1516,6 +1564,14 @@
 }
 .ph-duotone.ph-pencil-simple:after {
   content: "\e3b5";
+  margin-left: -1em;
+}
+.ph-duotone.ph-pencil-simple-line:before {
+  content: "\ebc6";
+  opacity: 0.2;
+}
+.ph-duotone.ph-pencil-simple-line:after {
+  content: "\ebc7";
   margin-left: -1em;
 }
 .ph-duotone.ph-percent:before {
@@ -1806,6 +1862,14 @@
   content: "\e42b";
   margin-left: -1em;
 }
+.ph-duotone.ph-smiley-sad:before {
+  content: "\e43e";
+  opacity: 0.2;
+}
+.ph-duotone.ph-smiley-sad:after {
+  content: "\e43f";
+  margin-left: -1em;
+}
 .ph-duotone.ph-sneaker-move:before {
   content: "\ed60";
   opacity: 0.2;
@@ -2044,6 +2108,14 @@
 }
 .ph-duotone.ph-timer:after {
   content: "\e493";
+  margin-left: -1em;
+}
+.ph-duotone.ph-tire:before {
+  content: "\edd2";
+  opacity: 0.2;
+}
+.ph-duotone.ph-tire:after {
+  content: "\edd3";
   margin-left: -1em;
 }
 .ph-duotone.ph-tooth:before {

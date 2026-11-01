@@ -81,6 +81,7 @@ on), Mozilla (Firefox push).
 Backups (`specs/cloudflare.md`): the whole export, gzipped, every night, 14 days, inside the same Durable Object;
 Cloudflare's own point-in-time history of the database, 30 days. A deleted family stays in those copies until they age out (at most
 30 days); the privacy text says so. The phones' error reports are kept 30 days (`opsSweep`).
+What a kid wrote at the Writer's Desk is kept a year (`retentionSweep`).
 
 - Kid: first name (English), age or grade (a Chacho's Nest kid: the real age, 2 to 7), level, PIN, color, pet and its name,
   group, the Hebrew help choice (`Girls.Hebrew`: yes, no or empty = on for A1 and A2; set by the kid in Me or a parent). Optional email (older setups). The parents' switches: the microphone (`Mic`) and the reminder hour (`RemindAt`); the
@@ -103,6 +104,12 @@ Cloudflare's own point-in-time history of the database, 30 days. A deleted famil
   new is stored for it.
 - Talk with Chacho: the text the phone heard (no audio reaches the server; only kept when the parents turned the microphone
   on), counts of spoken and tapped answers, and whether the phone listened on the device (`Chats.Mic = local`).
+- The Writer's Desk (tab `Writing`, `specs/missions.md`): the one to three sentences a kid wrote in a writing mission (one
+  line, at most 400 characters, no markup, never stored as a formula), her first try when she rewrote it, the checklist
+  score, the task, and the teacher's mark and preset note. Seen by the kid, her parents and the teacher (without the kid's
+  name); never by another kid. The tasks never ask for personal details (missions-check refuses the words). Deleted with the
+  kid and after a year. Say it again (fluency) uses the phone's speech recognition for timing only, when the parent's
+  microphone switch is on; nothing of it is kept or sent by the app.
 - Feedback and "Something wrong here?" notes.
 - Devices: push subscription endpoints and the browser's user-agent string.
 - Audit trail (tab Audit, `specs/audit.md`): when a kid, parent, admin or teacher opened the app (once per half hour),

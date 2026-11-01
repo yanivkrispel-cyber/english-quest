@@ -1198,6 +1198,80 @@ check('the v15 setup removes the old MissionPilot setting', run("getSetting('Mis
   run("PropertiesService.getScriptProperties().getProperty('setup')") === run('SETUP_VERSION'));
 }
 
+// ---- the Writer's Desk (Missions.js): writing days give a writing mission; the text is kept, safe, shown and marked ----
+{
+const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));
+const fails = (label, f) => { try { f(); console.log('FAIL: not rejected: ' + label); } catch (e) { console.log('ok: ' + label + ' is rejected: ' + e.message); } };
+const rows = name => sheets[name].rows.slice(1).map(r => Object.fromEntries(sheets[name].rows[0].map((h, i) => [h, r[i]])));
+const day0 = ctx.__day;
+run('REQ_APP = null');   // direct calls, not through doPost (an earlier doPost test left the version of its call)
+const G = run("apiAdminAddGroup('1234','Writing family','')"), gid = G.created.link.split('g=')[1];
+const W = run("apiAdminAddKid('1234','Wendy','9','" + gid + "','a1')").created;
+const wendy = (fn, ...a) => run(fn + '(' + ['Wendy', W.pin].concat(a).map(x => JSON.stringify(x)).join(',') + ')');
+wendy('apiSubmit', wendy('apiDashboard').levelTest.date, '', '', 'a1');
+let d = run("addDays('" + day0 + "', 1)");
+while (run("sectionFor('" + d + "')") !== 'writing') d = run("addDays('" + d + "', 1)");
+ctx.__day = d;
+let D = wendy('apiDashboard'), day = D.week.find(w => w.isToday);
+check('a writing day gives a Writer\'s Desk mission', day.section === 'writing' && day.mission && /^a1w\d\d$/.test(day.mission.id), JSON.stringify(day));
+const post = body => JSON.parse(run('doPost(' + JSON.stringify({ postData: { contents: JSON.stringify(body) } }) + ').getContent()'));
+const viaApp = v => post({ fn: 'apiDashboard', args: ['Wendy', W.pin], v }).data.week.find(w => w.isToday);
+check('an app too old for the Writer\'s Desk gets the link that day, a new one the mission', !viaApp('2026.10.30').mission && /test-english/.test(viaApp('2026.10.30').url) &&
+  viaApp(run('WRITING.minApp')).mission.id === day.mission.id);
+run('REQ_APP = null');
+const m = run("missionOf('" + day.url + "')");
+check('the index knows the write question and its task', m.wr && Object.keys(m.wr).length === 1 && Number(Object.keys(m.wr)[0]) === m.n, JSON.stringify(m.wr));
+const wq = Number(Object.keys(m.wr)[0]);
+const long = 'I like it. '.repeat(60);
+wendy('apiMissionResult', day.date, m.id, m.n - 1, m.n, [], [], 260, [
+  { n: wq, text: '=HYPERLINK("http://x","<b>hi</b>") my  sister\n is funny', first: '=1+1', checks: '3 of 4' },
+  { n: wq, text: 'a second copy of the same question', checks: '4 of 4' },
+  { n: 2, text: 'not a write question', checks: '4 of 4' },
+  { n: wq + 1, text: long, checks: 'lots' }
+]);
+const Wr = rows('Writing').filter(r => r.Girl === 'Wendy');
+check('one row for the one write question, nothing for other numbers', Wr.length === 1 && Number(Wr[0].Item) === wq && Wr[0].Mission === m.id, JSON.stringify(Wr));
+check('the text is one line, without markup, and never a formula in the sheet', /^'=/.test(Wr[0].Text) && !/[<>\n]/.test(Wr[0].Text) && /^'=/.test(Wr[0].First) && Wr[0].Checks === '3 of 4' && Wr[0].Prompt === m.wr[wq], JSON.stringify(Wr[0]));
+check('the row has an id the teacher can use, and the level', /^w[0-9a-f]{9}$/.test(Wr[0].Id) && Wr[0].Level === 'a1');
+D = wendy('apiDashboard');
+check('the kid sees her writing, the formula guard taken off', D.writing.length === 1 && D.writing[0].text.indexOf('=HYPERLINK(') === 0 && D.writing[0].prompt === m.wr[wq] && !D.writing[0].comment, JSON.stringify(D.writing));
+const P = run("apiParent('1234')").groups.find(g => g.id === gid).girls.find(x => x.girl.name === 'Wendy');
+check('the parents see it too, with the first try', P.writing.length === 1 && P.writing[0].first === '=1+1' && P.writing[0].checks === '3 of 4');
+// The teacher: no names, a mark and a preset note; a wrong code or a made-up mark is refused.
+run("setSetting('TeacherCode', '515151')");
+Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
+fails('the writing list with a wrong teacher code', () => run("apiTeacherWriting('000000')"));
+Object.keys(cacheStore).filter(k => k.startsWith('F:')).forEach(k => delete cacheStore[k]);
+const TL = run("apiTeacherWriting('515151')");
+const mine = TL.items.find(x => x.id === Wr[0].Id);
+check('the teacher sees the piece, without the kid\'s name', mine && JSON.stringify(TL).indexOf('Wendy') < 0 && TL.marks.length === 3 && TL.comments.length >= 5, JSON.stringify(mine));
+fails('a mark that is not on the list', () => run("apiTeacherMark('515151', '" + Wr[0].Id + "', 'gold', 0)"));
+fails('a piece that is not there', () => run("apiTeacherMark('515151', 'wnothere12', 'good', 0)"));
+const MK = run("apiTeacherMark('515151', '" + Wr[0].Id + "', 'star', 1)");
+check('the teacher marks it with a preset note', MK.ok && MK.item.markLabel === 'Excellent' && MK.item.comment === TL.comments[1]);
+D = wendy('apiDashboard');
+check('the kid sees the mark and the note', D.writing[0].markLabel === 'Excellent' && D.writing[0].comment === TL.comments[1] && D.writing[0].marked === ctx.__day, JSON.stringify(D.writing[0]));
+check('another kid never gets her writing', JSON.stringify(run("apiDashboard('Aviv', '" + String(sheets.Girls.rows.find(r => r[0] === 'Aviv')[2]) + "')").writing || []).indexOf('HYPERLINK') < 0);
+check('the teacher\'s mark is in the audit trail', sheets.Audit.rows.some(r => r[2] === 'teacher' && r[5] === 'writing mark'));
+// An old app (no writing argument) still saves its mission.
+ctx.__day = run("addDays('" + d + "', 1)");
+D = wendy('apiDashboard'); day = D.week.find(w => w.isToday);
+if (day && day.mission) { const m2 = run("missionOf('" + day.url + "')"); const R2 = wendy('apiMissionResult', day.date, m2.id, m2.n, m2.n, [], [], 200); check('a mission without writing still saves', R2.justEarned > 0); }
+// Deleting the kid deletes her writing; the retention sweep removes pieces older than a year.
+const gpin = sheets.Groups.rows.find(r => r[0] === gid)[2];
+run("apiDeleteData('g:" + gid + ":" + gpin + "', '', 'Wendy', 'DELETE')");
+check('deleting the kid deletes her writing', !rows('Writing').some(r => r.Girl === 'Wendy'));
+const wh = sheets.Writing.rows[0];
+sheets.Writing.rows.push(wh.map(h => (h === 'Date' ? '2024-01-01' : h === 'Girl' ? 'Ziv' : h === 'Id' ? 'wold000001' : h === 'Text' ? 'old' : '')),
+  wh.map(h => (h === 'Date' ? run('today()') : h === 'Girl' ? 'Ziv' : h === 'Id' ? 'wnew000001' : h === 'Text' ? 'new' : '')));
+run("invalidate('Writing')");
+const sw = JSON.parse(run('JSON.stringify(retentionSweep())'));
+check('retention: writing older than a year goes, the new piece stays', sw.writing === 1 && rows('Writing').some(r => r.Id === 'wnew000001') && !rows('Writing').some(r => r.Id === 'wold000001'), JSON.stringify(sw));
+sheets.Writing.rows = sheets.Writing.rows.filter(r => r[1] !== 'wnew000001');
+run("invalidate('Writing')");
+ctx.__day = day0;
+}
+
 // ---- the friends' pilot (Pilot.js) ----
 {
 const check = (label, ok, extra) => console.log((ok ? 'ok: ' : 'FAIL: ') + label + (extra === undefined ? '' : ' | ' + extra));

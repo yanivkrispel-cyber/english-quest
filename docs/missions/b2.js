@@ -1405,5 +1405,136 @@ window.EQ_MISSIONS.b2 = [
     { k: 'type', q: 'Deepfakes must ___ clearly labelled as made by AI.', a: ['be'], why: 'Modal passive: must + be + past participle.',
       he: 'אחרי must בא הפועל בלי to: must be labelled, לא must to be.' }
   ]
+},
+// ---- The Writer's Desk (writing days) ----
+{
+  id: 'b2w01', type: 'writing',
+  title: 'A formal email', kid: 'A formal email', he: 'כתיבה: מייל רשמי', dinner: 'If you could ask a museum one question, what would it be?',
+  hook: { q: 'Which is a formal way to end an email?', o: ['Kind regards,', 'See ya!', 'Love,'], a: 0,
+    reveal: '*Kind regards* or *Yours sincerely* end a formal email. *See ya!* is only for friends.' },
+  learn: { kind: 'rule', title: 'Formal and polite', form: ['I am writing to ...', 'Could you please ...?', 'I would be grateful if ...'],
+    lines: ['Say why you are writing: *I am writing to* ask about ...', 'Ask politely: *Could you please* tell me ...? *I would like to know* whether ...',
+      'No short forms in formal writing: *I am*, not I\'m.'],
+    ex: ['*I am writing to* ask about your summer science camp.', '*Could you please* tell me how much it costs?'],
+    he: 'במייל רשמי: I am writing to..., שאלות מנומסות (Could you please), ובלי קיצורים (I am ולא I\'m).' },
+  steps: [
+    { name: 'Polite and formal', items: [
+      { k: 'mc', q: 'I am writing ___ ask about the course.', o: ['to', 'for', 'about'], a: 0, why: 'I am writing to + verb.' },
+      { k: 'mc', q: 'Could you please tell me ___?', o: ['when it starts', 'when does it start', 'when starts it'], a: 0,
+        why: 'Inside a question: tell me when it starts (no does).', he: 'בשאלה עקיפה (tell me...) הסדר כמו במשפט רגיל: when it starts, בלי does.' },
+      { k: 'mc', q: 'I would be grateful ___ you could send me more information.', o: ['if', 'that', 'when'], a: 0, why: 'I would be grateful if you could...' },
+      { k: 'tf', q: '"I am writing to asking about the trip."', a: false, fix: 'I am writing to ask about the trip.', why: 'to + verb: to ask.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'I would like to know if there are discounts.', why: 'I would like to know if + a normal sentence.' },
+      { k: 'spot', s: 'Could you please *sending* me the timetable?', fix: 'send', why: 'Could you + verb: send.' },
+      { k: 'mc', q: 'Which ending is right for a formal email?', o: ['Yours sincerely,', 'Bye for now!', 'Hugs,'], a: 0, why: 'Yours sincerely is formal.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write a formal email to a science museum to ask about a workshop for kids.', tip: 'Say why you are writing, and ask two polite questions.',
+      n: [2, 3], len: [25, 70],
+      need: [{ t: 'Say why you are writing', any: ['i am writing to', 'i\'m writing to'] },
+        { t: 'Ask politely (Could you please, I would like to know)', any: ['could you please', 'could you tell me', 'i would like to know', 'i would be grateful', 'would it be possible'] }],
+      model: 'Dear Sir or Madam, I am writing to ask about your robotics workshop for kids. Could you please tell me when it starts and how much it costs? I would also like to know whether we need to bring anything.',
+      why: 'Why you write, then polite indirect questions, with no short forms.', he: 'אומרים למה כותבים, ושואלים בנימוס בשאלות עקיפות.' }
+  ]
+},
+{
+  id: 'b2w02', type: 'writing',
+  title: 'A polite complaint', kid: 'A polite complaint', he: 'כתיבה: תלונה מנומסת', dinner: 'What is the best way to complain without being rude?',
+  hook: { q: 'What makes a complaint work best?', o: ['Being polite and clear', 'Being angry and long', 'Being short and rude'], a: 0,
+    reveal: 'Stay *polite and clear*: say what went wrong and what you would like.' },
+  learn: { kind: 'rule', title: 'Complaining politely', form: ['I am writing to complain about ...', 'Unfortunately, ...', 'I would appreciate it if ...'],
+    lines: ['Say the problem: *I am writing to complain about* the headphones I bought.', 'Give details: *Unfortunately*, they stopped working after two days.',
+      'Ask for action: *I would appreciate it if* you could replace them.'],
+    ex: ['*Unfortunately*, the parcel arrived late.', '*I would appreciate it if* you could send a refund.'],
+    he: 'תלונה מנומסת: מה הבעיה, פרטים (Unfortunately), ומה אתם מבקשים (I would appreciate it if you could...).' },
+  steps: [
+    { name: 'Complaint phrases', items: [
+      { k: 'mc', q: 'I am writing to complain ___ the service.', o: ['about', 'for', 'on'], a: 0, why: 'complain about something.' },
+      { k: 'mc', q: '___, the screen was broken when it arrived.', o: ['Unfortunately', 'Luckily', 'Hopefully'], a: 0, why: 'Unfortunately → bad news.' },
+      { k: 'mc', q: 'I would appreciate it if you ___ replace it.', o: ['could', 'can to', 'will to'], a: 0, why: 'if you could + verb.' },
+      { k: 'tf', q: '"I am writing to complain about the late delivery."', a: true, why: 'A clear, polite first line.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'I would like a refund or a new one.', why: 'Say clearly what you want.' },
+      { k: 'spot', s: 'The game was *broke* when I opened the box.', fix: 'broken', why: 'was + broken (the past participle).' },
+      { k: 'mc', q: 'Which sentence is too rude for a complaint?', o: ['Your shop is terrible and you are lazy.', 'The order arrived two weeks late.', 'I would like a refund, please.'], a: 0,
+        why: 'Complain about the problem, not the people.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'You ordered a board game online, but some pieces were missing. Write a short complaint.', tip: 'Say the problem, give a detail, and ask for something.',
+      n: [2, 3], len: [25, 70],
+      need: [{ t: 'Say what the problem is', any: ['complain', 'unfortunately', 'problem'] },
+        { t: 'Ask politely for something', any: ['i would appreciate', 'could you', 'i would like', 'please'] }],
+      model: 'I am writing to complain about the board game I ordered last week. Unfortunately, four pieces were missing when I opened the box. I would appreciate it if you could send me the missing pieces.',
+      why: 'The problem, a detail, and a polite request.', he: 'הבעיה, פרט אחד (Unfortunately), ובקשה מנומסת.' }
+  ]
+},
+{
+  id: 'b2w03', type: 'writing',
+  title: 'Two views', kid: 'Two views', he: 'כתיבה: שתי דעות', dinner: 'Is it better to learn from books or from videos?',
+  hook: { q: 'In a discussion essay, when do you give your own opinion?', o: ['At the end', 'In the first word', 'Never'], a: 0,
+    reveal: 'First you discuss *both views*, then you give your opinion *at the end*.' },
+  learn: { kind: 'rule', title: 'Discussing two views', form: ['Some people believe ...', 'Others argue that ...', 'Personally, I think ...'],
+    lines: ['The first view: *Some people believe* that ...', 'The second view: *Others argue that* ...', 'Your view at the end: *Personally*, I think ... / *In conclusion*, ...'],
+    ex: ['*Some people believe* that online lessons are better.', '*Others argue that* kids learn more in a classroom.'],
+    he: 'חיבור דיון: דעה אחת (Some people believe), דעה שנייה (Others argue), ובסוף הדעה שלכם (Personally, I think).' },
+  steps: [
+    { name: 'Two sides', items: [
+      { k: 'mc', q: 'Some people ___ that homework is useless.', o: ['believe', 'believes', 'believing'], a: 0, why: 'people = they → believe.' },
+      { k: 'mc', q: 'Others argue ___ it helps students remember.', o: ['that', 'what', 'which'], a: 0, why: 'argue that + a sentence.' },
+      { k: 'mc', q: '___, I think both have advantages.', o: ['Personally', 'Firstly', 'Suddenly'], a: 0, why: 'Personally → your own view.' },
+      { k: 'tf', q: '"In conclusion, I believe that a mix of both is best."', a: true, why: 'In conclusion + your view: a good last sentence.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'Others argue that it is a waste of time.', why: 'Others argue that + the second view.' },
+      { k: 'spot', s: 'Some people *thinks* that tests are stressful.', fix: 'think', why: 'people = they → think.' },
+      { k: 'mc', q: 'Which word adds another point?', o: ['Moreover', 'However', 'Although'], a: 0, why: 'Moreover = and also. However shows the other side.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Some think kids learn better from videos, others from books. Discuss both and give your view.', tip: 'Use Some people believe, Others argue, Personally.',
+      n: [2, 3], len: [25, 70],
+      need: [{ t: 'Give the first view (Some people...)', any: ['some people', 'many people', 'some think'] },
+        { t: 'Give the other view (Others argue...)', any: ['others', 'other people', 'on the other hand', 'however'] },
+        { t: 'Give your own view', any: ['personally', 'in my opinion', 'i think', 'i believe', 'in conclusion'] }],
+      model: 'Some people believe that videos are the best way to learn because they are clear and fun. Others argue that books help kids think more deeply. Personally, I think a mix of both works best.',
+      why: 'One view, the other view, then yours.', he: 'דעה אחת, הדעה השנייה, ובסוף שלכם.' }
+  ]
+},
+{
+  id: 'b2w04', type: 'writing',
+  title: 'Agree or disagree?', kid: 'Agree or disagree?', he: 'כתיבה: מסכימים או לא', dinner: 'Do you agree that everyone should learn to cook?',
+  hook: { q: 'Which phrase shows the strongest agreement?', o: ['I completely agree', 'I partly agree', 'I am not sure'], a: 0,
+    reveal: '*I completely agree* is the strongest. *I partly agree* means only some of it.' },
+  learn: { kind: 'rule', title: 'Agreeing and disagreeing', form: ['I completely agree that ...', 'I strongly disagree ...', 'Firstly, ... Secondly, ...'],
+    lines: ['Be clear from the start: *I completely agree* / *I strongly disagree*.', 'Give your reasons in order: *Firstly*, ... *Secondly*, ...',
+      'Support them: *For instance*, ...'],
+    ex: ['*I strongly disagree* with this statement.', '*Firstly*, it is not fair to everyone.'],
+    he: 'בחיבור הסכמה: אומרים בבירור אם מסכימים (I completely agree / I strongly disagree), ואז סיבות לפי הסדר: Firstly, Secondly.' },
+  steps: [
+    { name: 'Agree or disagree', items: [
+      { k: 'mc', q: 'I completely ___ with this idea.', o: ['agree', 'agreed', 'am agree'], a: 0, why: 'I agree (never I am agree).' },
+      { k: 'mc', q: '___, it saves time. Secondly, it saves money.', o: ['Firstly', 'Lastly', 'Finally'], a: 0, why: 'Firstly comes before Secondly.' },
+      { k: 'mc', q: 'I ___ disagree that sport should be optional.', o: ['strongly', 'strong', 'strength'], a: 0, why: 'strongly (an adverb) + disagree.' },
+      { k: 'tf', q: '"I am agree that pets are good for kids."', a: false, fix: 'I agree that pets are good for kids.', why: 'agree is a verb: I agree.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'For instance, cooking teaches you to plan.', why: 'For instance, + an example.' },
+      { k: 'spot', s: 'Secondly, it *help* people stay healthy.', fix: 'helps', why: 'it → helps.' },
+      { k: 'mc', q: 'Which is the strongest disagreement?', o: ['I strongly disagree.', 'I am not sure.', 'I partly agree.'], a: 0, why: 'strongly makes it strong.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Do you agree? "Every young person should learn to cook." Give your view and two reasons.', tip: 'Say if you agree, then use Firstly and Secondly.',
+      n: [2, 3], len: [25, 70],
+      need: [{ t: 'Say if you agree or disagree', any: ['agree', 'disagree'] },
+        { t: 'Give reasons in order (Firstly, Secondly)', any: ['firstly', 'first of all', 'secondly'] }],
+      model: 'I completely agree that every young person should learn to cook. Firstly, it is healthier than eating fast food. Secondly, cooking with family is a great way to spend time together.',
+      why: 'A clear view, then reasons in order.', he: 'עמדה ברורה, ואז שתי סיבות לפי הסדר.' }
+  ]
 }
 ];

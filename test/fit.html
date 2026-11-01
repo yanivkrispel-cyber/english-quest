@@ -27,7 +27,9 @@ async function audit(f){
   ev("sayWord = function(){}; speechStop = function(){}; HTMLMediaElement.prototype.play = function(){ return Promise.resolve(); }; if (window.speechSynthesis) speechSynthesis.speak = function(){}; navigator.vibrate = function(){ return true; };");
   const m = () => { const st = d.querySelector('.gstage'); return { page: d.scrollingElement.scrollHeight - w.innerHeight, stage: st ? st.scrollHeight - st.clientHeight : 0 }; };
   const rows = [];
-  for (const lv of ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1']) {
+  // ?levels=b1,c1 measures only those levels.
+  const only = new URLSearchParams(location.search).get('levels');
+  for (const lv of only ? only.split(',') : ['a1', 'a2', 'b1', 'b1-b2', 'b2', 'c1']) {
     await ev(`loadMissions(MS_FILES['${lv}'])`);
     // Each level as its kids see it: Hebrew help (and no clock) for A1 and A2.
     ev(`dash.girl.level = '${lv}'; dash.girl.he = ${lv === 'a1' || lv === 'a2'}`);
@@ -35,8 +37,11 @@ async function audit(f){
       await ev(`previewMission('${id}', '')`);
       const n = ev('MS.S.length');
       for (let si = 0; si < n - 1; si++) {
-        ev(`MS.si = ${si}; MS.sub = {}; MS.guess = null; MS.drawn = -1; msRender()`);
+        // A talk left running from the screen before would draw itself over this one later: stop it first.
+        ev(`chatStop(); CT = null; MS.si = ${si}; MS.sub = {}; MS.guess = null; MS.drawn = -1; msRender()`);
         const t = ev('MS.S[MS.si].t'), k = ev("MS.S[MS.si].it ? MS.S[MS.si].it.k : ''"), a = m();
+        if (k === 'write') { kbd.push(await keyboard(f, id + '#' + si)); ev('MS.sub.checks = msWriteCheck(MS.S[MS.si].it, "", MS.S[MS.si].it.frame ? [""] : null)'); }
+        if (t === 'say') ev('MS.sub.rounds = [{ wpm: 84, heard: 8 }, { wpm: 97, heard: 9 }]; msRender()');
         if (t === 'q') { try { ev('msDone(false)'); } catch(e){} }
         else if (t === 'hook') ev('MS.guess = 0; msRender()');
         else if (t === 'learn') ev('MS.sub.pred = 0; msRender()');
@@ -45,6 +50,32 @@ async function audit(f){
     }
   }
   return rows;
+}
+// The Writer's Desk with the phone keyboard open: the box gets a long text and the focus, and the frame shrinks to what a
+// keyboard leaves (55% of the screen, as on Android; iPhones shrink the visual viewport the same way). The frame must turn
+// compact (html.kbd), the page must not scroll, and the box and the Check button must both be in sight.
+const kbd = [];
+async function keyboard(f, id){
+  const w = f.contentWindow, d = w.document, H = Number(f.height), pause = ms => new Promise(r => setTimeout(r, ms));
+  w.eval('kbdFit()');
+  const fld = d.querySelector('.mwrite textarea, .mwrite input');
+  fld.focus();
+  fld.value = fld.tagName === 'TEXTAREA' ? 'My best day was at the beach with my family and my two cousins. '.repeat(7).slice(0, 400) : 'a very long answer in this box';
+  fld.dispatchEvent(new w.Event('input'));
+  f.height = Math.round(H * .55);
+  await pause(500);
+  w.eval('kbdFit()');
+  const r = el => el ? el.getBoundingClientRect() : null, btn = r(d.querySelector('#gnext')), box = r(fld);
+  const why = w.eval('JSON.stringify({ a: document.activeElement && document.activeElement.tagName, tall: kbdTall, h: visualViewport.height, wide: kbdWide })') + (fld.isConnected ? '' : ' (the box was drawn again)');
+  const res = { id, why, on: d.documentElement.classList.contains('kbd'), page: d.scrollingElement.scrollHeight - w.innerHeight,
+    inSight: !!(btn && box && btn.bottom <= w.innerHeight + 1 && box.top >= 0 && box.bottom <= btn.top + 1) };
+  fld.blur(); f.height = H; await pause(400); w.eval('kbdFit()');
+  return res;
+}
+function kbdReport(){
+  const bad = kbd.filter(x => !x.on || x.page > 0 || !x.inSight);
+  return 'keyboard open (Writer\'s Desk): ' + kbd.length + ' screens · not compact, page scrolls, or the box or Check hidden on ' + bad.length +
+    (bad.length ? ' (' + bad.slice(0, 6).map(x => x.id + (x.on ? '' : ' not-compact ' + x.why) + (x.page > 0 ? ' page' : '') + (x.inSight ? '' : ' hidden')).join(', ') + ')' : '');
 }
 function report(size, rows){
   const by = {};
@@ -60,6 +91,7 @@ function report(size, rows){
     await Promise.all(frames.map(ready));
     const text = [];
     for (let i = 0; i < frames.length; i++) { out.textContent = 'Measuring ' + SIZES[i] + '…'; text.push(report(SIZES[i], await audit(frames[i]))); }
+    text.push(kbdReport());
     out.textContent = text.join('\n\n');
   } catch(e){ out.textContent = 'Failed: ' + e.message; }
 })();

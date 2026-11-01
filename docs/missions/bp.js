@@ -1396,5 +1396,135 @@ window.EQ_MISSIONS.bp = [
   use: [
     { k: 'build', s: 'Check who posted it before you share it.', why: 'Check + who posted it (normal order), then before + a sentence.' }
   ]
+},
+// ---- The Writer's Desk (writing days) ----
+{
+  id: 'bpw01', type: 'writing',
+  title: 'Describe a picture', kid: 'Describe a picture', he: 'כתיבה: תיאור תמונה', dinner: 'If you could take one photo of today, what would be in it?',
+  hook: { q: 'In a photo, what do we call the part closest to you?', o: ['The foreground', 'The background', 'The frame'], a: 0,
+    reveal: 'The *foreground* is the front of the picture; the *background* is the part far away.' },
+  learn: { kind: 'rule', title: 'Describing a picture', form: ['In the foreground,', 'In the background,', 'It looks like ...'],
+    lines: ['Say where things are: *In the foreground*, ... *In the background*, ... *On the left / right*, ...',
+      'Say what people are doing now: the present continuous, two kids *are playing*.', 'Guess: *It looks like* a hot day. They *might be* on holiday.'],
+    ex: ['*In the foreground*, two kids *are building* a sandcastle.', '*It looks like* a hot summer day.'],
+    he: 'בתיאור תמונה: איפה הדברים (foreground = קדימה, background = ברקע), מה אנשים עושים עכשיו (are playing), וניחוש (It looks like).' },
+  steps: [
+    { name: 'Where and what', items: [
+      { k: 'mc', q: 'In the ___, there are mountains far away.', o: ['background', 'foreground', 'corner'], a: 0, why: 'far away → in the background.' },
+      { k: 'mc', q: 'A boy ___ a kite on the beach.', o: ['is flying', 'flies', 'fly'], a: 0, why: 'In a picture, what is happening now → is + -ing.' },
+      { k: 'mc', q: 'It ___ like a cold, rainy day.', o: ['looks', 'sees', 'watches'], a: 0, why: 'It looks like... = it seems to be.' },
+      { k: 'tf', q: '"They might be on holiday."', a: true, why: 'might = maybe: a good way to guess.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'On the left, a man is selling ice cream.', why: 'Where, then what someone is doing.' },
+      { k: 'spot', s: 'Two girls *is* playing volleyball.', fix: 'are', why: 'two girls = they → are playing.' },
+      { k: 'mc', q: 'Which sentence is a guess?', o: ['They might be brother and sister.', 'There is a red umbrella.', 'A dog is running.'], a: 0,
+        why: 'might = maybe, so it is a guess.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Imagine a photo of a busy beach in summer. Describe what is in it.', tip: 'Where are things? What are people doing?',
+      n: [2, 3], len: [20, 60],
+      need: [{ t: 'Say where (in the foreground, on the left...)', any: ['in the foreground', 'in the background', 'on the left', 'on the right', 'in the middle', 'in the front', 'at the back'] },
+        { t: 'Say what people are doing (is / are + -ing)', re: '(is|are|\'re|\'s) [a-z]+ing\\b' }],
+      model: 'In the foreground, two kids are building a big sandcastle. In the background, people are swimming and a boat is sailing. It looks like a very hot day.',
+      why: 'Where things are, what people are doing, and a guess.', he: 'כותבים איפה הדברים בתמונה, מה אנשים עושים (are + ing), וניחוש.' }
+  ]
+},
+{
+  id: 'bpw02', type: 'writing',
+  title: 'Give advice', kid: 'Give advice', he: 'כתיבה: עצה', dinner: 'What is the best advice anyone ever gave you?',
+  hook: { q: 'Which sentence gives advice?', o: ['You should talk to her.', 'I went home.', 'The sky is blue.'], a: 0,
+    reveal: 'We give advice with *should*: You *should* talk to her.' },
+  learn: { kind: 'rule', title: 'Giving advice', form: ['You should ...', 'Why don\'t you ...?', 'If I were you, I would ...'],
+    lines: ['*You should* + verb: You *should* ask your teacher.', 'A friendly question: *Why don\'t you* try again?', '*If I were you, I would* tell her the truth.'],
+    ex: ['*If I were you, I would* practise every day.', '*Why don\'t you* join the club?'],
+    he: 'נותנים עצה: You should, Why don\'t you...?, If I were you, I would. אחרי should ו-would בא פועל בלי to.' },
+  steps: [
+    { name: 'Advice words', items: [
+      { k: 'mc', q: 'You should ___ to her today.', o: ['talk', 'to talk', 'talking'], a: 0, why: 'should + verb (no to).' },
+      { k: 'mc', q: 'Why ___ you ask your coach?', o: ['don\'t', 'not', 'doesn\'t'], a: 0, why: 'Why don\'t you...? = a friendly idea.' },
+      { k: 'mc', q: 'If I ___ you, I would say sorry.', o: ['were', 'am', 'be'], a: 0, why: 'If I were you: a fixed phrase for advice.' },
+      { k: 'tf', q: '"You should to practise more."', a: false, fix: 'You should practise more.', why: 'should + verb, with no to.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'Why don\'t you try something new?', why: 'Why don\'t you + verb...?' },
+      { k: 'spot', s: 'If I were you, I *will* call him.', fix: 'would', why: 'If I were you, I would...' },
+      { k: 'mc', q: 'Your friend is nervous about a test. Which advice is best?', o: ['You should start studying early.', 'Tests are boring.', 'I had a test too.'], a: 0,
+        why: 'Advice tells your friend what to do.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'A friend is new in your class and feels lonely. Write them some advice.', tip: 'Use should, Why don\'t you or If I were you.',
+      n: [2, 3], len: [20, 60],
+      need: [{ t: 'Give advice (should, Why don\'t you, If I were you)', any: ['should', 'why don\'t you', 'if i were you', 'you could'] }],
+      model: 'Don\'t worry, it gets easier! You should join a club after class, because it\'s a great way to meet people. If I were you, I would also say hi to one new person every day.',
+      why: 'Be kind first, then give one or two ideas.', he: 'מעודדים, ואז נותנים עצה אחת או שתיים עם should או If I were you.' }
+  ]
+},
+{
+  id: 'bpw03', type: 'writing',
+  title: 'For and against', kid: 'For and against', he: 'כתיבה: בעד ונגד', dinner: 'Is it better to live in a city or in the countryside?',
+  hook: { q: 'What does a balanced essay show?', o: ['Both sides', 'Only your side', 'Only facts about you'], a: 0,
+    reveal: 'A balanced essay shows *both sides*: the good points and the bad points.' },
+  learn: { kind: 'rule', title: 'Both sides', form: ['On the one hand,', 'On the other hand,', 'However,'],
+    lines: ['One side: *On the one hand*, phones help us learn.', 'The other side: *On the other hand*, they can be distracting.',
+      'Link ideas: *However*, ... / *Although* ..., ...'],
+    ex: ['*On the one hand*, school uniforms are easy.', '*On the other hand*, kids cannot choose their clothes.'],
+    he: 'מציגים שני צדדים: On the one hand / On the other hand. However = אבל, בתחילת משפט ואחריו פסיק.' },
+  steps: [
+    { name: 'Linking words', items: [
+      { k: 'mc', q: '___ the one hand, video games are fun.', o: ['On', 'In', 'At'], a: 0, why: 'On the one hand... On the other hand...' },
+      { k: 'mc', q: 'Smartphones are useful. ___, they can be addictive.', o: ['However', 'Because', 'So'], a: 0, why: 'However = but (the other side).' },
+      { k: 'mc', q: '___ it was raining, we went to the beach.', o: ['Although', 'However', 'Because'], a: 0, why: 'Although + a sentence, then a surprising result.' },
+      { k: 'tf', q: '"On the other hand, it is expensive."', a: true, why: 'On the other hand, + the other side.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'On the other hand, it can be noisy.', why: 'On the other hand, + a point against.' },
+      { k: 'spot', s: 'Living in a city is *excited* because there is a lot to do.', fix: 'exciting', why: 'The city makes you excited: it is exciting.' },
+      { k: 'mc', q: 'Which sentence is a point against cities?', o: ['Cities can be very crowded.', 'Cities have lots of shops.', 'There are many museums in cities.'], a: 0,
+        why: 'Crowded is a bad point, so it is against.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Should every kid have a smartphone? Give one point for and one point against.', tip: 'Use On the one hand and On the other hand.',
+      n: [2, 3], len: [20, 60],
+      need: [{ t: 'Give one side (On the one hand)', any: ['on the one hand', 'one advantage', 'firstly'] },
+        { t: 'Give the other side (On the other hand, However)', any: ['on the other hand', 'however', 'although', 'but'] }],
+      model: 'On the one hand, a smartphone helps kids call their parents and find information. On the other hand, it can be hard to stop playing games on it. I think kids should get one when they are older.',
+      why: 'One point for, one against, and what you think.', he: 'נקודה בעד, נקודה נגד, ומה אתם חושבים.' }
+  ]
+},
+{
+  id: 'bpw04', type: 'writing',
+  title: 'Tell a story', kid: 'Tell a story', he: 'כתיבה: סיפור', dinner: 'What would you do if you found a treasure map?',
+  hook: { q: 'Which word makes a story more exciting?', o: ['Suddenly', 'Usually', 'Sometimes'], a: 0,
+    reveal: '*Suddenly* tells the reader that something surprising is coming!' },
+  learn: { kind: 'rule', title: 'Setting the scene', form: ['was / were + -ing', 'when', 'the past simple'],
+    lines: ['Set the scene: I *was walking* home *when* ...', 'Then the action: ... *when* I *found* a strange map.',
+      'Add feelings: I felt *nervous*, *excited*, *relieved*.'],
+    ex: ['I *was reading* in the garden *when* I *heard* a shout.', 'I felt *excited* and a bit *nervous*.'],
+    he: 'בסיפור: was/were + ing לרקע (מה קרה באותו זמן), ואחרי when הפעולה הקצרה בעבר פשוט.' },
+  steps: [
+    { name: 'Past continuous', items: [
+      { k: 'mc', q: 'I ___ home when it started to rain.', o: ['was walking', 'walk', 'am walking'], a: 0, why: 'The longer action in the background → was walking.' },
+      { k: 'mc', q: 'We were eating dinner when the phone ___.', o: ['rang', 'was ringing', 'rings'], a: 0, why: 'The short action that interrupts → rang.' },
+      { k: 'mc', q: 'In the end, I felt ___ because everything was OK.', o: ['relieved', 'relieving', 'relief'], a: 0, why: 'How you feel → relieved.' },
+      { k: 'type', q: 'They ___ football when the ball hit a window.', hint: '(play)', a: ['were playing'], why: 'they → were playing (the background action).' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'While I was swimming, I saw a turtle.', why: 'While + was + -ing, then the past simple.' },
+      { k: 'spot', s: 'She *find* an old key in the sand yesterday.', fix: 'found', why: 'yesterday → the past: found.' },
+      { k: 'tf', q: '"I was sleeping when the alarm rang."', a: true, why: 'was sleeping (background) + rang (the short action).' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Start a story: you were walking on the beach when you found a bottle with a note inside.', tip: 'Use was / were + -ing, when, and a feeling.',
+      n: [2, 3], len: [20, 60],
+      need: [{ t: 'Use was / were + -ing', re: '\\b(was|were) [a-z]+ing\\b' },
+        { t: 'Use when, while or suddenly', any: ['when', 'while', 'suddenly'] }],
+      model: 'I was walking on the beach in Tel Aviv when I saw a small green bottle. Inside, there was an old note with a map. I felt excited and a little nervous.',
+      why: 'The scene (was walking), the action (saw), and a feeling.', he: 'מתחילים ברקע (was walking), ממשיכים בפעולה (when I saw), ומוסיפים רגש.' }
+  ]
 }
 ];

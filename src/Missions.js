@@ -14,10 +14,16 @@ function missionOf(url) {
   return idx.hasOwnProperty(url) ? idx[url] : null;
 }
 
+// The app version of this call (APP_V, set by doPost; null outside a web call, as in the tests).
+var REQ_APP = null;
+
 // What the app needs to open a day's mission, or null (no mission for that topic, or missions are off for the kid).
+// A Writer's Desk mission needs an app that knows the write question (WRITING.minApp): an older copy gets the day's
+// link instead, until it updates (the service worker does that on the second open).
 function missionView(kid, a, on) {
   if (!a || !on) return null;
   var m = missionOf(a.url);
+  if (m && m.wr && REQ_APP !== null && REQ_APP < WRITING.minApp) return null;
   return m ? { id: m.id, n: m.n, kid: m.k || '', he: m.h || '' } : null;
 }
 
@@ -29,7 +35,8 @@ function missionHe(url) {
 
 // One finished mission. The app measures the score; the server checks that it fits the day's mission.
 // missed / right: question ids (x:<mission>:<n>) for the spaced review. seconds: time spent playing.
-function apiMissionResult(name, pin, date, missionId, correct, total, missed, right, seconds) {
+// writing (newer apps): what she wrote at the Writer's Desk, [{ n, text, first, checks }] (n = the question number).
+function apiMissionResult(name, pin, date, missionId, correct, total, missed, right, seconds, writing) {
   var kid = auth(name, pin);
   var t = today();
   if (pendingLevelTest(kid)) throw new Error('Take the level test first.');
@@ -61,6 +68,7 @@ function apiMissionResult(name, pin, date, missionId, correct, total, missed, ri
     };
     appendRow('Log', entry);
     updateReview(kid.Name, missed, right, t);
+    saveWriting(kid, a, m, date, writing);
   } finally {
     lock.releaseLock();
   }
@@ -83,4 +91,111 @@ function apiFlag(name, pin, missionId, itemId, note) {
   if (mine.length >= MISSION.flagsPerDay) return { ok: true };
   appendRow('Flags', { Timestamp: new Date(), Girl: kid.Name, Date: t, Mission: missionId, Item: itemId, Note: note });
   return { ok: true };
+}
+
+// ---------- The Writer's Desk (specs/missions.md) ----------
+// What a kid writes in a mission (question kind `write`) is kept in the Writing tab: her parents see it in the parents'
+// area, the teacher in the teacher review (?missions&t=), where she gives a mark and one of the preset notes below, which
+// the kid sees on her Me tab. No other kid ever sees it. The prompt comes from MISSION_INDEX (`w`), never from the phone.
+var WRITING = {
+  maxChars: 400, perMission: 3, keepDays: 365, teacherList: 60, minApp: '2026.11.01',
+  marks: { star: 'Excellent', good: 'Good work', more: 'Keep practising' },
+  comments: [
+    'Great job! Your sentences are clear and easy to read.',
+    'Lovely ideas! Next time, check the capital letters.',
+    'Good work! Remember the full stop at the end of each sentence.',
+    'Nice! Next time, add one more sentence with a detail.',
+    'Well done! Check the verbs: he likes, she plays, it goes.',
+    'Super! You used the new words very well.',
+    'Good try! Read it aloud once before you check it.',
+    'Excellent! Your writing is fun to read.'
+  ]
+};
+
+// A kid's text for a sheet cell: one line, no markup or control characters, at most WRITING.maxChars, and never read
+// as a formula (a leading = + - @ gets an apostrophe, which sheetText takes off again).
+function writingClean(s) {
+  s = String(s == null ? '' : s).replace(/[\u0000-\u001f\u007f<>]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, WRITING.maxChars);
+  return /^[=+\-@]/.test(s) ? "'" + s : s;
+}
+function sheetText(s) {
+  s = String(s == null ? '' : s);
+  return /^'[=+\-@]/.test(s) ? s.slice(1) : s;
+}
+
+// Called inside apiMissionResult's lock, after its Log row. Only the mission's own write questions (MISSION_INDEX `w`),
+// once each; a bad entry is dropped, never the mission.
+function saveWriting(kid, a, m, date, writing) {
+  if (!Array.isArray(writing) || !m.wr) return 0;
+  var done = {}, n = 0;
+  writing.slice(0, WRITING.perMission).forEach(function (x) {
+    try {
+      var item = Math.round(Number(x && x.n));
+      if (!m.wr.hasOwnProperty(String(item)) || done[item]) return;
+      var text = writingClean(x.text);
+      if (!/[A-Za-z֐-׿]/.test(text)) return;
+      var first = writingClean(x.first), checks = String(x.checks || '').match(/^(\d{1,2}) of (\d{1,2})$/);
+      done[item] = true;
+      appendRow('Writing', { Timestamp: new Date(), Id: 'w' + Utilities.getUuid().replace(/-/g, '').slice(0, 9), Girl: kid.Name, Date: date, Mission: m.id, Item: item,
+        Level: a.level, Prompt: writingClean(m.wr[item]), Text: text, First: first === text ? '' : first, Checks: checks ? checks[1] + ' of ' + checks[2] : '',
+        Words: sheetText(text).split(' ').filter(function (w) { return /[A-Za-z]/.test(w); }).length, Mark: '', Comment: '', MarkedOn: '' });
+      n++;
+    } catch (e) { console.error(e); }
+  });
+  return n;
+}
+
+function writingView(r, withFirst) {
+  var v = { id: String(r.Id), date: String(r.Date), mission: String(r.Mission), level: LEVEL_LABEL[r.Level] || String(r.Level || ''),
+    prompt: sheetText(r.Prompt), text: sheetText(r.Text), checks: String(r.Checks || ''),
+    mark: String(r.Mark || ''), markLabel: WRITING.marks[r.Mark] || '', comment: String(r.Comment || ''), marked: String(r.MarkedOn || '') };
+  if (withFirst) v.first = sheetText(r.First);
+  return v;
+}
+
+// The kid's last pieces, newest first (her Me tab, and her parents through parentData).
+function writingInfo(kid) {
+  return kidRows('Writing', kid.Name).slice(-5).reverse().map(function (r) { return writingView(r, true); });
+}
+
+function teacherOk(code) {
+  ensureSetup();
+  var want = String(getSetting('TeacherCode') || '').trim();
+  checkPin('teacher', !!want && String(code || '').trim() === want);
+}
+
+// The teacher's list: the newest pieces of every kid, without names (the level and the prompt are enough to mark one).
+function apiTeacherWriting(code) {
+  teacherOk(code);
+  var rows = readTable('Writing').filter(function (r) { return r.Id; }).slice(-WRITING.teacherList).reverse();
+  return {
+    items: rows.map(function (r) { return writingView(r, true); }),
+    marks: Object.keys(WRITING.marks).map(function (k) { return { k: k, label: WRITING.marks[k] }; }),
+    comments: WRITING.comments
+  };
+}
+
+// mark: a key of WRITING.marks; comment: the number of a preset note, or -1 for none.
+function apiTeacherMark(code, id, mark, comment) {
+  teacherOk(code);
+  id = String(id || '').replace(/[^a-z0-9]/g, '').slice(0, 12);
+  mark = String(mark || '');
+  comment = Math.round(Number(comment));
+  if (!WRITING.marks.hasOwnProperty(mark)) throw new Error('Choose a mark');
+  var note = comment >= 0 && comment < WRITING.comments.length ? WRITING.comments[comment] : '';
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  var row;
+  try {
+    row = readTableUncached('Writing').filter(function (r) { return String(r.Id) === id; })[0];
+    if (!id || !row) throw new Error('This piece of writing is not there any more');
+    upsertRow('Writing', 'Id', id, { Mark: mark, Comment: note, MarkedOn: today() });
+  } finally {
+    lock.releaseLock();
+  }
+  var kid = findGirl(row.Girl);
+  audit('teacher', 'teacher', kid ? groupOf(kid) : '', 'writing mark', String(row.Mission) + ' #' + row.Item + ': ' + WRITING.marks[mark] + (note ? ' + note' : ''));
+  var view = writingView(row, true);
+  view.mark = mark; view.markLabel = WRITING.marks[mark]; view.comment = note; view.marked = today();
+  return { ok: true, item: view };
 }

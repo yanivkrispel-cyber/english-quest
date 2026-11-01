@@ -34,6 +34,11 @@ notifications, and reward points.
   (home, game XP); "Something wrong here?" goes to the Flags tab; parents get the mission's dinner question in the 21:00
   summary. Content: `docs/missions/<a1|a2|b1|bp|b2|c1>.js` (59 missions: the first week of each level, and Newsroom
   for A1 to B2). Assignments prefer the next topic of her level that has a mission; without one left, the link as before.
+  **Writer's Desk** (writing days, 2026-11-01): she writes one to three sentences of her own (a frame with boxes at A1),
+  checked on the phone by a kind checklist of simple rules (no AI), one rewrite, then Chacho's version; the text is kept
+  in the Writing tab for her parents (kid card) and the teacher (`?missions&t=`), who gives a mark and a preset note the kid
+  sees on her Me tab. **Say it again**: before the finish she reads a model sentence aloud twice and sees her words a
+  minute (only with the parent's microphone switch on). Spec: `specs/missions.md`.
 - **Talk with Chacho** (spec: `specs/talk.md`): short spoken talks with Chacho the parrot, scripted (no AI at run time).
   One after Use it in every mission, about what it taught, and one home scene a day (15 per level). Chacho speaks
   (recorded with Chatterbox, `specs/voice.md`), the kid answers aloud (the phone's speech recognition, matched to the script's branches by
@@ -186,6 +191,7 @@ Phone / browser                     GitHub Pages (docs/)            Google
 | Log | Timestamp, Girl, Date, DoneOn, Section, Level, Title, URL, Correct, Total, Percent, Points, Mission, Seconds | One row per completed task. `Mission` and `Seconds`: a task played as a mission (empty for the link). |
 | Chats | Timestamp, Girl, Date, Talk, Where, Level, Turns, Voice, Tiles, Mic, XP, Seconds, Said | One row per Talk with Chacho (`src/Chat.js`). Voice / Tiles = answers said aloud / tapped; Said = what the phone heard (text only). |
 | Flags | Timestamp, Girl, Date, Mission, Item, Note | "Something wrong here?" under a mission question (at most 20 a kid a day). |
+| Writing | Timestamp, Id, Girl, Date, Mission, Item, Level, Prompt, Text, First, Checks, Words, Mark, Comment, MarkedOn | The Writer's Desk (Missions.js): what a kid wrote in a mission (one line, at most 400 characters, a leading = + - @ kept as text), her first try when she rewrote it, the checklist score (`3 of 5`), and the teacher's mark and preset note. Deleted with the kid and after a year. |
 | Rewards | Points, Reward, Group | Empty Group = applies to groups without rewards of their own. |
 | Push | Girl, Endpoint, Created, Agent | Kids' devices for reminders. |
 | ParentPush | Who, Endpoint, Created, Agent, Instant | Who = `admin` or a group id; Instant = yes/no. |
@@ -205,7 +211,7 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | `src/Duels.js` | Play together: invites, live duels synced by polling, challenges, Boss Battle, Talk & Tap, Tug of War saves, results, Helper stars |
 | `src/Duos.js` | Duo Streak and Team Quest: requests, streak counting, quests, rewards after practice |
 | `src/Shop.js` | The Wordrobe: catalog, coins, Chacho's grading of a request (`cocoGrade`, also in Index.html), buying, the wardrobe; phase 2: items made of words (`SHOP_RECIPES`, memory and shine), the Word Saver, the Studio (`studioWords` + `studioGrade`, copied as they are into Index.html; designs as tokens) |
-| `src/Missions.js` | Today's Mission: who gets it (`Girls.Missions`), `apiMissionResult` (checks the result against the day's mission), `apiFlag` |
+| `src/Missions.js` | Today's Mission: who gets it (`Girls.Missions`), `apiMissionResult` (checks the result against the day's mission), `apiFlag`; the Writer's Desk (`saveWriting`, `writingInfo`, the teacher's `apiTeacherWriting` / `apiTeacherMark`, the preset notes `WRITING`) |
 | `src/Nest.js` | Chacho's Nest, ages 2 to 7 (`specs/nest.md`): `isNest`, the day (`nestNext`: four days a unit, a review is one), `nestInfo` (the home and each word's first tries), `apiNestResult`. `src/NestIndex.js` is written by `tools/nest-index.js`; the session engine and its games are `docs/nest/play.js` |
 | `src/Audit.js` | The audit trail: `audit`, `auditOpen`, `auditPin`, `auditSheetEdit`, `apiAudit` (the admin's Audit card, merged with the practice tabs) |
 | `src/Chat.js` | Talk with Chacho: `apiChatResult` (summary and bonus), `chatInfo` (dashboard, parents), `chatBoard` (the admin's stage 0 board) |
@@ -250,7 +256,8 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | apiDuelHome / Invite / Join / Reply / Cancel / Solo / Poll / Finish / Helped | kid | Play together (see `specs/play-together.md`; Boss Battle: `specs/boss-tug.md`; Talk & Tap: `specs/talk-tap.md`); `apiDuelPoll` is the hot path, every ~2 s during a duel |
 | apiShop / apiShopBuy(item, color, words) / apiWear(wear, move) | kid | The Wordrobe (see `specs/wordrobe.md`): the shop and coins; buy with a request (graded again on the server, which decides the price); what the pet wears |
 | apiDesign(base, text, fresh) / apiWords(item, right, missed) / apiSaveWord(id, on) | kid | The Studio, phase 2 (`specs/wordrobe-studio.md`): make a design (graded again on the server); collect or polish an item's words; save a word to her deck |
-| apiMissionResult(name, pin, date, mission, correct, total, missed, right, seconds) / apiFlag(name, pin, mission, item, note) | kid | Today's Mission (`specs/missions.md`): save a played mission as the day's task (the server checks that missions are on for her, the day's mission, the number of questions and the time); report a question |
+| apiMissionResult(name, pin, date, mission, correct, total, missed, right, seconds, writing) / apiFlag(name, pin, mission, item, note) | kid | Today's Mission (`specs/missions.md`): save a played mission as the day's task (the server checks that missions are on for her, the day's mission, the number of questions and the time; `writing` = what she wrote at the Writer's Desk, kept for the mission's own write questions only); report a question |
+| apiTeacherWriting(code) / apiTeacherMark(code, id, mark, note) | teacher | The Writer's Desk: the newest writing of every level without names; a mark and a preset note the kid sees |
 | apiChatResult(name, pin, talk, turns, voice, tiles, mic, said, seconds) | kid | Talk with Chacho (`specs/talk.md`): save a talk's summary and give the bonus (3 XP aloud, 1 a tile, +3 all aloud; 30 a day) |
 | apiTugCheck / apiTugSave | kid | Tug of War on one phone: checks the second kid's PIN once (returns a 2-day token the phone keeps instead of her PIN), then saves both results (a save id makes a save sent twice count once) |
 | apiPushSubscribe / apiPushMessage | kid / service worker | Register a device / text of the pending notification |

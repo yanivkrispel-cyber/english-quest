@@ -362,7 +362,7 @@ var CATALOG = {"grammar":{"a1":[{"t":"Present simple forms of 'to be': am/is/are
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v28';
+var SETUP_VERSION = 'v29';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 // The kids' front end (Cloudflare, docs/). Until 2026-10 it was https://yanivkrispel-cyber.github.io/english-quest/.
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
@@ -470,7 +470,10 @@ var HEADERS = {
   // Feature use (Ops.js): one row per kid, day and part of the app she opened, with how many times (written in batches).
   Usage: ['Date', 'Girl', 'Feature', 'Opens'],
   // The phones' error reports (Ops.js), kept 30 days. Girl: only when the call that carried the report was hers.
-  Errors: ['Timestamp', 'Date', 'Girl', 'Where', 'Message', 'Device', 'App']
+  Errors: ['Timestamp', 'Date', 'Girl', 'Where', 'Message', 'Device', 'App'],
+  // The Writer's Desk (Missions.js): what a kid wrote in a mission (First = her first try when she rewrote it, Checks = the
+  // checklist, '3 of 5'), and the teacher's mark and preset note, which the kid and her parents see.
+  Writing: ['Timestamp', 'Id', 'Girl', 'Date', 'Mission', 'Item', 'Level', 'Prompt', 'Text', 'First', 'Checks', 'Words', 'Mark', 'Comment', 'MarkedOn']
 };
 
 var WORDS = [
@@ -528,7 +531,7 @@ function api() {
   apiDuoInvite: apiDuoInvite, apiDuoAnswer: apiDuoAnswer, apiDuoNudge: apiDuoNudge, apiDuoEnd: apiDuoEnd,
   apiTugCheck: apiTugCheck, apiTugSave: apiTugSave,
   apiShop: apiShop, apiShopBuy: apiShopBuy, apiWear: apiWear, apiWords: apiWords, apiSaveWord: apiSaveWord, apiDesign: apiDesign,
-  apiMissionResult: apiMissionResult, apiFlag: apiFlag,
+  apiMissionResult: apiMissionResult, apiFlag: apiFlag, apiTeacherWriting: apiTeacherWriting, apiTeacherMark: apiTeacherMark,
   apiJoinCheck: apiJoinCheck, apiJoin: apiJoin, apiPlacement: apiPlacement, apiFeedback: apiFeedback,
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
   apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade, apiParentNestMin: apiParentNestMin, apiNestTime: apiNestTime,
@@ -554,6 +557,7 @@ function doPost(e) {
     }
     REQ_DEV = cleanDev(req.dev);
     REQ_IP = cleanIp(e.ip);
+    REQ_APP = String(req.v || '');
     REQ_OPEN = cleanOpen(req.open);
     PERF_PARTS = null;
     var t0 = Date.now();
@@ -1233,6 +1237,7 @@ function buildDashboard(kid) {
     chat: pending || nest ? null : chatInfo(kid, t),
     // The parents' switches (Safety.js): speech recognition allowed, and the hour of her reminder (0 = none).
     mic: kidMicOn(kid), remind: kidRemindHour(kid),
+    writing: pending || nest ? null : writingInfo(kid),
     coins: coinsOf(kid).balance,
     upgrades: upgradesOf(owned),
     polish: polishInfo(kid),
@@ -1343,8 +1348,8 @@ function nextExercise(section, level, used, missions) {
   var byLevel = CATALOG[section];
   var start = Math.max(0, LEVELS.indexOf(level));
   if (missions) {
-    // Writing has no missions yet, and C1 has no Use of English: a kid with missions gets a Use of English (or a
-    // grammar) mission that day instead of a link out of the app.
+    // A writing day gives the next Writer's Desk mission of her level; when they run out (and for C1, which has no Use of
+    // English), a Use of English (or a grammar) mission that day instead of a link out of the app.
     var tries = section === 'writing' || section === 'use-of-english' ? [section, 'use-of-english', 'grammar'] : [section];
     for (var s = 0; s < tries.length; s++) {
       var own = (CATALOG[tries[s]] || {})[LEVELS[start]] || [];
@@ -4244,6 +4249,10 @@ var MISSION_INDEX = {"https://test-english.com/grammar-points/a1/present-simple-
 "https://test-english.com/reading/a1/daily-routines-sportswoman/":{"id":"a1r08","n":13,"q":"Which sport would you like to try, and why?","k":"A swimmer's busy day","h":"סדר היום של ספורטאית"},
 "https://test-english.com/use-of-english/a1/a1-english-test-7-text-with-multiple-choice-gaps/":{"id":"a1u07","n":14,"q":"If you had a pet tortoise, what name would you give it?","k":"A very fast tortoise?","h":"חדשות מצחיקות: צב במרוץ"},
 "https://test-english.com/use-of-english/a1/a1-english-test-8-multiple-choice-questions/":{"id":"a1u08","n":14,"q":"What is your favourite fruit on a hot day?","k":"The giant watermelon","h":"חדשות מצחיקות: האבטיח הענק"},
+"https://test-english.com/writing/a1/writing-about-my-family/":{"id":"a1w01","n":8,"q":"Who in our family makes you laugh the most?","k":"All about my family","h":"כתיבה: המשפחה שלי","wr":{"8":"Write about one person in your family."}},
+"https://test-english.com/writing/a1/writing-about-my-daily-routine/":{"id":"a1w02","n":8,"q":"What is the best part of your day?","k":"A day in my life","h":"כתיבה: היום שלי","wr":{"8":"Write about your morning: two things you do."}},
+"https://test-english.com/writing/a1/my-hobby-a1-english-writing/":{"id":"a1w03","n":8,"q":"What hobby would you like to try one day?","k":"My hobby","h":"כתיבה: התחביב שלי","wr":{"8":"Write about your hobby and why you like it."}},
+"https://test-english.com/writing/a1/essay-about-my-neighbourhood-a1-english-writing/":{"id":"a1w04","n":8,"q":"What is your favourite place near our home?","k":"Near my home","h":"כתיבה: ליד הבית שלי","wr":{"8":"Write about a place near your home that you like."}},
 "https://test-english.com/grammar-points/a2/asking-questions-in-english/":{"id":"a2g01","n":14,"q":"What questions can you ask me about my day, in English?","k":"Asking questions","h":"שאלות באנגלית"},
 "https://test-english.com/grammar-points/a2/subject-questions-questions-preposition/":{"id":"a2g02","n":14,"q":"Who did you sit next to at school today?","k":"Who did it?","h":"שאלות מסוג Who did it?"},
 "https://test-english.com/grammar-points/a2/present-simple-continuous/":{"id":"a2g03","n":14,"q":"What are you doing right now, and what do you usually do after dinner?","k":"Every day or right now?","h":"הווה פשוט או הווה מתמשך"},
@@ -4303,6 +4312,10 @@ var MISSION_INDEX = {"https://test-english.com/grammar-points/a1/present-simple-
 "https://test-english.com/reading/a2/three-experiences-i-have-had-a2-english-reading-test/":{"id":"a2r08","n":14,"q":"What is the most exciting thing you have ever done?","k":"Ella's three big moments","h":"שלוש חוויות שלי (present perfect)"},
 "https://test-english.com/use-of-english/a2/a2-english-test-7-text-with-multiple-choice-gaps/":{"id":"a2u07","n":13,"q":"If you had a garden, what would you grow?","k":"A watermelon as big as me","h":"חדשות מצחיקות: האבטיח הענק"},
 "https://test-english.com/use-of-english/a2/a2-english-test-8-multiple-choice-questions/":{"id":"a2u08","n":13,"q":"If you had a robot helper, what job would you give it?","k":"The runaway robot","h":"חדשות מצחיקות: הרובוט שיצא לטיול"},
+"https://test-english.com/writing/a2/writing-and-responding-to-an-informal-email-invitation/":{"id":"a2w01","n":8,"q":"Who would you invite to a picnic, and what would you bring?","k":"Invite a friend","h":"כתיבה: הזמנה לחבר","wr":{"8":"Invite a friend to a picnic in the park. Say when it is."}},
+"https://test-english.com/writing/a2/my-last-holiday-writing/":{"id":"a2w02","n":8,"q":"What was the best day of our last holiday?","k":"My last holiday","h":"כתיבה: החופשה האחרונה","wr":{"8":"Write about a holiday or a fun trip you had."}},
+"https://test-english.com/writing/a2/writing-an-essay-about-someones-job/":{"id":"a2w03","n":8,"q":"What job would you like to try for one day?","k":"A cool job","h":"כתיבה: מקצוע מגניב","wr":{"8":"Write about a job you think is interesting."}},
+"https://test-english.com/writing/a2/writing-a-postcard-a2-english-writing/":{"id":"a2w04","n":8,"q":"Who would you send a postcard to, and from where?","k":"A postcard","h":"כתיבה: גלויה","wr":{"8":"Write a postcard to a friend from a trip, real or made up."}},
 "https://test-english.com/grammar-points/b1/present-simple-present-continuous/":{"id":"b1g01","n":14,"q":"What are you learning at school these days?","k":"Always or just now?","h":"הווה פשוט או מתמשך: קבוע או זמני"},
 "https://test-english.com/grammar-points/b1/future-forms/":{"id":"b1g02","n":14,"q":"What are you going to do this weekend?","k":"Talking about the future","h":"דרכים לדבר על העתיד"},
 "https://test-english.com/grammar-points/b1/past-simple-present-perfect/":{"id":"b1g03","n":14,"q":"What is the most interesting thing you have ever done?","k":"Done or up to now?","h":"עבר פשוט או present perfect"},
@@ -4334,6 +4347,10 @@ var MISSION_INDEX = {"https://test-english.com/grammar-points/a1/present-simple-
 "https://test-english.com/reading/b1/why-your-coworkers-hate-you-b1-english-reading-test/":{"id":"b1r02","n":10,"q":"What makes someone a good person to work with?","k":"Group project trouble","h":"קריאה: מה מעצבן בעבודה בקבוצה"},
 "https://test-english.com/reading/b1/unusual-and-wonderful-jobs-b1-english-reading-test/":{"id":"b1r03","n":10,"q":"Which unusual job would you love to do, and why?","k":"Unusual and wonderful jobs","h":"קריאה: עבודות מיוחדות ומפתיעות"},
 "https://test-english.com/reading/b1/how-led-lights-can-save-sea-turtles-lives-b1-english-reading-test/":{"id":"b1r04","n":10,"q":"What can our family do to help animals in the sea?","k":"Lights that help sea turtles","h":"קריאה: אורות שמצילים צבי ים"},
+"https://test-english.com/writing/b1/writing-an-opinion-essay/":{"id":"b1w01","n":8,"q":"Should kids have homework at the weekend? Why?","k":"What do you think?","h":"כתיבה: מה אני חושב","wr":{"8":"Should kids have homework at the weekend? Give your opinion."}},
+"https://test-english.com/writing/b1/how-to-write-an-email-to-a-friend-giving-news/":{"id":"b1w02","n":8,"q":"What good news did you have this week?","k":"Big news!","h":"כתיבה: חדשות","wr":{"8":"Write to a friend and tell them some good news."}},
+"https://test-english.com/writing/b1/how-to-write-a-past-story-from-a-given-sentence/":{"id":"b1w03","n":8,"q":"What is the funniest thing that happened to you this year?","k":"Story time","h":"כתיבה: סיפור קצר","wr":{"8":"Finish the story: \"When I opened the door, I couldn't believe my eyes.\""}},
+"https://test-english.com/writing/b1/how-to-write-a-hotel-review-after-a-stay/":{"id":"b1w04","n":8,"q":"What is the best place we ever stayed at?","k":"Write a review","h":"כתיבה: ביקורת","wr":{"8":"Write a short review of a place you stayed at or visited, like a hotel, a campsite or a museum."}},
 "https://test-english.com/grammar-points/b2/have-auxiliary-main-verb/":{"id":"b2g01","n":14,"q":"What do you usually have for breakfast?","k":"Two kinds of have","h":"have כפועל עיקרי וכפועל עזר"},
 "https://test-english.com/grammar-points/b2/clauses-contrast-purpose-reason-result/":{"id":"b2g02","n":14,"q":"What do you do so that you don't forget your homework?","k":"Linking ideas","h":"משפטי ניגוד, מטרה, סיבה ותוצאה"},
 "https://test-english.com/grammar-points/b2/generic-pronouns/":{"id":"b2g03","n":14,"q":"If someone in your class feels left out, what can you do to help them?","k":"Someone left their phone","h":"כינויים כלליים: someone, they"},
@@ -4365,6 +4382,10 @@ var MISSION_INDEX = {"https://test-english.com/grammar-points/a1/present-simple-
 "https://test-english.com/reading/b2/coolcationing-a-new-travel-trend-b2-english-reading-test/":{"id":"b2r02","n":10,"q":"For a summer holiday, would you choose somewhere hot or somewhere cool? Why?","k":"Holidays in the cool","h":"קריאה: חופשות במקומות קרירים"},
 "https://test-english.com/reading/b2/using-ai-to-talk-to-the-deceased-b2-english-reading-test/":{"id":"b2r03","n":11,"q":"If you could ask one animal one question, which animal would you choose, and what would you ask?","k":"Talking to whales","h":"קריאה: מדברים עם לווייתנים"},
 "https://test-english.com/reading/b2/regulating-deepfakes-b2-english-reading-test/":{"id":"b2r04","n":10,"q":"How could you check whether a video of a famous person is real?","k":"Is that really you?","h":"קריאה: deepfake, סרטונים מזויפים"},
+"https://test-english.com/writing/b2/formal-email-letter-asking-information/":{"id":"b2w01","n":8,"q":"If you could ask a museum one question, what would it be?","k":"A formal email","h":"כתיבה: מייל רשמי","wr":{"8":"Write a formal email to a science museum to ask about a workshop for kids."}},
+"https://test-english.com/writing/b2/a-formal-letter-of-complaint-tips-examples-exercises/":{"id":"b2w02","n":8,"q":"What is the best way to complain without being rude?","k":"A polite complaint","h":"כתיבה: תלונה מנומסת","wr":{"8":"You ordered a board game online, but some pieces were missing. Write a short complaint."}},
+"https://test-english.com/writing/b2/writing-a-discussion-essay-discuss-two-views-and-give-your-opinion/":{"id":"b2w03","n":8,"q":"Is it better to learn from books or from videos?","k":"Two views","h":"כתיבה: שתי דעות","wr":{"8":"Some think kids learn better from videos, others from books. Discuss both and give your view."}},
+"https://test-english.com/writing/b2/opinion-essay-agree-or-disagree-with-a-statement/":{"id":"b2w04","n":8,"q":"Do you agree that everyone should learn to cook?","k":"Agree or disagree?","h":"כתיבה: מסכימים או לא","wr":{"8":"Do you agree? \"Every young person should learn to cook.\" Give your view and two reasons."}},
 "https://test-english.com/grammar-points/b1-b2/questions-different-types/":{"id":"bpg01","n":14,"q":"What question would you like to ask a famous person?","k":"Questions of all kinds","h":"סוגים שונים של שאלות"},
 "https://test-english.com/grammar-points/b1-b2/indirect-questions/":{"id":"bpg02","n":14,"q":"Do you know what we are having for dinner tomorrow?","k":"Asking politely","h":"שאלות עקיפות ומנומסות"},
 "https://test-english.com/grammar-points/b1-b2/auxiliary-verbs-different-uses/":{"id":"bpg03","n":14,"q":"You like pizza, don't you?","k":"Small words, big jobs","h":"פעלי עזר: do, be, have"},
@@ -4396,6 +4417,10 @@ var MISSION_INDEX = {"https://test-english.com/grammar-points/a1/present-simple-
 "https://test-english.com/reading/b1-b2/the-business-of-running-b1-english-reading-test/":{"id":"bpr02","n":10,"q":"If you started a new sport tomorrow, which one would it be, and what would you need to buy?","k":"Running shoes and big money","h":"קריאה: איך ריצה הפכה לעסק גדול"},
 "https://test-english.com/reading/b1-b2/why-we-cant-stop-lying-b1-english-reading-test/":{"id":"bpr03","n":10,"q":"Is it ever OK to tell a white lie? When?","k":"Why we can't stop lying","h":"קריאה: למה אנחנו משקרים"},
 "https://test-english.com/reading/b1-b2/incredible-hoaxes-b1-english-reading-test/":{"id":"bpr04","n":10,"q":"Have you ever been fooled by a joke or a fake photo? What happened?","k":"Amazing tricks and jokes","h":"קריאה: מתיחות מפורסמות"},
+"https://test-english.com/writing/b1-b2/describing-a-photo-b1-english-writing/":{"id":"bpw01","n":8,"q":"If you could take one photo of today, what would be in it?","k":"Describe a picture","h":"כתיבה: תיאור תמונה","wr":{"8":"Imagine a photo of a busy beach in summer. Describe what is in it."}},
+"https://test-english.com/writing/b1-b2/an-informal-email-advice/":{"id":"bpw02","n":8,"q":"What is the best advice anyone ever gave you?","k":"Give advice","h":"כתיבה: עצה","wr":{"8":"A friend is new in your class and feels lonely. Write them some advice."}},
+"https://test-english.com/writing/b1-b2/for-against-essay-balanced-essay/":{"id":"bpw03","n":8,"q":"Is it better to live in a city or in the countryside?","k":"For and against","h":"כתיבה: בעד ונגד","wr":{"8":"Should every kid have a smartphone? Give one point for and one point against."}},
+"https://test-english.com/writing/b1-b2/narrative-writing-step-by-step/":{"id":"bpw04","n":8,"q":"What would you do if you found a treasure map?","k":"Tell a story","h":"כתיבה: סיפור","wr":{"8":"Start a story: you were walking on the beach when you found a bottle with a note inside."}},
 "https://test-english.com/grammar-points/c1/advanced-present-simple-and-present-continuous/":{"id":"c1g01","n":14,"q":"What is someone in our family always doing that drives you mad?","k":"The present, for experts","h":"הווה פשוט ומתמשך, רמה מתקדמת"},
 "https://test-english.com/grammar-points/c1/advanced-past-simple-past-continuous-past-perfect/":{"id":"c1g02","n":14,"q":"What had you never done before this year?","k":"Stories in the past","h":"זמני עבר בסיפור, כולל past perfect"},
 "https://test-english.com/grammar-points/c1/advanced-modal-verbs-will-would-and-should/":{"id":"c1g03","n":14,"q":"What would you do every summer when you were younger?","k":"will, would, should","h":"הפעלים will, would, should"},
@@ -4423,7 +4448,11 @@ var MISSION_INDEX = {"https://test-english.com/grammar-points/a1/present-simple-
 "https://test-english.com/listening/c1/operation-cat-drop-c1-english-listening-test/":{"id":"c1l09","n":10,"q":"Have you ever solved one problem and accidentally created another?","k":"Operation Cat Drop","h":"האזנה: מבצע הצנחת החתולים","w":3},
 "https://test-english.com/reading/c1/a-walk-gone-wrong-c1-english-reading-test/":{"id":"c1r02","n":11,"q":"What would you pack for a long walk, just to be on the safe side?","k":"A walk gone wrong","h":"קריאה: טיול שהשתבש"},
 "https://test-english.com/reading/c1/how-ai-voice-cloning-is-changing-scams-c1-english-reading-test/":{"id":"c1r03","n":11,"q":"How would you check that a message really came from a friend?","k":"When a voice can be copied","h":"קריאה: שיבוט קולות בבינה מלאכותית"},
-"https://test-english.com/reading/c1/kidfluencers-growing-up-online-c1-english-reading/":{"id":"c1r04","n":11,"q":"Should parents ask their children before posting photos of them?","k":"Kids who are online stars","h":"קריאה: ילדים כוכבי רשת"}};
+"https://test-english.com/reading/c1/kidfluencers-growing-up-online-c1-english-reading/":{"id":"c1r04","n":11,"q":"Should parents ask their children before posting photos of them?","k":"Kids who are online stars","h":"קריאה: ילדים כוכבי רשת"},
+"https://test-english.com/writing/c1/a-problem-solution-essay-c1-english-writing/":{"id":"c1w01","n":8,"q":"What is one small change that could make our town cleaner?","k":"Problem and solution","h":"כתיבה: בעיה ופתרון","wr":{"8":"Many families throw away a lot of food. Describe the problem and suggest a solution."}},
+"https://test-english.com/writing/c1/describing-visual-data-c1-english-writing/":{"id":"c1w02","n":8,"q":"What do you think most kids do in their free time?","k":"Describe the data","h":"כתיבה: תיאור נתונים","wr":{"8":"A survey of 100 kids: sport 40%, screens 30%, music 20%, reading 10%. Describe the results."}},
+"https://test-english.com/writing/c1/an-advanced-essay-c1-english-writing/":{"id":"c1w03","n":8,"q":"Should museums be free for everyone?","k":"A strong argument","h":"כתיבה: טיעון חזק","wr":{"8":"Should museums be free for everyone? Write a short argument."}},
+"https://test-english.com/writing/c1/how-to-write-a-proposal-c1-english-writing/":{"id":"c1w04","n":8,"q":"If you could add one thing to our neighbourhood, what would it be?","k":"A proposal","h":"כתיבה: הצעה","wr":{"8":"Write a short proposal to your town council: something new for young people in your area."}}};
 
 // ---- src/Missions.js ----
 // Today's Mission (specs/missions.md): the daily task played in the app, with a measured score.
@@ -4442,10 +4471,16 @@ function missionOf(url) {
   return idx.hasOwnProperty(url) ? idx[url] : null;
 }
 
+// The app version of this call (APP_V, set by doPost; null outside a web call, as in the tests).
+var REQ_APP = null;
+
 // What the app needs to open a day's mission, or null (no mission for that topic, or missions are off for the kid).
+// A Writer's Desk mission needs an app that knows the write question (WRITING.minApp): an older copy gets the day's
+// link instead, until it updates (the service worker does that on the second open).
 function missionView(kid, a, on) {
   if (!a || !on) return null;
   var m = missionOf(a.url);
+  if (m && m.wr && REQ_APP !== null && REQ_APP < WRITING.minApp) return null;
   return m ? { id: m.id, n: m.n, kid: m.k || '', he: m.h || '' } : null;
 }
 
@@ -4457,7 +4492,8 @@ function missionHe(url) {
 
 // One finished mission. The app measures the score; the server checks that it fits the day's mission.
 // missed / right: question ids (x:<mission>:<n>) for the spaced review. seconds: time spent playing.
-function apiMissionResult(name, pin, date, missionId, correct, total, missed, right, seconds) {
+// writing (newer apps): what she wrote at the Writer's Desk, [{ n, text, first, checks }] (n = the question number).
+function apiMissionResult(name, pin, date, missionId, correct, total, missed, right, seconds, writing) {
   var kid = auth(name, pin);
   var t = today();
   if (pendingLevelTest(kid)) throw new Error('Take the level test first.');
@@ -4489,6 +4525,7 @@ function apiMissionResult(name, pin, date, missionId, correct, total, missed, ri
     };
     appendRow('Log', entry);
     updateReview(kid.Name, missed, right, t);
+    saveWriting(kid, a, m, date, writing);
   } finally {
     lock.releaseLock();
   }
@@ -4511,6 +4548,113 @@ function apiFlag(name, pin, missionId, itemId, note) {
   if (mine.length >= MISSION.flagsPerDay) return { ok: true };
   appendRow('Flags', { Timestamp: new Date(), Girl: kid.Name, Date: t, Mission: missionId, Item: itemId, Note: note });
   return { ok: true };
+}
+
+// ---------- The Writer's Desk (specs/missions.md) ----------
+// What a kid writes in a mission (question kind `write`) is kept in the Writing tab: her parents see it in the parents'
+// area, the teacher in the teacher review (?missions&t=), where she gives a mark and one of the preset notes below, which
+// the kid sees on her Me tab. No other kid ever sees it. The prompt comes from MISSION_INDEX (`w`), never from the phone.
+var WRITING = {
+  maxChars: 400, perMission: 3, keepDays: 365, teacherList: 60, minApp: '2026.11.01',
+  marks: { star: 'Excellent', good: 'Good work', more: 'Keep practising' },
+  comments: [
+    'Great job! Your sentences are clear and easy to read.',
+    'Lovely ideas! Next time, check the capital letters.',
+    'Good work! Remember the full stop at the end of each sentence.',
+    'Nice! Next time, add one more sentence with a detail.',
+    'Well done! Check the verbs: he likes, she plays, it goes.',
+    'Super! You used the new words very well.',
+    'Good try! Read it aloud once before you check it.',
+    'Excellent! Your writing is fun to read.'
+  ]
+};
+
+// A kid's text for a sheet cell: one line, no markup or control characters, at most WRITING.maxChars, and never read
+// as a formula (a leading = + - @ gets an apostrophe, which sheetText takes off again).
+function writingClean(s) {
+  s = String(s == null ? '' : s).replace(/[\u0000-\u001f\u007f<>]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, WRITING.maxChars);
+  return /^[=+\-@]/.test(s) ? "'" + s : s;
+}
+function sheetText(s) {
+  s = String(s == null ? '' : s);
+  return /^'[=+\-@]/.test(s) ? s.slice(1) : s;
+}
+
+// Called inside apiMissionResult's lock, after its Log row. Only the mission's own write questions (MISSION_INDEX `w`),
+// once each; a bad entry is dropped, never the mission.
+function saveWriting(kid, a, m, date, writing) {
+  if (!Array.isArray(writing) || !m.wr) return 0;
+  var done = {}, n = 0;
+  writing.slice(0, WRITING.perMission).forEach(function (x) {
+    try {
+      var item = Math.round(Number(x && x.n));
+      if (!m.wr.hasOwnProperty(String(item)) || done[item]) return;
+      var text = writingClean(x.text);
+      if (!/[A-Za-z֐-׿]/.test(text)) return;
+      var first = writingClean(x.first), checks = String(x.checks || '').match(/^(\d{1,2}) of (\d{1,2})$/);
+      done[item] = true;
+      appendRow('Writing', { Timestamp: new Date(), Id: 'w' + Utilities.getUuid().replace(/-/g, '').slice(0, 9), Girl: kid.Name, Date: date, Mission: m.id, Item: item,
+        Level: a.level, Prompt: writingClean(m.wr[item]), Text: text, First: first === text ? '' : first, Checks: checks ? checks[1] + ' of ' + checks[2] : '',
+        Words: sheetText(text).split(' ').filter(function (w) { return /[A-Za-z]/.test(w); }).length, Mark: '', Comment: '', MarkedOn: '' });
+      n++;
+    } catch (e) { console.error(e); }
+  });
+  return n;
+}
+
+function writingView(r, withFirst) {
+  var v = { id: String(r.Id), date: String(r.Date), mission: String(r.Mission), level: LEVEL_LABEL[r.Level] || String(r.Level || ''),
+    prompt: sheetText(r.Prompt), text: sheetText(r.Text), checks: String(r.Checks || ''),
+    mark: String(r.Mark || ''), markLabel: WRITING.marks[r.Mark] || '', comment: String(r.Comment || ''), marked: String(r.MarkedOn || '') };
+  if (withFirst) v.first = sheetText(r.First);
+  return v;
+}
+
+// The kid's last pieces, newest first (her Me tab, and her parents through parentData).
+function writingInfo(kid) {
+  return kidRows('Writing', kid.Name).slice(-5).reverse().map(function (r) { return writingView(r, true); });
+}
+
+function teacherOk(code) {
+  ensureSetup();
+  var want = String(getSetting('TeacherCode') || '').trim();
+  checkPin('teacher', !!want && String(code || '').trim() === want);
+}
+
+// The teacher's list: the newest pieces of every kid, without names (the level and the prompt are enough to mark one).
+function apiTeacherWriting(code) {
+  teacherOk(code);
+  var rows = readTable('Writing').filter(function (r) { return r.Id; }).slice(-WRITING.teacherList).reverse();
+  return {
+    items: rows.map(function (r) { return writingView(r, true); }),
+    marks: Object.keys(WRITING.marks).map(function (k) { return { k: k, label: WRITING.marks[k] }; }),
+    comments: WRITING.comments
+  };
+}
+
+// mark: a key of WRITING.marks; comment: the number of a preset note, or -1 for none.
+function apiTeacherMark(code, id, mark, comment) {
+  teacherOk(code);
+  id = String(id || '').replace(/[^a-z0-9]/g, '').slice(0, 12);
+  mark = String(mark || '');
+  comment = Math.round(Number(comment));
+  if (!WRITING.marks.hasOwnProperty(mark)) throw new Error('Choose a mark');
+  var note = comment >= 0 && comment < WRITING.comments.length ? WRITING.comments[comment] : '';
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  var row;
+  try {
+    row = readTableUncached('Writing').filter(function (r) { return String(r.Id) === id; })[0];
+    if (!id || !row) throw new Error('This piece of writing is not there any more');
+    upsertRow('Writing', 'Id', id, { Mark: mark, Comment: note, MarkedOn: today() });
+  } finally {
+    lock.releaseLock();
+  }
+  var kid = findGirl(row.Girl);
+  audit('teacher', 'teacher', kid ? groupOf(kid) : '', 'writing mark', String(row.Mission) + ' #' + row.Item + ': ' + WRITING.marks[mark] + (note ? ' + note' : ''));
+  var view = writingView(row, true);
+  view.mark = mark; view.markLabel = WRITING.marks[mark]; view.comment = note; view.marked = today();
+  return { ok: true, item: view };
 }
 
 // ---- src/Pilot.js ----
@@ -5786,7 +5930,7 @@ function apiAdminEdit(pin, table, key, changes) {
 
 // Columns that hold a kid's name, and columns that hold a family (group) id.
 var KID_COLS = { Girls: ['Name'], Games: ['Girl'], Review: ['Girl'], Gates: ['Girl'], Assignments: ['Girl'], Log: ['Girl'], Push: ['Girl'],
-  Bonus: ['Girl'], Shop: ['Girl'], Wardrobe: ['Girl'], Words: ['Girl'], Flags: ['Girl'], Placements: ['Girl'], Chats: ['Girl'],
+  Bonus: ['Girl'], Shop: ['Girl'], Wardrobe: ['Girl'], Words: ['Girl'], Flags: ['Girl'], Placements: ['Girl'], Chats: ['Girl'], Writing: ['Girl'],
   Duos: ['A', 'B'], Duels: ['Host', 'Guest'], Audit: ['Who'], Blocks: ['Girl', 'Blocked'], Reports: ['Girl', 'About'], Usage: ['Girl'], Errors: ['Girl'] };
 // Feedback: Who is the family id ('admin' for the admin); its Group column is the family's name, for reading the tab.
 var GROUP_COLS = { Groups: ['Id'], Rewards: ['Group'], ParentPush: ['Who'], Feedback: ['Who'], Audit: ['Group'], Plans: ['Group'], Reports: ['Group'] };
@@ -5901,12 +6045,14 @@ function apiExportData(pin, groupId) {
 
 // Least data (specs/store-readiness.md): the audit trail keeps 180 days (opens only 30 days one by one, then as daily
 // totals), the text of what a kid said to Chacho 90 days (the counts stay), and a kid with no open and no practice for
-// 12 months is deleted (the admin hears about it a month before). Runs at night on Cloudflare (platformTick). It removes the old audit rows only when there are a
+// 12 months is deleted (the admin hears about it a month before), and what she wrote at the Writer's Desk a year (WRITING.keepDays). Runs at night on Cloudflare (platformTick). It removes the old audit rows only when there are a
 // month's worth of them, so the table is rewritten about once a month, not every night.
 var KEEP = { auditDays: 180, saidDays: 90, batchDays: 30 };
 function retentionSweep() {
-  var now = Date.now(), day = 86400000, out = { audit: 0, said: 0 };
+  var now = Date.now(), day = 86400000, out = { audit: 0, said: 0, writing: 0 };
   var limit = fmt(new Date(now - KEEP.auditDays * day)), batch = fmt(new Date(now - (KEEP.auditDays + KEEP.batchDays) * day));
+  var wlimit = fmt(new Date(now - WRITING.keepDays * day)), writes = readTable('Writing');
+  if (writes.length && String(writes[0].Date) < wlimit) out.writing = eraseRows('Writing', function (o) { return String(o.Date instanceof Date ? fmt(o.Date) : o.Date) < wlimit; });
   var audits = readTable('Audit');
   if (audits.length && String(audits[0].Date) < batch) out.audit = eraseRows('Audit', function (o) { return String(o.Date instanceof Date ? fmt(o.Date) : o.Date) < limit; });
   var sh = sheet('Chats');

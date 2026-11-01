@@ -2641,5 +2641,136 @@ window.EQ_MISSIONS.a2 = [
   use: [
     { k: 'build', s: 'Can the robot clean my room too?', why: 'Can + the robot + verb? A question with can.' }
   ]
+},
+// ---- The Writer's Desk (writing days) ----
+{
+  id: 'a2w01', type: 'writing',
+  title: 'Invite a friend', kid: 'Invite a friend', he: 'כתיבה: הזמנה לחבר', dinner: 'Who would you invite to a picnic, and what would you bring?',
+  hook: { q: 'What must every invitation say?', o: ['When and where it is', 'Your favourite colour', 'How old the house is'], a: 0,
+    reveal: 'Every invitation says *when* and *where*. Then your friend knows how to come!' },
+  learn: { kind: 'rule', title: 'An invitation', form: ['Would you like to ...?', 'It is on ... at ...'],
+    lines: ['Ask nicely: *Would you like to* come to my party?', 'Say when: it is *on* Friday *at* five o\'clock.',
+      'Say where, then end with a friendly line: *See you soon!*'],
+    ex: ['*Would you like to* come to the beach with us?', 'It is *on* Saturday *at* ten.'],
+    he: 'מזמינים בנימוס עם Would you like to...? ואומרים מתי (on + יום, at + שעה) ואיפה.' },
+  steps: [
+    { name: 'Asking nicely', items: [
+      { k: 'mc', q: '___ you like to come to my party?', o: ['Would', 'Do', 'Are'], a: 0, why: 'Would you like to...? is a polite invitation.' },
+      { k: 'mc', q: 'The party is ___ Friday.', o: ['on', 'in', 'at'], a: 0, why: 'Days → on.' },
+      { k: 'mc', q: 'It starts ___ four o\'clock.', o: ['at', 'on', 'in'], a: 0, why: 'A time → at.' },
+      { k: 'tf', q: '"Would you like come to the park?"', a: false, fix: 'Would you like to come to the park?', why: 'Would you like + to + verb.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'Would you like to come to my party?', why: 'Would you like to + verb + where.' },
+      { k: 'mc', q: 'Your friend can\'t come. Which answer is kind?', o: ['Thanks for asking! Sorry, I can\'t come.', 'No.', 'I don\'t like parties.'], a: 0,
+        why: 'Say thank you first, then say sorry.' },
+      { k: 'build', s: 'See you on Friday!', why: 'A friendly goodbye: See you + when.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Invite a friend to a picnic in the park. Say when it is.', tip: 'Start with Hi! and ask with Would you like to...?',
+      n: [2, 3], len: [8, 35],
+      need: [{ t: 'Ask with "Would you like to"', any: ['would you like to'] },
+        { t: 'Say the day or the time', re: '(monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|weekend|o\'clock|[0-9])' }],
+      ideas: ['Would you like to', 'on Friday', 'at four'],
+      model: 'Hi Noa! Would you like to come to a picnic in the park? It is on Friday at five o\'clock.',
+      why: 'Ask nicely and say when, so your friend knows.', he: 'מתחילים ב-Hi, מזמינים עם Would you like to ואומרים מתי.' }
+  ]
+},
+{
+  id: 'a2w02', type: 'writing',
+  title: 'My last holiday', kid: 'My last holiday', he: 'כתיבה: החופשה האחרונה', dinner: 'What was the best day of our last holiday?',
+  hook: { q: 'In which sea in Israel is the water so salty that you float?', o: ['The Dead Sea', 'The Red Sea', 'The Mediterranean'], a: 0,
+    reveal: 'In the *Dead Sea* the water is so salty that you float like a boat!' },
+  learn: { kind: 'rule', title: 'The past simple', form: ['I went', 'we played', 'it was'],
+    lines: ['A holiday is over, so we use the past: I *went*, we *played*, it *was* great.', 'Regular verbs: play → play*ed*, visit → visit*ed*.',
+      'Some verbs change: go → *went*, eat → *ate*, see → *saw*, swim → *swam*.'],
+    ex: ['Last summer we *went* to Eilat.', 'We *swam* in the sea every day.'],
+    he: 'מספרים על חופשה שהייתה: went, played, was. פעלים רגילים מקבלים ed, ויש פעלים שמשתנים (go → went).' },
+  steps: [
+    { name: 'In the past', items: [
+      { k: 'mc', q: 'Last summer we ___ to the Dead Sea.', o: ['went', 'go', 'goes'], a: 0, why: 'go → went.' },
+      { k: 'mc', q: 'We ___ in a tent near the beach.', o: ['slept', 'sleep', 'sleeped'], a: 0, why: 'sleep → slept.' },
+      { k: 'mc', q: 'The weather ___ very hot.', o: ['was', 'were', 'is'], a: 0, why: 'the weather = it → was.' },
+      { k: 'type', q: 'We ___ my grandma in Haifa.', hint: '(visit)', a: ['visited'], why: 'visit → visited.' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'We ate falafel on the beach.', why: 'eat → ate.' },
+      { k: 'spot', s: 'Yesterday we *swim* in the pool.', fix: 'swam', why: 'Yesterday = the past: swim → swam.' },
+      { k: 'build', s: 'It was the best holiday ever!', why: 'It + was + the best...' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write about a holiday or a fun trip you had.', tip: 'Where did you go? What did you do?',
+      n: [2, 3], len: [10, 40],
+      need: [{ t: 'Use the past (went, was, played...)', re: '\\b(went|was|were|saw|ate|had|swam|slept|took|made|got|[a-z]+ed)\\b' }],
+      ideas: ['we went to', 'we saw', 'it was', 'we ate'],
+      model: 'Last summer we went to Eilat. We swam in the sea and saw lots of fish. It was great!',
+      why: 'The trip is over, so the verbs are in the past.', he: 'כותבים לאן נסעתם ומה עשיתם, בזמן עבר.' }
+  ]
+},
+{
+  id: 'a2w03', type: 'writing',
+  title: 'A cool job', kid: 'A cool job', he: 'כתיבה: מקצוע מגניב', dinner: 'What job would you like to try for one day?',
+  hook: { q: 'Which job helps sick animals?', o: ['A vet', 'A pilot', 'A chef'], a: 0,
+    reveal: 'A *vet* is a doctor for animals.' },
+  learn: { kind: 'rule', title: 'What people do at work', form: ['A ... works in ...', 'He / She + verb + s'],
+    lines: ['Say where: a pilot *works in* a plane, a chef *works in* a kitchen.', 'Say what they do: a vet *helps* animals. (he / she → verb + s)',
+      'Say what you think: I think it is an *interesting* / *exciting* job.'],
+    ex: ['A firefighter *helps* people.', 'I think it is an *exciting* job.'],
+    he: 'מתארים מקצוע: איפה עובדים ומה עושים, עם s בסוף הפועל (helps, works). ואז מה אתם חושבים עליו.' },
+  steps: [
+    { name: 'Jobs', items: [
+      { k: 'mc', q: 'A chef ___ food.', o: ['cooks', 'cook', 'cooking'], a: 0, why: 'a chef = he or she → cooks.' },
+      { k: 'mc', q: 'A pilot works ___ a plane.', o: ['in', 'on', 'at'], a: 0, why: 'inside a plane → in.' },
+      { k: 'mc', q: 'A ___ helps sick animals.', o: ['vet', 'driver', 'pilot'], a: 0, why: 'A vet is a doctor for animals.' },
+      { k: 'tf', q: '"A teacher work at a school."', a: false, fix: 'A teacher works at a school.', why: 'a teacher = he or she → works.' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'A doctor helps people every day.', why: 'A doctor + helps + who.' },
+      { k: 'spot', s: 'She *flys* a big plane.', fix: 'flies', why: 'fly → flies (y → ies).' },
+      { k: 'mc', q: 'Being a firefighter is ___.', o: ['exciting', 'excited', 'excite'], a: 0, why: 'The job is exciting: it makes you feel excited.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write about a job you think is interesting.', tip: 'What does the person do? Why do you like it?',
+      n: [2, 3], len: [10, 40], need: [{ t: 'Say why with "because"', any: ['because'] }],
+      ideas: ['a vet', 'a chef', 'a pilot', 'helps', 'because'],
+      model: 'I think a vet has a cool job. A vet helps sick animals. I like it because I love animals.',
+      why: 'Say what the person does, and why you like it.', he: 'כותבים מה עושים במקצוע (helps, works) ולמה הוא מעניין, עם because.' }
+  ]
+},
+{
+  id: 'a2w04', type: 'writing',
+  title: 'A postcard', kid: 'A postcard', he: 'כתיבה: גלויה', dinner: 'Who would you send a postcard to, and from where?',
+  hook: { q: 'What can you write at the end of a postcard?', o: ['See you soon!', 'Dear Sir,', 'Chapter one'], a: 0,
+    reveal: 'A postcard ends with a short, warm goodbye, like *See you soon!* or *Love,*' },
+  learn: { kind: 'rule', title: 'A postcard', form: ['Hi ...!', 'We\'re in ...', 'See you soon!'],
+    lines: ['Start with *Hi* or *Dear* and the name.', 'Say where you are and what it is like: *We\'re in* the Galilee. It\'s *beautiful*.',
+      'Say one thing you did, then end: *See you soon!*'],
+    ex: ['*Hi* Grandma! *We\'re in* the Galilee.', 'It\'s sunny and *beautiful*.'],
+    he: 'בגלויה כותבים קצר: למי (Hi...), איפה אתם ואיך שם, ומשהו אחד שעשיתם.' },
+  steps: [
+    { name: 'Postcard words', items: [
+      { k: 'mc', q: 'We\'re having a great time ___ the Galilee.', o: ['in', 'at', 'on'], a: 0, why: 'A region or a city → in.' },
+      { k: 'mc', q: 'The weather is ___ and warm.', o: ['sunny', 'sun', 'suns'], a: 0, why: 'sun (a noun) → sunny (it describes the weather).' },
+      { k: 'mc', q: 'Yesterday we ___ a boat trip.', o: ['took', 'take', 'takes'], a: 0, why: 'Yesterday → the past: take → took.' },
+      { k: 'tf', q: '"we are in Tel Aviv."', a: false, fix: 'We are in Tel Aviv.', why: 'A sentence starts with a capital letter: We.' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'We\'re having a great time here!', why: 'We\'re having + a great time.' },
+      { k: 'spot', s: 'Yesterday we *visit* an old castle.', fix: 'visited', why: 'Yesterday → the past: visited.' },
+      { k: 'build', s: 'See you next week!', why: 'A short goodbye.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write a postcard to a friend from a trip, real or made up.', tip: 'Say where you are, what it is like, and one thing you did.',
+      n: [2, 3], len: [10, 40],
+      need: [{ t: 'Start with Hi, Hello or Dear', re: '^(hi|hello|dear)\\b' },
+        { t: 'Say where you are', any: ['we\'re in', 'we are in', 'i\'m in', 'i am in', 'we\'re at', 'we are at', 'i\'m at', 'i am at'] }],
+      ideas: ['We\'re in', 'beautiful', 'sunny', 'we visited'],
+      model: 'Hi Tom! We\'re in the Galilee and it\'s beautiful. Yesterday we took a boat trip on the lake.',
+      why: 'A postcard is short: where you are, what it is like, one thing you did.', he: 'כותבים למי, איפה אתם, איך שם, ומשהו אחד שעשיתם.' }
+  ]
 }
 ];

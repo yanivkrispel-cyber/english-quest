@@ -718,6 +718,39 @@ mark{background:rgba(99,102,241,.18);color:#3730a3;border-radius:6px;padding:0 3
 .mspell .slot.no{border-style:solid;border-color:#fb7185;background:#ffe4e6}
 .mtype{font:inherit;font-weight:800;font-size:18px;width:100%;padding:12px 14px;border-radius:16px;border:2px solid rgba(99,102,241,.45);background:#fff;color:var(--ink);text-align:center}
 .mtype:focus{outline:3px solid rgba(99,102,241,.3)}
+/* The Writer's Desk (specs/missions.md): a text box (or a frame with boxes), a word count, idea chips and the checklist. */
+textarea.mtype.mwta{text-align:left;font-weight:700;font-size:16.5px;line-height:1.45;height:7.4em;min-height:0;resize:none;display:block}
+.mwframe{font-size:18px;font-weight:700;line-height:2.3}
+.mwgap{font:inherit;font-size:17px;font-weight:800;width:6.5em;max-width:100%;padding:3px 8px;border-radius:12px;border:2px solid rgba(99,102,241,.45);background:#fff;color:var(--ink)}
+.mwgap:focus{outline:3px solid rgba(99,102,241,.3)}
+.mwgap:disabled,.mwta:disabled{background:rgba(255,255,255,.75);color:var(--ink);-webkit-text-fill-color:var(--ink);opacity:1}
+.mwfoot{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12.5px;font-weight:700;color:var(--muted)}
+.mwfoot .tok{min-height:32px;font-size:14px;padding:0 10px}
+.mwfoot .mwn{margin-right:auto}
+.mwchecks{display:grid;gap:6px;padding:12px 14px}
+.mwchecks div{display:flex;gap:8px;align-items:flex-start;font-size:14px;font-weight:700;line-height:1.35}
+.mwchecks i{flex:none;font-size:18px;margin-top:-1px}
+.mwchecks .ok i{color:#059669}
+.mwchecks .no i{color:#d97706}
+.mwchecks .no span small{display:block;font-weight:600;color:var(--muted);font-size:12.5px}
+.mwchecks .mflag{justify-self:start}
+.mwchecks .ok span{color:var(--muted);font-size:13px}
+.mwrite.checked textarea.mtype.mwta{height:4.6em}
+.mwmodel{font-weight:700;font-size:15px;margin:4px 0 6px}
+.msayline{font-size:20px;font-weight:800;line-height:1.4;text-align:center}
+.msayres{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.msayres .soft{padding:10px 12px;text-align:center;font-size:13px;font-weight:700;color:var(--muted);min-height:62px}
+.msayres .soft b{display:block;font-size:20px;color:var(--ink)}
+/* The keyboard is open on a phone (kbdFit): the frame is the part of the screen above it; the pet and the parts make room. */
+html.kbd:has(.gplay),html.kbd:has(.gplay) body{height:100%;overflow:hidden;overscroll-behavior:none}
+html.kbd:has(.gplay) #app{height:var(--vvh,100dvh);padding:calc(6px + env(safe-area-inset-top)) 16px 8px;display:flex;flex-direction:column}
+html.kbd .gscreen.gplay{flex:1;min-height:0;gap:8px}
+html.kbd .gplay .gstage{flex:1 1 0;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;margin:0 -16px -8px;padding:2px 16px 12px}
+html.kbd .gplay .mparts,html.kbd .gplay .gdock .react,html.kbd .gplay .gdock #explain{display:none}
+html.kbd .gplay .gtop .sub,html.kbd .gplay .gstage>.qprompt,html.kbd .mwrite>.qprompt,html.kbd .mwrite>.sub{display:none}
+html.kbd .mwrite>.qbig{font-size:15px!important}
+html.kbd .gplay .qcard{padding:10px 12px}
+html.kbd textarea.mtype.mwta{height:max(3.2em,min(7.4em,calc(var(--vvh,600px) - 225px)))}
 .mremind{border:1.5px dashed rgba(246,160,77,.7);background:rgba(255,247,237,.85)}
 .mremind b{color:#b45309}
 .mgaps .mtext{font-size:15.5px}
@@ -1346,7 +1379,7 @@ svg.pa{display:block;overflow:visible}
 .gstage.enter{animation:qin .26s ease both}
 @keyframes qin{from{transform:translateY(10px)}}
 .gplay{-webkit-user-select:none;user-select:none}
-.gplay input{-webkit-user-select:text;user-select:text}
+.gplay input,.gplay textarea{-webkit-user-select:text;user-select:text}
 button{touch-action:manipulation}
 #msclock,#dtimer,#ttime{font-variant-numeric:tabular-nums}
 .gtop .gsnd{width:38px;height:38px;font-size:16px;flex:none}
@@ -1770,7 +1803,7 @@ const store = {
 // The server is /api on this site (Cloudflare, specs/cloudflare.md). The old GitHub Pages address still calls Apps Script,
 // which passes the call on (src/Relay.js).
 // This copy of the app; the server can ask an older one to update (Settings.MinApp, src/Code.js doPost).
-const APP_V = '2026.10.30';
+const APP_V = '2026.11.01';
 const API_URL = /github.io$/.test(location.hostname) ? 'https:' + '/' + '/script.google.com/macros/s/AKfycbzN95JPrZcVFtwOc5yYpZLEh5fhySlDWHim1wAF_-3kdQpij1s6g4-ixld8NgK27HNI3w/exec' : '/api';
 // Every server call has a time limit (a stuck call never leaves a spinner turning), calls that only read
 // get one quiet second try, and errors from Google itself (not the app's own checks, like "Wrong PIN") read
@@ -4596,9 +4629,10 @@ async function startMission(date, practice){
   if (!m || msCount(m) !== w.mission.n) { toast('This mission is being updated. Here is the exercise on the website for today.', true); renderDash(); return openSheet(w); }
   const saved = practice ? null : msSaved(w);
   const chat = await chatForMission(m.id);
-  MS = { m, w, id: m.id, date, S: msAddChat(msScreens(m), chat), si: saved ? saved.si : 0, res: saved ? saved.res : [], missed: saved ? saved.missed : [],
+  MS = { m, w, id: m.id, date, S: msAddSay(msAddChat(msScreens(m), chat), m, micAllowed(dash.girl)), si: saved ? saved.si : 0, res: saved ? saved.res : [], missed: saved ? saved.missed : [],
     right: saved ? saved.right : [], active: saved ? saved.active : 0, last: Date.now(), sub: {}, he: false, practice: !!practice,
-    seed: hashStr(session.name + ':' + m.id + ':' + date), guess: saved ? saved.guess : null };
+    seed: hashStr(session.name + ':' + m.id + ':' + date), guess: saved ? saved.guess : null, wr: (saved && saved.wr) || {} };
+  MS.si = Math.min(MS.si, MS.S.length - 1);
   if (saved) toast('Welcome back! Your mission goes on from where you stopped.');
   msClock();
   msRender();
@@ -4628,7 +4662,7 @@ function msClockText(){
 }
 function msKeep(){
   if (!MS || MS.practice || MS.review) return;
-  store.set(msKey(), { id: MS.id, date: MS.date, si: MS.si, res: MS.res, missed: MS.missed, right: MS.right, active: MS.active, guess: MS.guess });
+  store.set(msKey(), { id: MS.id, date: MS.date, si: MS.si, res: MS.res, missed: MS.missed, right: MS.right, active: MS.active, guess: MS.guess, wr: MS.wr });
 }
 function msStopAudio(){
   if (msAudio) { try { msAudio.pause(); } catch(e){} msAudio = null; }
@@ -4658,10 +4692,11 @@ function msRender(){
   else if (sc.t === 'learn') [body, line, mood] = msLearn();
   else if (sc.t === 'play') [body, line, mood] = msPlay(sc);
   else if (sc.t === 'q') [body, line, mood] = msItem(sc);
+  else if (sc.t === 'say') [body, line, mood] = msSay(sc);
   else return msFinish();
   // The main button keeps its place from the start: Check while it is needed, then Next (grey until it can be tapped).
   const slot = MS.ready ? msNextHtml(MS.ready)
-    : MS.check ? `<button class="btn btn-primary btn-block" data-check="${MS.check.k}"${MS.check.ready ? '' : ' disabled'}>Check ${icon('check')}</button>`
+    : MS.check ? `<button class="btn btn-primary btn-block" data-check="${MS.check.k}"${MS.check.ready ? '' : ' disabled'}>${MS.check.label || 'Check'} ${icon('check')}</button>`
     : `<button class="btn btn-glass btn-block" disabled>${sc.t === 'q' ? 'Next' : 'Continue'} ${icon('arrow-right')}</button>`;
   app.innerHTML = `<div class="gscreen mscreen gplay" id="ms">
     <div class="gtop"><button class="btn btn-glass icon-btn" id="msquit" title="Stop">${icon('x')}</button>
@@ -4688,6 +4723,8 @@ function msRender(){
   const ti = document.getElementById('mstype');
   if (ti) ti.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); msCheckType(); } };
   if (sc.t === 'q' && sc.it.k === 'hear' && !MS.sub.done) setTimeout(() => sayWord(sc.it.say), 350);
+  if (sc.t === 'q' && sc.it.k === 'write') msWriteBind(sc);
+  kbdFit();
 }
 
 const msNextHtml = label => `<button class="btn btn-primary btn-block" id="msnext">${label || 'Next'} ${icon('arrow-right')}</button>`;
@@ -4850,7 +4887,7 @@ function msItem(sc){
   const playPart = sc.ctx.play != null ? sc.ctx.play : it.clip;
   if (playPart != null && MS.m.show) top = `<div class="row-flex" style="gap:8px;justify-content:center"><button class="btn btn-glass btn-sm" data-again="${playPart}">${icon('speaker-high')} Listen again</button>${msWordsBtn(playPart)}</div>`;
   if (sc.ctx.chunk != null) top = msChunk(sc.ctx.chunk, k === 'find' && !sub.done, k === 'find' && sub.done ? it.a : null, sc.ctx.step);
-  const remind = prevWrong && !sub.done ? msRemind() : '';
+  const remind = prevWrong && !sub.done && k !== 'write' ? msRemind() : '';
   const step = sc.ctx.chunk != null ? '' : `<div class="qprompt" style="text-align:center">${esc(sc.ctx.step || '')}</div>`;
   let body = '';
   const shuffled = (arr, salt) => shuffle(arr.map((x, i) => i), rng32((MS.seed ^ hashStr(salt + ':' + sc.q0)) >>> 0));
@@ -4916,10 +4953,14 @@ function msItem(sc){
     });
     body = `<div class="glass mcard mgaps">${it.title ? `<div class="qprompt">${esc(it.title)}</div>` : ''}<div class="mtext">${text}</div></div>
       ${sub.done ? '' : `<div class="opts${msOptsClass(gap.o)}">${order.map(i => `<button class="opt" data-gap="${i}">${esc(gap.o[i])}</button>`).join('')}</div>`}`;
+  } else if (k === 'write') {
+    body = msWriteBody(it, sub);
+    if (!sub.done) MS.check = { k: 'write', ready: msWriteReady(it, sub), label: sub.tries ? 'Check again' : 'Check' };
   }
   const hints = { mc: 'Hmm… which one is it?', tf: 'Read it carefully.', type: 'You can do it!', build: 'Let\'s build it together!', spot: 'Can you find it?',
     teach: dash.pet && it.s ? 'I said: "' + esc(it.s.replace(/\*/g, '')) + '" Is that right?' : 'Can you find the mistake?', sort: 'Where does each word go?', spell: 'Listen and spell it.',
-    hear: 'Listen carefully!', find: 'Look in the text!', gaps: 'Fill the gaps one by one.' };
+    hear: 'Listen carefully!', find: 'Look in the text!', gaps: 'Fill the gaps one by one.',
+    write: sub.tries ? 'Nearly there! Fix the orange ones and check again.' : 'Write it your way. Short and clear is great!' };
   return [top + remind + step + body, sub.done ? (sub.line || '') : (hints[k] || 'Your turn!'), sub.done ? (sub.ok ? 'celebrate' : 'oops') : 'thinking'];
 }
 // Long options one under the other; three short ones in a row.
@@ -5020,7 +5061,11 @@ function msClick(e){
   if (d.ehe) { const box = document.getElementById('mehe'); if (box) box.hidden = !box.hidden; return; }
   if (sc.t === 'hook' && d.guess != null && MS.guess == null) { msTouch(); MS.guess = Number(d.guess); msKeep(); return msRender(); }
   if (sc.t === 'learn' && d.pred != null && MS.sub.pred == null) { MS.sub.pred = Number(d.pred); return msRender(); }
+  if (sc.t === 'say' && t.id === 'msayrec') return msSayRec(sc);
   if (sc.t !== 'q' || sub.done) return;
+  if (d.check === 'write') return msWriteGo(false);
+  if (d.wkeep) return msWriteGo(true);
+  if (d.widea != null) return msWriteIdea(sc.it, Number(d.widea));
   const it = sc.it;
   if (d.opt != null) return msDone(Number(d.opt) === sub.right, { pick: Number(d.opt) });
   if (d.build != null) { sub.built.push(Number(d.build)); return msRender(); }
@@ -5051,8 +5096,10 @@ function msCheckType(){
   if (!msNorm(v)) { if (el) el.focus(); return; }
   return msDone(sc.it.a.some(a => sameAnswer(a, v)), { typed: v });
 }
-function msRecord(n, ok){
+// noReview: the Writer's Desk counts in the score but has no right answer to bring back in the review.
+function msRecord(n, ok, noReview){
   MS.res[n] = ok;
+  if (noReview) { msTouch(); return msKeep(); }
   const id = msQid(n);
   MS.missed = MS.missed.filter(x => x !== id); MS.right = MS.right.filter(x => x !== id);
   (ok ? MS.right : MS.missed).push(id);
@@ -5076,13 +5123,13 @@ function msDone(ok, extra){
     MS.sub.line = ok ? 'All the gaps are right!' : n + ' of ' + it.gaps.length + ' gaps right.';
   } else {
     MS.sub.ok = ok;
-    MS.sub.line = ok ? pick(['Correct!', 'Great!', 'Yes! You got it!', 'Perfect!', 'Well done!']) : pick(['Oops! Let\'s look at the answer.', 'Almost! Here is the answer.', 'Not quite. Now you know!']);
-    msRecord(sc.q0, ok);
+    MS.sub.line = (extra && extra.line) || (ok ? pick(['Correct!', 'Great!', 'Yes! You got it!', 'Perfect!', 'Well done!']) : pick(['Oops! Let\'s look at the answer.', 'Almost! Here is the answer.', 'Not quite. Now you know!']));
+    msRecord(sc.q0, ok, it.k === 'write');
   }
   msRender();
   const answer = msAnswerText(it);
   const why = it.k === 'gaps' ? it.gaps.map((g, j) => (MS.sub.gres || [])[j] ? '' : `<div>${j + 1}. <b>${esc(g.o[g.a])}</b>${g.why ? ' · ' + esc(g.why) : ''}</div>`).join('') : '';
-  document.getElementById('explain').innerHTML = `<div class="answer-box">${ok || it.k === 'gaps' ? '' : answer}${it.k === 'gaps' ? why : esc(it.why || '')}
+  document.getElementById('explain').innerHTML = `<div class="answer-box">${(ok && it.k !== 'write') || it.k === 'gaps' ? '' : answer}${it.k === 'gaps' ? why : esc(it.why || '')}
     <div class="mfoot">${it.he ? '<button class="mflag" data-ehe="1">בעברית</button>' : ''}<button class="mflag" data-flag="${esc(msQidOf(sc))}">Something wrong here?</button></div>
     ${it.he ? `<div class="mhe" id="mehe" dir="rtl" lang="he" hidden>${msHe(it.he)}</div>` : ''}</div>`;
   petReact(MS.sub.ok ? 'celebrate' : 'oops');
@@ -5100,7 +5147,216 @@ function msAnswerText(it){
   if (it.k === 'sort') return it.g.map((g, gi) => `<b>${esc(g)}:</b> ${esc(it.w.filter(w => w[1] === gi).map(w => w[0]).join(', '))}`).join('<br>') + '<br>';
   if (it.k === 'spell') return `<b>${esc(it.w)}</b><br>`;
   if (it.k === 'find') return `<b>${esc(it.a)}</b><br>`;
+  if (it.k === 'write') return `<span class="label">Chacho's version</span><div class="mwmodel">${esc(it.model)}</div>`;
   return '';
+}
+
+// ---- The Writer's Desk (specs/missions.md, question kind `write`): she writes one to three sentences of her own (a frame
+// with boxes at A1). A checklist of simple rules runs on the phone (no AI, nothing sent to check it); one rewrite, then
+// Chacho's version. The text goes with the mission result; her parents and the teacher see it. ----
+const MS_WRITE_MAX = 400;
+// The checklist of a text. it: the write item; text: all she wrote (with a frame, the whole sentence); gaps: a frame's
+// boxes. -> [{ k, t: the line shown, ok, hint }]. test/missions-check.js runs this same function on every model answer.
+function msWriteCheck(it, text, gaps){
+  const s = String(text || '').replace(/[‘’]/g, '\'').replace(/\s+/g, ' ').trim();
+  const mine = gaps ? gaps.join(' ') : s, words = mine.split(' ').filter(w => /[A-Za-z]/.test(w));
+  const flat = x => String(x).toLowerCase().replace(/[‘’]/g, '\'').replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim();
+  const low = ' ' + flat(s) + ' ', has = p => low.indexOf(' ' + flat(p) + ' ') >= 0;
+  const sents = (s.match(/[^.!?]+[.!?]*/g) || []).map(x => x.trim()).filter(x => /[A-Za-z]/.test(x));
+  const len = it.len || [3, 60], n = it.n || [1, 3], out = [];
+  out.push({ k: 'en', t: 'Written in English', ok: words.length > 0 && !/[֐-׿]/.test(mine), hint: 'Use English letters.' });
+  if (gaps) out.push({ k: 'fill', t: gaps.length > 1 ? 'Every box is filled' : 'The box is filled', ok: gaps.every(g => /[A-Za-z]/.test(g)), hint: 'Write a word or more in each box.' });
+  else {
+    out.push({ k: 'cap', t: 'Each sentence starts with a capital letter', ok: sents.length > 0 && sents.every(x => /^[^A-Za-z]*[A-Z]/.test(x)) && !/(^|[^A-Za-z'])i([^A-Za-z]|$)/.test(s),
+      hint: 'A big letter at the start. "I" is always big.' });
+    out.push({ k: 'stop', t: 'It ends with a full stop', ok: /[.!?]["')]?$/.test(s), hint: 'Put a full stop (.) at the end.' });
+    out.push({ k: 'sent', t: n[0] === n[1] ? n[0] + (n[0] > 1 ? ' sentences' : ' sentence') : n[0] + ' to ' + n[1] + ' sentences', ok: sents.length >= n[0] && sents.length <= n[1],
+      hint: sents.length < n[0] ? 'Add one more sentence.' : 'Try it with fewer sentences.' });
+  }
+  out.push({ k: 'len', t: len[0] + ' to ' + len[1] + ' words', ok: words.length >= len[0] && words.length <= len[1],
+    hint: 'You have ' + words.length + '. ' + (words.length < len[0] ? 'Add a little more.' : 'Make it a little shorter.') });
+  (it.need || []).forEach((x, i) => out.push({ k: 'n' + i, t: x.t, ok: (!x.any || x.any.some(has)) && (!x.re || new RegExp(x.re, 'i').test(s)), hint: x.hint || 'Try to use it once.' }));
+  return out;
+}
+// Her text: the textarea, or the frame with its boxes filled in.
+function msWriteText(it, sub){
+  if (!it.frame) return String(sub.text || '');
+  const parts = it.frame.split(/_{3,}/), g = sub.gaps || [];
+  return parts.map((p, i) => p + (i < parts.length - 1 ? String(g[i] || '').trim() : '')).join('');
+}
+const msWriteReady = (it, sub) => it.frame ? (sub.gaps || []).some(g => /[A-Za-z֐-׿]/.test(g)) : /[A-Za-z֐-׿]/.test(sub.text || '');
+const msWordCount = s => String(s || '').split(/\s+/).filter(w => /[A-Za-z]/.test(w)).length;
+function msWriteBody(it, sub){
+  const lock = sub.done ? ' disabled' : '';
+  let box;
+  if (it.frame) {
+    const parts = it.frame.split(/_{3,}/), g = sub.gaps || (sub.gaps = parts.slice(1).map(() => ''));
+    box = `<div class="mwframe">${parts.map((p, i) => esc(p) + (i < g.length ? `<input class="mwgap" data-wgap="${i}" type="text" maxlength="60" enterkeyhint="${i + 1 < g.length ? 'next' : 'done'}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Box ${i + 1}" value="${esc(g[i])}"${lock}>` : '')).join('')}</div>`;
+  } else {
+    box = `<textarea class="mtype mwta" id="mswrite" maxlength="${MS_WRITE_MAX}" rows="4" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" aria-label="Your sentences" placeholder="${esc(it.start ? it.start + '…' : 'Write here…')}"${lock}>${esc(sub.text || '')}</textarea>`;
+  }
+  const ideas = !sub.done && (it.ideas || []).length ? (it.ideas || []).map((w, i) => `<button class="tok" data-widea="${i}">${esc(w)}</button>`).join('') : '';
+  const n = msWordCount(it.frame ? (sub.gaps || []).join(' ') : sub.text);
+  // The checklist: what to fix first, each with its hint; the green ones together on one line.
+  const no = (sub.checks || []).filter(c => !c.ok), yes = (sub.checks || []).filter(c => c.ok);
+  const checks = sub.checks ? `<div class="soft mwchecks" id="mwchecks">${no.map(c => `<div class="no">${icon('circle-dashed', 'bold')}<span>${esc(c.t)}${c.hint ? `<small>${esc(c.hint)}</small>` : ''}</span></div>`).join('')}
+    ${yes.length ? `<div class="ok">${icon('check-circle', 'bold')}<span>${esc(yes.map(c => c.t).join(' · '))}</span></div>` : ''}
+    ${!sub.done && sub.tries === 1 ? '<button class="mflag" data-wkeep="1">Keep it as it is</button>' : ''}</div>` : '';
+  return `<div class="glass qcard mwrite${sub.checks ? ' checked' : ''}"><div class="qprompt">Writer's Desk</div><div class="qbig" style="font-size:17px">${esc(it.task)}</div>
+    ${it.tip ? `<div class="sub" style="margin:0;font-size:13px">${esc(it.tip)}</div>` : ''}${box}
+    <div class="mwfoot"><span class="mwn" id="mwn">${n} ${n === 1 ? 'word' : 'words'}</span>${ideas}</div></div>${checks}`;
+}
+// Typing never redraws the screen: the count and the Check button follow the text.
+function msWriteBind(sc){
+  const box = app.querySelector('#ms .mwrite');
+  if (!box || MS.sub.done) return;
+  const it = sc.it, sub = MS.sub, fields = [...box.querySelectorAll('textarea, input')];
+  const upd = () => {
+    msWriteRead(it, sub);
+    const n = msWordCount(it.frame ? sub.gaps.join(' ') : sub.text), el = document.getElementById('mwn'), b = document.querySelector('#gnext [data-check]');
+    if (el) el.textContent = n + (n === 1 ? ' word' : ' words');
+    if (b) b.disabled = !msWriteReady(it, sub);
+  };
+  fields.forEach((el, i) => {
+    el.oninput = () => { if (el.classList.contains('mwgap')) el.style.width = Math.max(6.5, Math.min(14, el.value.length * .62 + 2)) + 'em'; upd(); };
+    // Enter: the next box, or (the last one, the text box) the keyboard closes so the Check button is in sight.
+    el.onkeydown = e => { if (e.key !== 'Enter') return; e.preventDefault(); if (fields[i + 1]) fields[i + 1].focus(); else el.blur(); };
+    if (el.classList.contains('mwgap') && el.value) el.style.width = Math.max(6.5, Math.min(14, el.value.length * .62 + 2)) + 'em';
+  });
+}
+function msWriteRead(it, sub){
+  const box = app.querySelector('#ms .mwrite');
+  if (!box || sub.done) return;
+  if (it.frame) sub.gaps = [...box.querySelectorAll('.mwgap')].map(x => x.value);
+  else { const ta = box.querySelector('#mswrite'); if (ta) sub.text = ta.value; }
+}
+// An idea chip: the word goes where she is typing (the box in focus, or the first empty box; the end of the text).
+function msWriteIdea(it, i){
+  const w = (it.ideas || [])[i], box = app.querySelector('#ms .mwrite');
+  if (!w || !box) return;
+  const f = it.frame ? ([...box.querySelectorAll('.mwgap')].find(x => x === MS.sub.lastField) || [...box.querySelectorAll('.mwgap')].find(x => !x.value.trim()) || box.querySelector('.mwgap')) : box.querySelector('#mswrite');
+  if (!f) return;
+  const v = f.value, at = f === MS.sub.lastField && f.selectionStart != null ? f.selectionStart : v.length;
+  const before = v.slice(0, at), after = v.slice(at), pre = before && !/\s$/.test(before) ? ' ' : '', post = after && !/^\s/.test(after) ? ' ' : '';
+  f.value = (before + pre + w + post + after).slice(0, Number(f.maxLength) > 0 ? Number(f.maxLength) : MS_WRITE_MAX);
+  f.dispatchEvent(new Event('input'));
+}
+// Check: the checklist. Not all there on the first try: she can fix it once (or keep it). Then Chacho's version.
+function msWriteGo(keep){
+  const sc = MS && MS.S[MS.si];
+  if (!sc || sc.t !== 'q' || sc.it.k !== 'write' || MS.sub.done) return;
+  const it = sc.it, sub = MS.sub;
+  msWriteRead(it, sub);
+  if (!keep && !msWriteReady(it, sub)) return;
+  const text = msWriteText(it, sub), checks = msWriteCheck(it, text, it.frame ? sub.gaps : null), all = checks.every(c => c.ok);
+  msTouch();
+  if (!keep) { sub.tries = (sub.tries || 0) + 1; sub.checks = checks; if (sub.tries === 1) sub.first = text; }
+  if (!keep && !all && sub.tries < 2) {
+    if (document.activeElement) document.activeElement.blur();
+    msRender();
+    // The checklist in sight (the question area scrolls to it), the text box just above.
+    const st = app.querySelector('#ms .gstage'), box = document.getElementById('mwchecks');
+    if (st && box) st.scrollTop = Math.max(0, box.offsetTop - st.offsetTop - 120);
+    buzz(false);
+    return;
+  }
+  const got = (sub.checks || checks).filter(c => c.ok).length;
+  MS.wr = MS.wr || {};
+  MS.wr[sc.q0 + 1] = { text: text.slice(0, MS_WRITE_MAX), first: sub.first && sub.first !== text ? sub.first.slice(0, MS_WRITE_MAX) : '', checks: got + ' of ' + checks.length };
+  const line = all ? pick(['Wonderful writing!', 'You did it! Every check is green.', 'Great sentences!']) : sub.tries > 1 ? 'Good work fixing it! Look at my version too.' : 'Nice writing! Look at my version for ideas.';
+  if (document.activeElement) document.activeElement.blur();
+  msDone(all, { line, checks: sub.checks || checks });
+}
+
+// Phones: while she types in a play frame the frame is the part of the screen above the keyboard (visualViewport:
+// iPhones keep the page and slide it up, Androids shrink it). The tallest view seen is the screen without the keyboard.
+let kbdTall = 0, kbdWide = 0;
+function kbdFit(){
+  const vv = window.visualViewport, root = document.documentElement;
+  if (!vv) return;
+  const h = Math.round(vv.height), w = Math.round(vv.width);
+  // A turn of the phone starts over (a scrollbar coming or going changes the width a little, not a turn).
+  if (Math.abs(w - kbdWide) > 80) { kbdWide = w; kbdTall = h; }
+  kbdTall = Math.max(kbdTall, h);
+  const el = document.activeElement, typing = !!(el && /^(INPUT|TEXTAREA)$/.test(el.tagName) && el.closest('.gplay'));
+  const open = typing && kbdTall - h > 120;
+  root.style.setProperty('--vvh', h + 'px');
+  if (root.classList.contains('kbd') !== open) {
+    root.classList.toggle('kbd', open);
+    if (open) setTimeout(() => { if (document.activeElement === el) el.scrollIntoView({ block: 'nearest' }); }, 30);
+  }
+  if (open && (window.scrollY || vv.offsetTop)) window.scrollTo(0, 0);
+}
+if (window.visualViewport) { visualViewport.addEventListener('resize', kbdFit); visualViewport.addEventListener('scroll', kbdFit); }
+document.addEventListener('focusin', e => { if (MS && MS.sub && e.target.closest && e.target.closest('.mwrite')) MS.sub.lastField = e.target; setTimeout(kbdFit, 60); });
+document.addEventListener('focusout', () => setTimeout(kbdFit, 60));
+
+// ---- Say it again (night review, finding 13): repeated reading for fluency. Before the finish she reads one model
+// sentence of the mission aloud, twice; the phone times each reading (its own speech recognition, the words it heard
+// only) and shows the words a minute, kindly. Nothing is kept or sent. Only when her parent's microphone switch is on
+// (micAllowed) and the phone can listen; otherwise the step is not there. ----
+// The sentence: the mission's own `say`, or the first example of its card, its first word's example, the first line
+// of the show or of the story, the Writer's Desk model. One sentence of 4 to 16 words, or none.
+function msSayText(m){
+  const first = s => (String(s || '').replace(/\*/g, '').match(/[^.!?]+[.!?]+/) || [''])[0].trim();
+  const L = m.learn || {}, w = ((m.use || []).concat(...(m.steps || []).map(s => s.items || [])).find(x => x.k === 'write') || {}).model;
+  const cand = [m.say, L.kind === 'rule' && (L.ex || [])[0], L.kind === 'words' && ((L.words || [])[0] || {}).ex,
+    m.show && ((m.show.parts[0] || {}).lines || [])[0] && m.show.parts[0].lines[0][1], m.story && (m.story.chunks[0] || {}).text, w]
+    .map(first).find(s => { const n = s.split(/\s+/).length; return n >= 4 && n <= 16; });
+  return cand || '';
+}
+function msAddSay(S, m, on){
+  const text = on && chatCanListen() ? msSayText(m) : '';
+  if (text) S.splice(S.length - 1, 0, { t: 'say', part: 3, text });
+  return S;
+}
+function msSay(sc){
+  const sub = MS.sub, r = sub.rounds || (sub.rounds = []), n = sc.text.split(/\s+/).length;
+  const cell = i => { const x = r[i]; return `<div class="soft">${i ? 'Second time' : 'First time'}${x ? (x.wpm ? `<b>${x.wpm}</b>words a minute` : '<b>Done</b>') + (x.heard != null ? ` · ${x.heard} of ${n} words heard` : '') : '<b>&nbsp;</b>&nbsp;'}</div>`; };
+  const body = `<div class="glass qcard"><div class="qprompt">Say it again · read it aloud twice</div><div class="msayline">${esc(sc.text)}</div>
+      <button class="btn btn-glass btn-sm" data-say="${esc(sc.text)}">${icon('speaker-high')} Listen first</button></div>
+    <div class="speak-row"><button class="speak${sub.listen ? ' talk' : ''}" id="msayrec" aria-label="Read it aloud"${r.length >= 2 || sub.listen ? ' disabled' : ''}>${icon('microphone')}</button></div>
+    <div class="msayres">${cell(0)}${cell(1)}</div>`;
+  if (r.length || sub.skip) MS.ready = 'Continue';
+  let line = sub.listen ? 'I am listening… read it now!' : r.length === 0 ? 'Tap the mic and read the sentence out loud.' : r.length === 1 ? 'Nice! Read it once more, a little smoother.' : '';
+  if (r.length >= 2) {
+    const [a, b] = r;
+    line = a.wpm && b.wpm && b.wpm > a.wpm * 1.05 ? 'Smoother the second time! From ' + a.wpm + ' to ' + b.wpm + ' words a minute.' : 'Clear and steady, both times. Well done!';
+  }
+  return [body, line, r.length >= 2 ? 'celebrate' : sub.listen ? 'thinking' : 'happy'];
+}
+function msSayRec(sc){
+  const sub = MS.sub;
+  if (sub.listen || (sub.rounds || []).length >= 2) return;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { sub.skip = true; return msRender(); }
+  msStopAudio();
+  const r = new SR(), target = sc.text.toLowerCase().replace(/[^a-z' ]+/g, ' ').trim().split(/\s+/);
+  let t0 = Date.now(), t1 = 0, got = false;
+  const here = () => MS && MS.S[MS.si] === sc;
+  r.lang = 'en-US'; r.interimResults = false; r.maxAlternatives = 1; r.continuous = false;
+  r.onspeechstart = () => { t0 = Date.now(); };
+  r.onspeechend = () => { t1 = Date.now(); };
+  r.onresult = e => {
+    got = true;
+    const said = String((e.results[0] && e.results[0][0] && e.results[0][0].transcript) || '').toLowerCase().replace(/[^a-z' ]+/g, ' ').trim().split(/\s+/).filter(Boolean);
+    const sec = Math.max(.8, ((t1 || Date.now()) - t0) / 1000), wpm = Math.round(target.length / sec * 60);
+    const left = said.slice(), heard = target.filter(w => { const k = left.indexOf(w); if (k < 0) return false; left.splice(k, 1); return true; }).length;
+    sub.rounds.push({ wpm: wpm >= 20 && wpm <= 260 && said.length ? wpm : null, heard: said.length ? heard : null });
+    sub.listen = false;
+    msTouch();
+    if (here()) msRender();
+  };
+  r.onerror = e => {
+    got = true; sub.listen = false;
+    if (e && /not-allowed|service-not-allowed|audio-capture/.test(e.error)) { sub.skip = true; toast('The microphone is off. That is OK, read it aloud anyway!'); }
+    if (here()) msRender();
+  };
+  r.onend = () => { if (!got) { sub.listen = false; if (here()) { msRender(); const fb = document.getElementById('fb'); if (fb) fb.textContent = 'I did not hear it. Tap the mic and try again.'; } } };
+  sub.listen = true;
+  msRender();
+  try { r.start(); } catch(e){ sub.listen = false; sub.skip = true; msRender(); }
+  setTimeout(() => { if (sub.listen && here()) { try { r.abort(); } catch(e){} } }, 15000);
 }
 
 // The end: the score, the hook's answer, what comes back, the dinner question, and the save.
@@ -5110,7 +5366,7 @@ function msFinish(){
   const m = MS.m, total = MS.review ? MS.S.length - 1 : msCount(m), correct = MS.res.filter(x => x === true).length;
   const pct = total ? Math.round(correct / total * 100) : 0, stars = 1 + (pct >= 80 ? 1 : 0) + (pct === 100 ? 1 : 0);
   const mood = pct >= 80 ? 'celebrate' : pct >= 50 ? 'happy' : 'oops', R = MS, seconds = Math.round(MS.active / 1000);
-  const missedQ = msQuestions(m).filter((x, i) => MS.res[i] === false && !MS.review).slice(0, 6);
+  const missedQ = msQuestions(m).filter((x, i) => MS.res[i] === false && !MS.review && x[0].k !== 'write').slice(0, 6);
   const star = on => `<svg viewBox="0 0 24 24" class="ms-star${on ? ' on' : ''}" aria-hidden="true"><path d="M12 3.6l2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8z"/></svg>`;
   const script = m.show ? `<details class="glass panel mdet"><summary><b>Read what you heard</b></summary><div class="mscript">${m.show.parts.map(p => p.lines.map(([w, t]) => `<div><b>${esc((m.show.names || {})[w] || w)}:</b> ${esc(t)}</div>`).join('')).join('<hr>')}</div></details>` : '';
   app.innerHTML = `<div class="gscreen">
@@ -5137,6 +5393,9 @@ function msFinish(){
   if (R.practice) { const s = document.getElementById('savest'); s.className = 'saved'; s.innerHTML = icon('check') + (R.preview ? ' Preview · nothing is saved' : ' Practice round · your score from before stays'); MS = null; return; }
   store.del(msKey());
   const args = [R.date, R.id, correct, total, R.missed.slice(), R.right.slice(), Math.max(seconds, 1)];
+  // What she wrote at the Writer's Desk goes with the result (her parents and the teacher see it).
+  const writing = Object.keys(R.wr || {}).map(n => Object.assign({ n: Number(n) }, R.wr[n]));
+  if (writing.length) args.push(writing);
   MS = null;
   msSave(args);
 }
@@ -5227,7 +5486,8 @@ async function missionGallery(){
     <div class="glass panel"><div class="row-flex between"><h2>Mission preview</h2><span class="chip purple">${list.length} missions</span></div>
       ${TEACHER ? '<div class="sub mt-s" style="font-size:13px"><b>Teacher review.</b> Play any mission. Under each answer, tap <b>Something wrong here?</b> and write a short note: it goes straight to the owner.</div>' : '<div class="sub mt-s" style="font-size:13px">Play any mission as practice. Nothing is saved.</div>'}
       <div class="row-flex mt" style="gap:6px;flex-wrap:wrap">${LEVELS.map(([k, l]) => `<button class="btn ${k === msGalleryLevel ? 'btn-primary' : 'btn-glass'} btn-sm" data-glv="${k}">${l}</button>`).join('')}</div>
-      <button class="btn btn-glass btn-block mt" id="tochats">${icon('chats-circle')} Talk with Chacho: the home talks</button></div>
+      <button class="btn btn-glass btn-block mt" id="tochats">${icon('chats-circle')} Talk with Chacho: the home talks</button>
+      ${TEACHER ? `<button class="btn btn-glass btn-block mt-s" id="towriting">${icon('pencil-simple-line')} Writer's Desk: the kids' writing to mark</button>` : ''}</div>
     <div class="stack" style="gap:10px">${list.map(m => `<button class="soft task clickable" data-prev="${m.id}" style="text-align:left;width:100%;font:inherit;border:0">
       ${tile(m.type, true)}<div class="task-main"><div class="task-top">${esc((MS_TYPES[m.type] || MS_TYPES.grammar)[0])} · ${msCount(m)} questions · ${m.id}</div>
       <div class="task-title">${esc(m.title)}</div></div>${icon('caret-right')}</button>`).join('') || '<div class="glass panel sub">No missions for this level yet.</div>'}</div>
@@ -5235,13 +5495,54 @@ async function missionGallery(){
   app.querySelectorAll('[data-glv]').forEach(b => b.onclick = () => { msGalleryLevel = b.dataset.glv; dash.girl.level = msGalleryLevel; missionGallery(); });
   app.querySelectorAll('[data-prev]').forEach(b => b.onclick = () => previewMission(b.dataset.prev, label));
   document.getElementById('tochats').onclick = chatGallery;
+  const tw = document.getElementById('towriting'); if (tw) tw.onclick = teacherWriting;
+}
+
+// The teacher marks what the kids wrote at the Writer's Desk: a mark and one preset note, which the kid sees on her Me
+// tab. No names: the level, the day and the task are enough (Missions.js, apiTeacherWriting / apiTeacherMark).
+async function teacherWriting(){
+  if (!TEACHER) return missionGallery();
+  loading();
+  let r;
+  try { r = await call('apiTeacherWriting', TEACHER); }
+  catch(e){ toast(e.message, true); return missionGallery(); }
+  const card = w => `<div class="glass panel" data-wid="${esc(w.id)}">
+    <div class="row-flex" style="gap:6px;flex-wrap:wrap"><span class="chip purple">${esc(w.level)}</span><span class="chip">${fmtDate(w.date)}</span><span class="chip">${esc(w.mission)}</span>
+      ${w.checks ? `<span class="chip">${icon('list-checks')} ${esc(w.checks)}</span>` : ''}${w.markLabel ? `<span class="chip teal">${icon('check')} ${esc(w.markLabel)}</span>` : ''}</div>
+    <div class="sub mt-s" style="font-size:13px">${esc(w.prompt)}</div>
+    <div style="font-weight:700;margin-top:6px;overflow-wrap:anywhere">${esc(w.text)}</div>
+    ${w.first ? `<div class="sub" style="font-size:12.5px;margin-top:4px">First try: ${esc(w.first)}</div>` : ''}
+    <div class="row-flex mt-s" style="gap:6px;flex-wrap:wrap">${r.marks.map(m => `<button class="btn btn-sm ${w.mark === m.k ? 'btn-teal' : 'btn-glass'}" data-wmark="${m.k}">${esc(m.label)}</button>`).join('')}</div>
+    <select class="input mt-s" data-wnote aria-label="A note for the kid"><option value="-1">No note</option>${r.comments.map((c, i) => `<option value="${i}"${w.comment === c ? ' selected' : ''}>${esc(c)}</option>`).join('')}</select>
+  </div>`;
+  app.innerHTML = `<div class="stack">
+    <div class="glass panel"><div class="row-flex between"><h2>Writer's Desk</h2><button class="btn btn-glass icon-btn" id="twback" title="Back">${icon('arrow-left')}</button></div>
+      <div class="sub mt-s" style="font-size:13px">The newest writing from every level (no names). Tap a mark to save it with the note you chose; the kid sees both on the Me tab, and so do the parents.</div></div>
+    ${r.items.length ? r.items.map(card).join('') : '<div class="glass panel sub">Nothing written yet.</div>'}
+  </div>`;
+  window.scrollTo(0, 0);
+  document.getElementById('twback').onclick = missionGallery;
+  app.firstElementChild.onclick = async e => {
+    const b = e.target.closest('[data-wmark]');
+    if (!b || b.disabled) return;
+    const box = b.closest('[data-wid]'), note = box.querySelector('[data-wnote]');
+    box.querySelectorAll('[data-wmark]').forEach(x => x.disabled = true);
+    try {
+      const res = await call('apiTeacherMark', TEACHER, box.dataset.wid, b.dataset.wmark, Number(note.value));
+      const i = r.items.findIndex(x => x.id === box.dataset.wid);
+      r.items[i] = Object.assign(r.items[i], res.item);
+      box.outerHTML = card(r.items[i]);
+      toast('Saved. The kid will see it.');
+    } catch(err){ toast(err.message, true); box.querySelectorAll('[data-wmark]').forEach(x => x.disabled = false); }
+  };
 }
 async function previewMission(id, label){
   const m = (window.EQ_MISSIONS[msFile(id)] || []).find(x => x.id === id);
   if (!m) return;
   const chat = await chatForMission(m.id);
-  MS = { m, w: { level: label }, id, date: 'preview', S: msAddChat(msScreens(m), chat), si: 0, res: [], missed: [], right: [], active: 0, last: Date.now(), sub: {}, he: false,
-    practice: true, preview: true, seed: hashStr('preview:' + id + ':' + Date.now()), guess: null };
+  // The preview shows Say it again whenever the computer or phone can listen (grown-ups checking content).
+  MS = { m, w: { level: label }, id, date: 'preview', S: msAddSay(msAddChat(msScreens(m), chat), m, true), si: 0, res: [], missed: [], right: [], active: 0, last: Date.now(), sub: {}, he: false,
+    practice: true, preview: true, seed: hashStr('preview:' + id + ':' + Date.now()), guess: null, wr: {} };
   msClock();
   msRender();
 }
@@ -8029,6 +8330,7 @@ const PRIVACY_ITEMS = [
   `<b>עליכם:</b> שם פרטי, שם משפחה, קוד הורה, מייל אם תבחרו, ומתי אישרתם את ההודעה הזו ובאיזה נוסח.`,
   `<b>השיחה עם צ׳אצ׳ו:</b> המיקרופון כבוי עד שתדליקו אותו לכל ילד באזור ההורים. כשהוא דולק, שירות זיהוי הדיבור של הדפדפן הופך את הקול לטקסט: ב-${B_('Chrome')} ובאנדרואיד הקול נשלח ל-${B_('Google')}, ובאייפון ובאייפד בדרך כלל ל-${B_('Apple')}. בדפדפן שיודע לזהות דיבור בתוך המכשיר הקול לא יוצא ממנו. אנחנו לא מקבלים ולא שומרים הקלטות: נשמר רק הטקסט שהטלפון שמע, 90 יום, ואחר כך רק כמה תשובות היו בקול.`,
   `<b>הקן של צ׳אצ׳ו (גילאי 2 עד 7):</b> המיקרופון מודד רק עוצמה, ו"צ׳אצ׳ו חוזר עליך" מחזיק את הקול בזיכרון הטלפון לכמה שניות, משמיע אותו פעם אחת ומוחק. שום דבר לא נשמר ולא נשלח.`,
+  `<b>שולחן הכתיבה:</b> המשפטים הקצרים שהילד כותב באנגלית נשמרים, כדי שתראו אותם באזור ההורים ושהמורה תוכל לסמן אותם בהערה מוכנה מראש. ילדים אחרים לא רואים אותם, המשימות לא מבקשות פרטים אישיים, והם נמחקים אחרי שנה או עם הילד.`,
   `<b>מכשירים:</b> מתי נכנסו לאפליקציה ומאיזה סוג מכשיר (למשל אייפון או אנדרואיד). במכשיר שהפעילו בו התראות נשמרות גם כתובת ההתראות שלו ומחרוזת הדפדפן (${B_('user-agent')}).`,
   `<b>משחק עם ילדים ממשפחות אחרות:</b> כבוי עד שתדליקו אותו באזור ההורים (ושני הצדדים צריכים להדליק). ילדים ממשפחה אחרת רואים רק את השם הפרטי ואת חיית המחמד, בלי שם משפחה ובלי "מחובר עכשיו". אין צ׳אט חופשי, רק הזמנות ותגובות קבועות. ילד יכול לחסום ולדווח, ואתם רואים את זה באזור ההורים.`,
   `<b>התראות לילד:</b> רק אם הופעלו בטלפון שלו, פעם ביום בשעה שתבחרו (או בכלל לא), בנוסח נעים ובלי לחץ.`,
@@ -9474,7 +9776,7 @@ function tabBar(d){
   const h = duelsHome, p = d && d.placement;
   const dot = {
     play: !!(h && ((h.incoming || []).length || (h.challenges || []).length || (h.playing || []).length || (h.duos && (h.duos.incoming || []).length))),
-    me: !!(p && p.due && d.girl.inApp)
+    me: !!(p && p.due && d.girl.inApp) || (dashTab !== 'me' && writingNew(d))
   };
   return `<nav class="tabbar glass" id="tabbar" aria-label="Main">${TABS.map(([k, ic, l]) => `<button class="tabb ${k === dashTab ? 'on' : ''}" data-tab="${k}"${k === dashTab ? ' aria-current="page"' : ''}>${icon(ic, k === dashTab ? 'duotone' : 'bold')}<span>${l}</span>${dot[k] ? '<i class="tdot"></i>' : ''}</button>`).join('')}</nav>`;
 }
@@ -9515,6 +9817,7 @@ function dashBody(d){
       <div class="row-flex between"><h2>This week${heLine(heOf('This week'))}</h2><span class="chip">${s.weekDone} done</span></div>
       <div class="stack mt" style="gap:10px">${d.week.filter(w => !w.beforeStart).map(w => taskRow(w, open)).join('')}</div>
     </div>
+    ${writingCard(d)}
 
     <div class="glass panel">
       <div class="row-flex between"><h2>Rewards${heLine(heOf('Rewards'))}</h2>${low ? '' : `<span class="chip orange">${icon('star')} ${s.balance}</span>`}</div>
@@ -9534,6 +9837,25 @@ function dashBody(d){
     </div>`;
   }
   return `${homeTop(d)}${petHero(d)}${todayMain(d, today)}${homePills(d)}`;
+}
+
+// My writing (the Writer's Desk): her last pieces with the teacher's mark and note. Only she and her parents see them.
+// A note she has not seen yet puts a dot on the Me tab (the newest note's day, kept on the phone).
+const wSeenKey = d => 'eq_wseen_' + d.girl.name;
+const writingNew = d => !!d && (d.writing || []).some(w => w.comment && w.marked > (store.get(wSeenKey(d)) || ''));
+function writingCard(d){
+  const list = (d.writing || []).slice(0, 3);
+  if (!list.length) return '';
+  const last = list.map(w => w.marked).filter(Boolean).sort().pop();
+  if (last && last > (store.get(wSeenKey(d)) || '')) store.set(wSeenKey(d), last);
+  return `<div class="glass panel">
+    <div class="row-flex between"><h2>My writing</h2><span class="chip">${icon('pencil-simple-line')} Writer's Desk</span></div>
+    <div class="stack mt" style="gap:10px">${list.map(w => `<div class="soft" style="padding:12px 14px">
+      <div class="sub" style="font-size:12.5px;margin:0">${fmtDate(w.date)} · ${esc(w.prompt)}</div>
+      <div style="font-weight:700;margin-top:4px;overflow-wrap:anywhere">${esc(w.text)}</div>
+      ${w.comment || w.markLabel ? `<div class="answer-box mt-s"><b>${icon('chalkboard-teacher')} Your teacher: ${esc(w.markLabel)}</b>${w.comment ? '<br>' + esc(w.comment) : ''}</div>` : ''}
+    </div>`).join('')}</div>
+  </div>`;
 }
 
 // The top of Today (finding 11): two things up front, the pet (below) and the coins, in words; the streak sits with the pet.
@@ -10448,6 +10770,24 @@ const HE_DAYS = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳'], EN_DAY
 const dayLetter = w => PHE ? HE_DAYS[EN_DAYS.indexOf(w.day)] || w.day : w.day;
 // "3 ימים" / "יום אחד": a count with its word, the number first.
 const heN = (n, one, many) => n === 1 ? one : n + ' ' + many;
+// What the kid wrote at the Writer's Desk (her last five pieces), the checklist score and the teacher's mark and note.
+const W_MARK_HE = { star: 'מצוין', good: 'עבודה טובה', more: 'להמשיך להתאמן' };
+function writingParent(g){
+  const list = g.writing || [];
+  if (!list.length) return '';
+  const checks = c => { const m = /^(\d+) of (\d+)$/.exec(c || ''); return m ? T(c + ' checks', 'בדיקות: ' + m[1] + ' מתוך ' + m[2]) : ''; };
+  // Every English text is a block of its own, left to right, under its Hebrew label (no English inside a Hebrew line).
+  const en = (s, style) => `<div dir="ltr" lang="en" style="text-align:left;overflow-wrap:anywhere;${style}">${esc(s)}</div>`;
+  return `<details><summary>${T('Writing', 'כתיבה באנגלית')} (<bdi>${list.length}</bdi>) ▾</summary><div class="stack mt-s" style="gap:8px">${list.map(w => `<div class="soft" style="padding:10px 12px">
+    <div class="sub" style="font-size:12.5px;margin:0">${T('Task', 'המשימה')}, <bdi>${fmtDate(w.date)}</bdi></div>
+    ${en(w.prompt, 'font-size:12.5px;color:var(--muted)')}
+    ${en(w.text, 'font-weight:700;margin-top:4px')}
+    ${w.first ? `<div class="sub" style="font-size:12.5px;margin:6px 0 0">${T('First try', 'בניסיון הראשון')}</div>${en(w.first, 'font-size:12.5px;color:var(--muted)')}` : ''}
+    <div class="row-flex mt-s" style="gap:6px;flex-wrap:wrap">${w.checks ? `<span class="chip">${icon('list-checks')} ${checks(w.checks)}</span>` : ''}
+      ${w.markLabel ? `<span class="chip teal">${icon('chalkboard-teacher')} ${T('Teacher: ' + esc(w.markLabel), 'המורה: ' + (W_MARK_HE[w.mark] || esc(w.markLabel)))}</span>` : ''}</div>
+    ${w.comment ? `<div class="sub" style="font-size:12.5px;margin:6px 0 0">${T('The note the kid sees', 'ההערה שהילד רואה')}</div>${en(w.comment, 'font-size:12.5px')}` : ''}
+  </div>`).join('')}</div></details>`;
+}
 
 function girlCard(g, isAdmin, grp){
   const s = g.stats, nest = !!g.nest;
@@ -10486,6 +10826,7 @@ function girlCard(g, isAdmin, grp){
       <button class="btn btn-glass btn-sm" data-kidhere="${esc(g.girl.name)}" data-kidpin="${esc(g.pin)}" data-kidgroup="${esc(grp.id)}">${icon('device-mobile')} משחק בטלפון הזה</button>
       <span class="chip">${icon('key')} קוד גיבוי: <bdi>${esc(g.pin)}</bdi></span></div>` : ''}
     ${g.chat && g.chat.best ? `<div class="sub mt-s" style="font-size:13px">${icon('chats-circle')} ${T('Said to Chacho this week:', 'משפט מהשיחה עם צ׳אצ׳ו השבוע:')} <bdi dir="ltr">"${esc(g.chat.best)}"</bdi></div>` : ''}
+    ${writingParent(g)}
     <div class="strip">${g.week.map(w => {
       const st = w.beforeStart ? 'future' : w.done ? 'done' : w.isFuture ? 'future' : w.isToday ? 'pending' : 'missed';
       const v = w.done ? (w.section === 'level' ? (w.levelResult || '✓') : (w.percent !== '' ? w.percent + '%' : '✓')) : st === 'missed' ? '✕' : '';
