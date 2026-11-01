@@ -7903,7 +7903,7 @@ function auditRender(pin){
 // Listening and pictures only, and only Chacho's English (no Hebrew voice): he shows each game first. No reading, timers
 // or fail screens, and the pet is the only reward. Content: docs/nest/nest.js (EQ_NEST); the session engine and its
 // games: docs/nest/play.js; recordings: docs/nest/audio (tools/nest_audio.py).
-const NEST_V = 19, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
+const NEST_V = 20, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
 let NE = null, nestLoading = null, nestAudioEl = null, nestQueue = null, nestMic = null;
 function loadNest(){
   if (window.EQ_NEST && typeof NK === 'object' && typeof nkActorOn === 'function' && typeof nkHome === 'function' && typeof nkEchoStart === 'function' && typeof nkStickers === 'function' && typeof nkArcade === 'function') return Promise.resolve(window.EQ_NEST);
@@ -8129,7 +8129,7 @@ function renderNest(d){
     : nestStart(nkPick(n.played.filter(id => String(id).split('.')[0] === b.dataset.nkunit).concat([b.dataset.nkunit]))));
   document.getElementById('nkhear').onclick = () => nestPlay(['en-hi']);
   const art = document.getElementById('nkart'); if (art) art.onclick = nkAlbum;
-  nkGateBind(document.getElementById('logout'), nestSwitch);
+  if (typeof nkGateBind === 'function') nkGateBind(document.getElementById('logout'), nestSwitch); else document.getElementById('logout').onclick = nestSwitch;
   const pet = document.getElementById('nkpet');
   if (pet) pet.onclick = () => { paMood(pet.querySelector('svg'), 'celebrate'); buzz(true); };
   app.querySelectorAll('[data-nkpet]').forEach(b => b.onclick = async () => {
