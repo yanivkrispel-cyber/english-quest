@@ -103,8 +103,10 @@ loudness only; nothing is kept or sent.
   every tab and the audit trail; also a download of the family's data. Left: the admin cannot delete from the Data card yet
   (the admin can delete from a family's parents' code), and a deleted kid's name can stay inside another kid's Bonus `Ref`
   text (duo rewards).
-- Kids can share to WhatsApp (certificate, duel invite links) and a kid with `Girls.Missions = no` is sent to
-  test-english.com: both need a parental gate or must move to the parents' area.
+- Done 2026-11-01: a kid's WhatsApp share (the duel invite link), the certificate's share sheet and every link to
+  test-english.com (`Girls.Missions = no`, the old level test, the run-out fallback) go through the grown-ups' gate
+  (`grownUp()` in Index.html: a multiplication in Hebrew words, open for 10 minutes once passed). The mission files carry no
+  test-english addresses any more. Left: the link itself, until the own curriculum map (`specs/curriculum.md`) retires it.
 - Play together reaches kids in other groups by default (a group opts out with `Groups.Friends = no`); for the stores it
   should be off by default and switched on by a parent, with report and block.
 - Fonts: Plus Jakarta Sans and the icon fonts are served from `docs/fonts/` (2026-10-30, `tools/fonts_local.js`); only the Apps
@@ -114,9 +116,32 @@ loudness only; nothing is kept or sent.
   (`specs/cloudflare.md`, not switched on yet). Still personal accounts (Cloudflare too): a business account and a data
   processing note are needed before selling.
 - No `assetlinks.json` / native shell yet; no store listing, age rating questionnaire or data safety form yet.
-- The app name and Chacho: trademark check in Israel not done.
+- The app name and Chacho: trademark check and filing in Israel (classes 9 and 41) not done; the steps are in the owner's
+  checklist (`EnglishLessons-work/night-review/owner-actions.md`).
+- Third-party licenses: listed in `NOTICES.md` (2026-11-01); the list must also be shown in the app (parents' area) before a
+  submission.
+- Cost: the free Cloudflare plan's daily limits (100,000 calls, 100,000 rows written) hold roughly 300 to 1,000 active kids a
+  day. The admin's Audit card turns orange from 60% of either; Workers Paid (5 USD a month) is the owner's decision before a
+  store launch.
 - The Nest's microphone: a parent who said "no" (or a phone that refused) cannot turn the microphone back on in the app
   (`eq_nest_mic` has no switch in the parents' area yet).
 - Chacho's Nest (ages 2 to 7, `specs/nest.md`) puts kids under 5 in the same app as teenagers. Apple's Kids Category takes
   one age band an app (5 and under, 6 to 8, 9 to 11): choose a band, ship the Nest as its own app, or stay out of the
-  Kids Category. Google Families allows several age groups, with stricter rules for "5 and under".
+  Kids Category. Google Families allows several age groups, with stricter rules for "5 and under". The recommendation is below.
+
+## The store route and the Nest (recommendation, night review 2026-11-01, finding 22)
+
+1. **Google Play first, ages 6 to 12.** A Trusted Web Activity of https://coco.coachkrispel.com (`assetlinks.json` on the site,
+   a small Android project made with Bubblewrap), in the Families program with the target ages 6 to 8 and 9 to 12. A new
+   personal developer account must run a **closed test with at least 12 testers for 14 days** before it may publish: the pilot
+   families are the testers (each needs a Google account on an Android phone, opted in from the test link). A business
+   (organisation) account skips that rule but needs a D-U-N-S number.
+2. **The Nest stays out of the first store app.** In the store build, the sign-up offers grades only (no ages 2 to 7) and a
+   Nest kid who signs in sees a parents' note pointing to the web app; the pilot families keep the Nest on the web as now.
+   Later, the Nest ships as **its own app** ("Chacho's Nest", ages 2 to 5 band at Apple, "5 and under" at Google), with the
+   stricter rules for the youngest (no links out at all, a grown-ups' gate before the parents' area, screen-time caps).
+3. **Apple after the Google numbers.** Decide with the data from Play (installs, the pilot gate in `specs/pilot.md`): a thin
+   website wrapper is usually rejected (guideline 4.2), so the App Store needs a native shell with native features (local
+   reminders, offline packs, Sign in with Apple for parents) and one age band (6 to 8 or 9 to 11). Not before Play works.
+4. Before any of it: the trademark, a business entity and business accounts, the public privacy policy and terms pages, a
+   support address, and `NOTICES.md` shown in the app (the owner's checklist).
