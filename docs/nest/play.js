@@ -159,6 +159,24 @@
 @keyframes nknudge{0%,100%{scale:1;rotate:0deg;filter:none}15%{scale:1.1;rotate:-5deg;filter:drop-shadow(0 0 14px rgba(251,191,36,.95))}35%{scale:1.08;rotate:5deg}
   55%{scale:1.06;rotate:-3deg;filter:drop-shadow(0 0 14px rgba(251,191,36,.95))}75%{scale:1.03;rotate:1deg}}
 @media (prefers-reduced-motion: reduce){.nk-nudge{animation:none}}
+.nk-model{width:min(34cqw,26cqh,170px);max-width:none}
+.nk-sw{font-size:34px}
+.nk-sw b{color:var(--primary)}
+.nk-sw.hide{visibility:hidden}
+.nk-trace{position:relative;width:min(78cqw,58cqh,360px);aspect-ratio:100/112}
+.nk-trsvg{position:absolute;inset:0;width:100%;height:100%;touch-action:none;overflow:visible;transition:opacity .45s,transform .45s}
+.nk-trsvg.gone{opacity:0;transform:scale(.6)}
+.nk-trbed{fill:none;stroke:rgba(255,255,255,.9);stroke-width:18;stroke-linecap:round;stroke-linejoin:round}
+.nk-trguide{fill:none;stroke:rgba(99,102,241,.4);stroke-width:2.5;stroke-dasharray:3 5;stroke-linecap:round}
+.nk-trink{fill:none;stroke:var(--primary);stroke-width:12;stroke-linecap:round;stroke-linejoin:round}
+.nk-trink.ok{stroke:var(--teal)}
+.nk-trdot{fill:var(--teal);stroke:#fff;stroke-width:3}
+.nk-trend{fill:none}
+.nk-trpic{position:absolute;inset:10%;display:grid;place-items:center;opacity:0;transform:scale(.4);pointer-events:none;transition:opacity .45s .15s,transform .5s .15s cubic-bezier(.3,1.6,.5,1)}
+.nk-trpic.on{opacity:1;transform:none}
+.nk-trpic img{width:100%;height:100%;object-fit:contain}
+.nk-trpic .nk-dots{width:100%}
+@media (prefers-reduced-motion: reduce){.nk-trsvg,.nk-trpic{transition:none}}
 `;
   document.head.appendChild(st);
 })();
@@ -171,7 +189,7 @@ const NK_CUE = { meet: ['ear', 'ear'], phrase: ['ear', 'ear'], story: ['book-ope
   pairs: ['hand-pointing', ''], missing: ['hand-pointing', ''], odd: ['hand-pointing', ''], scene: ['hand-pointing', ''],
   give: ['hand-grabbing', 'drag'], sort: ['hand-grabbing', 'drag'], dress: ['hand-grabbing', 'drag'],
   color: ['paint-brush', 'paint'], move: ['person-simple-run', 'body'], say: ['microphone', 'mic'], teach: ['microphone', 'mic'],
-  done: ['star', 'mic'] };
+  starts: ['ear', 'ear'], trace: ['hand-pointing', 'drag'], done: ['star', 'mic'] };
 const NK_FOOD = new Set(['apple', 'banana', 'pear', 'grapes', 'strawberry', 'watermelon', 'bread', 'cheese', 'egg', 'milk', 'juice', 'ice-cream']);
 const NK_SKY = new Set(['sun', 'moon', 'star', 'cloud', 'rain', 'snow', 'rainbow', 'plane', 'kite', 'balloon', 'parrot']);
 const nkKid = () => (session && session.name) || 'preview';
@@ -558,6 +576,38 @@ function nkOther(u, need){
   const i = EQ_NEST.units.indexOf(u), ok = x => !x.review && !themes.has(x.theme) && x.theme !== 'hello' && x.words.filter(w => w.pic).length >= need;
   return nkPick(EQ_NEST.units.slice(0, i).filter(ok)) || nkPick(EQ_NEST.units.filter(ok));
 }
+// A game waiting for its recordings (EQ_NEST.wait.games, docs/nest/NEW_LINES.md) plays only in the teacher's preview and
+// the test pages, never in a kid's lesson or playground.
+const nkReady = g => !!(NE && NE.preview) || !(((window.EQ_NEST || {}).wait || {}).games || []).includes(g);
+// Every word the kid has met by this unit (the units before it in the program, and its own), by id.
+function nkMetWords(u, pool){
+  const last = u.review ? u.review[u.review.length - 1] : u.id, i = EQ_NEST.units.findIndex(x => x.id === last), m = new Map();
+  EQ_NEST.units.slice(0, i < 0 ? EQ_NEST.units.length : i + 1).forEach(x => (x.words || []).forEach(w => m.set(w.id, Object.assign({ unit: x.id, theme: x.theme }, w))));
+  (pool || []).forEach(w => m.set(w.id, w));
+  return m;
+}
+// The first sound as the groups mean it: c and k are one sound, and "one" starts like "window".
+const nkSoundKey = w => w.id === 'one' ? 'w' : w.en.charAt(0).toLowerCase() === 'k' ? 'c' : w.en.charAt(0).toLowerCase();
+// Starts like: Chacho says the model word; the right card is another word of its group, the others start with other sounds.
+function nkStartsRounds(u, pool, n, k){
+  const met = nkMetWords(u, pool), here = new Set(pool.map(w => w.id));
+  const groups = (EQ_NEST.starts || []).map(g => g.filter(id => met.has(id)).map(id => met.get(id))).filter(g => g.length >= 2);
+  const mine = shuffle(groups.filter(g => g.some(w => here.has(w.id)))), order = mine.concat(shuffle(groups.filter(g => !mine.includes(g)))), out = [];
+  for (let i = 0; i < n && order.length; i++) {
+    const g = order[i % order.length], model = nkPick(g.filter(w => here.has(w.id))) || nkPick(g), right = nkPick(g.filter(w => w !== model));
+    const key = nkSoundKey(model), others = shuffle([...met.values()].filter(w => !g.some(x => x.id === w.id) && nkSoundKey(w) !== key)).slice(0, Math.max(1, (k || 3) - 1));
+    if (!others.length) break;
+    out.push({ model, w: right, opts: shuffle([right].concat(others)) });
+  }
+  return out;
+}
+// Trace it: a met word for each letter that has its strokes, the unit's own words first, a different letter each round.
+function nkTraceRounds(u, pool, n){
+  const met = nkMetWords(u, pool), here = new Set(pool.map(w => w.id)), T = EQ_NEST.trace || {};
+  const cand = Object.keys(T).filter(l => NK_LETTERS[l]).map(l => { const ws = T[l].filter(id => met.has(id)).map(id => met.get(id)); return { l, ws, mine: ws.some(w => here.has(w.id)) }; }).filter(x => x.ws.length);
+  const order = shuffle(cand.filter(x => x.mine)).concat(shuffle(cand.filter(x => !x.mine)));
+  return order.slice(0, n).map(x => ({ letter: x.l, w: nkPick(x.ws.filter(w => here.has(w.id))) || nkPick(x.ws) }));
+}
 // Every activity a session can have, in the order of the day (NE.only plays one of them, for the teacher's preview).
 function nkCompose(u, day, only){
   const age = NE.age, core = age <= 3, k = NE.k, review = !!u.review;
@@ -600,7 +650,9 @@ function nkCompose(u, day, only){
     color: () => { const p = (EQ_NEST.color || [])[(EQ_NEST.units.indexOf(u) + (NE.day.charCodeAt(0) || 0)) % (EQ_NEST.color || [1]).length]; if (!p) return false; add('color', [{ page: p }]); },
     dress: n => { const cl = clothes.length >= 3 ? clothes : Object.keys(EQ_NEST.dress || {}).map(nkWord).filter(Boolean);
       add('dress', nkRounds(cl, n || 3).map(w => ({ w, opts: nkOpts(w, cl, Math.min(k, 3)) }))); },
-    teach: n => add('teach', shuffle(pool).slice(0, n || 3).map(w => ({ w })))
+    teach: n => add('teach', shuffle(pool).slice(0, n || 3).map(w => ({ w }))),
+    starts: n => { const r = nkStartsRounds(u, pool, n || 3, k); if (!r.length) return false; add('starts', r); },
+    trace: n => { const r = nkTraceRounds(u, pool, n || 2); if (!r.length) return false; add('trace', r); }
   };
   if (only) {
     if (only === 'meet') A.meet(); else if (A[only] && A[only]() === false) A.find(4);
@@ -609,13 +661,15 @@ function nkCompose(u, day, only){
     if (core) { A.peek(3); A.pop(); } else { A.missing(2); A.pairs(); }
     A.teach(3); A.chant();
   } else if (day === 'a') { A.meet(); A.find(6); A.peek(3); A.say(3); }
-  else if (day === 'b') { A.move(); if (give.length >= 2) A.give(3); else A.pop(); A.find(4); A.say(2); }
+  else if (day === 'b') { A.move(); if (give.length >= 2) A.give(3); else A.pop();
+    // Ages 6 and 7: two letters to trace (Chacho shows the first while it is new), and a shorter Find it.
+    if (age >= 6 && nkReady('trace') && A.trace(2) !== false) A.find(2); else A.find(4); A.say(2); }
   else if (day === 'c') { A.chant(); A.story(); A.scene(); }
   else {
     const wear = u.theme === 'clothes';
     if (age <= 3) { A.pop(); if (sounds.length >= 2) A.sound(3); else A.peek(3); if (give.length >= 2) A.give(3); else A.find(3); A.chant(); }
     else if (age <= 5) { if (A.sort() === false) A.find(4); A.pairs(); if (wear) A.dress(3); else A.color(); if (sounds.length >= 3) A.sound(3); else A.pop(); }
-    else { A.pairs(); if (A.odd(3) === false) A.find(3); A.missing(2); if (wear) A.dress(3); else A.color(); }
+    else { A.pairs(); if (A.odd(3) === false) A.find(3); if (!(nkReady('starts') && A.starts(3) !== false)) A.missing(2); if (wear) A.dress(3); else A.color(); }
   }
   // Chacho shows the first round of a game while it is new for this kid (always for ages 2 and 3).
   const shown = new Set();
@@ -789,7 +843,7 @@ const NK_PLAY = [['find', 2, 'magnifying-glass', 't-grammar'], ['pop', 2, 'ballo
   ['sound', 2, 'ear', 't-listen'], ['give', 2, 'hand-grabbing', 't-write'], ['move', 2, 'person-simple-run', 't-fire'],
   ['scene', 2, 'tree', 't-chat'], ['color', 2, 'paint-brush', 't-vocab'], ['chant', 2, 'music-notes', 't-together'],
   ['pairs', 4, 'cards', 't-target'], ['sort', 4, 'tray', 't-star'], ['missing', 4, 'question', 't-level'],
-  ['dress', 4, 't-shirt', 't-uoe'], ['odd', 6, 'shapes', 't-read']];
+  ['dress', 4, 't-shirt', 't-uoe'], ['odd', 6, 'shapes', 't-read'], ['starts', 6, 'ear', 't-listen'], ['trace', 6, 'hand-pointing', 't-write']];
 function nkKnownUnits(){
   const ids = new Set(((dash.nest || {}).played || []).map(id => String(id).split('.')[0]));
   return EQ_NEST.units.filter(u => !u.review && ids.has(u.id));
@@ -799,7 +853,8 @@ function nkKnownUnits(){
 function nkPlayGames(){
   const known = nkKnownUnits(), age = dash.nest.age;
   if (!known.length) return [];
-  return NK_PLAY.filter(([g, from]) => age >= from && (g !== 'dress' || known.some(u => u.theme === 'clothes'))
+  const wait = ((EQ_NEST.wait || {}).games || []);
+  return NK_PLAY.filter(([g, from]) => age >= from && !wait.includes(g) && (g !== 'dress' || known.some(u => u.theme === 'clothes'))
     && (g !== 'chant' || known.some(u => (EQ_NEST.chants || {})[u.id])) && nkPlayOk(g));
 }
 function nkPlayOk(game){
@@ -1591,6 +1646,132 @@ NK.teach = {
     document.getElementById('nkpic').onclick = () => nestPlay(['w-' + s.w.id]);
     const th = nkBtn('thumb', 'Got it', () => { if (!nkLive(s)) return; confetti(); nkWin(s, ['en-great']); });
     nestPlay(nestPrompt(s), () => { if (nkLive(s)) nkIdle(s, th); });
+  }
+};
+
+// Starts like (ages 6 and 7): Chacho says a word; which picture starts with the same sound? Whole words only.
+NK.starts = {
+  say: s => ['w-' + s.model.id, 'en-starts'], intro: ['en-listen'], demo: true,
+  render(s, opening){
+    const en = s.model.en;
+    nkFill(`<button class="nk-card nk-model" id="nkmodel" aria-label="${esc(en)}">${nestPic(s.model)}</button>
+      ${NE.words ? `<div class="nk-word nk-sw"><b>${esc(en.charAt(0))}</b>${esc(en.slice(1))}</div>` : ''}
+      <div class="nk-row n${s.opts.length}">${s.opts.map((o, i) => `<button class="nk-card" data-nkopt="${i}" aria-label="${esc(o.en)}">${nestPic(o)}<span class="nk-cap"></span></button>`).join('')}</div>`);
+    NE.tries = 0;
+    const model = document.getElementById('nkmodel'), right = () => app.querySelector(`[data-nkopt="${s.opts.indexOf(s.w)}"]`);
+    model.onclick = () => { if (nestQueue) return; nkAgain(model, 'pop'); nestPlay(['w-' + s.model.id]); };
+    const pick = (b, byCoco) => {
+      if (!b || !nkLive(s) || b.disabled || (NE.locked && !byCoco)) return;
+      const o = s.opts[Number(b.dataset.nkopt)];
+      NE.tries++;
+      if (NE.words) b.querySelector('.nk-cap').textContent = o.en;
+      if (o !== s.w) { b.disabled = true; b.classList.add('no'); nkMiss(['w-' + o.id, 'en-try', 'w-' + s.model.id, 'en-starts']); return; }
+      // A sound game: it counts for the session, not for the word's own "found" record.
+      if (!s.demo) nkScore(null, NE.tries === 1);
+      b.classList.add('yes'); model.classList.add('lit');
+      app.querySelectorAll('[data-nkopt]').forEach(x => { if (x !== b) x.classList.add('away'); });
+      nkWin(s, ['w-' + s.model.id, 'w-' + o.id, 'en-same']);
+    };
+    app.querySelectorAll('[data-nkopt]').forEach(b => b.onclick = () => pick(b));
+    nestPlay(nestPrompt(s, opening), () => {
+      if (!nkLive(s)) return;
+      if (s.demo) { NE.locked = true; nkHandTap(right(), () => pick(right(), true)); } else nkIdle(s, right);
+    });
+  }
+};
+
+// Trace it (ages 6 and 7): the finger follows the small letter from the dot, stroke by stroke (generous: anywhere near the
+// line, a lifted finger keeps what it drew); then the letter turns into the picture of a met word that starts with it.
+// Strokes in a 100 x 112 box (the x-height from 40 to 88, ascenders from 12, the tail of p to 108), in writing order.
+const NK_LETTERS = {
+  a: ['M70 48C60 34 30 36 30 62C30 90 62 92 70 70', 'M70 40L70 88'],
+  b: ['M32 12L32 88', 'M32 62C32 36 72 34 72 64C72 92 34 92 32 70'],
+  c: ['M70 48C58 34 30 38 30 64C30 90 60 94 71 78'],
+  d: ['M68 52C60 34 28 38 28 64C28 92 64 92 68 72', 'M68 12L68 88'],
+  e: ['M31 64L69 64C69 36 31 36 31 64C31 90 60 94 70 80'],
+  f: ['M68 18C60 8 44 10 44 28L44 88', 'M30 44L62 44'],
+  h: ['M32 12L32 88', 'M32 60C32 34 68 34 68 58L68 88'],
+  k: ['M34 12L34 88', 'M66 42L34 68L68 88'],
+  l: ['M50 12L50 88'],
+  m: ['M22 40L22 88', 'M22 58C22 36 50 36 50 56L50 88', 'M50 56C50 36 78 36 78 56L78 88'],
+  n: ['M32 40L32 88', 'M32 60C32 34 68 34 68 58L68 88'],
+  p: ['M32 40L32 108', 'M32 60C34 36 72 36 72 64C72 92 34 92 32 72'],
+  r: ['M38 40L38 88', 'M38 62C40 42 56 36 70 42'],
+  s: ['M68 46C60 34 34 36 34 50C34 64 66 60 66 74C66 90 38 92 30 80'],
+  t: ['M48 18L48 80C48 90 60 90 66 84', 'M32 42L64 42'],
+  w: ['M18 40L33 88L50 50L67 88L82 40']
+};
+// The hand traces the strokes (Chacho's own round): step(stroke, point) at every frame, done() at the end.
+function nkHandTrace(svg, P, step, done){
+  const h = nkHandEl(), tok = NE && NE.tok;
+  if (!svg.getScreenCTM || !svg.getScreenCTM()) return done && done();
+  nkHandStop();
+  let si = 0, t0 = 0;
+  const tick = now => {
+    if (!NE || NE.tok !== tok) { h.style.opacity = 0; return; }
+    if (!t0) t0 = now;
+    const c = P[si], f = Math.min(1, (now - t0) / (500 + c.L * 14)), j = Math.round(f * (c.pts.length - 1));
+    const pt = svg.createSVGPoint(); pt.x = c.pts[j].x; pt.y = c.pts[j].y;
+    const q = pt.matrixTransform(svg.getScreenCTM());
+    h.style.opacity = 1; h.style.transform = `translate(${q.x}px,${q.y}px)`;
+    step(si, j);
+    if (f < 1) return requestAnimationFrame(tick);
+    si++; t0 = 0;
+    if (si < P.length) return setTimeout(() => requestAnimationFrame(tick), 250);
+    setTimeout(() => { h.style.opacity = 0; if (done) done(); }, 200);
+  };
+  requestAnimationFrame(tick);
+}
+NK.trace = {
+  say: () => ['en-trace'], demo: true,
+  render(s, opening){
+    const L = NK_LETTERS[s.letter] || NK_LETTERS.l, en = s.w.en;
+    nkFill(`<div class="nk-trace"><svg class="nk-trsvg" viewBox="0 0 100 112" role="img" aria-label="${esc(s.letter)}">
+        ${L.map(d => `<path class="nk-trbed" d="${d}"/>`).join('')}${L.map(d => `<path class="nk-trguide" d="${d}"/>`).join('')}
+        ${L.map((d, i) => `<path class="nk-trink" data-nktr="${i}" d="${d}"/>`).join('')}
+        <circle class="nk-trend" id="nktrend" r="4"/><circle class="nk-trdot" id="nktrdot" r="7"/></svg>
+      <div class="nk-trpic" id="nktrpic">${nestPic(s.w)}</div></div>
+      ${NE.words ? `<div class="nk-word nk-sw hide" id="nktrw"><b>${esc(en.charAt(0))}</b>${esc(en.slice(1))}</div>` : ''}`);
+    const svg = app.querySelector('.nk-trsvg'), dot = document.getElementById('nktrdot'), end = document.getElementById('nktrend');
+    const P = [...app.querySelectorAll('.nk-trink')].map(p => {
+      const len = p.getTotalLength(), pts = [];
+      for (let d = 0; d < len; d += 2) pts.push(p.getPointAtLength(d));
+      pts.push(p.getPointAtLength(len));
+      p.style.strokeDasharray = len; p.style.strokeDashoffset = len;
+      return { p, L: len, pts };
+    });
+    let si = 0, at = 0, drawing = false, over = false;
+    const place = () => { const c = P[si], a = c.pts[at], b = c.pts[c.pts.length - 1]; dot.setAttribute('cx', a.x); dot.setAttribute('cy', a.y); end.setAttribute('cx', b.x); end.setAttribute('cy', b.y); };
+    const finish = () => {
+      over = true; drawing = false;
+      nkLadderStop();
+      svg.classList.add('gone');
+      document.getElementById('nktrpic').classList.add('on');
+      const w = document.getElementById('nktrw'); if (w) w.classList.remove('hide');
+      nkWin(s, ['w-' + s.w.id, nkPraise()], 500);
+    };
+    const follow = q => {
+      const c = P[si];
+      if (!c || !q || over) return;
+      // The farthest point a little ahead (14 points, so a quick finger keeps up) that is near the finger; R is forgiving.
+      let best = -1;
+      for (let j = at; j <= Math.min(at + 14, c.pts.length - 1); j++) { const p = c.pts[j]; if ((p.x - q.x) ** 2 + (p.y - q.y) ** 2 <= 15 * 15) best = j; }
+      if (best > at) { at = best; c.p.style.strokeDashoffset = c.L * (1 - at / (c.pts.length - 1)); place(); }
+      if (at < c.pts.length - 1) return;
+      c.p.style.strokeDashoffset = 0; c.p.classList.add('ok'); nkSfx('pop');
+      si++; at = 0;
+      if (si < P.length) place(); else finish();
+    };
+    const local = e => { const m = svg.getScreenCTM(); if (!m) return null; const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; return pt.matrixTransform(m.inverse()); };
+    svg.addEventListener('pointerdown', e => { if (over || NE.locked) return; drawing = true; try { svg.setPointerCapture(e.pointerId); } catch (_) {} follow(local(e)); e.preventDefault(); });
+    svg.addEventListener('pointermove', e => { if (drawing && !over && !NE.locked) follow(local(e)); });
+    ['pointerup', 'pointercancel'].forEach(k => svg.addEventListener(k, () => { drawing = false; }));
+    place();
+    nestPlay(nestPrompt(s, opening), () => {
+      if (!nkLive(s)) return;
+      if (s.demo) { NE.locked = true; nkHandTrace(svg, P, (i, j) => { if (i === si) follow(P[i].pts[j]); }); }
+      else nkIdle(s, () => dot, () => end);
+    });
   }
 };
 

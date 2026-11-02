@@ -437,6 +437,9 @@ window.EQ_NEST = {
     whee: 'Wheee!',
     achoo: 'Ah... ah... achoo!',
     listen: 'Listen!',
+    starts: 'Which one starts the same?',
+    same: 'They start the same!',
+    trace: 'Trace the letter!',
     meet: "Let's meet new words!",
     find: 'Find it!',
     turn: 'Your turn!',
@@ -558,6 +561,8 @@ window.EQ_NEST = {
     color: 'צובעים: בוחרים את הצבע שצ׳אצ׳ו אמר וצובעים. אחר כך צובעים חופשי.',
     dress: 'מלבישים: צ׳אצ׳ו אומר מה ללבוש, והילד גורר את הבגד לדובי.',
     teach: 'תלמד את ההורה: הילד אומר לכם את המילה. לחצו על האגודל כשהבנתם.',
+    starts: 'צליל ראשון: צ׳אצ׳ו אומר מילה, והילד בוחר תמונה שמתחילה באותו צליל. רק מילים שלמות, בלי צליל לבד.',
+    trace: 'עוקבים אחרי אות: מעבירים אצבע על האות הקטנה מהנקודה, והיא הופכת לתמונה של מילה שמתחילה בה.',
     done: 'סיימנו להיום. מחר יש משחקים אחרים.'
   },  // Chacho's Hebrew guidance (package B, owner 2026-10-31): how to play, never what a word means. Spoken by Chacho (Chatterbox
   // Multilingual on Kaggle, from niqqud text; EnglishLessons-work/hebrew-voice), docs/nest/he/<key>.mp3, said as h-<key>.
@@ -592,6 +597,8 @@ window.EQ_NEST = {
     color: 'מקשיבים לצבע, לוחצים עליו, וצובעים.',
     dress: 'מקשיבים, ומלבישים את הדובי.',
     teach: 'עכשיו מלמדים את אמא או אבא! אומרים להם את המילה.',
+    starts: 'מקשיבים למילה. איזו תמונה מתחילה באותו צליל?',
+    trace: 'מעבירים את האצבע על האות, מהנקודה.',
     parrot: 'מדברים אליי, ואני עונה כמו תוכי!',
     peep: 'מקשיבים לשם, ולוחצים עליו כשהוא קופץ.',
     nono: 'לפעמים אני טועה! אם טעיתי, לוחצים לא. אם צדקתי, לוחצים כן.',
@@ -692,5 +699,49 @@ window.EQ_NEST = {
     n22: { place: 'park', pages: [['What is Chacho doing?', ['parrot']], ['Singing. La, la, la!', ['singing']], ['Painting.', ['painting']], ['Climbing. Up, up!', ['climbing']], ['Cooking. Yummy!', ['cooking']]] },
     n23: { place: 'beach', pages: [['Chacho goes outside.', ['parrot']], ['A tree and a flower.', ['tree', 'flower']], ['A leaf falls down.', ['leaf']], ['The sea! Splash!', ['sea']], ['A shell and a rock.', ['shell', 'rock']]] },
     n24: { place: 'home', pages: [['Good morning, Chacho!', ['parrot']], ['Brush your teeth.', ['toothbrush']], ['Wash with soap.', ['soap']], ['Eat with a spoon.', ['spoon']], ['Drink from a cup. Good job!', ['cup']]] }
+  },
+  // Starts like (ages 6 and 7, games plan phase 5): groups of words that start with the same sound and the same letter,
+  // whole words only (a computer voice cannot say a sound alone: "suh"). Chacho says one word of a group, the kid picks the
+  // picture of another word of the group among words of other groups. Only words the kid has met play.
+  starts: [
+    ['sun', 'socks', 'sea', 'soap', 'six', 'seven', 'sad', 'sister', 'silly', 'singing'],
+    ['ball', 'banana', 'baby', 'bed', 'bath', 'bus', 'bike', 'boat', 'balloon'],
+    ['dog', 'dad', 'door', 'doctor', 'duck', 'dancing'],
+    ['cat', 'cow', 'car', 'cap', 'coat', 'cup', 'cooking'],
+    ['mom', 'moon', 'milk', 'monkey', 'mouth'],
+    ['pink', 'pear', 'pants', 'pilot', 'painting', 'parrot', 'penguin', 'purple'],
+    ['two', 'ten', 'tooth', 'tongue', 'teddy-bear', 'teacher'],
+    ['five', 'four', 'foot', 'face', 'finger', 'farmer'],
+    ['hello', 'horse', 'hand', 'happy', 'house'],
+    ['red', 'rain', 'robot', 'rock', 'rainbow', 'running'],
+    ['lion', 'leg', 'leaf'],
+    ['nose', 'nine', 'no'],
+    ['window', 'white', 'walking', 'watermelon']
+  ],
+  // Trace it (ages 6 and 7, games plan phase 5): the small letter a met word starts with (its usual sound), traced with a
+  // finger from the dot; then the letter turns into the word's picture and Chacho says the word (never the letter's sound).
+  // The strokes are NK_LETTERS in play.js.
+  trace: {
+    a: ['apple', 'angry'], b: ['ball', 'banana', 'bed', 'bus', 'boat'], c: ['cat', 'cow', 'car', 'cup', 'coat'],
+    d: ['dog', 'duck', 'door', 'dad'], e: ['egg', 'elephant'], f: ['five', 'foot', 'face', 'finger'],
+    h: ['hand', 'horse', 'house', 'happy'], k: ['kite', 'key'], l: ['lion', 'leg', 'leaf'], m: ['moon', 'milk', 'mom', 'monkey'],
+    n: ['nose', 'nine'], p: ['pear', 'pink', 'pants', 'penguin'], r: ['red', 'rain', 'robot', 'rock'],
+    s: ['sun', 'socks', 'sea', 'six', 'soap'], t: ['ten', 'tooth', 'two', 'tongue'], w: ['window', 'watermelon']
+  },
+  // Waiting for the owner (docs/nest/NEW_LINES.md, written by node tools/nest-new-lines.js): lines not recorded yet and
+  // games that need them. A kid's lesson and playground skip a waiting game (the teacher's preview and the test pages play
+  // it, with the phone's voice). After recording, take the names out here, run the checks and raise NEST_V.
+  // en and he: the line's key and where it plays (the text is in en / he above).
+  wait: {
+    games: ['starts', 'trace'],
+    en: {
+      starts: 'Starts like (ages 6 and 7): every round, right after Chacho says the word ("sun ... Which one starts the same?"), and again after a wrong card',
+      same: 'Starts like: after the right card, following both words ("sun, socks ... They start the same!")',
+      trace: 'Trace it (ages 6 and 7): every letter, before the kid traces it; again when the kid waits (the help ladder)'
+    },
+    he: {
+      starts: 'Starts like: before the English, the first two plays when the parent sets Hebrew to always (from age 6 auto is off)',
+      trace: 'Trace it: the same, before "Trace the letter!"'
+    }
   }
 };

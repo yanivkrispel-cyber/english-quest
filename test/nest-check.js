@@ -14,7 +14,7 @@ const EN_KEYS = ['hi', 'listen', 'meet', 'find', 'turn', 'give', 'with', 'color'
   'whosays', 'popit', 'sort', 'pairs', 'close', 'open', 'missing', 'odd', 'look', 'story', 'theend', 'teach', 'dress', 'yummy',
   'thanks', 'yes', 'wow', 'super', 'great', 'try', 'done', 'bye'];
 const GAMES = ['meet', 'phrase', 'find', 'move', 'say', 'give', 'peek', 'sound', 'pop', 'sort', 'pairs', 'missing', 'odd', 'chant',
-  'story', 'scene', 'color', 'dress', 'teach', 'done'];
+  'story', 'scene', 'color', 'dress', 'teach', 'starts', 'trace', 'done'];
 const PAGES = ['ball', 'car', 'house', 'fish', 'flower', 'balloon', 'apple', 'kite', 'boat', 'tree', 'star', 'sun'];
 const PLACES = ['home', 'playroom', 'kitchen', 'farm', 'savanna', 'park', 'town', 'beach', 'sky'];
 const SLOTS = ['head', 'face', 'neck', 'body', 'hands', 'legs', 'feet'];
@@ -189,6 +189,33 @@ function check(opts) {
     const asked = new Set([].concat(...(st.pages || []).map(pg => pg[1] || [])).filter(id => id !== 'parrot' && word[id]));
     if (asked.size < 3) err('story ' + u.id, 'needs 3 words to ask about afterwards');
   });
+  // Starts like: groups of met words with one first sound and one first letter (c and k aside, never mixed in a group), no
+  // word in two groups. Trace it: a letter with its strokes in play.js (NK_LETTERS), each word starting with it.
+  const inGroup = {};
+  (nest.starts || []).forEach((g, i) => {
+    const where = 'starts group ' + (i + 1);
+    if (!Array.isArray(g) || g.length < 3) return err(where, 'needs at least 3 words');
+    g.forEach(id => { if (!known(where, id)) return; if (inGroup[id]) err(where, id + ' is also in group ' + inGroup[id]); inGroup[id] = i + 1; });
+    const first = new Set(g.filter(id => word[id]).map(id => word[id].en.charAt(0).toLowerCase()));
+    if (first.size > 1) err(where, 'words start with different letters: ' + [...first].join(' '));
+  });
+  const playSrc = fs.readFileSync(path.join(ROOT, 'docs/nest/play.js'), 'utf8');
+  const letters = new Set([...(/const NK_LETTERS = {([\s\S]*?)\n};/.exec(playSrc) || [, ''])[1].matchAll(/^  ([a-z]): \[/gm)].map(m => m[1]));
+  Object.keys(nest.trace || {}).forEach(l => {
+    const where = 'trace ' + l;
+    if (!letters.has(l)) err(where, 'no strokes for this letter in NK_LETTERS (docs/nest/play.js)');
+    const ws = nest.trace[l];
+    if (!Array.isArray(ws) || !ws.length) return err(where, 'needs words');
+    ws.forEach(id => { if (known(where, id) && word[id].en.charAt(0).toLowerCase() !== l) err(where, id + ' does not start with ' + l); });
+  });
+  if ((nest.starts || []).length) ok.push((nest.starts || []).length + ' Starts like groups, ' + Object.keys(nest.trace || {}).length + ' letters to trace');
+  // The wait list (docs/nest/NEW_LINES.md): games of the lesson, lines that exist, each with where it plays.
+  const wait = nest.wait || {};
+  (wait.games || []).forEach(g => { if (!GAMES.includes(g)) err('wait.games', 'unknown game ' + g); });
+  [['en', nest.en || {}], ['he', nest.he || {}]].forEach(([k, lines]) => Object.keys(wait[k] || {}).forEach(key => {
+    if (!lines[key]) err('wait.' + k, 'no line ' + key + ' in nest.' + k);
+    if (!String(wait[k][key] || '').trim()) err('wait.' + k + '.' + key, 'say where it plays');
+  }));
   ['chants', 'stories'].forEach(k => Object.keys(nest[k] || {}).forEach(id => { if (!units.some(u => u.id === id && !u.review)) err(k + '.' + id, 'no such new unit'); }));
   ok.push(Object.keys(nest.chants || {}).length + ' chants, ' + Object.keys(nest.stories || {}).length + ' stories, ' + Object.keys(nest.sounds || {}).length +
     ' sounds, ' + (nest.give || []).length + ' things to give, ' + Object.keys(nest.dress || {}).length + ' clothes, ' + (nest.color || []).length + ' coloring pages');
@@ -197,7 +224,12 @@ function check(opts) {
     let missing = 0;
     pics.forEach(p => { if (!fs.existsSync(path.join(ROOT, 'docs/nest/pics', p + '.webp'))) { missing++; err('pics', 'missing docs/nest/pics/' + p + '.webp'); } });
     if (!missing) ok.push(pics.size + ' pictures on disk');
-    const list = clips(nest);
+    const waitEn = new Set(Object.keys((nest.wait || {}).en || {}).map(k => 'en-' + k));
+    const list = clips(nest).filter(c => !waitEn.has(c.name));
+    waitEn.forEach(n => { if (fs.existsSync(path.join(ROOT, 'docs/nest/audio', n + '.mp3'))) err('wait.en', n + '.mp3 is recorded: take it out of EQ_NEST.wait'); });
+    const lines = require('../tools/nest-new-lines.js'), have = fs.existsSync(lines.OUT) ? fs.readFileSync(lines.OUT, 'utf8').replace(/\r\n/g, '\n') : '';
+    if (have !== lines.text(nest)) err('docs/nest/NEW_LINES.md', 'out of date (node tools/nest-new-lines.js)');
+    else ok.push('docs/nest/NEW_LINES.md matches (' + waitEn.size + ' English and ' + Object.keys((nest.wait || {}).he || {}).length + ' Hebrew lines to record)');
     let gone = 0;
     list.forEach(c => {
       const p = path.join(ROOT, 'docs/nest/audio', c.name + '.mp3');
@@ -269,7 +301,9 @@ function check(opts) {
     if (!he.peek2) err('nest.he', 'no peek2 (Peekaboo from age 4)');
     Object.entries(he).forEach(([k, v]) => {
       if (!/[\u05d0-\u05ea]/.test(v) || /[a-z]/i.test(v)) err('nest.he ' + k, 'a Hebrew line without English in it');
-      if (opts.files && !fs.existsSync(path.join(ROOT, 'docs/nest/he', k + '.mp3'))) err('nest.he ' + k, 'no recording docs/nest/he/' + k + '.mp3');
+      const waiting = ((nest.wait || {}).he || {})[k], onDisk = fs.existsSync(path.join(ROOT, 'docs/nest/he', k + '.mp3'));
+      if (opts.files && !waiting && !onDisk) err('nest.he ' + k, 'no recording docs/nest/he/' + k + '.mp3');
+      if (opts.files && waiting && onDisk) err('wait.he', k + '.mp3 is recorded: take it out of EQ_NEST.wait');
     });
     ok.push('nest.he: ' + Object.keys(he).length + ' Hebrew lines');
     // Every game the day plans has its activity in play.js.

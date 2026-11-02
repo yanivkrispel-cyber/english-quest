@@ -39,9 +39,9 @@ next day is the first one not played yet (`nestNext`), so a missed day never ski
 | Day id | Day | What the session has |
 |---|---|---|
 | `n04` | New words | Meet (each word, then the phrase from age 4), Find it ×6, Peekaboo ×3, Say it ×3 (from age 4 the last is the phrase) |
-| `n04.b` | Move | Chacho says ×3 (×2 for ages 2 and 3), Give it to me ×3 (or Pop it when the unit has nothing to give), Find it ×4, Say it ×2 |
+| `n04.b` | Move | Chacho says ×3 (×2 for ages 2 and 3), Give it to me ×3 (or Pop it when the unit has nothing to give), Find it ×4, Say it ×2. Ages 6 and 7: Trace it ×2 and Find it ×2 instead of Find it ×4 (once Trace it is recorded) |
 | `n04.c` | Song and story | The unit's chant, its story (5 pages, then Find it ×2 about it), the big picture ×4 (×3) |
-| `n04.d` | Games | Ages 2 and 3: Pop it, Who says that? (or Peekaboo), Give it to me (or Find it), the chant. Ages 4 and 5: Sort it, Pairs, Color it (Get dressed in a clothes unit), Who says that? (or Pop it). Ages 6 and 7: Pairs with written words, Odd one out ×3, What's missing ×2, Color it (Get dressed) |
+| `n04.d` | Games | Ages 2 and 3: Pop it, Who says that? (or Peekaboo), Give it to me (or Find it), the chant. Ages 4 and 5: Sort it, Pairs, Color it (Get dressed in a clothes unit), Who says that? (or Pop it). Ages 6 and 7: Pairs with written words, Odd one out ×3, What's missing ×2 (Starts like ×3 once it is recorded), Color it (Get dressed) |
 | `r02` | Review | Find it ×5 over both units and up to 3 words due again, Peekaboo and Pop it (2 and 3) or What's missing and Pairs, Teach a grown-up ×3, a chant |
 
 Words due again on a review day: words of earlier units missed more often than found, or not met for a week (from the
@@ -79,6 +79,8 @@ tap, grabbing hand: drag, brush: color, runner: move, microphone: say), and thes
 | Color it | `color` | 3+ | picks the color Chacho says, colors his part, then colors the rest freely; kept on the phone (the palette button on the home) |
 | Get dressed | `dress` | 3+ | drags the clothes Chacho says onto the teddy; they stay on |
 | Teach a grown-up | `teach` | all | says the word to Mom or Dad, who taps the thumb |
+| Starts like | `starts` | 6+ | hears a met word (its picture on top, the word written with its first letter in color); taps the picture that starts with the same sound |
+| Trace it | `trace` | 6+ | traces the small letter with a finger from the dot, stroke by stroke; it turns into the picture of a met word that starts with it, and Chacho says the word |
 
 Shared pieces: `nkHandTap` / `nkHandDrag` (the hand), `nkIdle` (the hint), `nkDrag` (a finger drag with a generous drop
 area; a tap flies the picture there), `nkSfx` (pops, flips, munches and the drums, made with Web Audio), `nkPlaceSvg`
@@ -183,6 +185,29 @@ band an app: 5 and under, 6 to 8, 9 to 11) is in the gaps list of `specs/store-r
 - 2026-10-27, the games plan phases 1 to 4: no Hebrew voice, the hand and Chacho's first round, four days a unit with
   spaced review per word, and the games above. Not built: the monthly report, the word map for parents, weeks 21 to 40,
   first sounds and letter tracing for ages 6 and 7 (phases 5 and 6 of the games plan).
+- 2026-11-02, games plan phase 5, part 1: Starts like and Trace it (below), built and waiting for their recordings.
+
+## Starts like and Trace it (ages 6 and 7, games plan phase 5)
+
+Whole words only: a computer voice cannot say a sound alone ("suh" for /s/), so Chacho never does. Both games play on words
+the kid has met (the units up to the day's one, `nkMetWords`), the day's unit first.
+
+- **Starts like** (`NK.starts`, `EQ_NEST.starts`): groups of words with one first sound and one first letter (13 groups;
+  c and k are one sound, "one" starts like "window", and no group mixes letters). Chacho says a word of a group ("sun ...
+  Which one starts the same?"); the right card is another word of the group, the others start with other sounds. A right
+  card: both words, then "They start the same!". It counts for the session only, not for a word's own found / missed record
+  (it is about the sound, not the meaning).
+- **Trace it** (`NK.trace`, `EQ_NEST.trace`, the strokes in `NK_LETTERS`): 16 small letters drawn as strokes in writing
+  order (a b c d e f h k l m n p r s t w). The finger follows the line from the dot; anywhere within a forgiving distance
+  counts, a lifted finger keeps what it drew, and nothing is ever wrong. When the last stroke is done the letter turns into
+  the picture of a met word that starts with it (its usual sound: apple, not arm) and Chacho says the word. Chacho's own
+  round: the hand traces it. Not counted.
+- **Waiting** (`EQ_NEST.wait`, `docs/nest/NEW_LINES.md` written by `node tools/nest-new-lines.js`): their lines are written,
+  not recorded. While a game is in `wait.games` a kid's lesson and playground skip it (the day is exactly what it was before),
+  and the teacher's preview and the test pages play it with the phone's voice. test/nest-check.js checks that every waiting
+  line exists and says where it plays, that NEW_LINES.md is up to date, and fails when a waiting line is already on disk
+  (take it out of `wait`). After recording: take the keys out, run the checks, raise `NEST_V`.
+- Store rules: nothing new is kept (the per-phone play counts already cover the two games).
 
 ## The playground, one more lesson and the right-answer moment (option C, owner 2026-10-28)
 
