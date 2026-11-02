@@ -268,6 +268,8 @@ top-level name starts with nk/NK, and nest-check fails on a name shared with Ind
 `test/tablet.html?screen=nest|nest-meet|nest-find|nest-say|nest-done&phones`; every game in phone frames:
 `test/nest-games.html?all` (lists screens that scroll) or `?unit=n07&game=give&age=4`. A new audio folder needs its path in
 `run_worker_first` (wrangler.jsonc), or Safari plays nothing.
+A Nest line written but not recorded goes into `EQ_NEST.wait` (the kids' lessons skip a waiting game) and
+`docs/nest/NEW_LINES.md` (`node tools/nest-new-lines.js`); nest-check fails when that file is stale or a waiting line is on disk.
 **Chacho is a he** (Hebrew: צ׳אצ׳ו אומר, שואל). Nest pictures are clay stickers made for the app (`tools/NEST-ART.md`), never emoji.
 **Chacho says in Hebrew how to play, never what a word means** (owner, 2026-10-31, package B; it replaces "no Hebrew" of 2026-10-27):
 `EQ_NEST.he` lines, recorded in Chacho's voice (Chatterbox Multilingual from niqqud text, `EnglishLessons-work/hebrew-voice`, files

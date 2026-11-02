@@ -8983,7 +8983,7 @@ function auditRender(pin){
 // Listening and pictures only, and only Chacho's English (no Hebrew voice): he shows each game first. No reading, timers
 // or fail screens, and the pet is the only reward. Content: docs/nest/nest.js (EQ_NEST); the session engine and its
 // games: docs/nest/play.js; recordings: docs/nest/audio (tools/nest_audio.py).
-const NEST_V = 22, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
+const NEST_V = 23, NEST_PRAISE = ['yes', 'great', 'wow', 'super'];
 let NE = null, nestLoading = null, nestAudioEl = null, nestQueue = null, nestMic = null;
 function loadNest(){
   if (window.EQ_NEST && typeof NK === 'object' && typeof nkActorOn === 'function' && typeof nkHome === 'function' && typeof nkEchoStart === 'function' && typeof nkStickers === 'function' && typeof nkArcade === 'function') return Promise.resolve(window.EQ_NEST);
@@ -9398,7 +9398,7 @@ let NG_AGE = 5;
 const NG_AGES = [[3, 'Age 2 to 3'], [4, 'Age 4'], [5, 'Age 5'], [7, 'Age 6 to 7']];
 const NG_GAMES = [['meet', 'Meet'], ['find', 'Find it'], ['move', 'Chacho says'], ['say', 'Say it'], ['give', 'Give it to me'], ['peek', 'Peekaboo'],
   ['sound', 'Who says that?'], ['pop', 'Pop it'], ['sort', 'Sort it'], ['pairs', 'Pairs'], ['missing', "What's missing?"], ['odd', 'Odd one out'],
-  ['chant', 'Chant'], ['story', 'Story'], ['scene', 'Big picture'], ['color', 'Color it'], ['dress', 'Get dressed'], ['teach', 'Teach Mom']];
+  ['chant', 'Chant'], ['story', 'Story'], ['scene', 'Big picture'], ['color', 'Color it'], ['dress', 'Get dressed'], ['teach', 'Teach Mom'], ['starts', 'Starts like'], ['trace', 'Trace it']];
 function nestGalleryDash(){
   if (!dash || !dash.preview) dash = { preview: true, pet: { id: 'fawn', name: 'Fern', stage: 3, xp: 600, wear: [], move: 'spin' }, girl: { name: 'Preview', level: 'nest', levelLabel: '' }, week: [], games: Object.assign({}, GAMES_DEFAULT), stats: { streak: 0 } };
   dash.nest = { age: NG_AGE, choices: NG_AGE <= 4 ? 2 : 3, words: NG_AGE >= 6, today: null, done: false, played: [] };
