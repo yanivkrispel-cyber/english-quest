@@ -4413,7 +4413,7 @@ async function flushPending(){
 
 // Read-aloud (Hear it, word taps, Read to me): Chacho's recordings in docs/say (tools/voice.py). The phone's own voice
 // only for a text without a recording, or when the recording cannot play (offline).
-const SAY_V = 2;
+const SAY_V = 3;
 let SAY = null, sayAudio = null, sayLoading = false;
 // FNV-1a of the lower-cased text with its spaces collapsed; the same function as sayKey in tools/voice-list.js.
 function sayKey(text){
@@ -4555,7 +4555,7 @@ function chatModel(turn, text){
 // Said back after a recast: close enough when most of the model's words are there.
 const CHAT_CLOSE = 0.6;
 
-const MISSIONS_V = 5, MS_PARTS = ['Hook', 'Learn', 'Practice', 'Use it', 'Finish'];
+const MISSIONS_V = 6, MS_PARTS = ['Hook', 'Learn', 'Practice', 'Use it', 'Finish'];
 const MS_TYPES = { grammar: ['Grammar Lab', 7], vocabulary: ['Word Pack', 7], listening: ['Radio Show', 8], reading: ['Story Cards', 8],
   'use-of-english': ['Newsroom', 7], writing: ['Writer\'s Desk', 9] };
 let MS = null, msTick = null, msAudio = null;
@@ -5577,7 +5577,7 @@ async function previewMission(id, label){
 // voice or tile, then the talk goes on); an open question answered with enough words gets `o` and the closest model as
 // a quiet "Another way to say it". Voice XP only for a branch or an answer with enough words (chatEnough), or the model
 // said back. Settings.TalkRecast = off turns the recast step off (the model line stays).
-const TALK_V = 7;
+const TALK_V = 8;
 const CHAT_PET = {
   start: ['Your turn soon! Tap the mic and talk.', 'Talk to Chacho! I am right here.', 'Speak English with Chacho. You can do it!'],
   voice: ['You said it!', 'Out loud! Keep going!', 'Chacho heard you!', 'So cool! Keep going!', 'Yes! Out loud!'],
