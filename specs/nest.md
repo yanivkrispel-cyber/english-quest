@@ -186,6 +186,53 @@ band an app: 5 and under, 6 to 8, 9 to 11) is in the gaps list of `specs/store-r
   spaced review per word, and the games above. Not built: the monthly report, the word map for parents, weeks 21 to 40,
   first sounds and letter tracing for ages 6 and 7 (phases 5 and 6 of the games plan).
 - 2026-11-02, games plan phase 5, part 1: Starts like and Trace it (below), built and waiting for their recordings.
+- 2026-11-02, games plan phase 5, part 2: weeks 21 to 40 written (below), waiting for their pictures and voice.
+
+## Weeks 21 to 40 (year plan terms 3 and 4): written, waiting for pictures and voice
+
+The year plan's themes for weeks 21 to 40 (https://claude.ai/artifact/F8f5DKqozWFJ98y8TNXJMJ), without the words the first 24
+units already have (lion, car, doctor, moon...: they come back through the spaced review): 18 units, n25 to n42, 99 new
+words, each with its phrase, Chacho says moves (all of them existing moves), two ideas for home, a chant and a story, and a
+review after every two (r13 to r21). Bold: the core words for ages 2 and 3.
+
+| Unit | Plan week | Theme | Words | Phrase |
+|---|---|---|---|---|
+| n25 | 21 | More wild animals (עוד חיות בטבע) | **bear**, **tiger**, **hippo**, **frog**, kangaroo, owl | The bear is big! |
+| n26 | 22 | More things that go (עוד כלי תחבורה) | **truck**, **helicopter**, **tractor**, **taxi**, scooter, ambulance | Beep beep! Let's go! |
+| n27 | 23 | At the park (בגן השעשועים) | **swing**, **slide**, **bird**, **grass**, bench, sandbox | My turn! Your turn! |
+| n28 | 24 | More people who help (עוד אנשים שעוזרים) | **cook**, **police officer**, **driver**, vet, **nurse**, builder | Thank you for your help! |
+| n29 | 25 | At the beach (בים) | **fish**, **crab**, **bucket**, **towel**, sandcastle, sun hat | Look, a fish! |
+| n30 | 26 | Big and small (גדול וקטן) | **big**, **small**, **up**, **down**, fast, slow | Go fast! Go slow! |
+| n31 | 27 | At the table (ליד השולחן) | **plate**, **fork**, **bowl**, **table**, napkin | More, please! |
+| n32 | 28 | Little creatures (יצורים קטנים) | **bee**, **butterfly**, **ant**, **snail**, ladybug, worm | Look! A butterfly! |
+| n33 | 29 | I can! (אני יכול!) | **drawing**, **reading**, **jumping**, **guitar**, piano | I can jump! |
+| n34 | 31 | Where is it? (איפה זה?) | **in**, **on**, **under**, next to, **box** | It's in the box! |
+| n35 | 32 | Birthday party (יום הולדת) | **cake**, **present**, **candle**, **party hat**, card | Happy birthday! |
+| n36 | 33 | Pets (חיות מחמד) | **rabbit**, **turtle**, hamster, **puppy**, **kitten** | I have a rabbit. |
+| n37 | 34 | Sky and seasons (שמיים ועונות) | **sky**, **summer**, **winter**, spring, autumn, **umbrella** | Look at the sky! |
+| n38 | 35 | My school bag (התיק שלי) | **bag**, **book**, **crayon**, **pencil**, scissors, glue | Can I have a crayon? |
+| n39 | 36 | Kind words (מילים טובות) | **please**, **thank you**, **sorry**, **help**, share | Let's share! |
+| n40 | 37 | Sports (ספורט) | **kicking**, **throwing**, **catching**, **hopping**, skating | Catch the ball! |
+| n41 | 38 | Space (חלל) | **rocket**, **planet**, **Earth**, **telescope** | Three, two, one, go! |
+| n42 | 39 | Story world (עולם הסיפורים) | **king**, **queen**, **castle**, **crown**, dragon, princess | Once upon a time. |
+
+- **Where they are:** `EQ_NEST.next` in docs/nest/nest.js (their chants and stories with the others, by unit id). The
+  server's program (`src/NestIndex.js`), a kid's lessons, the playground and the parents' views read `EQ_NEST.units` only, so
+  no kid meets them and no kid's place in the program moves.
+- **What they need:** 99 clay stickers (`docs/nest/NEW_LINES.md` lists each one with how to draw it: abstract words such as
+  big, under, please or summer have a drawing note in the word's `draw`) and 382 English clips (word, Find it question, phrase,
+  chant lines, story pages; `python tools/voice.py` records them, since tools/nest-audio-list.js lists them).
+  `tools/nest_pics.py` turns the clay pictures of these units into WebPs too (never a Fluent stand-in) and keeps them.
+- **Checks:** test/nest-check.js runs every content rule on them (numbering on from n24 and r12, one meaning per English word
+  across all 42 units, 4 to 6 words, core words, phrase, moves, home ideas, chants, stories, safe words) but does not ask for
+  their pictures and clips on disk; it says when a unit has all of them ("ready to move from next into units").
+- **Going live, a unit at a time:** move the unit and its review from `next` to the end of `units`, run
+  `node tools/nest-index.js` and `node tools/nest-new-lines.js`, the checks, and raise `NEST_V`. A kid who finished the 108
+  days and goes around again meets the new days next (`nestNext` gives the first day not played). Optional then: the unit's
+  words in `give`, `sounds` and `dress`.
+- **For the early-years teacher:** n30 (big, small, up, down, fast, slow), n34 (in, on, under, next to) and n39 (please,
+  thank you, sorry, help, share) are the first units whose words are not things; their pictures need care, and Find it
+  between two of them may be harder than the plan expects. The friendly dragon (n42) and the ambulance (n26) are drawn soft.
 
 ## Starts like and Trace it (ages 6 and 7, games plan phase 5)
 

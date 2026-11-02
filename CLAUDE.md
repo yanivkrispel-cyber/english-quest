@@ -270,6 +270,8 @@ top-level name starts with nk/NK, and nest-check fails on a name shared with Ind
 `run_worker_first` (wrangler.jsonc), or Safari plays nothing.
 A Nest line written but not recorded goes into `EQ_NEST.wait` (the kids' lessons skip a waiting game) and
 `docs/nest/NEW_LINES.md` (`node tools/nest-new-lines.js`); nest-check fails when that file is stale or a waiting line is on disk.
+Weeks 21 to 40 are `EQ_NEST.next` (no kid sees them; the server's program is `units` only): a unit goes live by moving it
+and its review to the end of `units`, then `node tools/nest-index.js`, `node tools/nest-new-lines.js`, the checks and `NEST_V`.
 **Chacho is a he** (Hebrew: צ׳אצ׳ו אומר, שואל). Nest pictures are clay stickers made for the app (`tools/NEST-ART.md`), never emoji.
 **Chacho says in Hebrew how to play, never what a word means** (owner, 2026-10-31, package B; it replaces "no Hebrew" of 2026-10-27):
 `EQ_NEST.he` lines, recorded in Chacho's voice (Chatterbox Multilingual from niqqud text, `EnglishLessons-work/hebrew-voice`, files
