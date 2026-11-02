@@ -52,9 +52,9 @@ var JOURNEY = { stations: 30, early: 20, earlyAvg: 85, items: 15, pass: 80, wait
   // on the first try over her last `masteryItems` game and mission questions in this world (at least `masteryMin`).
   // Settings.GateMastery: a percentage, or off. A kid who met the stations rule before `masteryFrom`
   // (Settings.GateMasteryFrom) or already tried this gate keeps her open gate.
-  mastery: 80, masteryItems: 80, masteryMin: 40, masteryFrom: '2026-11-02' };
+  mastery: 80, masteryItems: 80, masteryMin: 40, masteryFrom: '2026-11-03' };
 // Item stats (first-try right rate per item) count rounds from this day on: the Right column starts with SETUP v24.
-var ITEM_STATS_FROM = '2026-11-01';
+var ITEM_STATS_FROM = '2026-11-03';
 var WORLDS = { a1: 'Sunny Meadow', a2: 'Whisper Woods', b1: 'Crystal Caves', 'b1-b2': 'Misty Peaks', b2: 'Sky Islands', c1: 'Star Summit' };
 
 // The sheet tab for kids is still called "Girls" (it predates groups).
