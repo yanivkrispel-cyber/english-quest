@@ -1,0 +1,73 @@
+/* The privacy policy and terms pages (docs/privacy.html, docs/terms.html). The app's own tokens and classes (specs/design.md),
+   copied from the :root and the "Clay controls" block of src/Index.html: keep them in step there. No new colors. */
+:root{
+  --ink:#1c1e2b; --muted:#4b5064; --faint:#555a6e;
+  --primary:#5558e0; --primary-2:#6b6ff0; --teal:#3cc7b6; --orange:#f6a04d; --danger:#e8687a;
+  --glass:linear-gradient(140deg,rgba(255,255,255,.52),rgba(255,255,255,.2));
+  --glass-soft:linear-gradient(140deg,rgba(255,255,255,.42),rgba(255,255,255,.14));
+  --stroke:rgba(255,255,255,.72);
+  --shadow:0 26px 50px -18px rgba(38,40,80,.28);
+  --inner:inset 0 1px 1px rgba(255,255,255,.95), inset 0 -1px 1px rgba(255,255,255,.3);
+  --clay-face:#f6f4fa;
+  --clay-up:inset 0 6px 10px rgba(255,255,255,.95);
+  --clay-down:inset 0 -6px 10px rgba(118,108,165,.2);
+  --clay-drop:0 14px 22px -12px rgba(60,58,105,.5);
+  --clay-press:inset 0 -2px 6px rgba(118,108,165,.16),inset 0 7px 12px rgba(118,108,165,.24);
+  --clay-spring:cubic-bezier(.3,1.7,.5,1);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;color:var(--ink);line-height:1.6;
+  background:linear-gradient(135deg,#f4ede5 0%,#e9e3dd 38%,#b8c2cf 78%,#7d8a9c 100%);background-attachment:fixed;min-height:100vh;overflow-x:hidden}
+[lang="he"]{font-family:system-ui,-apple-system,'Segoe UI',Arial,sans-serif}
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.75}
+.b1{width:340px;height:340px;background:#a5a8ff;top:-80px;left:-90px}
+.b2{width:300px;height:300px;background:#8ff0e2;top:32%;right:-110px}
+.b3{width:280px;height:280px;background:#ffc79a;bottom:-60px;left:-40px;opacity:.6}
+.b4{width:220px;height:220px;background:#f5b8e8;bottom:22%;right:12%;opacity:.5}
+main{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:20px 16px 56px;display:grid;gap:16px}
+section{display:grid;gap:16px}
+.glass{background:var(--glass);backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);
+  border:1px solid var(--stroke);border-radius:30px;box-shadow:var(--shadow),var(--inner)}
+.soft{background:var(--glass-soft);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
+  border:1px solid var(--stroke);border-radius:22px}
+.panel{padding:24px 20px}
+h1{font-size:30px;font-weight:800;letter-spacing:-.6px;margin:0;line-height:1.15}
+h2{font-size:18px;font-weight:700;margin:0 0 8px}
+h3{font-size:15px;font-weight:700;margin:16px 0 4px}
+p{margin:6px 0}
+ul,ol{margin:6px 0;padding-inline-start:22px;display:grid;gap:6px}
+.label{font-size:13px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
+.sub{color:var(--muted);font-size:15px}
+a{color:var(--primary);font-weight:600}
+.row-flex{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.top{display:flex;align-items:center;gap:16px}
+.top img{width:76px;height:76px;object-fit:contain;flex:none;filter:drop-shadow(0 10px 14px rgba(38,40,80,.25))}
+/* Clay pills (specs/design.md rule 3): links that act as buttons. */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;padding:0 16px;border-radius:999px;font:inherit;
+  font-size:14px;font-weight:700;color:var(--ink);text-decoration:none;cursor:pointer;border:0;background:var(--clay-face);
+  box-shadow:var(--clay-drop),inset 0 -4px 7px rgba(118,108,165,.2),inset 0 4px 7px rgba(255,255,255,.95);transition:transform .22s var(--clay-spring)}
+.btn:active{transform:scale(.96,.9);box-shadow:0 6px 12px -8px rgba(60,58,105,.45),var(--clay-press)}
+:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+/* Chips: a blank the owner fills in (orange), a place a lawyer must read (red; shown with ?review). */
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:26px;padding:1px 10px;border-radius:999px;font-size:13px;font-weight:700;
+  background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.8);color:var(--ink);vertical-align:baseline}
+.chip.orange,.fill{background:rgba(246,160,77,.18);color:#b45309;border:1px solid rgba(246,160,77,.35);border-radius:999px;padding:1px 10px;font-weight:700;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.chip.red{background:rgba(232,104,122,.15);color:#be123c;border-color:rgba(232,104,122,.3)}
+.lr{display:none}
+html.review .lr{display:inline-flex}
+html.review [data-lr]{box-shadow:0 0 0 3px rgba(232,104,122,.45),var(--shadow),var(--inner)}
+.reviewbar{display:none}
+html.review .reviewbar{display:block}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:start;vertical-align:top;padding:9px 6px;border-bottom:1px solid rgba(28,30,43,.1)}
+th{font-size:13px;color:var(--muted);font-weight:700}
+section[lang="en"]{direction:ltr;text-align:left}
+@media (max-width:560px){
+  table,thead,tbody,tr,th,td{display:block}thead{display:none}
+  td{border:0;padding:2px 0}tr{padding:10px 0;border-bottom:1px solid rgba(28,30,43,.1)}td:first-child{font-weight:700}
+  h1{font-size:26px}.top img{width:60px;height:60px}
+}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}}
+@media print{.bg,.nav{display:none}body{background:#fff}.glass,.soft{box-shadow:none;backdrop-filter:none;border:1px solid #ccc}}

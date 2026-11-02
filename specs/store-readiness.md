@@ -180,7 +180,20 @@ games shelf was opened (in `eq_nest_seen_<kid>`, with the games' counts); the he
 - The data lives in the owner's personal Google account; the move to a proper database on Cloudflare is built
   (`specs/cloudflare.md`, not switched on yet). Still personal accounts (Cloudflare too): a business account and a data
   processing note are needed before selling.
-- No `assetlinks.json` / native shell yet; no store listing, age rating questionnaire or data safety form yet.
+- The Google Play pack is built (`store/`, 2026-11-02): the Bubblewrap `twa-manifest.json` (package `com.coachkrispel.chacho`),
+  `docs/.well-known/assetlinks.json` with **placeholder fingerprints** (the owner fills them from Play Console after the first
+  upload), the icons and feature graphic, the Data safety answers, the IARC and Families checklist, the listing, and the
+  lawyer's list. The store app is the website with `IN_PLAY` on (grades only at sign-up, no Nest, `store/README.md`). Left: the
+  developer account, the closed test (12 testers, 14 days), the reviewer family, and checking that Cloudflare serves the
+  dot-folder. No App Store shell yet.
+- The short privacy notice (`PRIVACY_ITEMS`, version 2) is behind the code: feature use (`Usage`), error reports (`Errors`),
+  backups (a deletion leaves them within 30 days, the notice says "for good"), a kid's email in old setups, the exact sweep
+  periods and the Apps Script / GitHub processors are missing (`store/data-safety.md`, mismatches). `docs/privacy.html` has
+  them. Version 3 of the notice (and the re-consent it shows every family) is the owner's call; it should come before the
+  Play closed test.
+- The sign-up asks for an email "for a weekly summary", but the live server on Cloudflare sends no email; Apps Script's
+  Friday trigger may still email from the sheet copy. Least data: stop asking, or send it from Cloudflare.
+- Cloudflare's Workers logs are on for `coco-api` (`observability`): what they hold and for how long is not checked.
 - The app name and Chacho: trademark check and filing in Israel (classes 9 and 41) not done; the steps are in the owner's
   checklist (`EnglishLessons-work/night-review/owner-actions.md`).
 - Third-party licenses: listed in `NOTICES.md` (2026-11-01); the list must also be shown in the app (parents' area) before a

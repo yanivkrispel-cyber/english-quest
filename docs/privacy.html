@@ -7,214 +7,237 @@
 <meta name="description" content="What English with Chacho keeps about a child and a family, why, where, for how long, and how to download or delete it.">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="stylesheet" href="fonts/plus-jakarta-sans/style.css">
-<!-- The privacy policy (night review 2026-11-01). Keep it in step with the notice in src/Index.html (PRIVACY_ITEMS,
-     PRIVACY_V) and the data list in specs/store-readiness.md. OWNER: fill the two marked lines (operator and contact)
-     before the stores or a public launch. -->
-<style>
-:root{
-  --ink:#1c1e2b; --muted:#6b7083; --faint:#9aa0b2;
-  --primary:#6366f1; --teal:#3cc7b6; --orange:#f6a04d;
-  --glass:linear-gradient(140deg,rgba(255,255,255,.62),rgba(255,255,255,.3));
-  --stroke:rgba(255,255,255,.72);
-  --shadow:0 26px 50px -18px rgba(38,40,80,.28);
-}
-*{box-sizing:border-box}
-html,body{margin:0}
-body{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;color:var(--ink);line-height:1.6;
-  background:linear-gradient(135deg,#f4ede5 0%,#e9e3dd 38%,#b8c2cf 78%,#7d8a9c 100%);background-attachment:fixed;min-height:100vh}
-main{max-width:760px;margin:0 auto;padding:24px 16px 56px;display:grid;gap:16px}
-.glass{background:var(--glass);backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);
-  border:1px solid var(--stroke);border-radius:26px;box-shadow:var(--shadow);padding:22px 20px}
-h1{font-size:28px;font-weight:800;letter-spacing:-.4px;margin:0;line-height:1.2}
-h2{font-size:19px;font-weight:700;margin:0 0 8px}
-h3{font-size:15px;font-weight:700;margin:14px 0 4px}
-p{margin:6px 0}
-ul{margin:6px 0;padding-inline-start:22px;display:grid;gap:4px}
-.label{font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
-.sub{color:var(--muted);font-size:14px}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{text-align:start;vertical-align:top;padding:8px 6px;border-bottom:1px solid rgba(28,30,43,.1)}
-th{font-size:12px;color:var(--muted);font-weight:700}
-.fill{background:#fde68a;border-radius:6px;padding:0 6px;font-weight:700}
-.toc{display:flex;flex-wrap:wrap;gap:8px}
-.toc a,.chip{display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.7);color:var(--ink);text-decoration:none;font-weight:600;font-size:13px}
-a{color:#4f46e5}
-section[lang="en"]{direction:ltr;text-align:left}
-@media (max-width:520px){table,thead,tbody,tr,th,td{display:block}thead{display:none}td{border:0;padding:2px 0}tr{padding:8px 0;border-bottom:1px solid rgba(28,30,43,.1)}td:first-child{font-weight:700}}
-</style>
+<link rel="stylesheet" href="legal.css">
+<!-- The privacy policy (night review 2026-11-01; checked against the code for the Play pack 2026-11-02, store/data-safety.md).
+     Keep it in step with the notice in src/Index.html (PRIVACY_ITEMS, PRIVACY_V), the data list in specs/store-readiness.md
+     and store/data-safety.md. OWNER: fill the orange blanks before the stores. LAWYER: open this page with ?review: every
+     place to read is marked L1 to L10 (the list with the questions: store/legal-review.md). -->
+<script>
+if (/[?&]review\b/.test(location.search)) document.documentElement.classList.add('review');
+// Back to the app: the page the app opened in place goes back to it; a page opened on its own goes to the app's address.
+document.addEventListener('click', function (e) {
+  var a = e.target.closest && e.target.closest('[data-back]');
+  if (!a) return;
+  try { if (history.length > 1 && document.referrer && new URL(document.referrer).origin === location.origin) { e.preventDefault(); history.back(); } } catch (err) {}
+});
+</script>
 </head>
 <body>
+<div class="bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div></div>
 <main>
 
-<!-- ======================= עברית ======================= -->
-<section dir="rtl" lang="he" style="display:grid;gap:16px">
-<div class="glass">
-  <div class="label"><bdi>English with Chacho</bdi></div>
-  <h1>מדיניות פרטיות</h1>
-  <p class="sub">נוסח 2, עודכן ב-1 בנובמבר 2026. <a href="#en">English below</a> · <a href="terms.html">תנאי השימוש</a></p>
-  <p>האפליקציה מלמדת ילדים אנגלית בעשר דקות ביום. הורה רושם את המשפחה ומאשר את ההודעה הזו. אנחנו שומרים רק מה שצריך כדי ללמד ולהראות להורים את ההתקדמות, לא מוכרים מידע, ואין פרסומות או כלי מעקב.</p>
+<div class="glass panel reviewbar" lang="en" dir="ltr" style="text-align:left">
+  <div class="label">Review mode</div>
+  <p>Red chips <span class="chip red">L1</span> mark every place a lawyer must read; outlined cards contain one. Orange chips are blanks the owner fills in. The questions for each mark: <code>store/legal-review.md</code> in the repository.</p>
 </div>
 
-<div class="glass">
-  <h2>מי מפעיל את האפליקציה</h2>
+<!-- ======================= עברית ======================= -->
+<section dir="rtl" lang="he" id="he">
+<div class="glass panel">
+  <div class="top"><img src="coco/happy.webp" alt="">
+    <div><div class="label"><bdi>English with Chacho</bdi></div><h1>מדיניות פרטיות</h1>
+      <div class="sub">עודכן ב-2 בנובמבר 2026</div></div></div>
+  <div class="row-flex nav" style="margin-top:14px;gap:8px">
+    <a class="btn" href="./" data-back>חזרה לאפליקציה</a>
+    <a class="btn" href="#en" lang="en">English</a>
+    <a class="btn" href="terms.html">תנאי השימוש</a>
+    <a class="btn" href="#delete">מחיקת נתונים</a>
+  </div>
+  <p style="margin-top:14px">האפליקציה מלמדת ילדים אנגלית בעשר דקות ביום. הורה רושם את המשפחה ומאשר את ההודעה הזו. אנחנו שומרים רק מה שצריך כדי ללמד ולהראות להורים את ההתקדמות. לא מוכרים מידע, ואין פרסומות או כלי מעקב.</p>
+</div>
+
+<div class="glass panel" data-lr>
+  <h2>מי מפעיל את האפליקציה <span class="chip red lr">L1</span></h2>
   <p><span class="fill">[שם המפעיל, ובהמשך החברה, וכתובת: ימולא לפני פרסום בחנויות]</span></p>
   <p>פנייה בכל עניין של פרטיות: דרך כפתור המשוב באפליקציה (באזור ההורים, "ספרו לנו"), או <span class="fill">[כתובת מייל לפניות: ימולא]</span>. עונים בתוך 30 יום.</p>
 </div>
 
-<div class="glass">
-  <h2>מה נשמר, למה, וכמה זמן</h2>
+<div class="glass panel" data-lr>
+  <h2>מה נשמר, למה, וכמה זמן <span class="chip red lr">L3</span></h2>
   <table>
     <thead><tr><th>מה</th><th>למה</th><th>כמה זמן</th></tr></thead>
     <tbody>
-      <tr><td>על הילד: שם פרטי (באנגלית), גיל או כיתה, רמה, קוד כניסה, צבע, חיית המחמד ושמה, המשפחה</td><td>כניסה, התאמת התוכן לרמה, הצגה להורים</td><td>כל עוד החשבון פעיל</td></tr>
-      <tr><td>תרגול: משימות ותשובות, ציונים וזמן, משחקים, שאלות לחזרה, אתגרי שער, מבחני רמה, משחקים עם ילדים אחרים, רצף זוגי, קניות בחנות של צ׳אצ׳ו (במטבעות של המשחק), מה שהחיה לובשת, מילים שמורות; בקן של צ׳אצ׳ו: היום שנעשה ואם כל מילה נמצאה בניסיון הראשון</td><td>התקדמות, חזרה מרווחת, תגמולים, סיכום להורים</td><td>כל עוד החשבון פעיל</td></tr>
-      <tr><td>השיחה עם צ׳אצ׳ו: הטקסט שהטלפון שמע (כשהמיקרופון דולק), וכמה תשובות היו בקול או בכפתור</td><td>המשך השיחה, משפט אחד להורים</td><td>הטקסט 90 יום, המספרים כל עוד החשבון פעיל</td></tr>
-      <tr><td>על ההורה: שם פרטי, שם משפחה, קוד הורה, מייל (לא חובה), איזה נוסח של הודעת הפרטיות אושר ומתי</td><td>כניסה לאזור ההורים, סיכום שבועי במייל, הוכחת הסכמה</td><td>כל עוד החשבון פעיל</td></tr>
-      <tr><td>הבחירות של ההורים: מיקרופון לכל ילד, משחק עם משפחות אחרות, שעת התזכורת</td><td>לכבד את מה שבחרתם</td><td>כל עוד החשבון פעיל</td></tr>
-      <tr><td>משוב שהורים שולחים, דיווחים על טעות בשאלה, חסימות ודיווחים של ילדים על ילדים</td><td>שיפור התוכן ובטיחות</td><td>כל עוד החשבון פעיל</td></tr>
+      <tr><td>על הילד: שם פרטי (באנגלית), גיל או כיתה, רמה, קוד כניסה, צבע, חיית המחמד ושמה, המשפחה, האם עזרה בעברית דלוקה, היום האחרון שנכנס</td><td>כניסה, התאמת התוכן לרמה, הצגה להורים</td><td>כל עוד החשבון פעיל</td></tr>
+      <tr><td>תרגול: משימות ותשובות, ציונים וזמן, משחקים (וגם אילו שאלות היו נכונות ואילו לא), שאלות לחזרה, אתגרי שער, מבחני רמה, משחקים עם ילדים אחרים, רצף זוגי, קניות בחנות של צ׳אצ׳ו (במטבעות של המשחק), מה שהחיה לובשת, מילים שמורות; בקן של צ׳אצ׳ו: היום שנעשה, אם כל מילה נמצאה בניסיון הראשון, וזמן המסך של היום</td><td>התקדמות, חזרה מרווחת, תגמולים, סיכום להורים</td><td>כל עוד החשבון פעיל</td></tr>
+      <tr><td>שולחן הכתיבה: המשפטים הקצרים שהילד כותב באנגלית (עד 400 תווים), הניסיון הראשון אם תיקן, והסימון וההערה המוכנה מראש של המורה</td><td>שתראו מה נכתב, ושהמורה תוכל לסמן (המורה רואה את הטקסט בלי שם הילד; ילדים אחרים לא רואים)</td><td>שנה, או עד שהילד נמחק</td></tr>
+      <tr><td>השיחה עם צ׳אצ׳ו: הטקסט שהטלפון שמע (רק כשהמיקרופון דולק), כמה תשובות היו בקול או בכפתור, והאם הזיהוי נעשה בתוך הטלפון</td><td>המשך השיחה, משפט אחד להורים</td><td>הטקסט 90 יום, המספרים כל עוד החשבון פעיל</td></tr>
+      <tr><td>על ההורה: שם פרטי, שם משפחה, קוד הורה, מייל (לא חובה), איזה נוסח של הודעת הפרטיות אושר ומתי</td><td>כניסה לאזור ההורים, סיכום שבועי במייל למי שנתן מייל, הוכחת הסכמה</td><td>כל עוד החשבון פעיל</td></tr>
+      <tr><td>הבחירות של ההורים: מיקרופון לכל ילד, משחק עם משפחות אחרות, שעת התזכורת; בקן: שיעורים ביום, דקות משחק וזמן מסך</td><td>לכבד את מה שבחרתם</td><td>כל עוד החשבון פעיל</td></tr>
+      <tr><td>משוב שהורים שולחים, דיווחים על טעות בשאלה ("משהו לא נכון כאן?", עד 300 תווים), חסימות ודיווחים של ילדים על ילדים (מרשימה קבועה)</td><td>שיפור התוכן ובטיחות</td><td>כל עוד החשבון פעיל</td></tr>
       <tr><td>מכשירים שהפעילו התראות: כתובת ההתראות של המכשיר ומחרוזת הדפדפן (<bdi>user-agent</bdi>)</td><td>שליחת תזכורות ועדכונים</td><td>עד שההתראות כבות או שהמכשיר מפסיק לקבל אותן</td></tr>
-      <tr><td>יומן: מתי נכנסו ומאיזה סוג מכשיר (למשל "אייפון, אפליקציה"), כמה זמן לקחה הפתיחה, ניסיונות קוד שגויים (בלי הקוד), שינויים של הורים ושל המפעיל</td><td>אבטחה, ולדעת שהאפליקציה עובדת</td><td>הכניסות 30 יום בפירוט ואחר כך רק סיכום יומי; כל היומן עד 180 יום</td></tr>
+      <tr><td>יומן: מתי נכנסו ומאיזה סוג מכשיר (למשל "אייפון, אפליקציה"), כמה זמן לקחה הפתיחה, ניסיונות קוד שגויים (בלי הקוד), שינויים של הורים ושל המפעיל</td><td>אבטחה, ולדעת שהאפליקציה עובדת</td><td>הכניסות כחודש בפירוט (עד 37 יום) ואחר כך רק סיכום יומי; כל היומן כחצי שנה (עד 210 יום)</td></tr>
+      <tr><td>שימוש בחלקי האפליקציה: לכל ילד ויום, אילו חלקים נפתחו וכמה פעמים (משימות, משחקים, שיחות, החנות...). בלי שעה, בלי מכשיר ובלי תוכן</td><td>לדעת מה עוזר ללמוד ומה צריך לשפר</td><td>כל עוד החשבון פעיל</td></tr>
+      <tr><td>דיווחי תקלות מהטלפון: הודעת השגיאה, איפה באפליקציה, סוג המכשיר, גרסת האפליקציה, ושם הילד אם התקלה קרתה אצלו. כתובות נשמרות בלי החלק שאחרי סימן השאלה, ומה שנראה כמו מייל נמחק</td><td>לתקן תקלות</td><td>30 יום</td></tr>
     </tbody>
   </table>
   <h3>חשבון שלא בשימוש</h3>
   <p>ילד שלא נכנס ולא תרגל 12 חודשים נמחק עם כל המידע שלו (ואם הוא היחיד במשפחה, גם המשפחה). המפעיל מקבל הודעה חודש לפני, ואם הילד חוזר, שום דבר לא נמחק.</p>
+  <h3>גיבויים</h3>
+  <p>כל לילה נשמר גיבוי דחוס של כל הנתונים, 14 יום, ול-<bdi>Cloudflare</bdi> יש היסטוריה של מסד הנתונים ל-30 יום. עותק הלילה בגיליון של <bdi>Google</bdi> נכתב מחדש כל לילה. לכן מידע שנמחק נשאר בגיבויים עד 30 יום ואז נעלם; משתמשים בגיבויים רק כדי לשחזר את השירות אחרי תקלה.</p>
   <h3>בטלפון עצמו</h3>
-  <p>הטלפון זוכר את הילד ואת הקוד שלו, את המסך האחרון והגדרות (צליל, קול). בקן של צ׳אצ׳ו נשמרים בטלפון בלבד גם כמה פעמים שיחקו בכל משחק, הציורים האחרונים (אילו צבעים איפה) וספר המדבקות. זה לא נשלח אלינו.</p>
+  <p>הטלפון זוכר את הילד ואת הקוד שלו, את המסך האחרון והגדרות (צליל, קול, עזרה בעברית), ואצל הורה שנכנס: כניסה חתומה ל-30 יום (בלי הקוד). בקן של צ׳אצ׳ו נשמרים בטלפון בלבד גם כמה פעמים שיחקו בכל משחק, הציורים האחרונים (אילו צבעים איפה), ספר המדבקות וזמן המשחק של היום. זה לא נשלח אלינו.</p>
   <h3>מה לא נאסף</h3>
-  <p>אנחנו לא מקבלים ולא שומרים הקלטות קול, תמונות, מיקום, אנשי קשר או מזהה פרסום. אין כלי ניתוח, פרסום, דיווח קריסות או רשתות חברתיות של חברות אחרות, ואין טביעת אצבע של מכשירים.</p>
+  <p>אנחנו לא מקבלים ולא שומרים הקלטות קול, תמונות, מיקום, אנשי קשר או מזהה פרסום. אין כלי ניתוח, פרסום, דיווח קריסות או רשתות חברתיות של חברות אחרות, ואין טביעת אצבע של מכשירים. השרת רואה את כתובת הרשת (<bdi>IP</bdi>) של כל פנייה, כמו כל אתר: היא משמשת לזמן קצר, בזיכרון בלבד, כדי לעצור ניחוש של קודים, ולא נשמרת. ל-<bdi>Cloudflare</bdi> יש יומנים טכניים קצרים משלה על עבודת השרת. <span class="chip red lr">L3</span></p>
 </div>
 
-<div class="glass">
-  <h2>המיקרופון והדיבור</h2>
-  <p><b>השיחה עם צ׳אצ׳ו</b>, וגם "תגידו בקול" בחנות ובסטודיו, משתמשות בזיהוי הדיבור של הדפדפן. המיקרופון כבוי לכל ילד עד שהורה מדליק אותו באזור ההורים. כשהוא כבוי עונים בכפתורים עם משפטים.</p>
-  <p>כשהמיקרופון דולק, הדפדפן הופך את הקול לטקסט בעזרת השירות של היצרן שלו: ב-<bdi>Chrome</bdi> ובאנדרואיד הקול נשלח ל-<bdi>Google</bdi>, ובאייפון ובאייפד (<bdi>Safari</bdi>) בדרך כלל ל-<bdi>Apple</bdi>. בדפדפן שיודע לזהות דיבור בתוך המכשיר (למשל גרסאות חדשות של <bdi>Chrome</bdi>), האפליקציה מבקשת זאת והקול לא יוצא מהמכשיר. האפליקציה עצמה לא מקבלת קול: היא מקבלת רק את הטקסט, ושומרת אותו 90 יום.</p>
-  <p><b>הקן של צ׳אצ׳ו</b> (גילאי 2 עד 7): המיקרופון מודד רק אם הילד דיבר (עוצמה), ו"צ׳אצ׳ו חוזר עליך" מחזיק את הקול בזיכרון הטלפון לכמה שניות, משמיע אותו פעם אחת ומוחק. בלי זיהוי דיבור, ושום דבר לא נשמר ולא נשלח.</p>
+<div class="glass panel" data-lr>
+  <h2>המיקרופון והדיבור <span class="chip red lr">L5</span></h2>
+  <p><b>השיחה עם צ׳אצ׳ו</b>, "תגידו בקול" בחנות ובסטודיו, ו"תגידו שוב" בסוף משימה (מדידת קצב הקריאה בלבד, שלא נשמרת) משתמשות בזיהוי הדיבור של הדפדפן. המיקרופון כבוי לכל ילד עד שהורה מדליק אותו באזור ההורים. כשהוא כבוי עונים בכפתורים עם משפטים.</p>
+  <p>כשהמיקרופון דולק, הדפדפן הופך את הקול לטקסט בעזרת השירות של היצרן שלו: ב-<bdi>Chrome</bdi> ובאנדרואיד (גם באפליקציה מ-<bdi>Google Play</bdi>, שפועלת בתוך <bdi>Chrome</bdi>) הקול נשלח ל-<bdi>Google</bdi>, ובאייפון ובאייפד (<bdi>Safari</bdi>) בדרך כלל ל-<bdi>Apple</bdi>. בדפדפן שיודע לזהות דיבור בתוך המכשיר (למשל גרסאות חדשות של <bdi>Chrome</bdi>), האפליקציה מבקשת זאת והקול לא יוצא מהמכשיר. האפליקציה עצמה לא מקבלת קול: היא מקבלת רק את הטקסט, ושומרת אותו 90 יום.</p>
+  <p><b>הקן של צ׳אצ׳ו</b> (גילאי 2 עד 7, באתר בלבד, לא באפליקציה מהחנות): המיקרופון מודד רק אם הילד דיבר (עוצמה), ו"צ׳אצ׳ו חוזר עליך" מחזיק את הקול בזיכרון הטלפון לכמה שניות, משמיע אותו פעם אחת ומוחק. בלי זיהוי דיבור, ושום דבר לא נשמר ולא נשלח.</p>
 </div>
 
-<div class="glass">
+<div class="glass panel">
   <h2>ילדים פוגשים ילדים</h2>
   <p>בין ילדים באותה משפחה המשחק פתוח. משחק עם ילדים ממשפחות אחרות כבוי עד ששני ההורים, בכל אחת מהמשפחות, מדליקים אותו באזור ההורים. גם אז ילד ממשפחה אחרת רואה רק שם פרטי וחיית מחמד: בלי שם משפחה, בלי רמה ובלי "מחובר עכשיו".</p>
   <p>אין צ׳אט חופשי, קול או תמונות בין ילדים: רק הזמנות למשחק, תגובות קבועות ו"נפנוף" קבוע. יש הגבלה על מספר ההזמנות בשעה. ילד יכול לחסום ילד אחר ולדווח עליו מתוך רשימה קבועה; הדיווח מגיע למפעיל, וההורים רואים אותו באזור ההורים ויכולים לבטל חסימה.</p>
 </div>
 
-<div class="glass">
-  <h2>התראות</h2>
+<div class="glass panel">
+  <h2>התראות ומיילים</h2>
   <p>תזכורת לילד מגיעה רק לטלפון שהפעיל התראות, פעם ביום, בשעה שההורים בוחרים (או בכלל לא), ורק ביום שעוד לא תרגל. הנוסח עדין: בלי ספירה לאחור, בלי "הזדמנות אחרונה" ובלי שמות של ילדים אחרים. להורים: סיכום יומי ועדכונים, אם הפעילו.</p>
+  <p>מייל: רק למי שנתן כתובת. הורה יכול לקבל סיכום שבועי בעברית. בהתקנות ישנות שהמפעיל הגדיר, ילד עם מייל יכול לקבל תזכורת יומית במייל. המיילים יוצאים דרך שירות המייל של <bdi>Google</bdi> מהחשבון של המפעיל.</p>
 </div>
 
-<div class="glass">
-  <h2>מי מעבד את המידע ואיפה</h2>
+<div class="glass panel" data-lr>
+  <h2>מי מעבד את המידע ואיפה <span class="chip red lr">L4</span></h2>
   <ul>
-    <li><b><bdi>Cloudflare</bdi></b>: השרת ומסד הנתונים של האפליקציה, ואתר האפליקציה.</li>
-    <li><b><bdi>Google</bdi></b>: עותק לילה של הנתונים בגיליון <bdi>Google Sheets</bdi> בחשבון של המפעיל; שירות ההתראות של <bdi>Chrome</bdi> ואנדרואיד; זיהוי הדיבור ב-<bdi>Chrome</bdi> כשהמיקרופון דולק.</li>
+    <li><b><bdi>Cloudflare</bdi></b>: השרת ומסד הנתונים של האפליקציה, הגיבויים, ואתר האפליקציה.</li>
+    <li><b><bdi>Google</bdi></b>: עותק לילה של הנתונים בגיליון <bdi>Google Sheets</bdi> בחשבון של המפעיל; השרת הקודם (<bdi>Google Apps Script</bdi>), שמעביר הלאה פניות מגרסאות ישנות של האפליקציה ושולח את המיילים; שירות ההתראות של <bdi>Chrome</bdi> ואנדרואיד; זיהוי הדיבור ב-<bdi>Chrome</bdi> כשהמיקרופון דולק. מי שהוריד את האפליקציה מ-<bdi>Google Play</bdi>: ההורדה והעדכונים עוברים דרך <bdi>Google</bdi> לפי המדיניות שלה; האפליקציה עצמה לא שולחת מידע ל-<bdi>Google Play</bdi>.</li>
     <li><b><bdi>Apple</bdi></b>: שירות ההתראות באייפון, באייפד וב-<bdi>Safari</bdi>; זיהוי הדיבור ב-<bdi>Safari</bdi> כשהמיקרופון דולק.</li>
     <li><b><bdi>Mozilla</bdi></b>: שירות ההתראות של <bdi>Firefox</bdi>.</li>
+    <li><b><bdi>GitHub</bdi></b>: הכתובת הישנה של האפליקציה, שמציגה רק את מסך "עברנו לבית חדש".</li>
   </ul>
   <p>החברות האלה עשויות לעבד מידע מחוץ לישראל (למשל בארצות הברית או באירופה). אנחנו לא מוכרים מידע ולא מעבירים אותו לאף אחד אחר, ולא משתמשים בו לפרסום.</p>
 </div>
 
-<div class="glass">
-  <h2>הזכויות שלכם</h2>
+<div class="glass panel" data-lr id="delete">
+  <h2>הזכויות שלכם, ומחיקת נתונים <span class="chip red lr">L6</span> <span class="chip red lr">L10</span></h2>
   <ul>
     <li><b>לראות ולהוריד:</b> באזור ההורים, בכרטיס "הנתונים שלכם", מורידים קובץ עם כל המידע על המשפחה.</li>
-    <li><b>למחוק:</b> באותו כרטיס מוחקים ילד אחד או את כל המשפחה, מיד ולתמיד, מכל הטבלאות (גם מהיומן).</li>
+    <li><b>למחוק:</b> באותו כרטיס מוחקים ילד אחד או את כל המשפחה, מיד, מכל הטבלאות (גם מהיומן). מהגיבויים זה נעלם תוך 30 יום.</li>
     <li><b>לתקן:</b> שם, גיל או כיתה משנים באזור ההורים; כל תיקון אחר דרך כפתור המשוב.</li>
     <li><b>לחזור בכם:</b> מכבים את המיקרופון, את המשחק עם משפחות אחרות או את התזכורות, או מוחקים את החשבון.</li>
   </ul>
+  <h3>מחיקה בלי האפליקציה</h3>
+  <p>לא צריך להתקין שום דבר: פותחים בכל דפדפן את <a href="./" dir="ltr">coco.coachkrispel.com</a>, מקישים על המנעול, נכנסים עם שם המשפחה וקוד ההורה, ובכרטיס "הנתונים שלכם" בוחרים ילד או את כל המשפחה, כותבים "מחיקה" ומוחקים. שכחתם את הקוד? כתבו ל-<span class="fill">[כתובת מייל לפניות: ימולא]</span> מאיזה מייל או טלפון נרשמתם ומה למחוק; אחרי שנוודא שאתם ההורים, נמחק תוך 30 יום ונאשר.</p>
   <p>הזכויות האלה עומדות לכם לפי חוק הגנת הפרטיות, התשמ״א-1981 (כולל תיקון 13), ולפי <bdi>COPPA</bdi> בארצות הברית ו-<bdi>GDPR</bdi> באירופה ובבריטניה, כולל הזכות להגביל עיבוד, להתנגד ולהעביר את המידע (הקובץ שמורידים). אפשר גם להתלונן לרשות להגנת הפרטיות, או לרשות המקבילה במדינה שלכם.</p>
 </div>
 
-<div class="glass">
-  <h2>אבטחה, ילדים ושינויים</h2>
-  <p>הכול עובר בחיבור מוצפן (<bdi>HTTPS</bdi>). קודים שגויים ננעלים אחרי כמה ניסיונות, והקודים לא נכתבים ביומן. אם יקרה אירוע אבטחה, נודיע כפי שהחוק דורש.</p>
-  <p>ילד לא נרשם לבד: הורה רושם את המשפחה ומאשר. אם ייאסף בטעות מידע על ילד בלי אישור הורה, נמחק אותו.</p>
-  <p>כשהנוסח הזה משתנה בדבר מהותי, הנוסח מקבל מספר חדש והורים רואים באזור ההורים מה השתנה ומתבקשים לאשר שוב.</p>
+<div class="glass panel" data-lr>
+  <h2>ילדים והסכמת הורים <span class="chip red lr">L2</span> <span class="chip red lr">L8</span></h2>
+  <p>ילד לא נרשם לבד: הורה רושם את המשפחה ומאשר את ההודעה הזו, והילד מקבל קוד כניסה. האפליקציה מהחנות מיועדת לילדים בבית הספר (מכיתה ג); הקן של צ׳אצ׳ו לגילאי 2 עד 7 נמצא בינתיים באתר בלבד. ילדים לא מתבקשים למסור שם משפחה, מייל, כתובת או טלפון, והמשימות לא מבקשות פרטים אישיים. אם נגלה שנאסף מידע על ילד בלי אישור הורה, נמחק אותו.</p>
+</div>
+
+<div class="glass panel" data-lr>
+  <h2>אבטחה ושינויים <span class="chip red lr">L7</span> <span class="chip red lr">L9</span></h2>
+  <p>הכול עובר בחיבור מוצפן (<bdi>HTTPS</bdi>). קודים שגויים ננעלים אחרי כמה ניסיונות, והקודים לא נכתבים ביומן. הכניסה של הורה נשמרת בטלפון כאישור חתום, בלי הקוד עצמו. אם יקרה אירוע אבטחה, נודיע כפי שהחוק דורש.</p>
+  <p>כשהנוסח הזה משתנה בדבר מהותי, הודעת הפרטיות באפליקציה מקבלת מספר נוסח חדש, והורים רואים באזור ההורים מה השתנה ומתבקשים לאשר שוב.</p>
 </div>
 </section>
 
 <!-- ======================= English ======================= -->
-<section id="en" lang="en" dir="ltr" style="display:grid;gap:16px">
-<div class="glass">
-  <div class="label">English with Chacho</div>
-  <h1>Privacy policy</h1>
-  <p class="sub">Version 2, updated 1 November 2026. <a href="terms.html#en">Terms of use</a></p>
-  <p>The app teaches children English in about ten minutes a day. A parent signs the family up and agrees to this notice. We keep only what we need to teach and to show parents the progress. We never sell data, and there are no ads or trackers.</p>
+<section id="en" lang="en" dir="ltr">
+<div class="glass panel">
+  <div class="top"><img src="coco/happy.webp" alt="">
+    <div><div class="label">English with Chacho</div><h1>Privacy policy</h1>
+      <div class="sub">Updated 2 November 2026</div></div></div>
+  <div class="row-flex nav" style="margin-top:14px;gap:8px">
+    <a class="btn" href="./" data-back>Back to the app</a>
+    <a class="btn" href="#he" lang="he">עברית</a>
+    <a class="btn" href="terms.html#en">Terms of use</a>
+    <a class="btn" href="#delete-en">Delete your data</a>
+  </div>
+  <p style="margin-top:14px">The app teaches children English in about ten minutes a day. A parent signs the family up and agrees to this notice. We keep only what we need to teach and to show parents the progress. We never sell data, and there are no ads or trackers.</p>
 </div>
 
-<div class="glass">
-  <h2>Who runs the app</h2>
+<div class="glass panel" data-lr>
+  <h2>Who runs the app <span class="chip red lr">L1</span></h2>
   <p><span class="fill">[Operator's name (later the company) and address: to be filled in before the stores]</span></p>
   <p>Privacy questions: the feedback button in the app (parents' area, "Tell us"), or <span class="fill">[contact email: to be filled in]</span>. We answer within 30 days.</p>
 </div>
 
-<div class="glass">
-  <h2>What we keep, why, and for how long</h2>
+<div class="glass panel" data-lr>
+  <h2>What we keep, why, and for how long <span class="chip red lr">L3</span></h2>
   <table>
     <thead><tr><th>What</th><th>Why</th><th>How long</th></tr></thead>
     <tbody>
-      <tr><td>About the child: first name (in English), age or grade, level, PIN, color, the pet and its name, the family</td><td>Signing in, content at the right level, the parents' view</td><td>While the account is active</td></tr>
-      <tr><td>Practice: missions and answers, scores and time, games, items to review, gate challenges, level tests, games with other kids, duo streaks, purchases in Chacho's shop (in-game coins), what the pet wears, saved words; in Chacho's Nest: the day played and whether each word was found on the first try</td><td>Progress, spaced review, rewards, the parents' summary</td><td>While the account is active</td></tr>
-      <tr><td>Talk with Chacho: the text the phone heard (when the microphone is on), and how many answers were spoken or tapped</td><td>Carrying on the talk, one sentence for the parents</td><td>Text 90 days; the counts while the account is active</td></tr>
-      <tr><td>About the parent: first name, family name, parent PIN, email (optional), which version of this notice was agreed to and when</td><td>The parents' area, the weekly email, proof of consent</td><td>While the account is active</td></tr>
-      <tr><td>The parents' choices: microphone per child, playing with other families, reminder hour</td><td>Doing what you chose</td><td>While the account is active</td></tr>
-      <tr><td>Feedback from parents, "something wrong here" notes, children's blocks and reports</td><td>Better content, safety</td><td>While the account is active</td></tr>
+      <tr><td>About the child: first name (in English), age or grade, level, PIN, color, the pet and its name, the family, whether Hebrew help is on, the last day they opened the app</td><td>Signing in, content at the right level, the parents' view</td><td>While the account is active</td></tr>
+      <tr><td>Practice: missions and answers, scores and time, games (including which questions were right or missed), items to review, gate challenges, level tests, games with other kids, duo streaks, purchases in Chacho's shop (in-game coins), what the pet wears, saved words; in Chacho's Nest: the day played, whether each word was found on the first try, and today's screen time</td><td>Progress, spaced review, rewards, the parents' summary</td><td>While the account is active</td></tr>
+      <tr><td>The Writer's Desk: the short sentences a child writes in English (up to 400 characters), their first try if they rewrote it, and the teacher's mark and preset note</td><td>So you can see it, and the teacher can mark it (the teacher sees the text without the child's name; other children never see it)</td><td>One year, or until the child is deleted</td></tr>
+      <tr><td>Talk with Chacho: the text the phone heard (only when the microphone is on), how many answers were spoken or tapped, and whether recognition ran on the device</td><td>Carrying on the talk, one sentence for the parents</td><td>Text 90 days; the counts while the account is active</td></tr>
+      <tr><td>About the parent: first name, family name, parent code, email (optional), which version of this notice was agreed to and when</td><td>The parents' area, a weekly email for those who gave one, proof of consent</td><td>While the account is active</td></tr>
+      <tr><td>The parents' choices: microphone per child, playing with other families, reminder hour; in the Nest: lessons a day, game minutes and screen time</td><td>Doing what you chose</td><td>While the account is active</td></tr>
+      <tr><td>Feedback from parents, "Something wrong here?" notes (up to 300 characters), children's blocks and reports (from a preset list)</td><td>Better content, safety</td><td>While the account is active</td></tr>
       <tr><td>Devices with notifications on: the device's push address and the browser's user-agent string</td><td>Sending reminders and updates</td><td>Until notifications are off or the device stops receiving them</td></tr>
-      <tr><td>Audit trail: when someone opened the app and a coarse device type ("iPhone, app"), how long the open took, wrong PIN attempts (never the PIN), changes made by parents and the operator</td><td>Security, knowing that the app works</td><td>Opens 30 days one by one, then daily totals only; the whole trail up to 180 days</td></tr>
+      <tr><td>Audit trail: when someone opened the app and a coarse device type ("iPhone, app"), how long the open took, wrong PIN attempts (never the PIN), changes made by parents and the operator</td><td>Security, knowing that the app works</td><td>Opens about a month one by one (at most 37 days), then daily totals only; the whole trail about six months (at most 210 days)</td></tr>
+      <tr><td>Feature use: per child and day, which parts of the app were opened and how often (missions, games, talks, the shop...). No time of day, device or content</td><td>Knowing what helps children learn and what to improve</td><td>While the account is active</td></tr>
+      <tr><td>Error reports from the phone: the error message, where in the app, the device type, the app version, and the child's first name if it happened to them. Addresses are kept without the part after the question mark, and anything like an email is cut out</td><td>Fixing bugs</td><td>30 days</td></tr>
     </tbody>
   </table>
   <h3>Accounts not in use</h3>
   <p>A child who has not opened the app or practiced for 12 months is deleted with all their data (and the family, if it was the only child). The operator is told a month before; if the child comes back, nothing is deleted.</p>
+  <h3>Backups</h3>
+  <p>Every night a compressed backup of all the data is kept for 14 days, and Cloudflare keeps a 30-day history of the database. The nightly copy in the Google Sheet is rewritten every night. So deleted data stays in the backups for at most 30 days and then is gone; backups are used only to restore the service after a failure.</p>
   <h3>On the phone</h3>
-  <p>The phone remembers the child and PIN, the last screen and settings (sound, voice). Chacho's Nest also keeps, on the phone only, how often each game was played, the last colored pictures (which colors went where) and the sticker book. None of this is sent to us.</p>
+  <p>The phone remembers the child and PIN, the last screen and settings (sound, voice, Hebrew help), and for a signed-in parent a signed sign-in for 30 days (never the code). Chacho's Nest also keeps, on the phone only, how often each game was played, the last colored pictures (which colors went where), the sticker book and today's play time. None of this is sent to us.</p>
   <h3>What we do not collect</h3>
-  <p>We do not receive or keep voice recordings, photos, location, contacts or advertising ids. There are no third-party analytics, ads, crash reporters or social SDKs, and no device fingerprinting.</p>
+  <p>We do not receive or keep voice recordings, photos, location, contacts or advertising ids. There are no third-party analytics, ads, crash reporters or social SDKs, and no device fingerprinting. The server sees the network (IP) address of each request, as every website does: it is used briefly, in memory only, to stop code guessing, and is not stored. Cloudflare keeps its own short technical logs of the server's work. <span class="chip red lr">L3</span></p>
 </div>
 
-<div class="glass">
-  <h2>The microphone and speech</h2>
-  <p><b>Talk with Chacho</b>, and "Say it aloud" in the shop and the Studio, use the browser's speech recognition. The microphone is off for every child until a parent turns it on in the parents' area; when it is off, the child answers with sentence buttons.</p>
-  <p>When it is on, the browser turns the voice into text with its maker's service: on Chrome and Android the voice goes to Google, on iPhone and iPad (Safari) usually to Apple. Where the browser can recognize speech on the device (for example newer versions of Chrome), the app asks for that and the voice does not leave the device. The app itself never receives audio: only the text, which it keeps for 90 days.</p>
-  <p><b>Chacho's Nest</b> (ages 2 to 7): the microphone only measures whether the child spoke (loudness), and "Chacho repeats you" holds the voice in the phone's memory for a few seconds, plays it back once and drops it. No speech recognition; nothing is kept or sent.</p>
+<div class="glass panel" data-lr>
+  <h2>The microphone and speech <span class="chip red lr">L5</span></h2>
+  <p><b>Talk with Chacho</b>, "Say it aloud" in the shop and the Studio, and "Say it again" at the end of a mission (reading speed only, not kept) use the browser's speech recognition. The microphone is off for every child until a parent turns it on in the parents' area; when it is off, the child answers with sentence buttons.</p>
+  <p>When it is on, the browser turns the voice into text with its maker's service: on Chrome and Android (the Google Play app too, which runs inside Chrome) the voice goes to Google, on iPhone and iPad (Safari) usually to Apple. Where the browser can recognize speech on the device (for example newer versions of Chrome), the app asks for that and the voice does not leave the device. The app itself never receives audio: only the text, which it keeps for 90 days.</p>
+  <p><b>Chacho's Nest</b> (ages 2 to 7, on the website only, not in the store app): the microphone only measures whether the child spoke (loudness), and "Chacho repeats you" holds the voice in the phone's memory for a few seconds, plays it back once and drops it. No speech recognition; nothing is kept or sent.</p>
 </div>
 
-<div class="glass">
+<div class="glass panel">
   <h2>Children meeting children</h2>
   <p>Children in the same family can always play together. Playing with children of other families is off until the parents of both families turn it on. Even then a child of another family sees only the first name and the pet: no family name, no level and no "online now".</p>
   <p>There is no free chat, voice or pictures between children: only game invites, preset reactions and a preset "wave", with a limit on invites per hour. A child can block another child and report them from a preset list; reports go to the operator, and parents see them in the parents' area and can lift a block.</p>
 </div>
 
-<div class="glass">
-  <h2>Notifications</h2>
+<div class="glass panel">
+  <h2>Notifications and emails</h2>
   <p>A child's reminder comes only to a device where notifications were turned on, once a day at the hour the parents choose (or never), and only on a day the child has not practiced. The words are gentle: no countdowns, no "last call", and never another child's name. Parents get a daily summary and updates if they turn them on.</p>
+  <p>Email: only to an address someone gave. A parent can get a weekly summary in Hebrew. In older setups made by the operator, a child with an email can get a daily reminder email. Emails go out through Google's mail service from the operator's account.</p>
 </div>
 
-<div class="glass">
-  <h2>Who processes the data, and where</h2>
+<div class="glass panel" data-lr>
+  <h2>Who processes the data, and where <span class="chip red lr">L4</span></h2>
   <ul>
-    <li><b>Cloudflare</b>: the app's server and database, and the app's website.</li>
-    <li><b>Google</b>: a nightly copy of the data in a Google Sheet in the operator's account; the push service for Chrome and Android; speech recognition in Chrome when the microphone is on.</li>
+    <li><b>Cloudflare</b>: the app's server and database, the backups, and the app's website.</li>
+    <li><b>Google</b>: a nightly copy of the data in a Google Sheet in the operator's account; the previous server (Google Apps Script), which passes on requests from old copies of the app and sends the emails; the push service for Chrome and Android; speech recognition in Chrome when the microphone is on. If you installed the app from Google Play, the download and updates go through Google under its own policy; the app itself sends nothing to Google Play.</li>
     <li><b>Apple</b>: the push service on iPhone, iPad and Safari; speech recognition in Safari when the microphone is on.</li>
     <li><b>Mozilla</b>: the push service for Firefox.</li>
+    <li><b>GitHub</b>: the app's old address, which only shows the "we moved" screen.</li>
   </ul>
   <p>These companies may process data outside Israel (for example in the United States or the EU). We do not sell data, share it with anyone else, or use it for advertising.</p>
 </div>
 
-<div class="glass">
-  <h2>Your rights</h2>
+<div class="glass panel" data-lr id="delete-en">
+  <h2>Your rights, and deleting your data <span class="chip red lr">L6</span> <span class="chip red lr">L10</span></h2>
   <ul>
     <li><b>See and download:</b> in the parents' area, the card "Your data" downloads a file with everything about the family.</li>
-    <li><b>Delete:</b> the same card deletes one child or the whole family, at once and for good, from every table (the audit trail too).</li>
+    <li><b>Delete:</b> the same card deletes one child or the whole family, at once, from every table (the audit trail too). It leaves the backups within 30 days.</li>
     <li><b>Correct:</b> name, age or grade in the parents' area; anything else through the feedback button.</li>
     <li><b>Withdraw:</b> turn off the microphone, playing with other families or reminders, or delete the account.</li>
   </ul>
+  <h3>Deleting without the app</h3>
+  <p>Nothing to install: open <a href="./">coco.coachkrispel.com</a> in any browser, tap the lock, sign in with the family name and the parent code, and in the card "Your data" pick a child or the whole family, type the confirmation word and delete. Forgot the code? Write to <span class="fill">[contact email: to be filled in]</span> with the email or phone you signed up with and what to delete; once we have checked that you are the parent, we delete it within 30 days and confirm.</p>
   <p>These rights are yours under Israel's Privacy Protection Law, 1981 (including Amendment 13), under COPPA in the United States and under the GDPR in the EU and the UK, including the rights to restrict processing, to object and to data portability (the downloaded file). You may also complain to Israel's Privacy Protection Authority or to the authority in your country.</p>
 </div>
 
-<div class="glass">
-  <h2>Security, children and changes</h2>
-  <p>Everything travels over an encrypted connection (HTTPS). Wrong codes are locked after a few attempts, and codes are never written to the audit trail. If a security incident happens, we notify as the law requires.</p>
-  <p>Children do not sign up on their own: a parent signs the family up and agrees. If we learn that we hold a child's data without a parent's consent, we delete it.</p>
-  <p>When this notice changes in a material way it gets a new version number, and parents see what changed in the parents' area and are asked to agree again.</p>
+<div class="glass panel" data-lr>
+  <h2>Children and parents' consent <span class="chip red lr">L2</span> <span class="chip red lr">L8</span></h2>
+  <p>Children do not sign up on their own: a parent signs the family up and agrees to this notice, and the child gets a sign-in code. The store app is for school children (from Israeli grade 3, about age 8); Chacho's Nest for ages 2 to 7 is on the website only for now. Children are never asked for a family name, email, address or phone number, and the missions never ask for personal details. If we learn that we hold a child's data without a parent's consent, we delete it.</p>
+</div>
+
+<div class="glass panel" data-lr>
+  <h2>Security and changes <span class="chip red lr">L7</span> <span class="chip red lr">L9</span></h2>
+  <p>Everything travels over an encrypted connection (HTTPS). Wrong codes are locked after a few attempts, and codes are never written to the audit trail. A parent's sign-in is kept on the phone as a signed pass, never the code itself. If a security incident happens, we notify as the law requires.</p>
+  <p>When this notice changes in a material way, the privacy notice in the app gets a new version number, and parents see what changed in the parents' area and are asked to agree again.</p>
 </div>
 </section>
 
