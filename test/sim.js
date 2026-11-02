@@ -1509,6 +1509,12 @@ run(`apiParentNestPerDay(__fc('7788'), '${TALI}', 1)`);
   check('the parents see a Hebrew sentence of the Nest week', /^השבוע: (שיעור אחד בקן|\d+ שיעורים בקן) \(שלום, צ׳אצ׳ו!/.test(kid.learned) && /עוד מתאמנים על yes/.test(kid.learned) && !kid.track, kid.learned);
   check('a school kid with no practice yet, and her level as a track (grade 5 starts at A1 since the night review)', gk.learned === 'השבוע עוד אין תרגול.' && gk.track && gk.track.label === 'A1' && /משפטים קצרים/.test(gk.track.he), JSON.stringify([gk.learned, gk.track]));
   check('no dash between numbers in the sentence', !/\d\s*[-–—]\s*\d/.test(kid.learned));
+  // The monthly report (src/Learned.js nestMonths): this month and the one before, for Nest kids in the parents' view only.
+  const nm = kid.nestMonths, mon = run('today()').slice(0, 7);
+  check('the monthly report has this month and the one before', Array.isArray(nm) && nm.length === 2 && nm[0].month === mon && nm[1].month < mon, JSON.stringify(nm));
+  check('this month: the lessons logged, the days played and the words met for the first time',
+    nm[0].lessons === sheets.Log.rows.filter(r => r[1] === TALI).length && nm[0].days === 1 && ['hello', 'yes', 'baby'].every(w => nm[0].fresh.includes(w)) && nm[1].lessons === 0, JSON.stringify(nm[0]));
+  check('school kids get no monthly report, and neither does the dashboard of the kid', !gk.nestMonths && !run(`apiDashboard('${TALI}', '${tali.PIN}')`).nestMonths);
 }
 // Chacho's arcade (specs/nest.md, stage C): 15 minutes a day by default; the parent sets 0 (no limit) to 60, audited.
 check('the arcade has 15 minutes a day by default', d.nest.arcadeMin === 15, JSON.stringify(d.nest.arcadeMin));

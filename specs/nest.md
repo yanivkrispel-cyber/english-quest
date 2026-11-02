@@ -111,6 +111,22 @@ ages 2 and 3 the card adds "משחקים ביחד": sit next to the kid, point a
 (AAP and WHO: young kids learn best from a screen with a grown-up). The parent sets the screen time (below), lessons a day
 and the arcade's share in the kid card.
 
+**The word map** (games plan phase 6, `nestWordMap` in Index.html): the button "מפת המילים" on the Nest card opens a sheet
+with every unit the kid has played, in program order, and its words with their pictures (a tap plays Chacho's word). Each
+word is known (a teal ring: found on the first try in two lessons or more, more often than missed), still practicing (an
+orange ring: missed more often than found) or met; the units still ahead are listed by name. `nestWordState` is the one
+definition of these states (the monthly report uses it too). It is drawn on the parents' phone from the parents' view
+(`nest.known`, `nest.played`) and the Nest content: nothing new is asked, sent or kept.
+
+**The monthly report** (games plan phase 6, the year plan's "דוח חודשי להורה"; `nestMonthReport` in Index.html,
+`nestMonths` in src/Learned.js): "הדוח החודשי" next to the word map. The server adds `nestMonths` to a Nest kid in the
+parents' view only (this month and the one before, from the kid's own Log rows: lessons, days played, words met for the
+first time that month). The sheet shows the month in a sentence and the new words as picture cards, then one can-do line per
+topic of the program (`NEST_CAN`, every line starts with מזהה, the same for a boy or a girl): already (half of the topic's
+words known or more), on the way (met), not met yet; 6 to 8 lines, the topics met first. Last month behind a pill. Two things
+to watch for at home are text only: the parent marks nothing and nothing is kept. No scores, percentages or comparisons with
+other kids.
+
 ## The teacher's preview
 
 `?nest` (the teacher's link `?nest&t=<Settings.TeacherCode>`, copied from the admin's Pilot card) lists every unit. A unit

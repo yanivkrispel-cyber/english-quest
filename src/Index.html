@@ -230,6 +230,13 @@ body.nestkid .icon-btn .cicon{width:40px;height:40px}
 .nk-lw{flex:none;width:74px;border:0;background:rgba(255,255,255,.75);border-radius:14px;padding:6px 4px;display:grid;justify-items:center;gap:2px;font-weight:700;font-size:12px;color:var(--ink);cursor:pointer}
 .nk-lw img{width:46px;height:46px;object-fit:contain}
 .nk-lw .nk-blob,.nk-lw .nk-dots{width:40px}
+.nkmap{max-height:82vh;overflow:auto;overscroll-behavior:contain}
+.nkmap-unit{margin-top:14px}
+.nkmap-row{display:flex;flex-wrap:wrap;gap:8px;padding-top:6px}
+.nk-lw.known{box-shadow:0 0 0 3px var(--teal)}
+.nk-lw.practice{box-shadow:0 0 0 3px var(--orange)}
+.nk-lw .nkmap-mark{font-size:13px;line-height:1;color:var(--teal-2)}
+.nkmap-key{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .nk-word.long{font-size:26px;line-height:1.25;max-width:92%;margin-inline:auto}
 .nk-phr{display:flex;align-items:center;gap:8px;width:100%;border:0;background:rgba(255,255,255,.75);border-radius:14px;padding:8px 12px;margin-top:6px;font:inherit;font-size:14px;color:var(--ink);cursor:pointer;text-align:start}
 .nk-phr bdi{font-weight:800}
@@ -9364,12 +9371,118 @@ function nestFillParent(p){
       <div style="font-size:13px;line-height:1.5"><b>משחקים ביחד.</b> בגיל הזה לומדים הכי טוב עם מבוגר: שבו ליד <bdi>${esc(kid.girl.name)}</bdi>, הצביעו יחד על התמונות ואמרו את המילים בקול אחרי צ׳אצ׳ו. אחרי השיעור, מילה אחת מהיום בארוחת הערב.</div></div>` : '';
     el.innerHTML = `<div class="he sub" dir="rtl" lang="he" style="font-size:13px;margin:0">${icon('bird')} היום בקן של צ׳אצ׳ו: <b>${esc(u.he)}</b></div>${coplay}
       <div class="nk-learnrow">${nestWordsOf(u).map(w => `<button class="nk-lw" data-nkw="${esc(w.id)}" title="${esc(w.he)}">${nestPic(w)}<span dir="ltr">${esc(w.en)}</span></button>`).join('')}</div>
-      ${nestCardMore(u)}`;
+      ${nestCardMore(u)}
+      ${kid && kid.nest ? `<div class="row-flex mt-s" style="gap:6px;flex-wrap:wrap"><button class="btn btn-glass btn-sm" data-nkmap="${esc(kid.girl.name)}">${icon('map-trifold')} מפת המילים</button>${kid.nestMonths ? `<button class="btn btn-glass btn-sm" data-nkrep="${esc(kid.girl.name)}">${icon('calendar-check')} הדוח החודשי</button>` : ''}</div>` : ''}`;
     el.querySelectorAll('[data-nkw]').forEach(b => b.onclick = () => nestPlay(['w-' + b.dataset.nkw]));
+    el.querySelectorAll('[data-nkmap]').forEach(b => b.onclick = () => nestWordMap(kid));
+    el.querySelectorAll('[data-nkrep]').forEach(b => b.onclick = () => nestMonthReport(kid, 0));
     el.querySelectorAll('[data-nkp]').forEach(b => b.onclick = () => nestPlay(['p-' + b.dataset.nkp]));
     // The week's postcard (docs/nest/stickers.js), for the kid this card belongs to.
     if (typeof nkPostcard === 'function') nkPostcard(el, el.dataset.nkkid, p ? [].concat(...p.groups.map(x => x.girls)).find(x => x.girl.name === el.dataset.nkkid) : null);
   })).catch(() => {});
+}
+
+// A word's state for the parents, from the kid's stats [lessons found on the first try, lessons missed, the last day met]:
+// known = found on the first try in two lessons or more, more often than missed; practice = missed more often than found.
+function nestWordState(st){
+  if (!st) return null;
+  const ok = Number(st[0]) || 0, miss = Number(st[1]) || 0;
+  return ok >= 2 && ok > miss ? 'known' : miss > ok ? 'practice' : 'met';
+}
+// The word map (games plan phase 6): every unit the kid has played, in program order, its words with their pictures (a tap
+// plays Chacho's word), each marked known / met / still practicing; the units still ahead by name. Nothing new is kept:
+// it is drawn from the parents' view data and the Nest content.
+function nestWordMap(g){
+  if (!g || !g.nest || !window.EQ_NEST) return;
+  const known = g.nest.known || {}, played = new Set((g.nest.played || []).map(id => String(id).split('.')[0]));
+  const units = EQ_NEST.units.filter(u => !u.review), met = units.filter(u => played.has(u.id) || u.words.some(w => known[w.id]));
+  const ahead = units.filter(u => !met.includes(u));
+  const all = [].concat(...met.map(u => u.words)), states = all.map(w => nestWordState(known[w.id]));
+  const nMet = states.filter(Boolean).length, nKnown = states.filter(s => s === 'known').length;
+  const mark = { known: [0, 'מכירים'], practice: [0, 'עוד מתאמנים'], met: [0, 'פגשנו'] };
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="sheet glass he nkmap" dir="rtl" lang="he">
+    <div class="row-flex between"><span class="row-flex" style="gap:10px"><span class="tile sm t-vocab">${icon('map-trifold', 'duotone')}</span>
+      <h2 style="margin:0;font-size:18px">המילים של <bdi>${esc(g.girl.name)}</bdi></h2></span>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x" aria-label="Close">${icon('x')}</button></div>
+    <p class="sub" style="font-size:14px;margin:8px 0 0">${nMet ? `פגשנו ${nMet === 1 ? 'מילה אחת' : nMet + ' מילים'} באנגלית${nKnown ? `, ו-${nKnown === 1 ? 'אחת' : nKnown} כבר מוכרות היטב` : ''}. נוגעים בתמונה ושומעים את צ׳אצ׳ו.` : 'עוד לא פגשנו מילים. אחרי השיעור הראשון הן יופיעו כאן.'}</p>
+    <div class="nkmap-key"><span class="chip teal">${icon('check')} מכירים: מצאו בניסיון הראשון בשני שיעורים</span><span class="chip orange">עוד מתאמנים</span><span class="chip">פגשנו</span></div>
+    ${met.map(u => `<div class="nkmap-unit"><div class="label" style="text-transform:none">${esc(u.he)} · <bdi dir="ltr">${esc(u.title)}</bdi></div>
+      <div class="nkmap-row">${u.words.map(w => { const s = nestWordState(known[w.id]);
+        return `<button class="nk-lw ${s || ''}" data-nkmw="${esc(w.id)}" title="${esc(w.he)}${s ? ' · ' + mark[s][1] : ''}" aria-label="${esc(w.en)}: ${esc(w.he)}${s ? ', ' + mark[s][1] : ''}"${s ? '' : ' style="opacity:.55"'}>${nestPic(w)}<span dir="ltr">${esc(w.en)}</span>${s === 'known' ? `<span class="nkmap-mark">${icon('check', 'bold')}</span>` : ''}</button>`; }).join('')}</div></div>`).join('')}
+    ${ahead.length ? `<div class="nkmap-unit"><div class="label" style="text-transform:none">בהמשך השנה</div><p class="sub" style="font-size:14px;margin:4px 0 0">${ahead.map(u => esc(u.he)).join(' · ')}</p></div>` : ''}
+  </div>`;
+  document.body.appendChild(ov);
+  dialogOpen(ov);
+  const close = () => { nestStopAudio(); ov.remove(); if (ov._back) try { ov._back.focus(); } catch (e) {} };
+  ov.querySelector('#x').onclick = close;
+  ov.onclick = e => { if (e.target === ov) close(); };
+  ov.querySelectorAll('[data-nkmw]').forEach(b => b.onclick = () => nestPlay(['w-' + b.dataset.nkmw]));
+}
+
+// The monthly report (games plan phase 6, the year plan's "דוח חודשי להורה"): the month in numbers a grown-up reads (lessons,
+// days, new words; never a score, a percentage or another kid), then can-do lines by topic, each one already, on the way or
+// not met yet, from the word states of the word map. Last month too, behind a pill. Two things to watch for at home, which
+// the parent keeps in mind (nothing is asked or stored). Drawn on the parents' phone from the parents' view data.
+const NEST_CAN = { hello: 'מזהה שלום, ביי, כן ולא באנגלית', colors: 'מזהה צבעים כשהם נאמרים באנגלית', numbers: 'מזהה מספרים באנגלית',
+  animals: 'מזהה חיות לפי השם שלהן באנגלית', family: 'מזהה את בני המשפחה באנגלית', body: 'מזהה חלקי גוף ופנים באנגלית',
+  food: 'מזהה פירות, אוכל ושתייה באנגלית', toys: 'מזהה צעצועים וכלי תחבורה באנגלית', feelings: 'מזהה רגשות: שמח, עצוב, כועס',
+  clothes: 'מזהה בגדים באנגלית', actions: 'מזהה פעולות: רץ, הולך, שוחה', nature: 'מזהה דברים בשמיים ובטבע באנגלית',
+  home: 'מזהה חפצים בבית באנגלית', people: 'מזהה אנשים שעוזרים לנו באנגלית' };
+const NEST_HE_MONTHS = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
+// The can-do lines: one per topic of the program, in its order. Topics met come first (already: half of their words known or
+// more; on the way: met, fewer known), then topics not met yet, 6 to 8 lines in all.
+function nestCanDo(g){
+  const known = g.nest.known || {}, themes = [];
+  EQ_NEST.units.filter(u => !u.review && NEST_CAN[u.theme]).forEach(u => { let t = themes.find(x => x.theme === u.theme);
+    if (!t) themes.push(t = { theme: u.theme, words: [] }); t.words.push(...u.words); });
+  themes.forEach(t => { const s = t.words.map(w => nestWordState(known[w.id])), met = s.filter(Boolean).length, ok = s.filter(x => x === 'known').length;
+    t.level = !met ? 'not' : ok * 2 >= t.words.length ? 'yes' : 'way'; t.ex = t.words.filter(w => known[w.id]).slice(0, 3).map(w => w.en); });
+  const met = themes.filter(t => t.level !== 'not'), not = themes.filter(t => t.level === 'not');
+  return met.slice(-8).concat(not.slice(0, Math.max(0, 6 - Math.min(met.length, 8))));
+}
+function nestMonthReport(g, which){
+  if (!g || !g.nest || !g.nestMonths || !window.EQ_NEST) return;
+  const m = g.nestMonths[which] || g.nestMonths[0], [y, mo] = m.month.split('-').map(Number), name = esc(g.girl.name);
+  const label = NEST_HE_MONTHS[mo - 1] + ' ' + y, lines = nestCanDo(g);
+  const LV = { yes: ['chip teal', 'כבר'], way: ['chip orange', 'בדרך'], not: ['chip', 'עוד לא פגשנו'] };
+  const fresh = m.fresh.map(id => nestWordById(id)).filter(Boolean);
+  const sum = m.lessons ? `ב${NEST_HE_MONTHS[mo - 1]}: ${m.lessons === 1 ? 'שיעור אחד' : m.lessons + ' שיעורים'} בקן, ${m.days === 1 ? 'ביום אחד' : 'ב-' + m.days + ' ימים'}${fresh.length ? `, ו-${fresh.length === 1 ? 'מילה חדשה אחת' : fresh.length + ' מילים חדשות'}` : ''}.` : `ב${NEST_HE_MONTHS[mo - 1]} עוד לא היו שיעורים בקן.`;
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="sheet glass he nkmap" dir="rtl" lang="he">
+    <div class="row-flex between"><span class="row-flex" style="gap:10px"><span class="tile sm t-level">${icon('calendar-check', 'duotone')}</span>
+      <h2 style="margin:0;font-size:18px">הדוח החודשי של <bdi>${name}</bdi></h2></span>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x" aria-label="Close">${icon('x')}</button></div>
+    ${g.nestMonths[1] && g.nestMonths[1].lessons ? `<div class="row-flex mt-s" style="gap:6px">${g.nestMonths.map((x, i) => { const [, xm] = x.month.split('-').map(Number);
+      return `<button class="btn btn-sm ${x === m ? 'btn-primary' : 'btn-glass'}" data-nkmon="${i}">${NEST_HE_MONTHS[xm - 1]}</button>`; }).join('')}</div>` : ''}
+    <div class="label mt-s" style="text-transform:none">${esc(label)}</div>
+    <p style="margin:4px 0 0;font-size:15px">${sum}</p>
+    ${fresh.length ? `<div class="nkmap-row">${fresh.slice(0, 12).map(w => `<button class="nk-lw" data-nkmw="${esc(w.id)}" title="${esc(w.he)}" aria-label="${esc(w.en)}: ${esc(w.he)}">${nestPic(w)}<span dir="ltr">${esc(w.en)}</span></button>`).join('')}</div>` : ''}
+    <div class="label mt" style="text-transform:none">לפי נושאים</div>
+    ${lines.map(t => `<div class="row-flex between soft panel mt-s" style="gap:10px;align-items:center;padding:10px 14px">
+      <span style="font-size:14px;line-height:1.45">${esc(NEST_CAN[t.theme])}${t.ex.length ? `<span class="sub" style="display:block;font-size:13px;margin:2px 0 0"><bdi dir="ltr">${t.ex.map(esc).join(', ')}</bdi></span>` : ''}</span>
+      <span class="${LV[t.level][0]}" style="flex:none">${LV[t.level][1]}</span></div>`).join('')}
+    <div class="label mt" style="text-transform:none">לשים לב בבית</div>
+    <ul style="margin:4px 0 0;padding-inline-start:18px;font-size:14px;line-height:1.55">
+      <li>מילה באנגלית מחוץ לאפליקציה? זה הסימן הכי משמח. שמחו יחד, בלי לבקש לחזור עליה.</li>
+      <li>אמרו <bdi dir="ltr">Clap!</bdi> או <bdi dir="ltr">Jump!</bdi> בלי להראות. אם התנועה מגיעה, ההוראה באנגלית מובנת.</li>
+    </ul>
+    <p class="sub" style="font-size:13px;margin:10px 0 0">כבר: מצאו בניסיון הראשון לפחות חצי מהמילים של הנושא, כל אחת בשני שיעורים. בלי ציונים ובלי השוואה לילדים אחרים: כל ילד בקצב שלו.</p>
+  </div>`;
+  document.body.appendChild(ov);
+  dialogOpen(ov);
+  const close = () => { nestStopAudio(); ov.remove(); if (ov._back) try { ov._back.focus(); } catch (e) {} };
+  ov.querySelector('#x').onclick = close;
+  ov.onclick = e => { if (e.target === ov) close(); };
+  ov.querySelectorAll('[data-nkmw]').forEach(b => b.onclick = () => nestPlay(['w-' + b.dataset.nkmw]));
+  ov.querySelectorAll('[data-nkmon]').forEach(b => b.onclick = () => { ov.remove(); nestMonthReport(g, Number(b.dataset.nkmon)); });
+}
+// A Nest word by id, without a session (the parents' area).
+function nestWordById(id){
+  for (const u of EQ_NEST.units) for (const w of (u.words || [])) if (w.id === id) return w;
+  return null;
 }
 
 // ---- The preview for the early-years teacher and the owner: every unit, its parts, and a session at each age ----
