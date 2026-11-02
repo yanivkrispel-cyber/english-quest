@@ -183,6 +183,10 @@ first. Tablets get the phone layout scaled (`tabletFit`); never add width breakp
   Data card need the code typed: `parentAccess(pin, { typed: true })`) or the admin's passphrase (Script Property `ADMIN_PASS`,
   `tools/admin-passphrase.js`; the 4-digit AdminPIN works only until it is set). Never compare a code with another family's.
   Wrong PINs count per name and per address (`REQ_IP`, memory only); a name that does not exist must keep nothing.
+- **The Google Play app is this site with `IN_PLAY` on** (`store/README.md`): no Chacho's Nest there (ages 6 to 12 first). A new
+  screen that offers an age, the Nest or a way out of the app checks `IN_PLAY`; test with `?src=play`. The package name lives in
+  three places (`PLAY_PKG`, `store/android/twa-manifest.json`, `docs/.well-known/assetlinks.json`). A change to what is kept or
+  sent also updates `store/data-safety.md`.
 - Default PINs are random; the real PINs live only in the private sheet. The repo is public:
   never commit real PINs, emails or the sheet's contents (tests use fake PINs 4821/7356/2694/1234).
 

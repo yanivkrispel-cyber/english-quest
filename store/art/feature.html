@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Feature graphic</title>
+<!-- Google Play's feature graphic, 1024 x 500 (store/README.md). The app's own pieces only (specs/design.md): the body
+     gradient and blobs, a .glass card, Plus Jakarta Sans, Chacho and the pets in clay. Shot by store/art/shoot.js. -->
+<link rel="stylesheet" href="../../docs/fonts/plus-jakarta-sans/style.css">
+<style>
+:root{
+  --ink:#1c1e2b; --muted:#4b5064; --primary:#5558e0; --clay-primary:#5f63ea;
+  --glass:linear-gradient(140deg,rgba(255,255,255,.52),rgba(255,255,255,.2));
+  --stroke:rgba(255,255,255,.72);
+  --shadow:0 26px 50px -18px rgba(38,40,80,.28);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{width:1024px;height:500px;overflow:hidden;position:relative;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink);
+  background:linear-gradient(135deg,#f4ede5 0%,#e9e3dd 38%,#b8c2cf 78%,#7d8a9c 100%)}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.75}
+.b1{width:420px;height:420px;background:#a5a8ff;top:-140px;left:-120px}
+.b2{width:360px;height:360px;background:#8ff0e2;top:120px;right:-80px}
+.b3{width:320px;height:320px;background:#ffc79a;bottom:-150px;left:260px;opacity:.6}
+.b4{width:240px;height:240px;background:#f5b8e8;top:-60px;right:300px;opacity:.5}
+.card{position:absolute;left:56px;top:96px;width:470px;padding:34px 34px 30px;border-radius:30px;background:var(--glass);
+  backdrop-filter:blur(24px) saturate(170%);border:1px solid var(--stroke);box-shadow:var(--shadow)}
+h1{font-size:50px;font-weight:800;letter-spacing:-1.2px;line-height:1.04;margin:0}
+h1 b{color:var(--primary)}
+.sub{font-size:22px;font-weight:600;color:var(--muted);margin-top:14px}
+.pill{display:inline-flex;align-items:center;height:44px;padding:0 22px;margin-top:22px;border-radius:999px;color:#fff;font-weight:700;font-size:18px;
+  background:var(--clay-primary);box-shadow:0 14px 22px -12px rgba(76,70,200,.7),inset 0 -6px 11px rgba(40,30,160,.38),inset 0 6px 11px rgba(255,255,255,.32)}
+.coco{position:absolute;right:120px;top:40px;width:400px;filter:drop-shadow(0 24px 30px rgba(38,40,80,.3))}
+.pet{position:absolute;filter:drop-shadow(0 14px 18px rgba(38,40,80,.28))}
+.p1{width:150px;right:20px;bottom:6px}
+.p2{width:132px;right:500px;bottom:-6px}
+.p3{width:118px;right:40px;top:8px}
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div>
+<div class="card">
+  <h1>English with <b>Chacho</b></h1>
+  <div class="sub">10 minutes of English a day, for kids</div>
+  <div class="pill">Missions, games and a pet that grows</div>
+</div>
+<img class="coco" src="../../docs/coco/wave.webp" alt="">
+<img class="pet p1" src="../../docs/pets/cat/2-happy.webp" alt="">
+<img class="pet p2" src="../../docs/pets/turtle/2-happy.webp" alt="">
+<img class="pet p3" src="../../docs/pets/lion/1-happy.webp" alt="">
+</body>
+</html>

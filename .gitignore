@@ -13,3 +13,11 @@ tools/__pycache__/
 !.dev.vars.example
 .env*
 !.env.example
+
+# The Android app (store/README.md): never commit the signing key or the generated project
+*.keystore
+*.jks
+*.aab
+*.apk
+store/android/*
+!store/android/twa-manifest.json

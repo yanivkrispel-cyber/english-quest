@@ -116,6 +116,9 @@ notifications, and reward points.
   in the parents' area), the microphone (speech recognition) is off per kid until a parent turns it on, playing with other
   families is off until both families' parents turn it on, kids can block and report (preset reasons), invites are limited per
   hour, and retention deletes old opens and kids inactive for 12 months. Public pages: docs/privacy.html, docs/terms.html.
+- **Google Play** (`store/README.md`): the Android app is a Trusted Web Activity of the site (Bubblewrap, `store/android/twa-manifest.json`,
+  `docs/.well-known/assetlinks.json`). Inside it (`IN_PLAY`) the sign-up offers school grades only and Chacho's Nest stays on the website.
+  The store forms and texts: `store/data-safety.md`, `store/content-rating.md`, `store/listing.md`, `store/legal-review.md`.
 
 **The friends' pilot** (spec: `specs/pilot.md`): families join on their own from the owner's invite link (`?join=<code>`, Hebrew screens
 and a privacy consent), new kids take an adaptive level test inside the app (and a progress check after four weeks), parents see their

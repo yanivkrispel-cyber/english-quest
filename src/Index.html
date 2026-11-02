@@ -2129,6 +2129,24 @@ const KHE_RX = [
 // Group from the link (?g=...), remembered on the device so the installed app (which always
 // starts at the base URL) opens the right group. Empty means the default group.
 const IN_APPS_SCRIPT = !!(window.google && google.script);
+// ---------- The Google Play app (store/README.md) ----------
+// The Android app is a Trusted Web Activity of this site: Chrome opens it with the app as the referrer (android-app:<package>)
+// and its start address carries ?src=play. The tab keeps that in sessionStorage, never in localStorage: the app shares Chrome's
+// storage for this address, so a kept flag would turn the website into the store app too. In the store app (ages 6 to 12 first,
+// specs/store-readiness.md, "The store route"): the sign-up offers school grades only, a Chacho's Nest kid sees a note for the
+// parents (the Nest stays on the website for now), and phones stay upright (tablets turn both ways, specs/tablet.md).
+const PLAY_PKG = 'com.coachkrispel.chacho';
+const IN_PLAY = (() => {
+  if (IN_APPS_SCRIPT) return false;
+  let on = false;
+  try {
+    const ref = String(document.referrer || '').replace(/\/+$/, '');
+    on = ref === 'android-app:' + '/' + '/' + PLAY_PKG || new URLSearchParams(location.search).get('src') === 'play' || sessionStorage.getItem('eq_store') === 'play';
+    if (on) sessionStorage.setItem('eq_store', 'play');
+  } catch(e){}
+  return on;
+})();
+if (IN_PLAY && Math.min(screen.width, screen.height) < 600 && screen.orientation && screen.orientation.lock) screen.orientation.lock('portrait').catch(() => {});
 function groupId(){
   if (IN_APPS_SCRIPT) return '';
   const g = new URLSearchParams(location.search).get('g');
@@ -5342,7 +5360,9 @@ function msSayRec(sc){
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) { sub.skip = true; return msRender(); }
   msStopAudio();
-  const r = new SR(), target = sc.text.toLowerCase().replace(/[^a-z' ]+/g, ' ').trim().split(/\s+/);
+  // On the phone where the browser can (processLocally), as in every other use: the policy says so (store/data-safety.md).
+  srCheckLocal();
+  const r = srNew(), target = sc.text.toLowerCase().replace(/[^a-z' ]+/g, ' ').trim().split(/\s+/);
   let t0 = Date.now(), t1 = 0, got = false;
   const here = () => MS && MS.S[MS.si] === sc;
   r.lang = 'en-US'; r.interimResults = false; r.maxAlternatives = 1; r.continuous = false;
@@ -8425,12 +8445,12 @@ function joinWelcome(){
 function joinForm(){
   const kidRow = (k, i) => `<div class="row-flex" style="gap:8px">
       <input class="input" data-kname="${i}" placeholder="שם פרטי באנגלית, למשל Noa" value="${esc(k.name)}" autocomplete="off" style="flex:1;min-width:0" dir="auto">
-      <select class="input" data-kgrade="${i}" style="width:128px"><option value="">גיל או כיתה</option><optgroup label="הקן של צ׳אצ׳ו">${NEST_AGES.map(([v, l]) => `<option value="${v}" ${String(k.grade) === v ? 'selected' : ''}>${l}</option>`).join('')}</optgroup><optgroup label="בית ספר">${GRADES.map(([g, l]) => `<option value="${g}" ${String(k.grade) === String(g) ? 'selected' : ''}>כיתה ${l}</option>`).join('')}</optgroup></select>
+      <select class="input" data-kgrade="${i}" style="width:128px"><option value="">${IN_PLAY ? 'כיתה' : 'גיל או כיתה'}</option>${IN_PLAY ? '' : `<optgroup label="הקן של צ׳אצ׳ו">${NEST_AGES.map(([v, l]) => `<option value="${v}" ${String(k.grade) === v ? 'selected' : ''}>${l}</option>`).join('')}</optgroup>`}<optgroup label="בית ספר">${GRADES.map(([g, l]) => `<option value="${g}" ${String(k.grade) === String(g) ? 'selected' : ''}>כיתה ${l}</option>`).join('')}</optgroup></select>
       ${JOIN.kids.length > 1 ? `<button class="btn btn-glass icon-btn" data-kdel="${i}" title="הסרה">${icon('x')}</button>` : ''}</div>`;
   app.innerHTML = `<div class="stack he" dir="rtl" lang="he">
     <div class="glass panel" style="display:grid;gap:10px">
       <h2>הילדים</h2>
-      <div class="sub" style="font-size:12px">השם מופיע באפליקציה, ולכן באנגלית. מכיתה ג ומעלה, לפי הכיתה נקבעת נקודת ההתחלה של מבחן הרמה. ילדים מגיל 2 עד כיתה ב נכנסים לקן של צ׳אצ׳ו: משחק בשמיעה ובתמונות, בלי מבחן ובלי קריאה.</div>
+      <div class="sub" style="font-size:12px">השם מופיע באפליקציה, ולכן באנגלית. מכיתה ג ומעלה, לפי הכיתה נקבעת נקודת ההתחלה של מבחן הרמה. ${IN_PLAY ? 'הקן של צ׳אצ׳ו, לילדים מגיל 2 עד כיתה ב, נמצא בינתיים רק באתר <bdi dir="ltr">coco.coachkrispel.com</bdi> ולא באפליקציה מהחנות.' : 'ילדים מגיל 2 עד כיתה ב נכנסים לקן של צ׳אצ׳ו: משחק בשמיעה ובתמונות, בלי מבחן ובלי קריאה.'}</div>
       ${JOIN.kids.map(kidRow).join('')}
       ${JOIN.kids.length < 5 ? `<button class="btn btn-glass btn-block" id="jaddkid">${icon('user-plus')} עוד ילד</button>` : ''}
     </div>
@@ -8460,7 +8480,7 @@ function joinForm(){
     const kids = JOIN.kids.filter(k => k.name.trim());
     if (!kids.length) return toast('כתבו את השם של הילד', true);
     if (kids.some(k => !/^[A-Za-z][A-Za-z .'-]*$/.test(k.name.trim()))) return toast('כתבו את שמות הילדים באותיות באנגלית', true);
-    if (kids.some(k => !k.grade)) return toast('בחרו גיל או כיתה לכל ילד', true);
+    if (kids.some(k => !k.grade || (IN_PLAY && /^a/.test(k.grade)))) return toast(IN_PLAY ? 'בחרו כיתה לכל ילד' : 'בחרו גיל או כיתה לכל ילד', true);
     if (!JOIN.parent.trim() || !JOIN.family.trim()) return toast('כתבו את השם שלכם ואת שם המשפחה', true);
     const b = document.getElementById('jsend'); b.disabled = true; b.innerHTML = '<span class="mini-spin"></span> פותחים…';
     try {
@@ -9147,6 +9167,19 @@ function nestPlayground(){
   nestPlay(['en-hi']);
 }
 
+// The store app has no Chacho's Nest yet (ages 6 to 12 first): the parents read where it is. No link out (rule 2).
+function nestStoreNote(d){
+  app.innerHTML = `<div class="stack">
+    <div class="glass panel he" dir="rtl" lang="he" style="display:grid;gap:12px;text-align:center">
+      <img src="${cocoSrc('wave')}" alt="" style="width:120px;height:120px;object-fit:contain;justify-self:center">
+      <div class="label">להורים</div>
+      <h2>הקן של צ׳אצ׳ו נמצא באתר</h2>
+      <div class="sub">${esc(d.girl.name)} בקן של צ׳אצ׳ו, לגילאי 2 עד 7. בינתיים הקן לא נמצא באפליקציה מהחנות, רק באתר: פותחים בדפדפן את <bdi dir="ltr">coco.coachkrispel.com</bdi> ונכנסים כמו תמיד. כל מה שנעשה עד היום שמור שם.</div>
+    </div>
+    <button class="btn btn-primary btn-block" id="nsout">${icon('users-three')} Who is playing?</button>
+  </div>`;
+  document.getElementById('nsout').onclick = signOut;
+}
 function renderNest(d){
   { const sky = document.getElementById('nksky'); if (sky) sky.remove(); }
   // n.next: one more lesson (the parent allows more than one a day), so the big button starts it instead of a replay.
@@ -9259,7 +9292,7 @@ function ageLabel(v){
   const n = NEST_AGES.find(x => x[0] === v), c = GRADES.find(x => String(x[0]) === v);
   return n ? 'הקן של צ׳אצ׳ו, ' + n[1] : c ? 'כיתה ' + c[1] : 'גיל או כיתה';
 }
-const ageOptions = v => `<option value="">גיל או כיתה</option><optgroup label="הקן של צ׳אצ׳ו">${NEST_AGES.map(([a, l]) => `<option value="${a}" ${v === a ? 'selected' : ''}>${l}</option>`).join('')}</optgroup><optgroup label="בית ספר">${GRADES.map(([c, l]) => `<option value="${c}" ${v === String(c) ? 'selected' : ''}>כיתה ${l}</option>`).join('')}</optgroup>`;
+const ageOptions = v => IN_PLAY && !/^a/.test(v || '') ? `<option value="">כיתה</option>${GRADES.map(([c, l]) => `<option value="${c}" ${v === String(c) ? 'selected' : ''}>כיתה ${l}</option>`).join('')}` : `<option value="">גיל או כיתה</option><optgroup label="הקן של צ׳אצ׳ו">${NEST_AGES.map(([a, l]) => `<option value="${a}" ${v === a ? 'selected' : ''}>${l}</option>`).join('')}</optgroup><optgroup label="בית ספר">${GRADES.map(([c, l]) => `<option value="${c}" ${v === String(c) ? 'selected' : ''}>כיתה ${l}</option>`).join('')}</optgroup>`;
 function ageRow(g){
   return `<div class="row-flex mt-s he" dir="rtl" lang="he" style="gap:8px;flex-wrap:wrap;align-items:center" data-agebox="${esc(g.girl.name)}">
     <span class="chip">${icon(g.nest ? 'bird' : 'graduation-cap')} ${esc(ageLabel(ageValue(g)))}</span>
@@ -9865,7 +9898,7 @@ function renderDash(){
   if (d.duels) duelsHome = d.duels;
   if (!d.games) d.games = Object.assign({}, GAMES_DEFAULT);
   if (d.levelTest) return renderOnboarding(d);
-  if (d.nest) return renderNest(d);
+  if (d.nest) return IN_PLAY ? nestStoreNote(d) : renderNest(d);
   if (dashTab === 'journey' && d.journey) return renderMap();
   app.innerHTML = `<div class="tabview tv-${dashTab}${dashTab === 'today' || dashTab === 'play' ? '' : ' stack'}">${dashBody(d)}</div>${tabBar(d)}`;
   window.scrollTo(0, 0);
@@ -9961,6 +9994,8 @@ function dashBody(d){
 
     ${heCard(d)}
 
+    ${aboutCard()}
+
     <div class="word-card">
       <div class="label">Word of the day</div>
       <div class="word">${esc(d.word.word)}</div>
@@ -10036,6 +10071,14 @@ function heCard(d){
     <div style="flex:1;min-width:0"><h2>Hebrew help</h2><div class="sub" style="margin:2px 0 0;font-size:13px">A small line in Hebrew under instructions and messages</div>
       <span class="khe" dir="rtl" lang="he">עזרה בעברית: שורה קטנה בעברית מתחת להוראות ולהודעות</span></div>
     <button class="btn btn-sm ${on ? 'btn-teal' : 'btn-glass'}" id="hetoggle" aria-pressed="${on}">${on ? 'On' : 'Off'}</button></div></div>`;
+}
+// For grown-ups: the privacy policy and the terms (docs/privacy.html, docs/terms.html). Pages of this site, opened in place
+// (the store app stays the app; each page has a way back), through the grown-ups' gate like every page a kid did not ask for.
+function aboutCard(){
+  return `<div class="glass panel"><div class="row-flex" style="gap:12px"><span class="tile t-read">${icon('shield-check', 'duotone')}</span>
+    <div style="flex:1;min-width:0"><h2>For grown-ups</h2><div class="sub" style="margin:2px 0 0;font-size:13px">Privacy policy and terms of use</div>
+      <span class="khe" dir="rtl" lang="he">להורים: מדיניות הפרטיות ותנאי השימוש</span></div></div>
+    <div class="row-flex mt-s" style="gap:8px;flex-wrap:wrap"><a class="btn btn-glass btn-sm" href="${ASSETS}privacy.html" data-gate="self">Privacy</a><a class="btn btn-glass btn-sm" href="${ASSETS}terms.html" data-gate="self">Terms</a></div></div>`;
 }
 function bindHeCard(){
   const b = document.getElementById('hetoggle');
@@ -10625,7 +10668,7 @@ document.addEventListener('click', e => {
   const a = e.target.closest && e.target.closest('a[data-gate]');
   if (!a) return;
   e.preventDefault();
-  grownUp(() => window.open(a.href, '_blank', 'noopener'));
+  grownUp(() => a.dataset.gate === 'self' ? location.assign(a.href) : window.open(a.href, '_blank', 'noopener'));
 }, true);
 
 function groupMessage(g, word){
