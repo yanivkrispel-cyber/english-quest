@@ -8,7 +8,7 @@
 //   node test/nest-check.js
 //   require('./nest-check.js').check({ files: false, index: false })  -> list of errors (tools/nest-index.js)
 const fs = require('fs'), path = require('path'), vm = require('vm');
-const { load, clips } = require('../tools/nest-audio-list.js');
+const { load, clips, waiting } = require('../tools/nest-audio-list.js');
 const ROOT = path.join(__dirname, '..');
 const EN_KEYS = ['hi', 'listen', 'meet', 'find', 'turn', 'give', 'with', 'color', 'say', 'sing', 'again', 'move', 'who', 'peek',
   'whosays', 'popit', 'sort', 'pairs', 'close', 'open', 'missing', 'odd', 'look', 'story', 'theend', 'teach', 'dress', 'yummy',
@@ -28,7 +28,10 @@ function check(opts) {
   let nest;
   try { nest = load(); } catch (e) { return ['nest.js: ' + e.message]; }
   if (!nest || !Array.isArray(nest.units)) return ['nest.js: window.EQ_NEST.units missing'];
-  const units = nest.units, unitIds = new Set(), wordIds = new Set(), pics = new Set(), enWhere = {};
+  // The program's units and, after them, the ones still waiting for pictures and voice (EQ_NEST.next): one set of rules.
+  const units = nest.units.concat(nest.next || []), later = new Set((nest.next || []).map(u => u.id)), unitIds = new Set(), wordIds = new Set(), enWhere = {};
+  const pics = new Set(), nextPics = new Set();
+  let into = pics;
   const moves = nest.moves || {}, usedMoves = new Set();
   // A parents' idea: Hebrew, with every English part inside {braces} (shown left to right in the card).
   const homeLine = (where, t) => {
@@ -49,24 +52,25 @@ function check(opts) {
     if (kinds.length !== 1) err(where, 'needs exactly one of pic / color / count, has ' + (kinds.join(', ') || 'none'));
     if (w.pic != null) {
       if (!/^[a-z0-9-]+$/.test(w.pic)) err(where, 'bad pic name');
-      else pics.add(w.pic);
+      else into.add(w.pic);
     }
     if (w.color != null && !/^#[0-9a-f]{6}$/i.test(w.color)) err(where, 'color must be #rrggbb');
-    else if (w.color != null) pics.add('blob-' + w.color.slice(1).toLowerCase());
-    if (w.count != null) pics.add('count-token');
+    else if (w.color != null) into.add('blob-' + w.color.slice(1).toLowerCase());
+    if (w.count != null) into.add('count-token');
     if (w.count != null && !(Number.isInteger(w.count) && w.count >= 1 && w.count <= 10)) err(where, 'count must be 1 to 10');
   };
   let nNew = 0, nRev = 0, nWords = 0;
 
   units.forEach((u, i) => {
     const where = 'unit ' + (u.id || i);
+    into = later.has(u.id) ? nextPics : pics;
     if (!/^[nr]\d\d$/.test(u.id || '')) err(where, 'id must be nNN or rNN');
     if (unitIds.has(u.id)) err(where, 'duplicate unit id');
     unitIds.add(u.id);
     if (!u.title || typeof u.title !== 'string') err(where, 'no title');
     if (!HEB.test(u.he || '')) err(where, 'no Hebrew title');
     if (!/^[a-z0-9-]+$/.test(u.icon || '')) err(where, 'no icon');
-    else pics.add(u.icon);
+    else into.add(u.icon);
     if (u.review) {
       nRev++;
       if (u.id !== 'r' + String(nRev).padStart(2, '0')) err(where, 'reviews must be numbered r01, r02, ... in order');
@@ -137,7 +141,9 @@ function check(opts) {
       err('unit ' + u.id, 'a review comes after two new units and reviews exactly those two');
   });
   if (units.length && !units[units.length - 1].review) err('units', 'should end with a review');
-  ok.push(units.length + ' units (' + nNew + ' new, ' + nRev + ' reviews), ' + nWords + ' words');
+  into = pics;
+  if (nest.next && nest.next.length && nest.units.length && !nest.units[nest.units.length - 1].review) err('next', 'the program must end with a review before the waiting units');
+  ok.push(units.length + ' units (' + nNew + ' new, ' + nRev + ' reviews), ' + nWords + ' words' + (later.size ? ', ' + later.size + ' of the units waiting (EQ_NEST.next)' : ''));
   Object.keys(moves).forEach(k => {
     if (!/^[a-z0-9-]+$/.test(k)) err('move ' + k, 'id must be lowercase a-z, digits and -');
     english('move ' + k, moves[k].en, 7);
@@ -225,7 +231,13 @@ function check(opts) {
     pics.forEach(p => { if (!fs.existsSync(path.join(ROOT, 'docs/nest/pics', p + '.webp'))) { missing++; err('pics', 'missing docs/nest/pics/' + p + '.webp'); } });
     if (!missing) ok.push(pics.size + ' pictures on disk');
     const waitEn = new Set(Object.keys((nest.wait || {}).en || {}).map(k => 'en-' + k));
-    const list = clips(nest).filter(c => !waitEn.has(c.name));
+    const later = waiting(nest), list = clips(nest).filter(c => !waitEn.has(c.name) && !later.has(c.name));
+    // A waiting unit with every picture and clip on disk can move into the program.
+    (nest.next || []).filter(u => !u.review).forEach(u => {
+      const need = [u.icon].concat(u.words.map(w => w.pic).filter(Boolean)), names = [...later].filter(n => n.slice(2).startsWith(u.id + '-') || n === 'p-' + u.id || u.words.some(w => n.slice(2) === w.id));
+      if (need.every(p => fs.existsSync(path.join(ROOT, 'docs/nest/pics', p + '.webp'))) && names.every(n => fs.existsSync(path.join(ROOT, 'docs/nest/audio', n + '.mp3'))))
+        ok.push(u.id + ' has every picture and clip: ready to move from next into units');
+    });
     waitEn.forEach(n => { if (fs.existsSync(path.join(ROOT, 'docs/nest/audio', n + '.mp3'))) err('wait.en', n + '.mp3 is recorded: take it out of EQ_NEST.wait'); });
     const lines = require('../tools/nest-new-lines.js'), have = fs.existsSync(lines.OUT) ? fs.readFileSync(lines.OUT, 'utf8').replace(/\r\n/g, '\n') : '';
     if (have !== lines.text(nest)) err('docs/nest/NEW_LINES.md', 'out of date (node tools/nest-new-lines.js)');
@@ -246,7 +258,7 @@ function check(opts) {
       const ctx = {};
       try {
         new vm.Script(fs.readFileSync(p, 'utf8') + '\n;this.NEST_UNITS = NEST_UNITS;').runInNewContext(ctx);
-        const want = JSON.stringify([].concat(...units.map(u => (u.review ? [''] : ['', '.b', '.c', '.d']).map(d => [u.id + d, u.title, u.review ? 1 : 0, u.he || u.title]))));
+        const want = JSON.stringify([].concat(...nest.units.map(u => (u.review ? [''] : ['', '.b', '.c', '.d']).map(d => [u.id + d, u.title, u.review ? 1 : 0, u.he || u.title]))));
         if (JSON.stringify(ctx.NEST_UNITS) !== want) err('src/NestIndex.js', 'out of date (node tools/nest-index.js)');
         else ok.push('src/NestIndex.js matches');
       } catch (e) { err('src/NestIndex.js', e.message); }

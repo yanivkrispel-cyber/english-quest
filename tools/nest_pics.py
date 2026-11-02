@@ -67,13 +67,15 @@ OUT = os.path.join(APP, 'docs', 'nest', 'pics')
 CDN = 'https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/'
 
 
-def used():
-    """Every picture name nest.js uses (word pics, unit icons, Coco says pictures, color blobs and the count token)."""
+def used(later=False):
+    """Every picture name nest.js uses (word pics, unit icons, Coco says pictures, color blobs and the count token).
+    later=True: the pictures of the units still waiting in EQ_NEST.next (weeks 21 to 40), which get clay pictures only."""
     js = ("const vm=require('vm'),fs=require('fs');const w={};"
           "vm.runInNewContext(fs.readFileSync('docs/nest/nest.js','utf8'),{window:w});const s=new Set();"
           "const add=x=>{if(x.pic)s.add(x.pic);if(x.color)s.add('blob-'+x.color.slice(1).toLowerCase());if(x.count)s.add('count-token')};"
-          "w.EQ_NEST.units.forEach(u=>{s.add(u.icon);(u.words||[]).forEach(add)});"
-          "Object.values(w.EQ_NEST.moves||{}).forEach(add);"
+          + ("(w.EQ_NEST.next||[]).forEach(u=>{if(u.icon)s.add(u.icon);(u.words||[]).forEach(add)});" if later else
+             "w.EQ_NEST.units.forEach(u=>{s.add(u.icon);(u.words||[]).forEach(add)});"
+             "Object.values(w.EQ_NEST.moves||{}).forEach(add);") +
           "process.stdout.write(JSON.stringify([...s]))")
     return json.loads(subprocess.check_output(['node', '-e', js], cwd=APP).decode('utf-8'))
 
@@ -133,9 +135,18 @@ def main():
             im = Image.open(cached(PICS[name])).convert('RGBA')
             im.thumbnail((200, 200), Image.LANCZOS)
         im.save(os.path.join(OUT, name + '.webp'), 'WEBP', quality=88, alpha_quality=100, method=6)
+    # The waiting units (EQ_NEST.next): only the clay pictures already made (never a Fluent stand-in); the rest are listed in
+    # docs/nest/NEW_LINES.md. Their pictures on disk are kept.
+    later = [n for n in used(later=True) if n not in names]
+    for name in later:
+        if os.path.exists(clay(name)):
+            im = Image.open(clay(name)).convert('RGBA')
+            im.thumbnail((320, 320), Image.LANCZOS)
+            im.save(os.path.join(OUT, name + '.webp'), 'WEBP', quality=88, alpha_quality=100, method=6)
+    keep = set(names + later)
     # Pictures nest.js no longer uses are removed.
     for f in os.listdir(OUT):
-        if f.endswith('.webp') and f[:-5] not in names:
+        if f.endswith('.webp') and f[:-5] not in keep:
             os.remove(os.path.join(OUT, f))
     total = sum(os.path.getsize(os.path.join(OUT, f)) for f in os.listdir(OUT))
     print(len(os.listdir(OUT)), 'pictures (%d clay, %d Fluent),' % (len(names) - fluent, fluent), total // 1024, 'KB')

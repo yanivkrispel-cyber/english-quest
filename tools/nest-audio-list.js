@@ -19,7 +19,7 @@ const giveText = w => 'Give me ' + (w.color ? '' : 'the ') + w.en.replace(/-/g, 
 function clips(nest) {
   nest = nest || load();
   const out = [];
-  nest.units.forEach(u => {
+  nest.units.concat(nest.next || []).forEach(u => {
     (u.words || []).forEach(w => {
       out.push({ name: 'w-' + w.id, text: w.say, voice: 'word' });
       out.push({ name: 'f-' + w.id, text: w.find, voice: 'find' });
@@ -40,5 +40,18 @@ function clips(nest) {
   return out;
 }
 
-module.exports = { load, clips, giveText };
+// The clips of the units still waiting in EQ_NEST.next (weeks 21 to 40): their words, phrases, chants and stories.
+function waiting(nest) {
+  nest = nest || load();
+  const out = new Set();
+  (nest.next || []).forEach(u => {
+    (u.words || []).forEach(w => { out.add('w-' + w.id); out.add('f-' + w.id); });
+    if (u.phrase) out.add('p-' + u.id);
+    ((nest.chants || {})[u.id] || []).forEach((l, i) => out.add('c-' + u.id + '-' + i));
+    (((nest.stories || {})[u.id] || {}).pages || []).forEach((pg, i) => out.add('t-' + u.id + '-' + i));
+  });
+  return out;
+}
+
+module.exports = { load, clips, giveText, waiting };
 if (require.main === module) process.stdout.write(JSON.stringify(clips()));
