@@ -99,10 +99,12 @@ function platformTick() {
     try { fn(); ran.push(name); } catch (e) { console.error(name + ': ' + ((e && e.message) || e)); }
   }
   ensureSetup();
-  job('dailyReminder', Number(getSetting('ReminderHour')) || 17, dailyReminder);
-  job('lastCallReminder', Number(getSetting('LastCallHour')), lastCallReminder);
+  // Kids' reminders: every hour, for the kids whose parents chose that hour (Safety.js); hour 0 is midnight, never a reminder.
+  if (h) job('dailyReminder:' + h, h, function () { dailyReminder(h); });
   job('parentSummary', Number(getSetting('ParentSummaryHour')), parentSummary);
   job('retentionSweep', 3, retentionSweep);
+  job('opsSweep', 3, opsSweep);
+  job('healthCheck', 10, healthCheck);
   try { auditFlush(); } catch (e) { console.error('auditFlush: ' + ((e && e.message) || e)); }
   return ran;
 }
@@ -111,6 +113,6 @@ function platformPushTtl() { return PUSH_TTL; }
 
 // 4. The relay (src/Relay.js) belongs to Apps Script: here it never relays, and its admin calls refuse.
 cfIntercept = function () { return null; };
-apiCfExport = function () { throw new Error('Not on this server: use /admin/export'); };
-apiCfMode = function () { throw new Error('Not on this server'); };
+cfExport = function () { throw new Error('Not on this server: use /admin/export'); };
+cfSetMode = function () { throw new Error('Not on this server'); };
 cfMirror = function () { throw new Error('Not on this server'); };

@@ -152,6 +152,7 @@ async function nkArcStart(g, unitId, preview){
 // ---------- The arcade screen ----------
 // A painted fairground; two shelves (Chacho's games, learning games) by two big buttons; every game a clay cover.
 function nkArcade(){
+  if (nkTimeUp()) return nkBedtime();
   const coco = nkArcGames(), learn = nkPlayGames(), L = Object.fromEntries(NG_GAMES);
   if (!coco.length && !learn.length) return renderDash();
   const tab = coco.length ? (learn.length ? NKR.tab : 'coco') : 'learn', left = nkArcLeft(), asleep = tab === 'coco' && left <= 0;

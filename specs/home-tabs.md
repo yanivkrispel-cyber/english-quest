@@ -17,14 +17,30 @@ A sign-in opens on Today; a game, the shop, a talk or the map goes back to the t
 
 | Tab | What is on it |
 | --- | --- |
-| Today | `homeTop` (face, greeting, streak, coins, refresh), `petHero` (the pet, its line, XP to grow), `todayMain` (one Start; done or no task says so, with "Catch up" when days were missed), `homePills` (Talk with Chacho, and an invite or a warm-up game) |
+| Today | `homeTop` (face, greeting, "98 coins" in words, refresh), `petHero` (the pet, its line, XP to grow or "Growing" for A1/A2, and the streak in words: `streakLine`, "3 days in a row"), `todayMain` (one Start under the mission's kids' title; done or no task says so, with one "Catch up a day" when days were missed), `homePills` (Talk with Chacho, and an invite or a warm-up game) |
 | Journey | the map (`renderMap`), now a tab: no back button |
 | Play | one screen since 2026-10-29 (`specs/play-tab.md`): friends, the stage (invites, duo streak, team quest, review, last games; swiped sideways), the four games |
 | Pet | the pet card (wardrobe, change pet, a warm-up game) and the shop card |
-| Me | name and level, switch player (`#logout`), the week ring and stats, the progress check, reminders, this week, rewards, word of the day |
+| Me | name and level, switch player (`#logout`), the week ring and stats (days in a row, points, average), the progress check, reminders, this week (one "Still open" chip on the latest missed day), rewards, Hebrew help (`heCard`), word of the day |
 
 Dots on the bar: Play when an invite, a challenge, a live game or a duo request waits; Me when the progress check
 is due.
+
+## Fewer meters (night review, 2026-11-01, finding 11)
+
+A kid sees two things up front: the pet, which grows, and the coins. The streak lives with the pet, in words. Every
+other meter (points, the rewards ladder, the average, the daily XP cap, duo and team streaks, quests, stars, shine,
+badges, the world's progress) stays on Me, Play or its own screen. A1 and A2 kids (`lowKid()`) see no point or XP
+numbers anywhere: "Growing" instead of "52 XP to grow", "Saved" instead of "+10 XP", "Keep going to" instead of the
+points left, a heart instead of "+2 XP"; the data is kept and parents still see the numbers.
+
+A1 and A2 kids (and any kid with Hebrew help on, `dash.girl.he`) see a small Hebrew line: under the mission's title its
+topic in Hebrew (`mission.he`), and on the two pills the Hebrew name in place of the small English line (the same
+height, so Today still fits).
+
+The first-run tour (`tourShow`, `TOUR`): three steps with pictures (the kid's pet, the clay map, the clay coins), a
+speaker for Chacho's voice and Hebrew for A1/A2; Skip on every step; once per kid on the phone (`eq_tour_<name>`).
+It opens over Today after a sign-in and never inside the test pages (frames).
 
 ## Today never scrolls
 

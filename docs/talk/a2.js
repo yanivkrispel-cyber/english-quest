@@ -1082,7 +1082,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
           { k: ['clever smart hard hardworking working'], r: "Clever and hard-working! A great mix." },
           { k: ['shy quiet calm'], r: "Quiet people are often great listeners. Lovely." }
         ],
-        o: "Great words! You sound like a lovely person.",
+        o: "Thank you for telling me! I like learning about you.",
         t: ["I am kind and funny.", "I am clever and hard-working.", "I am a bit shy."],
         x: [["i am kind and funny", 0], ["funny", 0], ["i am kind", 1], ["i am a honest", 1], ["clever", 2], ["hard working", 2], ["a bit shy", 3], ["i don't know", -1], ["tall", -1]]
       },
@@ -1596,7 +1596,7 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
           { k: ['math maths science history geography computer planet space animal'], r: "Ooh, interesting! Lessons like that can be very useful." },
           { k: ['nothing not know remember'], r: "That's okay! Today you learned new things with me." }
         ],
-        o: "That is really useful! Well done.",
+        o: "Thank you for telling me! Learning new things is fun.",
         t: ["I learned new English words.", "I learned to swim.", "I learned about the planets."],
         x: [["i learned new english words", 0], ["english", 0], ["i learned to swim", 1], ["about the planets", 2], ["math", 2], ["i don't remember", 3], ["nothing", 3], ["to be nice", -1]]
       },
@@ -1723,6 +1723,1659 @@ window.EQ_TALK.a2 = (window.EQ_TALK.a2 || []).concat([
       }
     ],
     end: "Next time you see a rainbow, remember our talk! Bye bye!"
+  },
+  // Month 2 missions (2026-11-01)
+  {
+    id: 'ta2g10', title: 'The one who makes you laugh',
+    he: 'מדברים עם צ׳אצ׳ו על אנשים, דברים ומקומות עם who, which, that, where',
+    turns: [
+      {
+        c: "I'm a parrot who loves hats. What is a place where you feel happy?",
+        he: 'מקום שבו אתם מרגישים שמחים: The beach is a place where I feel happy.',
+        a: [
+          { k: ['beach sea pool'], r: "The beach! A place where you can swim and play." },
+          { k: ['park garden playground forest field'], r: "Outside in the green! Lovely and quiet." },
+          { k: ['home room bed house'], r: "Home, sweet home! A place where you can relax." },
+          { k: ['school class library'], r: "A place where you learn things! I like that." }
+        ],
+        o: "What a lovely place! Thank you for telling me.",
+        t: ["The beach is a place where I feel happy.", "My room is a place where I relax.", "The park!"],
+        m: "The beach is a place where I feel really happy.",
+        x: [["the beach", 0], ["the sea is a place where i feel happy", 0], ["in the park", 1], ["my room", 2], ["at my house", 2], ["the library", 3], ["grandma", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Think of a person who makes you laugh. Who is it?",
+        he: 'מי האדם שמצחיק אתכם? My friend is a person who makes me laugh.',
+        a: [
+          { k: ['friend'], r: "Friends who make us laugh are the best friends!" },
+          { k: ['mom mum mother dad father brother sister grandma grandpa cousin aunt uncle family'], r: "Family who make you laugh! How lovely." },
+          { k: ['teacher'], r: "A funny teacher! Lessons are more fun like that." },
+          { k: ['chacho chaco parrot myself'], r: "Ha! A silly parrot who makes you laugh. That's me!" }
+        ],
+        o: "Laughing together is the best!",
+        t: ["My friend is a person who makes me laugh.", "My teacher makes me laugh.", "My cousin is very funny."],
+        x: [["my friend", 0], ["my best friend who is funny", 0], ["my mom", 1], ["my brother make me laugh", 1], ["the teacher", 2], ["chacho", 3], ["my cat", -1], ["nobody", -1]]
+      },
+      {
+        c: "I have a hat which glows in the dark! What is a thing which you really love?",
+        he: 'מה הדבר שאתם הכי אוהבים? A ball which I play with every day.',
+        a: [],
+        o: "Ooh, that sounds great! Thank you for telling me.",
+        t: ["A ball which I play with every day.", "The bike that I got for my birthday.", "A book that I read again and again."],
+        m: "I love the book that my friend gave me.",
+        x: [["my phone", -1], ["a ball which i play", -1]]
+      },
+      {
+        c: "Imagine you have a shop. Is it a shop which sells toys, books or hats?",
+        he: 'איזו חנות הייתם פותחים? A shop which sells toys. או A shop that sells books.',
+        a: [
+          { k: ['toy game'], r: "A shop which sells toys! Every kid is going to visit." },
+          { k: ['book comic'], r: "A shop which sells books! I can read all day." },
+          { k: ['hat cap clothes dress shoe shirt'], r: "A shop which sells hats and clothes! Fabulous, like my hats." },
+          { k: ['food pizza ice_cream candy sweet cake animal pet'], r: "Ooh, what a good idea for a shop!" }
+        ],
+        o: "What a fun shop! I want to visit it.",
+        t: ["A shop which sells toys.", "A shop that sells books.", "A shop which sells hats, like yours!"],
+        m: "My shop is a shop which sells toys and games.",
+        x: [["toys", 0], ["a shop which sell toys", 0], ["books", 1], ["hats", 2], ["clothes for kids", 2], ["pets", 3], ["i don't know", -1], ["flowers", -1]]
+      }
+    ],
+    end: "Thank you! You are a friend who is great at English. Bye!"
+  },
+  {
+    id: 'ta2g11', title: 'Have you ever?',
+    he: 'מדברים עם צ׳אצ׳ו על חוויות: Have you ever...?',
+    turns: [
+      {
+        c: "I have flown over the sea many times! Have you ever been on a plane?",
+        he: "הייתם פעם במטוס? Yes, I have! או No, I have never been on a plane.",
+        a: [
+          { k: ['no not never'], n: 'yes know', r: "Not yet! One day you will fly, like me." },
+          { k: ['yes have many once twice'], r: "You have been on a plane! Flying is so much fun." }
+        ],
+        o: "Flying is fun, but I like my wings best!",
+        t: ["Yes, I have!", "No, I have never been on a plane."],
+        m: "Yes, I have. I have been on a plane twice.",
+        x: [["yes i have", 1], ["yes many times", 1], ["no i haven't", 0], ["never", 0], ["i don't know", -1], ["maybe", -1]]
+      },
+      {
+        c: "I have never seen snow. Have you ever seen snow?",
+        he: 'ראיתם פעם שלג? Yes, I have seen snow. או No, I have never seen snow.',
+        a: [
+          { k: ['no not never'], n: 'yes know', r: "Me neither! Maybe one day we will see it together." },
+          { k: ['yes have once'], r: "You have seen snow! Lucky you. It looks so soft." }
+        ],
+        o: "Snow is a mystery for this parrot!",
+        t: ["Yes, I have seen snow.", "No, I have never seen snow."],
+        x: [["yes i have seen snow", 1], ["yes once", 1], ["no never", 0], ["i have never seen snow", 0], ["i don't know", -1], ["it is cold", -1]]
+      },
+      {
+        c: "Ooh! What is something fun that you have done this week?",
+        he: 'מה עשיתם השבוע שהיה כיף? I have played football with my friends.',
+        a: [],
+        o: "That sounds like a lovely week!",
+        t: ["I have played football with my friends.", "I have read a new book.", "I have learned a new song."],
+        x: [["i played football", -1], ["i have read a book", -1]]
+      },
+      {
+        c: "What is a place you have never visited, but want to visit one day?",
+        he: 'לאיזה מקום עוד לא הגעתם ורוצים להגיע? I have never been to Japan.',
+        a: [],
+        o: "Ooh, good choice! I hope you go there one day.",
+        t: ["I have never been to Eilat.", "I have never visited London.", "I want to visit Japan."],
+        x: [["japan", -1], ["i never been to paris", -1]]
+      }
+    ],
+    end: "I have really enjoyed our chat! See you again soon."
+  },
+  {
+    id: 'ta2g12', title: 'Trips: ever and when',
+    he: 'מדברים עם צ׳אצ׳ו על טיולים: have been ו-went',
+    turns: [
+      {
+        c: "I have been to many beaches. Have you ever been to the Dead Sea?",
+        he: "הייתם פעם בים המלח? Yes, I have! או No, I haven't been there.",
+        a: [
+          { k: ['no not never'], n: 'yes know', r: "Not yet! The water is so salty that you float." },
+          { k: ['yes have went'], r: "You have been there! Floating there is so strange." }
+        ],
+        o: "The Dead Sea is the lowest place on land. Amazing!",
+        t: ["Yes, I have!", "No, I haven't been there."],
+        x: [["yes i have", 1], ["yes i went there last year", 1], ["no i haven't", 0], ["never", 0], ["what is it", -1], ["i don't know", -1]]
+      },
+      {
+        c: "When did you last go to the beach?",
+        he: 'מתי הייתם בפעם האחרונה בים? I went there last summer. או Two years ago.',
+        a: [
+          { k: ['never not'], n: 'know remember', r: "Never? Then the beach is waiting for you!" },
+          { k: ['year'], r: "That was a while ago. Time for another trip!" },
+          { k: ['yesterday week weekend month ago summer today'], r: "Not long ago! Lucky you." }
+        ],
+        o: "The beach is always waiting for you!",
+        t: ["I went there last summer.", "I went there two years ago.", "I went there last week."],
+        m: "I went to the beach last weekend with my friends.",
+        x: [["last summer", 2], ["i went there two years ago", 1], ["last week", 2], ["i have never been", 0], ["i don't know", -1], ["in tel aviv", -1]]
+      },
+      {
+        c: "What is the best trip you have ever been on?",
+        he: 'מה הטיול הכי טוב שהייתם בו? A trip to the north with my class.',
+        a: [],
+        o: "What a great trip! Thank you for telling me.",
+        t: ["A trip to the north with my class.", "A trip to Eilat.", "A day at the zoo."],
+        x: [["the zoo", -1], ["a trip to eilat", -1]]
+      },
+      {
+        c: "And what did you do there?",
+        he: 'ומה עשיתם שם? We swam in the sea. או We saw a lot of animals.',
+        a: [],
+        o: "Wow, that sounds like a lot of fun!",
+        t: ["We swam in the sea.", "We saw a lot of animals.", "We walked in the forest."],
+        m: "We walked by a river and had a picnic.",
+        x: [["we swim", -1], ["we saw animals", -1]]
+      }
+    ],
+    end: "I have loved hearing about your trips! Bye for now."
+  },
+  {
+    id: 'ta2g13', title: 'Something is missing!',
+    he: 'מדברים עם צ׳אצ׳ו עם something, anything, nothing ו-somewhere',
+    turns: [
+      {
+        c: "I am looking for something in my shop. Can you guess what it is?",
+        he: 'נחשו מה צ׳אצ׳ו מחפש: Is it a hat? או Is it something to eat?',
+        a: [
+          { k: ['hat cap crown'], r: "Yes! My favourite hat. It is somewhere here." },
+          { k: ['key'], r: "Good guess! But no, it is my favourite hat." },
+          { k: ['eat food cracker snack'], r: "Ha! No, I have eaten everything. It is my hat." }
+        ],
+        o: "Good guess! It is my favourite hat. It is somewhere here.",
+        t: ["Is it a hat?", "Is it a key?", "Is it something to eat?"],
+        m: "Is it something to wear, like a hat?",
+        x: [["a hat", 0], ["is it a crown", 0], ["key", 1], ["something to eat", 2], ["crackers", 2], ["a book", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Look, there is nothing in this box. What do you want to put in it?",
+        he: 'הקופסה ריקה. מה תשימו בה? I want to put my toys in it.',
+        a: [],
+        o: "Good idea! I will keep this box for you.",
+        t: ["I want to put my toys in it.", "Some books.", "Nothing, it is a nice box!"],
+        m: "I want to put some old toys in it.",
+        x: [["my toys", -1], ["some pencils", -1]]
+      },
+      {
+        c: "Is there anything you can't do now, but want to learn?",
+        he: "יש משהו שאתם עוד לא יודעים לעשות ורוצים ללמוד? I want to learn to swim.",
+        a: [],
+        o: "Great! You can learn anything if you practise.",
+        t: ["I want to learn to swim.", "I want to learn to play the guitar.", "I can't skate, but I want to."],
+        x: [["swim", -1], ["ride a horse", -1]]
+      },
+      {
+        c: "If you could go anywhere tomorrow, where would you go?",
+        he: 'אם הייתם יכולים לנסוע לכל מקום מחר, לאן? I would go to the beach.',
+        a: [
+          { k: ['beach sea'], r: "The beach! Somewhere warm and sunny." },
+          { k: ['space moon mars star'], r: "Somewhere in space! Take me with you." },
+          { k: ['nowhere home'], r: "Nowhere? Home is a lovely place too." }
+        ],
+        o: "Ooh, that sounds like a great place!",
+        t: ["I would go to the beach.", "I would go to the moon!", "Nowhere, I love my home."],
+        m: "I would go somewhere warm, like the beach in Eilat.",
+        x: [["the beach", 0], ["to the moon", 1], ["nowhere", 2], ["my home", 2], ["paris", -1], ["i don't know", -1]]
+      }
+    ],
+    end: "Everybody needs a friend like you! See you somewhere soon."
+  },
+  {
+    id: 'ta2g14', title: 'Faster, funnier, the best',
+    he: 'משווים עם צ׳אצ׳ו: faster, better, the funniest',
+    turns: [
+      {
+        c: "Which animal do you think is the fastest: a cheetah, a horse or a parrot?",
+        he: 'מי הכי מהיר? The cheetah is the fastest. או A horse is faster.',
+        a: [
+          { k: ['cheetah cheeta chita'], r: "Yes! The cheetah is the fastest land animal." },
+          { k: ['horse'], r: "Horses are fast, but cheetahs are faster!" },
+          { k: ['parrot chacho chaco bird'], r: "Ha! Thank you! But a cheetah is faster than me." }
+        ],
+        o: "Good guess! The cheetah is the fastest of the three.",
+        t: ["The cheetah is the fastest.", "A horse is faster.", "You are the fastest, Chacho!"],
+        m: "I think the cheetah is the fastest animal.",
+        x: [["cheetah", 0], ["the cheetah is fastest", 0], ["horse", 1], ["you chacho", 2], ["a parrot", 2], ["a lion", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Which is better, summer or winter? Why?",
+        he: "מה עדיף, קיץ או חורף? Summer is better because I can swim.",
+        a: [
+          { k: ['summer'], n: 'winter', r: "Summer! Longer days and the sea. I agree." },
+          { k: ['winter'], n: 'summer', r: "Winter! Cooler days and rain. Very cosy." },
+          { k: ['both same'], r: "Both! Each one is good in a different way." }
+        ],
+        o: "Good answer! Every season has something nice.",
+        t: ["Summer is better because I can swim.", "Winter is better. It's cooler.", "They are both good."],
+        x: [["summer", 0], ["summer because i can swim", 0], ["winter is better", 1], ["both", 2], ["summer is better than winter", -1], ["spring", -1]]
+      },
+      {
+        c: "What is the most beautiful place you know?",
+        he: 'מה המקום הכי יפה שאתם מכירים? The beach in Haifa. או The forest near my town.',
+        a: [],
+        o: "Ooh, it sounds more beautiful than my shop!",
+        t: ["The beach in Haifa.", "The forest near my town.", "The sea is the most beautiful."],
+        x: [["the beach", -1], ["my grandma garden", -1]]
+      },
+      {
+        c: "Last one! What is the funniest animal in the world?",
+        he: 'מה החיה הכי מצחיקה? A monkey is the funniest. או Penguins are funnier than cats.',
+        a: [
+          { k: ['monkey'], r: "Monkeys! They are so silly. Funnier than clowns!" },
+          { k: ['parrot chacho chaco bird'], r: "A parrot! Of course. We are the funniest birds." },
+          { k: ['penguin duck'], r: "Ha! They walk in the funniest way." },
+          { k: ['dog cat'], r: "Pets can be the funniest! So many silly moments." }
+        ],
+        o: "Ha! That animal is very funny.",
+        t: ["A monkey is the funniest.", "Parrots are the funniest!", "Penguins are funnier than cats."],
+        m: "I think monkeys are the funniest animals in the world.",
+        x: [["monkey", 0], ["a parrot like you", 1], ["penguins", 2], ["my cat", 3], ["a giraffe", -1], ["i don't know", -1]]
+      }
+    ],
+    end: "You are one of the best people to talk to! Bye bye!"
+  },
+  {
+    id: 'ta2g15', title: 'Too cold or warm enough?',
+    he: 'מדברים עם צ׳אצ׳ו עם too, too much, too many ו-enough',
+    turns: [
+      {
+        c: "Brr! Is it too cold or warm enough to swim in the sea today?",
+        he: "קר מדי או חם מספיק? It's too cold! או It's warm enough.",
+        a: [
+          { k: ['cold freezing not'], n: 'know', r: "Too cold! Let's wait for summer." },
+          { k: ['warm hot nice good enough'], r: "Warm enough! Then let's go swimming." }
+        ],
+        o: "Hmm, I think I will just put my feet in!",
+        t: ["It's too cold!", "It's warm enough."],
+        x: [["too cold", 0], ["it is not warm enough", 0], ["warm enough", 1], ["it is hot", 1], ["i don't know", -1], ["the sea", -1]]
+      },
+      {
+        c: "My shop has too many hats! What do you have too many of?",
+        he: 'ממה יש לכם יותר מדי? I have too many pencils. או I have too many toys.',
+        a: [],
+        o: "Ha! Too many is better than not enough.",
+        t: ["I have too many pencils.", "I have too many toys.", "I don't have too many things."],
+        m: "I have too many pencils, but I always lose them.",
+        x: [["too many toys", -1], ["socks", -1]]
+      },
+      {
+        c: "Do you think kids have enough time to play after school?",
+        he: 'יש לילדים מספיק זמן לשחק? Yes, we have enough time. או No, we have too much homework.',
+        a: [
+          { k: ['no not'], n: 'yes know', r: "Not enough time? Play is very important too." },
+          { k: ['yes enough lot'], r: "Enough time! Great, play is so important." }
+        ],
+        o: "Time to play is really important!",
+        t: ["Yes, we have enough time.", "No, we have too much homework."],
+        m: "No, I don't think so. We have too much homework.",
+        x: [["yes enough", 1], ["a lot of time", 1], ["no not enough", 0], ["too much homework", -1], ["i don't know", -1]]
+      },
+      {
+        c: "What is something you are too young to do now, but want to do one day?",
+        he: 'מה אתם צעירים מדי לעשות עכשיו, אבל רוצים לעשות יום אחד? I am too young to drive a car.',
+        a: [],
+        o: "One day you will do it! I am sure.",
+        t: ["I am too young to drive a car.", "I am too young to travel alone.", "I want to fly a plane one day."],
+        x: [["drive a car", -1], ["i am too young to travel alone", -1]]
+      }
+    ],
+    end: "That's enough talking for today! Thank you, see you soon."
+  },
+  {
+    id: 'ta2g16', title: 'How many hats?',
+    he: 'מדברים עם צ׳אצ׳ו עם much, many, a few, a little',
+    turns: [
+      {
+        c: "I have got a lot of hats. How many hats do you think I have?",
+        he: 'כמה כובעים יש לצ׳אצ׳ו לדעתכם? I think you have a hundred hats. או Only a few!',
+        a: [
+          { k: ['hundred thousand million lot many 100'], r: "Yes! More than a hundred. I love them all!" },
+          { k: ['one two three four five six seven eight nine ten few'], r: "Only a few? No, I have many more than that!" },
+          { k: ['eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty thirty forty fifty'], r: "More! I have more than a hundred hats." }
+        ],
+        o: "I have more than a hundred hats! I love them all.",
+        t: ["I think you have a hundred hats.", "Only a few!", "Maybe twenty hats."],
+        m: "I think you have about a hundred hats.",
+        x: [["a hundred", 0], ["a lot", 0], ["many hats", 0], ["5", 1], ["a few", 1], ["twenty", 2], ["i don't know", -1]]
+      },
+      {
+        c: "How much time do you spend outside every day: a lot or a little?",
+        he: 'כמה זמן אתם בחוץ כל יום? A lot of time! או Only a little.',
+        a: [
+          { k: ['little not much bit'], n: 'know', r: "A little? That's okay. Inside is nice too." },
+          { k: ['lot many hours'], r: "A lot! Fresh air is great." }
+        ],
+        o: "Inside or outside, every day is a good day!",
+        t: ["A lot of time!", "Only a little.", "Not much, maybe one hour."],
+        x: [["a lot", 1], ["many hours", 1], ["a little", 0], ["not much", 0], ["i don't know", -1], ["outside", -1]]
+      },
+      {
+        c: "What do you like having a lot of: books, games or stickers?",
+        he: 'ממה אתם אוהבים שיש לכם הרבה? I like having a lot of books.',
+        a: [
+          { k: ['book comic'], r: "Books! You can never have too many." },
+          { k: ['game ball toy'], r: "Games! More games, more fun." },
+          { k: ['sticker card'], r: "Stickers! A big collection is so much fun." }
+        ],
+        o: "Ooh, a great thing to collect!",
+        t: ["I like having a lot of books.", "Games!", "I have a lot of stickers."],
+        x: [["books", 0], ["a lot of games", 1], ["stickers", 2], ["cards", 2], ["shoes", -1], ["i don't know", -1]]
+      },
+      {
+        c: "I have a few crackers left. Would you like some?",
+        he: 'רוצים קצת קרקרים? Yes, please! או No, thank you.',
+        a: [
+          { k: ['no not'], n: 'yes know', r: "No problem! More crackers for me, ha!" },
+          { k: ['yes please sure okay ok love'], r: "Here you are! Some crackers for a friend." }
+        ],
+        o: "Crackers are the best, but I will share!",
+        t: ["Yes, please!", "No, thank you."],
+        m: "Yes, please! I would like a few crackers.",
+        x: [["yes please", 1], ["sure", 1], ["no thank you", 0], ["no", 0], ["what are crackers", -1], ["i don't know", -1]]
+      }
+    ],
+    end: "Thank you for a lot of fun! See you in a few days."
+  },
+  {
+    id: 'ta2g17', title: 'What do you like the most?',
+    he: 'מדברים עם צ׳אצ׳ו עם most, most of ו-the most',
+    turns: [
+      {
+        c: "Most parrots love crackers. What food do most kids love?",
+        he: 'איזה אוכל רוב הילדים אוהבים? Most kids love pizza.',
+        a: [
+          { k: ['pizza'], r: "Pizza! Yes, most kids love pizza." },
+          { k: ['ice_cream icecream chocolate candy sweet cake'], r: "Something sweet! Most kids love that." },
+          { k: ['chips fries pasta spaghetti falafel hamburger burger schnitzel'], r: "Ooh, yum! Most kids love that too." }
+        ],
+        o: "Mmm! I think most kids like that.",
+        t: ["Most kids love pizza.", "Most kids love ice cream.", "Most kids love pasta."],
+        m: "I think most kids love pizza and ice cream.",
+        x: [["pizza", 0], ["most kids love ice cream", 1], ["chocolate", 1], ["pasta", 2], ["falafel", 2], ["vegetables", -1], ["i don't know", -1]]
+      },
+      {
+        c: "What do you like the most about the weekend?",
+        he: 'מה אתם הכי אוהבים בסוף השבוע? I like playing with my friends the most.',
+        a: [],
+        o: "Ooh, that sounds like the best part!",
+        t: ["I like sleeping late the most.", "Playing with my friends.", "I like the beach the most."],
+        m: "I like playing with my friends the most.",
+        x: [["sleep", -1], ["playing games", -1]]
+      },
+      {
+        c: "Which subject at school do you like the most?",
+        he: 'איזה מקצוע אתם הכי אוהבים? I like English the most. או Art is my favourite subject.',
+        a: [
+          { k: ['english'], r: "English! That is my favourite subject too." },
+          { k: ['math maths mathematics science'], r: "Ooh, numbers and experiments! Very clever." },
+          { k: ['sport pe gym art music drawing'], r: "So much fun! Moving and making things is the best." },
+          { k: ['break lunch recess'], r: "Ha! The break is the most fun for most kids." }
+        ],
+        o: "Good choice! Every subject has something interesting.",
+        t: ["I like English the most.", "Maths!", "Art is my favourite subject."],
+        m: "I like art the most, because I love drawing.",
+        x: [["english", 0], ["i like math", 1], ["science", 1], ["art", 2], ["the break", 3], ["history", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Most people have a favourite colour. What colour do you like the most?",
+        he: 'איזה צבע אתם הכי אוהבים? I like blue the most.',
+        a: [],
+        o: "Ooh, fabulous! I will make a hat in that colour.",
+        t: ["I like blue the most.", "Green is my favourite colour.", "Pink and purple."],
+        m: "I like blue the most, like the sea.",
+        x: [["blue", -1], ["red and black", -1]]
+      }
+    ],
+    end: "Most of all, I love talking with you! Bye for now."
+  },
+  {
+    id: 'ta2v06', title: 'Helping at home',
+    he: 'מדברים עם צ׳אצ׳ו על עבודות בית: make the bed, set the table',
+    turns: [
+      {
+        c: "I tidy up my shop every evening. Which job at home do you like doing the most?",
+        he: 'איזו עבודה בבית אתם הכי אוהבים? I like setting the table.',
+        a: [
+          { k: ['bed'], r: "Making your bed! A great start to the day." },
+          { k: ['table'], r: "Setting the table! Everyone is happy at dinner." },
+          { k: ['washing wash dish plate'], r: "The washing-up! Bubbles are fun." },
+          { k: ['tidy vacuum sweep clean rubbish trash garbage'], r: "Cleaning up! A tidy room feels so good." }
+        ],
+        o: "Every job helps at home, even a small one!",
+        t: ["I like making my bed.", "I like setting the table.", "I like doing the washing-up."],
+        x: [["make my bed", 0], ["set the table", 1], ["washing up", 2], ["i like to vacuum", 3], ["nothing", -1], ["i don't like jobs", -1]]
+      },
+      {
+        c: "And which job is the most boring for you?",
+        he: 'ואיזו עבודה הכי משעממת? Tidying my room. או Taking out the rubbish.',
+        a: [
+          { k: ['bed'], r: "Making the bed? It only takes one minute!" },
+          { k: ['washing wash dish plate'], r: "The washing-up? Put on music, then it is more fun!" },
+          { k: ['rubbish trash garbage bin'], r: "Taking out the rubbish? Quick, and then it is done!" },
+          { k: ['tidy vacuum sweep clean room'], r: "Tidying up? Make it a game with a timer!" }
+        ],
+        o: "Ha! Every job is more fun with music.",
+        t: ["Making my bed.", "Taking out the rubbish.", "Tidying my room."],
+        x: [["make the bed", 0], ["the dishes", 1], ["take out the rubbish", 2], ["tidy my room", 3], ["homework", -1], ["nothing", -1]]
+      },
+      {
+        c: "Imagine a robot which does all the housework. What job should it do first?",
+        he: 'רובוט שעושה את כל עבודות הבית: מה הוא יעשה קודם? It should do the washing-up.',
+        a: [],
+        o: "Great idea! I want a robot like that too.",
+        t: ["It should do the washing-up.", "It should tidy my room.", "It should make my bed."],
+        x: [["washing up", -1], ["clean my room", -1]]
+      },
+      {
+        c: "Do you think kids should help at home? Why?",
+        he: 'ילדים צריכים לעזור בבית? Yes, because everybody lives there. או No, kids need time to play.',
+        a: [
+          { k: ['no not'], n: 'yes know', r: "Hmm, maybe a little help is nice for everybody." },
+          { k: ['yes sure course agree'], r: "I agree! When everybody helps, it is quicker." }
+        ],
+        o: "Good thinking! Helping makes a home happy.",
+        t: ["Yes, because everybody lives there.", "No, kids need time to play."],
+        m: "Yes, I think kids should help, because everybody lives there.",
+        x: [["yes", 1], ["of course", 1], ["no they should play", 0], ["not always", 0], ["sometimes", -1], ["i don't know", -1]]
+      }
+    ],
+    end: "Now I am going to tidy up my shop! Bye, helper!"
+  },
+  {
+    id: 'ta2v07', title: 'Around your town',
+    he: 'מדברים עם צ׳אצ׳ו על העיר: park, library, square, by bus',
+    turns: [
+      {
+        c: "In my town there is a big square with a fountain. What is your favourite place in your town?",
+        he: 'מה המקום שאתם הכי אוהבים בעיר? The park. או The library.',
+        a: [
+          { k: ['park playground garden'], r: "The park! A great place to play." },
+          { k: ['library museum'], r: "Ooh, a place to learn and see new things!" },
+          { k: ['beach sea pool'], r: "The water! Lucky you." },
+          { k: ['mall shop cinema cafe restaurant'], r: "A busy place! Fun with friends." }
+        ],
+        o: "That sounds like a great place!",
+        t: ["The park near my school.", "The library.", "The beach!"],
+        m: "My favourite place is the big park near the library.",
+        x: [["the park", 0], ["library", 1], ["the museum", 1], ["the beach", 2], ["the mall", 3], ["my house", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Do you like big cities or small towns more?",
+        he: 'מה אתם אוהבים יותר, ערים גדולות או עיירות קטנות? I like big cities more.',
+        a: [
+          { k: ['big city cities'], n: 'small', r: "Big cities! Lots of museums, shops and lights." },
+          { k: ['small town village quiet'], n: 'big', r: "Small towns! Quiet streets, and everyone says hello." },
+          { k: ['both'], r: "Both! Each one is good in its own way." }
+        ],
+        o: "Every place has something special!",
+        t: ["I like big cities more.", "Small towns are quieter.", "I like both."],
+        x: [["big cities", 0], ["the city", 0], ["small town", 1], ["a village", 1], ["both", 2], ["i don't know", -1]]
+      },
+      {
+        c: "Imagine you can build one new place in your town. What is it?",
+        he: 'אם הייתם בונים מקום חדש בעיר, מה הוא היה? A big water park.',
+        a: [],
+        o: "What a great idea! I want to visit it.",
+        t: ["A big water park.", "A new library with comics.", "A skate park for kids."],
+        x: [["a zoo", -1], ["a big pool", -1]]
+      },
+      {
+        c: "How do you usually get around your town: on foot, by bike, by bus or by car?",
+        he: 'איך אתם בדרך כלל מתניידים? I usually walk. או By bike! או By bus.',
+        a: [
+          { k: ['foot walk'], r: "On foot! Walking is the best way to see things." },
+          { k: ['bike bicycle scooter'], r: "By bike! Fast and fun." },
+          { k: ['bus train'], r: "By bus! You can look out of the window." },
+          { k: ['car taxi'], r: "By car! Easy on a rainy day." }
+        ],
+        o: "Good way to travel! I usually fly, of course.",
+        t: ["I usually walk.", "By bike!", "By bus."],
+        m: "I usually walk, but sometimes I go by bus.",
+        x: [["walk", 0], ["on foot", 0], ["by bike", 1], ["scooter", 1], ["bus", 2], ["by car", 3], ["i fly", -1], ["i don't know", -1]]
+      }
+    ],
+    end: "Thank you for the tour of your town! Bye for now."
+  },
+  {
+    id: 'ta2v08', title: 'Wake up, get up!',
+    he: 'מדברים עם צ׳אצ׳ו על הבוקר: wake up, put on, take off, look for',
+    turns: [
+      {
+        c: "I wake up at six, but I get up at seven! What time do you wake up?",
+        he: 'מתי אתם מתעוררים? I wake up at seven. או At six thirty.',
+        a: [
+          { k: ['five six'], r: "So early! Just like a bird." },
+          { k: ['seven eight'], r: "A good time to wake up!" },
+          { k: ['nine ten eleven twelve late'], r: "You wake up late! Lucky you." }
+        ],
+        o: "That is a good time to wake up!",
+        t: ["I wake up at seven.", "At six thirty.", "I wake up at eight."],
+        x: [["at 7", 1], ["i wake up at six", 0], ["8", 1], ["late", 2], ["at 9 on weekends", 2], ["i don't know", -1], ["early", -1]]
+      },
+      {
+        c: "What is the first thing you put on in the morning?",
+        he: 'מה הדבר הראשון שאתם לובשים בבוקר? I put on my socks first.',
+        a: [
+          { k: ['sock'], r: "Socks first! Warm feet are happy feet." },
+          { k: ['shirt tshirt top uniform'], r: "Your shirt first! Then you look ready." },
+          { k: ['trousers pants jeans shorts skirt dress'], r: "Good choice! Then the rest is easy." },
+          { k: ['glasses watch'], r: "Ha! A clever way to start the day." }
+        ],
+        o: "Good idea! Getting dressed is easy then.",
+        t: ["I put on my socks first.", "I put on my T-shirt.", "My trousers."],
+        m: "First I put on my socks, and then my T-shirt.",
+        x: [["socks", 0], ["my t-shirt", 1], ["jeans", 2], ["my glasses", 3], ["shoes", -1], ["i don't know", -1]]
+      },
+      {
+        c: "When you come home, do you take off your shoes at the door?",
+        he: "כשאתם חוזרים הביתה, אתם חולצים נעליים ליד הדלת? Yes, I always take them off. או No, I don't.",
+        a: [
+          { k: ['no not never'], n: 'yes know', r: "Okay! But watch out for mud on the floor." },
+          { k: ['yes always sometimes'], r: "Good idea! The floor stays clean." }
+        ],
+        o: "Shoes on or off, home is the best place!",
+        t: ["Yes, I always take them off.", "No, I don't."],
+        m: "Yes, I always take off my shoes at the door.",
+        x: [["yes", 1], ["sometimes", 1], ["no i don't", 0], ["never", 0], ["what", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Oh no, I can't find my favourite hat! Can you help me look for it?",
+        he: 'עזרו לצ׳אצ׳ו לחפש את הכובע: Yes, I will help you! או Is it under the table?',
+        a: [
+          { k: ['no not sorry'], n: 'yes know', r: "That's okay! I will look for it later." },
+          { k: ['yes sure okay ok course help'], r: "Thank you! Oh look, it is on my head!" },
+          { k: ['under behind bed table chair box shelf'], r: "Let me see... no! Oh look, it is on my head!" }
+        ],
+        o: "Oh look, it was on my head all the time!",
+        t: ["Yes, I will help you!", "Is it under the table?", "Sorry, I'm busy."],
+        m: "Yes, of course! Let's look for it under the table.",
+        x: [["yes of course", 1], ["okay", 1], ["under the bed", 2], ["sorry i can't", 0], ["no", 0], ["bananas", -1], ["hmm", -1]]
+      }
+    ],
+    end: "Thank you, friend! Now I can put on my hat and go out. Bye!"
+  },
+  {
+    id: 'ta2v09', title: "What's the weather like?",
+    he: 'מדברים עם צ׳אצ׳ו על מזג האוויר: sunny, cloudy, windy, storm',
+    turns: [
+      {
+        c: "It is sunny in my forest today. What is the weather like where you are now?",
+        he: "איך מזג האוויר אצלכם עכשיו? It's sunny and hot. או It's raining.",
+        a: [
+          { k: ['sun sunny hot warm nice clear'], r: "Sunny and warm! A great day to go out." },
+          { k: ['rain rainy shower storm'], r: "Rain! Don't forget your umbrella." },
+          { k: ['cloud cloudy grey gray'], r: "Cloudy! Maybe the sun is coming later." },
+          { k: ['wind windy cold cool'], r: "Brr! Put on a warm hoodie." }
+        ],
+        o: "Thank you for the weather report!",
+        t: ["It's sunny and hot.", "It's raining.", "It's cloudy and windy."],
+        m: "It's sunny and warm today, but a little windy.",
+        x: [["sunny", 0], ["it is hot", 0], ["it is raining", 1], ["storm", 1], ["cloudy", 2], ["windy", 3], ["i don't know", -1], ["it is night", -1]]
+      },
+      {
+        c: "What is your favourite kind of weather? Why?",
+        he: 'איזה מזג אוויר אתם הכי אוהבים, ולמה? Sunny weather, because I love the beach.',
+        a: [],
+        o: "Ooh, good choice! Every kind of weather has something nice.",
+        t: ["Sunny weather, because I love the beach.", "Rainy days, because I like the sound.", "Snow, but we don't often have it."],
+        x: [["sun", -1], ["rain because it is nice", -1]]
+      },
+      {
+        c: "Have you ever seen a big storm with thunder and lightning?",
+        he: 'ראיתם פעם סערה גדולה עם רעמים וברקים? Yes, I have! או No, never.',
+        a: [
+          { k: ['no not never'], n: 'yes know', r: "Not yet? Storms are loud, but they don't last long." },
+          { k: ['yes have once many'], r: "Wow! Thunder can be so loud." }
+        ],
+        o: "Storms are loud, but it is cosy inside.",
+        t: ["Yes, I have!", "No, never."],
+        m: "Yes, I have. The thunder was really loud.",
+        x: [["yes", 1], ["yes last winter", 1], ["no never", 0], ["i have not", 0], ["i don't know", -1], ["loud", -1]]
+      },
+      {
+        c: "Look at the forecast: tomorrow it will be rainy. What are you going to do?",
+        he: "מחר יהיה גשום. מה תעשו? I am going to stay home and read. או I'm going to jump in puddles!",
+        a: [
+          { k: ['rain puddle jump umbrella outside'], r: "Fun in the rain! Don't forget your boots." },
+          { k: ['inside home stay read book movie film tv game play'], r: "A cosy day inside! That sounds perfect." }
+        ],
+        o: "Good plan for a rainy day!",
+        t: ["I am going to stay home and read.", "I'm going to jump in puddles!", "I am going to watch a film."],
+        x: [["stay home", 1], ["i am going to read a book", 1], ["jump in the puddles", 0], ["take an umbrella", 0], ["sleep", -1], ["i don't know", -1]]
+      }
+    ],
+    end: "Whatever the weather, it's great to talk to you! Bye!"
+  },
+  {
+    id: 'ta2u05', title: 'Speedy the tortoise',
+    he: 'מדברים עם צ׳אצ׳ו על ספידי, הצב שהגיע לספרייה',
+    turns: [
+      {
+        c: "Speedy walked all the way to the library! Why do you think he went there?",
+        he: 'למה ספידי הלך לספרייה לדעתכם? He wanted to read books! או He was looking for food.',
+        a: [
+          { k: ['book read story'], r: "For the books! A tortoise who loves reading." },
+          { k: ['food eat lettuce hungry apple'], r: "For food! And he found some lettuce." },
+          { k: ['quiet sleep cool cold shade'], r: "A quiet, cool place! Very clever, Speedy." },
+          { k: ['adventure explore bored friend'], r: "An adventure! What a brave tortoise." }
+        ],
+        o: "Who knows? Speedy is a very mysterious tortoise.",
+        t: ["He wanted to read books!", "He was looking for food.", "He wanted an adventure."],
+        x: [["to read books", 0], ["he like books", 0], ["food", 1], ["he was hungry", 1], ["it is quiet", 2], ["adventure", 3], ["i don't know", -1], ["he was lost", -1]]
+      },
+      {
+        c: "When the librarian found Speedy, how do you think she felt?",
+        he: 'איך הספרנית הרגישה כשמצאה את ספידי? She was surprised! או She was happy.',
+        a: [
+          { k: ['surprise shock amazed wow'], r: "So surprised! A tortoise in the library!" },
+          { k: ['happy glad excited funny laugh'], r: "Happy! What a funny visitor." },
+          { k: ['scared afraid'], r: "A little scared? It was just a small tortoise!" }
+        ],
+        o: "I think she was very surprised!",
+        t: ["She was surprised!", "She was happy.", "She was a bit scared."],
+        m: "I think she was very surprised, and then she laughed.",
+        x: [["surprised", 0], ["she was shocked", 0], ["she was happy", 1], ["funny", 1], ["scared", 2], ["angry", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Speedy is very slow. Which animal is the slowest, in your opinion?",
+        he: 'איזו חיה הכי איטית לדעתכם? A snail is the slowest. או A sloth!',
+        a: [
+          { k: ['snail'], r: "A snail! Even slower than Speedy." },
+          { k: ['sloth'], r: "A sloth! It moves very, very slowly." },
+          { k: ['turtle tortoise'], r: "A tortoise, like Speedy! Slow, but brave." }
+        ],
+        o: "Good answer! That animal is very slow.",
+        t: ["A snail is the slowest.", "A sloth!", "Tortoises are the slowest."],
+        m: "I think a snail is the slowest animal of all.",
+        x: [["snail", 0], ["the sloth", 1], ["turtle", 2], ["a tortoise like speedy", 2], ["a cat", -1], ["i don't know", -1]]
+      },
+      {
+        c: "If you had a pet tortoise, what funny name would you give it?",
+        he: 'אם היה לכם צב, איזה שם מצחיק הייתם נותנים לו? I would call it Rocket!',
+        a: [],
+        o: "Ha! What a great name for a tortoise.",
+        t: ["I would call it Rocket!", "Flash, because it's so slow.", "Mister Slow."],
+        x: [["rocket", -1], ["i call him flash", -1]]
+      }
+    ],
+    end: "Speedy says thank you for reading his story! Bye, friend!"
+  },
+  {
+    id: 'ta2u06', title: 'The stylish seagull',
+    he: 'מדברים עם צ׳אצ׳ו על השחף שאסף משקפי שמש בחוף',
+    turns: [
+      {
+        c: "The seagull took lots of sunglasses! Why do you think it did that?",
+        he: 'למה השחף לקח משקפי שמש? They are shiny. או It wanted to look cool.',
+        a: [
+          { k: ['shiny shine bright pretty nice beautiful'], r: "They are shiny! Birds love shiny things." },
+          { k: ['nest home house'], r: "For its nest! A very stylish home." },
+          { k: ['fashion style stylish cool look'], r: "Fashion! I understand that bird completely." },
+          { k: ['fun funny game play joke'], r: "Just for fun! A very funny seagull." }
+        ],
+        o: "Who knows? Maybe it just loved sunglasses.",
+        t: ["They are shiny.", "It wanted to look cool.", "For its nest."],
+        x: [["because they are shiny", 0], ["for the nest", 1], ["to look cool", 2], ["for fun", 3], ["it was hungry", -1], ["i don't know", -1]]
+      },
+      {
+        c: "What do you usually take to the beach?",
+        he: 'מה אתם בדרך כלל לוקחים לים? A towel and a hat. או A ball and a book.',
+        a: [
+          { k: ['towel'], r: "A towel! And keep an eye on it." },
+          { k: ['sunglasses glasses hat cap sun_cream suncream'], r: "Careful! The seagull might take it." },
+          { k: ['ball bucket spade game toy book'], r: "Ooh, fun things to play with!" },
+          { k: ['food water sandwich snack fruit watermelon drink'], r: "Something to eat or drink! Very smart." }
+        ],
+        o: "Good things for a beach day!",
+        t: ["A towel and a hat.", "My sunglasses!", "A ball and a book."],
+        m: "I usually take a towel, a hat and some water.",
+        x: [["a towel", 0], ["sunglasses", 1], ["my hat", 1], ["a ball", 2], ["water", 3], ["my friends", -1], ["i don't know", -1]]
+      },
+      {
+        c: "The girl followed the seagull to its nest. Was that a good idea?",
+        he: "הילדה הלכה אחרי השחף עד הקן. זה היה רעיון טוב? Yes, it was a clever idea. או No, it wasn't safe alone.",
+        a: [
+          { k: ['no not dangerous'], n: 'yes know', r: "Maybe not alone. It is better with a grown-up." },
+          { k: ['yes good great clever smart brave'], r: "Yes! She was clever, and she found everything." }
+        ],
+        o: "It was brave, but take a grown-up next time!",
+        t: ["Yes, it was a clever idea.", "No, it wasn't safe alone."],
+        x: [["yes", 1], ["it was a good idea", 1], ["no", 0], ["not alone", 0], ["i don't know", -1], ["maybe", -1]]
+      },
+      {
+        c: "Have you ever seen a funny animal at the beach or in the park?",
+        he: 'ראיתם פעם חיה מצחיקה בים או בפארק? Yes, I saw a funny dog. או No, never.',
+        a: [
+          { k: ['no not never'], n: 'yes know', r: "Not yet! Keep your eyes open next time." },
+          { k: ['dog'], r: "A funny dog! Dogs love the beach." },
+          { k: ['bird seagull pigeon crow duck parrot'], r: "A funny bird! Birds are the best, of course." },
+          { k: ['cat crab fish'], r: "Ha! Animals can be so funny." }
+        ],
+        o: "Ha! Animals are the funniest.",
+        t: ["Yes, I saw a funny dog.", "Yes, a crab on the beach!", "No, never."],
+        x: [["a dog", 1], ["yes a seagull", 2], ["a crab", 3], ["no never", 0], ["i have not", 0], ["a monkey", -1], ["i don't know", -1]]
+      }
+    ],
+    end: "Now I have to go and hide my sunglasses! Bye bye!"
+  },
+  {
+    id: 'ta2l10', title: 'At the clothes shop',
+    he: 'מדברים עם צ׳אצ׳ו על בגדים, צבעים וקניות, כמו מאיה והמעיל החדש',
+    turns: [
+      {
+        c: "Maya needed a warm jacket for her trip. What do you wear when it is cold?",
+        he: 'מה אתם לובשים כשקר? I wear a warm jacket. או I wear a hoodie.',
+        a: [
+          { k: ['jacket coat'], r: "A jacket! Warm and cosy, like Maya." },
+          { k: ['hoodie sweater jumper sweatshirt'], r: "A hoodie! Soft and comfy. Great choice." },
+          { k: ['scarf hat gloves boots'], r: "Ooh, very stylish! You are ready for winter." }
+        ],
+        o: "Good idea! Staying warm is important.",
+        t: ["I wear a warm jacket.", "I wear a hoodie.", "A hat and a scarf."],
+        x: [["i wear a jacket", 0], ["coat", 0], ["my hoodie", 1], ["a sweater", 1], ["hat and scarf", 2], ["nothing", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Maya wanted green or blue, not black. What colour are your favourite clothes?",
+        he: 'באיזה צבע הבגדים האהובים עליכם? My favourite clothes are blue. או I love black.',
+        a: [
+          { k: ['black white grey gray'], r: "Classic colours! They go with everything." },
+          { k: ['red pink orange yellow purple gold'], r: "Bright and happy! Just like my feathers." },
+          { k: ['blue green'], r: "Blue or green, like Maya! Lovely colours." }
+        ],
+        o: "What a nice choice! Fabulous.",
+        t: ["My favourite clothes are blue.", "I love black clothes.", "Pink and purple!"],
+        m: "My favourite clothes are blue, like the sky.",
+        x: [["blue", 2], ["green and blue", 2], ["black", 0], ["white shirt", 0], ["pink", 1], ["red and yellow", 1], ["all colours", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Do you like shopping for clothes, or is it boring for you?",
+        he: "אתם אוהבים לקנות בגדים או שזה משעמם? I love it! או It is boring. או I don't like it.",
+        a: [
+          { k: ['not', 'boring bored'], r: "Not boring? Great! Shopping can be fun." },
+          { k: ['boring bored hate'], r: "Boring for you? That is okay. Not everyone loves it." },
+          { k: ['no not'], n: 'know', r: "That is fine! Some people just want to go home." },
+          { k: ['love like fun yes great enjoy'], r: "Me too! I could shop all day." }
+        ],
+        o: "Thank you for telling me! I love shopping, of course.",
+        t: ["I love it!", "It is boring.", "No, not really."],
+        m: "I like it, but only with my friends.",
+        x: [["it's not boring", 0], ["boring", 1], ["i hate shopping", 1], ["no", 2], ["no not really", 2], ["i don't like it", 2], ["yes i love it", 3], ["fun", 3], ["i don't know", -1], ["sometimes", -1]]
+      },
+      {
+        c: "Imagine you design a jacket for Chacho. What is it going to look like?",
+        he: 'תעצבו מעיל לצ׳אצ׳ו. איך הוא ייראה? It is going to be green with a hood.',
+        a: [],
+        o: "Fabulous! I am going to wear it every day.",
+        t: ["It is going to be green with a hood.", "It is going to have big pockets.", "It is going to be red and gold."],
+        x: [["green with a hood", -1], ["a red jacket with stars", -1]]
+      }
+    ],
+    end: "Thank you for shopping with me! See you next time. Bye!"
+  },
+  {
+    id: 'ta2l11', title: 'Plans for the year',
+    he: 'מדברים עם צ׳אצ׳ו על חוגים ותוכניות לשנה, עם be going to',
+    turns: [
+      {
+        c: "Adam's science club is going to build a robot. Which club would you like to join?",
+        he: 'לאיזה חוג הייתם רוצים להצטרף? A science club. או A football club. או An art club.',
+        a: [
+          { k: ['science robot code coding computer'], r: "A science club! You could build a robot too." },
+          { k: ['sport football basketball swim swimming dance tennis'], r: "A sports club! Great for staying active." },
+          { k: ['art draw drawing paint music sing drama theatre'], r: "An art or music club! So creative." },
+          { k: ['cook cooking bake chess book read'], r: "Ooh, lovely! A club for a calm hobby." }
+        ],
+        o: "Great choice! Clubs are a good way to make friends.",
+        t: ["A science club.", "A football club.", "An art club."],
+        x: [["science club", 0], ["coding", 0], ["football", 1], ["dance club", 1], ["art", 2], ["music", 2], ["chess", 3], ["i don't know", -1], ["no club", -1]]
+      },
+      {
+        c: "Lina is going to learn to code. What are you going to learn this year?",
+        he: 'מה אתם הולכים ללמוד השנה? I am going to learn to swim. או I am going to learn the guitar.',
+        a: [],
+        o: "Wow, a great goal! You are going to do it.",
+        t: ["I am going to learn to swim.", "I am going to learn the guitar.", "I am going to learn to code."],
+        m: "I am going to learn to play the guitar.",
+        x: [["learn swimming", -1], ["i going to learn guitar", -1]]
+      },
+      {
+        c: "Is it better to plan your goals, or to just see what happens?",
+        he: 'עדיף לתכנן מטרות או לראות מה יקרה? It is better to plan. או Just see what happens.',
+        a: [
+          { k: ['both'], r: "A bit of both? Very wise!" },
+          { k: ['plan planning goal list write'], n: 'not', r: "Planning! Like the science club. Very organised." },
+          { k: ['see happen surprise free'], r: "Just see what happens! That can be fun too." }
+        ],
+        o: "Interesting! Everyone is different.",
+        t: ["It is better to plan.", "Just see what happens.", "A bit of both."],
+        x: [["plan", 1], ["better to plan", 1], ["see what happens", 2], ["both", 0], ["i don't know", -1], ["maybe", -1]]
+      },
+      {
+        c: "Chacho is going to learn a new word every day. What is your big goal this year?",
+        he: 'מה המטרה הגדולה שלכם השנה? I am going to read ten books. או I am going to make new friends.',
+        a: [],
+        o: "That is a great goal! I believe in you.",
+        t: ["I am going to read ten books.", "I am going to make new friends.", "I am going to be in the school play."],
+        m: "I am going to read ten books this year.",
+        x: [["read more books", -1], ["make new friends", -1]]
+      }
+    ],
+    end: "Good luck with your plans! Now I am going to practise my new words. Bye!"
+  },
+  {
+    id: 'ta2l12', title: 'Movie night',
+    he: 'מדברים עם צ׳אצ׳ו על סרטים: איזה סוג אתם אוהבים ואיפה הכי כיף לצפות',
+    turns: [
+      {
+        c: "Rana loves adventure films. What kind of films do you like best?",
+        he: 'איזה סוג סרטים אתם הכי אוהבים? I like comedies. או Adventure films. או Animated films.',
+        a: [
+          { k: ['comedy comedies funny'], r: "Comedies! Laughing is the best." },
+          { k: ['adventure action'], r: "Adventure films, like Rana! Exciting." },
+          { k: ['animated cartoon cartoons animation'], r: "Animated films! Like Planet of Socks." },
+          { k: ['animal nature science space fiction'], r: "Ooh, interesting! You can learn a lot from films like that." }
+        ],
+        o: "Nice! There are so many kinds of films.",
+        t: ["I like comedies.", "Adventure films!", "Animated films."],
+        m: "I like comedies best, because they make me laugh.",
+        x: [["comedy", 0], ["funny films", 0], ["adventure", 1], ["action movies", 1], ["cartoons", 2], ["animal films", 3], ["sad films", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Planet of Socks is about lost socks. Where do you think lost socks really go?",
+        he: 'לאן לדעתכם נעלמים הגרביים? They go under the bed. או The washing machine eats them.',
+        a: [],
+        o: "Ha! Great idea. It is a big mystery!",
+        t: ["They go under the bed.", "The washing machine eats them.", "They go to another planet."],
+        m: "I think they hide under the bed.",
+        x: [["under the bed", -1], ["the washing machine eat them", -1]]
+      },
+      {
+        c: "Do you prefer watching films at home or at the cinema?",
+        he: 'איפה אתם מעדיפים לראות סרטים? At the cinema. או At home on the sofa.',
+        a: [
+          { k: ['both'], r: "Both! Films are great anywhere." },
+          { k: ['cinema'], r: "The cinema! The big screen is amazing." },
+          { k: ['home house sofa bed'], r: "At home! Cosy on the sofa, perfect." }
+        ],
+        o: "Good answer! A good film is a good film.",
+        t: ["At the cinema.", "At home on the sofa.", "Both!"],
+        m: "I prefer the cinema, because the screen is really big.",
+        x: [["cinema", 1], ["in the cinema", 1], ["at home", 2], ["on my sofa", 2], ["both", 0], ["i don't know", -1], ["on my phone", -1]]
+      },
+      {
+        c: "Imagine you make a film. What is it going to be about?",
+        he: 'אתם עושים סרט. על מה הוא יהיה? It is going to be about a talking dog.',
+        a: [],
+        o: "Wow! I want to watch it already. Fabulous!",
+        t: ["It is going to be about a talking dog.", "A funny film about a flying school.", "It is going to be about two friends in space."],
+        x: [["about a dog that talks", -1], ["a film about football", -1]]
+      }
+    ],
+    end: "That was fun! Now I am going to watch Planet of Socks. Bye!"
+  },
+  {
+    id: 'ta2l13', title: 'Weekend plans',
+    he: 'מדברים עם צ׳אצ׳ו על תוכניות לסוף השבוע, כמו עומר ודנה',
+    turns: [
+      {
+        c: "Omer is going to watch birds in the Hula Valley. Would you like to go bird-watching?",
+        he: 'הייתם רוצים לצפות בציפורים? Yes, I would love to! או No, not really.',
+        a: [
+          { k: ['no not'], n: 'know', r: "Not for you? That is okay. Birds can be very noisy!" },
+          { k: ['yes love like sure want maybe'], r: "Great! Bring a warm coat, like Omer." }
+        ],
+        o: "Birds are amazing. I am a bird, so I know!",
+        t: ["Yes, I would love to!", "No, not really.", "Maybe one day."],
+        m: "Yes, I would love to see the cranes.",
+        x: [["yes", 1], ["i would love to", 1], ["no", 0], ["not really", 0], ["i don't know", -1], ["what is that", -1]]
+      },
+      {
+        c: "Dana is having a swimming lesson on Friday. What are you doing this weekend?",
+        he: 'מה אתם עושים בסוף השבוע? I am meeting my friends. או I am going to the beach.',
+        a: [],
+        o: "That sounds like a good weekend!",
+        t: ["I am meeting my friends.", "I am going to the beach.", "I am staying at home and reading."],
+        x: [["i meet my friends", -1], ["go to the park", -1]]
+      },
+      {
+        c: "Omer is leaving at seven in the morning. Do you like getting up early?",
+        he: 'אתם אוהבים לקום מוקדם? Yes, I like it. או No, I hate it!',
+        a: [
+          { k: ['no not hate'], n: 'know', r: "Me neither! Sleep is wonderful." },
+          { k: ['yes love like'], r: "Wow! You are an early bird, like me." }
+        ],
+        o: "Early or late, every day is a good day!",
+        t: ["Yes, I like it.", "No, I hate it!"],
+        m: "No, I don't. I like sleeping late at the weekend.",
+        x: [["yes", 1], ["i like it", 1], ["no", 0], ["i hate it", 0], ["i don't like it", 0], ["sometimes", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Dana is going to bake a cake. Which cake would you bake, lemon or chocolate?",
+        he: 'איזו עוגה הייתם אופים, לימון או שוקולד? Chocolate, of course! או Lemon cake.',
+        a: [
+          { k: ['both'], r: "Both! Two cakes are better than one." },
+          { k: ['chocolate'], r: "Chocolate! Yum, that is my favourite too." },
+          { k: ['lemon'], r: "Lemon! Fresh and sweet." }
+        ],
+        o: "Ooh, that sounds delicious!",
+        t: ["Chocolate, of course!", "Lemon cake.", "Both!"],
+        m: "I would bake a chocolate cake with strawberries.",
+        x: [["chocolate", 1], ["i bake chocolate cake", 1], ["lemon", 2], ["both", 0], ["carrot cake", -1], ["i can't bake", -1]]
+      }
+    ],
+    end: "Have a wonderful weekend! I am going to watch the birds too. Bye!"
+  },
+  {
+    id: 'ta2l14', title: 'If I could fly...',
+    he: 'מדמיינים עם צ׳אצ׳ו: מה הייתם עושים אילו... (If I had..., I would...)',
+    turns: [
+      {
+        c: "Yara would clean her room with a magic wand. What would you do with a magic wand?",
+        he: 'מה הייתם עושים עם שרביט קסמים? I would clean my room. או I would fly to the Moon.',
+        a: [],
+        o: "Wow! That is real magic.",
+        t: ["I would clean my room.", "I would make a giant ice cream.", "I would fly to the Moon."],
+        x: [["clean my room", -1], ["i will make a big pizza", -1]]
+      },
+      {
+        c: "If you could fly, where would you go first?",
+        he: 'אילו יכולתם לעוף, לאן הייתם עפים קודם? I would fly to the beach. או To the Moon.',
+        a: [
+          { k: ['beach sea'], r: "To the beach! A great view from up there." },
+          { k: ['moon space star stars'], r: "To space! That is a very long flight." },
+          { k: ['school'], r: "To school? You would never be late!" },
+          { k: ['grandma grandpa friend friends'], r: "To see someone you love! So sweet." }
+        ],
+        o: "What a trip! Flying is the best, believe me.",
+        t: ["I would fly to the beach.", "I would fly to the Moon.", "I would fly to my friend's house."],
+        x: [["to the beach", 0], ["the sea", 0], ["moon", 1], ["to school", 2], ["to my grandma", 3], ["paris", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Itamar would give the zoo animals a big forest. Do you think animals are happy in zoos?",
+        he: 'לדעתכם חיות שמחות בגן חיות? Yes, in good zoos. או No, they are not. או Sometimes.',
+        a: [
+          { k: ['sometimes depend depends'], r: "It depends. That is a very good answer." },
+          { k: ['no not sad'], n: 'know', r: "Maybe not always. A big forest is better, like Itamar says." },
+          { k: ['yes happy good'], r: "Some zoos take good care of animals. Good point!" }
+        ],
+        o: "That is a big question! Thanks for thinking about it.",
+        t: ["Yes, in good zoos.", "No, they are not.", "Sometimes."],
+        x: [["sometimes", 0], ["it depends", 0], ["no", 1], ["they are not happy", 1], ["yes", 2], ["happy", 2], ["i don't know", -1], ["lions", -1]]
+      },
+      {
+        c: "If you won a big prize at school, what would you choose?",
+        he: 'אילו זכיתם בפרס גדול בבית הספר, מה הייתם בוחרים? I would choose a trip to the zoo.',
+        a: [],
+        o: "Great choice! I would choose that too.",
+        t: ["I would choose a trip to the zoo.", "I would choose a day with no homework.", "A big box of books."],
+        m: "I would choose a trip to see the northern lights.",
+        x: [["a trip to the zoo", -1], ["no homework", -1]]
+      }
+    ],
+    end: "If I could, I would talk to you all day! Bye for now!"
+  },
+  {
+    id: 'ta2l15', title: 'Cities and towns',
+    he: 'מדברים עם צ׳אצ׳ו על חיפה ועל מה שאוהבים בעיר',
+    turns: [
+      {
+        c: "Haifa has the sea and a mountain. Do you prefer the sea or the mountains?",
+        he: 'מה אתם מעדיפים, ים או הרים? The sea! או The mountains. או Both!',
+        a: [
+          { k: ['both'], r: "Both! Just like Haifa." },
+          { k: ['sea beach swim swimming'], r: "The sea! Swimming and sand, lovely." },
+          { k: ['mountain mountains hill hills forest'], r: "The mountains! Fresh air and a great view." }
+        ],
+        o: "Nice! Israel has lots of beautiful places.",
+        t: ["The sea!", "The mountains.", "Both!"],
+        m: "I prefer the sea, because I love swimming.",
+        x: [["the sea", 1], ["beach", 1], ["mountains", 2], ["hills", 2], ["both", 0], ["the desert", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Karim loves the science museum. What is the best place in a city: a park, a museum or a beach?",
+        he: 'מה המקום הכי טוב בעיר: פארק, מוזיאון או חוף? A park. או A museum. או The beach!',
+        a: [
+          { k: ['park'], r: "A park! Green, and great for playing." },
+          { k: ['museum'], r: "A museum, like Karim! You learn so much." },
+          { k: ['beach sea'], r: "The beach! Sun, sand and sea." }
+        ],
+        o: "Good choice! Every city needs one.",
+        t: ["A park.", "A museum.", "The beach!"],
+        x: [["park", 0], ["a big park", 0], ["museum", 1], ["beach", 2], ["the sea", 2], ["cinema", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Karim sometimes takes the Carmelit, a little underground train. How do you like to travel around?",
+        he: 'איך אתם אוהבים להסתובב? By bike. או I like to walk. או By bus.',
+        a: [
+          { k: ['bike bicycle scooter skateboard'], r: "By bike or scooter! Fast and fun." },
+          { k: ['bus train'], r: "By bus or train! You can look out of the window." },
+          { k: ['walk walking foot feet'], r: "Walking! Good for you, and you see everything." },
+          { k: ['car'], r: "By car! Comfy, and good for long trips." }
+        ],
+        o: "Great! Travelling around is fun.",
+        t: ["By bike.", "I like to walk.", "By bus."],
+        m: "I like to travel by bike with my friends.",
+        x: [["by bike", 0], ["scooter", 0], ["bus", 1], ["train", 1], ["i walk", 2], ["on foot", 2], ["car", 3], ["i fly", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Imagine you could add one new thing to your town. What would it be?",
+        he: 'אתם יכולים להוסיף דבר אחד חדש לעיר. מה זה יהיה? A big water park. או More trees.',
+        a: [],
+        o: "Wonderful idea! Everybody would love it.",
+        t: ["A big water park.", "A zoo with a forest.", "More parks and trees."],
+        m: "I would add a big water park for kids.",
+        x: [["a water park", -1], ["more trees", -1]]
+      }
+    ],
+    end: "Thank you for the tour! Haifa sounds lovely. Bye!"
+  },
+  {
+    id: 'ta2l16', title: 'Friends are the best',
+    he: 'מדברים עם צ׳אצ׳ו על חברים: מה עושים יחד ומה עושה חבר טוב',
+    turns: [
+      {
+        c: "Tom and Amir both love football and comics. What do you like doing with your friends?",
+        he: 'מה אתם אוהבים לעשות עם חברים? We play football. או We talk and laugh.',
+        a: [
+          { k: ['football basketball sport ball run swim'], r: "Sport with friends! Great fun." },
+          { k: ['game games video computer'], r: "Games! Fun with friends." },
+          { k: ['talk chat laugh walk park'], r: "Talking and laughing! The best." },
+          { k: ['draw art music sing dance cook bake'], r: "So creative! Great." }
+        ],
+        o: "That sounds like a lot of fun!",
+        t: ["We play football.", "We play video games.", "We talk and laugh."],
+        m: "We play football in the park after school.",
+        x: [["football", 0], ["we play basketball", 0], ["video games", 1], ["we talk", 2], ["walk in the park", 2], ["we dance", 3], ["nothing", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Shir is quiet, and Lea is talkative. Are you more quiet or more talkative?",
+        he: 'אתם יותר שקטים או יותר פטפטנים? I am quiet. או I am very talkative! או A bit of both.',
+        a: [
+          { k: ['both depend depends'], r: "A bit of both! That is perfect." },
+          { k: ['quiet shy calm'], r: "Quiet, like Shir! Good listeners are great friends." },
+          { k: ['talk talkative chat loud'], r: "Talkative, like Lea! Never boring." }
+        ],
+        o: "Quiet or talkative, both make great friends!",
+        t: ["I am quiet.", "I am very talkative!", "A bit of both."],
+        m: "I am quite talkative, but I listen too.",
+        x: [["quiet", 1], ["i'm shy", 1], ["talkative", 2], ["i talk a lot", 2], ["both", 0], ["it depends", 0], ["i don't know", -1], ["tall", -1]]
+      },
+      {
+        c: "For Shir, a good friend listens. What makes a good friend for you?",
+        he: 'מה עושה חבר טוב בשבילכם? A good friend is kind. או A good friend helps you.',
+        a: [],
+        o: "That is very true. Thank you for sharing!",
+        t: ["A good friend is kind.", "A good friend helps you.", "Someone who is funny."],
+        m: "A good friend is kind and always helps you.",
+        x: [["kind", -1], ["he help me", -1]]
+      },
+      {
+        c: "Imagine Chacho is your new friend. What would we do together?",
+        he: 'דמיינו שצ׳אצ׳ו הוא החבר החדש שלכם. מה הייתם עושים יחד? We would go to the beach.',
+        a: [],
+        o: "Ooh, I can't wait! That sounds fabulous.",
+        t: ["We would go to the beach.", "We would play games.", "We would sing songs."],
+        m: "We would fly kites at the beach together.",
+        x: [["go to the beach", -1], ["play games", -1]]
+      }
+    ],
+    end: "Thank you for being my friend today! See you soon. Bye!"
+  },
+  {
+    id: 'ta2l17', title: 'The cake mystery',
+    he: 'מדברים עם צ׳אצ׳ו על תעלומת העוגה, עם was ו-were + ing',
+    turns: [
+      {
+        c: "Mr Haddad moved the cake to keep it cold. Was that a good idea?",
+        he: 'זה היה רעיון טוב? Yes, it was a good idea. או No, he should ask the class first.',
+        a: [
+          { k: ['no not tell ask'], n: 'know', r: "Maybe he should ask the class first. Good point!" },
+          { k: ['yes good great smart clever'], r: "I agree! Chocolate and sun are not friends." }
+        ],
+        o: "Hmm, interesting! The cake was fine in the end.",
+        t: ["Yes, it was a good idea.", "No, he should ask the class first."],
+        x: [["yes", 1], ["it was good", 1], ["no", 0], ["he didn't tell them", 0], ["i don't know", -1], ["cake", -1]]
+      },
+      {
+        c: "At ten o'clock Ron was watering the plants. What were you doing at eight o'clock this morning?",
+        he: 'מה עשיתם היום בשמונה בבוקר? I was having breakfast. או I was sleeping!',
+        a: [
+          { k: ['breakfast eat ate food'], r: "You were having breakfast! Good start to the day." },
+          { k: ['sleep slept bed'], r: "You were sleeping! Lucky you." },
+          { k: ['school bus walk'], r: "You were going to school! A busy morning." },
+          { k: ['dress teeth wash shower brush'], r: "You were getting ready! Clean and fresh." }
+        ],
+        o: "Thank you! Every morning is different.",
+        t: ["I was having breakfast.", "I was sleeping!", "I was going to school."],
+        m: "At eight o'clock I was having breakfast.",
+        x: [["i was eating breakfast", 0], ["having breakfast", 0], ["sleeping", 1], ["i was sleep", 1], ["going to school", 2], ["on the bus", 2], ["brushing my teeth", 3], ["nothing", -1]]
+      },
+      {
+        c: "Gali was a great detective. Would you like to be a detective one day?",
+        he: 'הייתם רוצים להיות בלשים יום אחד? Yes, I would love it! או No, not really.',
+        a: [
+          { k: ['no not'], n: 'know', r: "That is okay! There are lots of great jobs." },
+          { k: ['yes love like sure maybe'], r: "Great! You can find all the lost socks." }
+        ],
+        o: "Detectives are clever, and so are you!",
+        t: ["Yes, I would love it!", "No, not really."],
+        m: "Yes, I would love to solve mysteries.",
+        x: [["yes", 1], ["i would love it", 1], ["no", 0], ["not really", 0], ["i don't know", -1], ["a teacher", -1]]
+      },
+      {
+        c: "Imagine a new mystery at your school. What is missing this time?",
+        he: 'דמיינו תעלומה חדשה בבית הספר. מה נעלם הפעם? The class ball is missing.',
+        a: [],
+        o: "A new mystery! Call Gali, the class detective.",
+        t: ["The class ball is missing.", "The teacher's pen is missing.", "All the chairs are missing!"],
+        x: [["the ball", -1], ["the teacher pen", -1]]
+      }
+    ],
+    end: "Mystery solved! You are a great detective too. Bye!"
+  },
+  {
+    id: 'ta2r05', title: 'Chores: yes or no?',
+    he: 'מדברים עם צ׳אצ׳ו על עזרה בבית, כמו נועם, ליאור והמורה לוי',
+    turns: [
+      {
+        c: "Noam's family has a chore chart on the fridge. Do you think a chore chart is a good idea?",
+        he: "לוח מטלות על המקרר הוא רעיון טוב? Yes, it is fair. או No, I don't like it.",
+        a: [
+          { k: ['no not'], n: 'know', r: "Not for you? That is okay. Every home is different." },
+          { k: ['yes good great fair'], r: "I agree! Then everyone knows their jobs." }
+        ],
+        o: "Interesting! Thank you for telling me.",
+        t: ["Yes, it is fair.", "No, I don't like it."],
+        m: "Yes, because everyone knows their jobs.",
+        x: [["yes", 1], ["good idea", 1], ["no", 0], ["i don't like it", 0], ["i don't know", -1], ["maybe", -1]]
+      },
+      {
+        c: "Lior always tidies his own room. Which chore is the easiest for you?",
+        he: 'איזו מטלה הכי קלה לכם? Making my bed. או Setting the table. או Watering the plants.',
+        a: [
+          { k: ['bed'], r: "Making your bed! Quick and easy." },
+          { k: ['table plate plates fork'], r: "Setting the table! Easy, and everyone is happy." },
+          { k: ['plant plants flower flowers water'], r: "Watering the plants! The plants love you." },
+          { k: ['tidy room toys clothes'], r: "Tidying up! Nice and quick." }
+        ],
+        o: "Good one! Easy chores are the best.",
+        t: ["Making my bed.", "Setting the table.", "Watering the plants."],
+        m: "Setting the table is the easiest. It takes two minutes.",
+        x: [["making my bed", 0], ["set the table", 1], ["water the plants", 2], ["tidy my room", 3], ["none", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Ms Levy says twenty or thirty minutes of chores a day is enough. Do you agree?",
+        he: "אתם מסכימים שעשרים או שלושים דקות ביום זה מספיק? Yes, I agree. או No, I don't agree.",
+        a: [
+          { k: ['no not disagree'], n: 'know', r: "Every family is different. Thank you for your opinion!" },
+          { k: ['yes agree right enough'], r: "I agree too! Then there is time to play." }
+        ],
+        o: "Thank you! That is a good answer.",
+        t: ["Yes, I agree.", "No, I don't agree."],
+        x: [["yes", 1], ["i am agree", 1], ["no", 0], ["i don't agree", 0], ["i don't know", -1], ["ten minutes", -1]]
+      },
+      {
+        c: "Imagine you make the chore chart. Which job are you going to give yourself?",
+        he: 'אתם מכינים את לוח המטלות. איזו עבודה תיקחו לעצמכם? I am going to feed the cat.',
+        a: [],
+        o: "Great choice! You are a real team player.",
+        t: ["I am going to feed the cat.", "I am going to cook pasta.", "I am going to set the table."],
+        m: "I am going to cook pasta, like Noam.",
+        x: [["feed the dog", -1], ["i cook pasta", -1]]
+      }
+    ],
+    end: "Thank you! Now I am going to tidy my nest. See you!"
+  },
+  {
+    id: 'ta2r06', title: 'Old inventions',
+    he: 'מדברים עם צ׳אצ׳ו על שלוש ההמצאות משנות ה-20 ועל המצאות של העתיד',
+    turns: [
+      {
+        c: "Bubble gum, sliced bread and TV are all from the nineteen twenties. Which one is the best invention?",
+        he: 'איזו המצאה הכי טובה? The TV. או Sliced bread! או Bubble gum.',
+        a: [
+          { k: ['tv television'], r: "The TV! Films and shows for everybody." },
+          { k: ['bread sandwich toast'], r: "Sliced bread! The best thing since sliced bread, ha!" },
+          { k: ['gum bubble'], r: "Bubble gum! Pink, stretchy and fun." }
+        ],
+        o: "Good choice! All three are clever ideas.",
+        t: ["The TV.", "Sliced bread!", "Bubble gum."],
+        x: [["tv", 0], ["television", 0], ["bread", 1], ["sliced bread", 1], ["bubble gum", 2], ["the gum", 2], ["the phone", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Walter Diemer's gum was pink. If you made a new gum, what colour would it be?",
+        he: 'אילו המצאתם מסטיק חדש, באיזה צבע הוא היה? It would be blue. או Rainbow colours!',
+        a: [],
+        o: "Ooh, what a fun colour! I want to try it.",
+        t: ["It would be blue.", "Rainbow colours!", "It would be gold and shiny."],
+        m: "It would be blue and taste of strawberries.",
+        x: [["blue", -1], ["it will be green", -1]]
+      },
+      {
+        c: "Before sliced bread, people cut their own bread. What is the best thing in a sandwich?",
+        he: 'מה הכי טעים בכריך? Cheese and tomato. או Chocolate spread! או Hummus and egg.',
+        a: [],
+        o: "Yum! That sounds like a great sandwich.",
+        t: ["Cheese and tomato.", "Chocolate spread!", "Hummus and egg."],
+        m: "The best thing in a sandwich is cheese and tomato.",
+        x: [["cheese", -1], ["peanut butter", -1]]
+      },
+      {
+        c: "One hundred years from now, what invention do you think people are going to use?",
+        he: 'בעוד מאה שנה, באיזו המצאה אנשים ישתמשו? Flying cars. או Robots that do homework.',
+        a: [],
+        o: "Wow, what an idea! Maybe you are going to invent it.",
+        t: ["Flying cars.", "Robots that do homework.", "Shoes that can fly."],
+        m: "I think people are going to use flying cars.",
+        x: [["flying car", -1], ["robots", -1]]
+      }
+    ],
+    end: "Thank you, inventor! Now I am going to blow a big bubble. Bye!"
+  },
+  {
+    id: 'ta2r07', title: 'Carnival time!',
+    he: 'מדברים עם צ׳אצ׳ו על הקרנבל בלונדון: תחפושות, ריקודים ומוזיקה',
+    turns: [
+      {
+        c: "Amara was a butterfly at the carnival. What costume would you like to wear?",
+        he: 'איזו תחפושת הייתם רוצים ללבוש? I would be a butterfly. או A colourful bird!',
+        a: [],
+        o: "Fabulous! You would look amazing.",
+        t: ["I would be a butterfly.", "A colourful bird!", "I would be a lion."],
+        x: [["a lion", -1], ["i want be a butterfly", -1]]
+      },
+      {
+        c: "At the carnival, people dance in a big parade. Do you like dancing?",
+        he: 'אתם אוהבים לרקוד? Yes, I love dancing! או No, not really. או Only with my friends.',
+        a: [
+          { k: ['only sometimes friend friends little'], r: "With friends it is more fun! I agree." },
+          { k: ['no not'], n: 'know', r: "That is okay! Watching is fun too." },
+          { k: ['yes love like dance dancing'], r: "Me too! I dance with my wings." }
+        ],
+        o: "Dancing or watching, both are fun!",
+        t: ["Yes, I love dancing!", "No, not really.", "Only with my friends."],
+        m: "Yes, I love dancing with my friends.",
+        x: [["yes i love it", 2], ["i like dancing", 2], ["no", 1], ["not really", 1], ["only with friends", 0], ["sometimes", 0], ["i don't know", -1], ["music", -1]]
+      },
+      {
+        c: "The steel bands at the carnival are very loud. Do you like loud music or quiet music?",
+        he: 'אתם אוהבים מוזיקה רועשת או שקטה? Loud music! או Quiet music. או Both!',
+        a: [
+          { k: ['both'], r: "Both! It depends on the day." },
+          { k: ['loud'], r: "Loud music! Feel it in your feet." },
+          { k: ['quiet soft calm'], r: "Quiet music! Nice and calm." }
+        ],
+        o: "Music makes every day better!",
+        t: ["Loud music!", "Quiet music.", "Both!"],
+        m: "I like loud music when I dance.",
+        x: [["loud", 1], ["very loud music", 1], ["quiet", 2], ["soft music", 2], ["both", 0], ["i don't know", -1], ["no music", -1]]
+      },
+      {
+        c: "Imagine your town has a big summer festival. What is it going to have?",
+        he: 'בעיר שלכם יש פסטיבל קיץ גדול. מה יהיה בו? It is going to have music and dancing.',
+        a: [],
+        o: "What a great festival! I am going to come.",
+        t: ["It is going to have music and dancing.", "Lots of food and games.", "A parade with costumes."],
+        x: [["music and food", -1], ["a big parade", -1]]
+      }
+    ],
+    end: "Thank you for coming to the carnival with me! Bye!"
+  },
+  {
+    id: 'ta2r08', title: 'Have you ever...?',
+    he: 'מדברים עם צ׳אצ׳ו על דברים שעשיתם ועוד לא עשיתם (present perfect)',
+    turns: [
+      {
+        c: "Ella has slept in the desert twice. Have you ever slept in a tent?",
+        he: "ישנתם פעם באוהל? Yes, I have. או No, I haven't.",
+        a: [
+          { k: ['no not never'], n: 'know', r: "Not yet? Maybe one day! Tents are fun." },
+          { k: ['yes have once twice times'], r: "You have! Tents are great under the stars." }
+        ],
+        o: "Tents are fun! I sleep in a nest.",
+        t: ["Yes, I have.", "No, I haven't.", "Yes, once!"],
+        x: [["yes i have", 1], ["once", 1], ["no i haven't", 0], ["never", 0], ["i don't know", -1], ["in my bed", -1]]
+      },
+      {
+        c: "Ella has never skied. What is something you have never done, but you want to try?",
+        he: 'מה עוד לא עשיתם ואתם רוצים לנסות? I have never been on a plane. או I have never skied.',
+        a: [],
+        o: "Ooh! I hope you can try it soon.",
+        t: ["I have never been on a plane.", "I have never skied.", "I have never ridden a horse."],
+        x: [["ride a horse", -1], ["i never fly on a plane", -1]]
+      },
+      {
+        c: "Ella sang on a stage. Would you like to sing or dance on a stage?",
+        he: 'הייתם רוצים לשיר או לרקוד על במה? I would like to sing. או I would like to dance. או No, thank you!',
+        a: [
+          { k: ['no not never'], n: 'know', r: "That is okay! You can clap for everybody." },
+          { k: ['both'], r: "Both! A real star." },
+          { k: ['sing singing song'], r: "Singing! I would love to hear you." },
+          { k: ['dance dancing'], r: "Dancing! Show us your best moves." }
+        ],
+        o: "A stage is exciting! Everybody is clapping.",
+        t: ["I would like to sing.", "I would like to dance.", "No, thank you!"],
+        m: "I would like to dance on a big stage.",
+        x: [["sing", 2], ["singing", 2], ["dance", 3], ["both", 1], ["no thank you", 0], ["not me", 0], ["i don't know", -1], ["act", -1]]
+      },
+      {
+        c: "Ella says: try things that scare you at first. What is something brave you have done?",
+        he: 'מה דבר אמיץ שעשיתם? I have jumped into a big pool. או I have sung in front of my class.',
+        a: [],
+        o: "Thank you for telling me! Being brave is not easy.",
+        t: ["I have jumped into a big pool.", "I have sung in front of my class.", "I have touched a snake."],
+        m: "I have jumped into the deep end of the pool.",
+        x: [["i jumped in the pool", -1], ["i touch a snake", -1]]
+      }
+    ],
+    end: "You have done amazing things! See you next time. Bye!"
+  },
+  {
+    id: 'ta2u07', title: 'The giant watermelon',
+    he: 'מדברים עם צ׳אצ׳ו על האבטיח הענק, על פירות ועל גינה בבית הספר',
+    turns: [
+      {
+        c: "The class watermelon was thirty-one kilos! What is your favourite summer fruit?",
+        he: 'מה הפרי האהוב עליכם בקיץ? Watermelon, of course! או I love mangoes.',
+        a: [
+          { k: ['watermelon watermelons'], r: "Watermelon! Sweet and cold, perfect for summer." },
+          { k: ['mango mangoes peach peaches apricot cherry plum'], r: "Ooh, juicy and sweet! A great choice." },
+          { k: ['grape grapes melon strawberry strawberries banana apple orange'], r: "Yum! I love that fruit too." }
+        ],
+        o: "Yum! Summer fruit is the best.",
+        t: ["Watermelon, of course!", "I love mangoes.", "Grapes!"],
+        x: [["watermelon", 0], ["mango", 1], ["cherries", 1], ["grapes", 2], ["strawberry", 2], ["ice cream", -1], ["i don't know", -1]]
+      },
+      {
+        c: "If you had a school garden, what would you grow?",
+        he: 'אילו הייתה לכם גינה בבית הספר, מה הייתם מגדלים? I would grow tomatoes. או A giant pumpkin!',
+        a: [],
+        o: "Lovely! I would come and help you.",
+        t: ["I would grow tomatoes.", "I would grow flowers.", "A giant pumpkin!"],
+        m: "I would grow tomatoes and a giant pumpkin.",
+        x: [["tomatoes", -1], ["i grow flowers", -1]]
+      },
+      {
+        c: "The children shared the watermelon with the whole school. Do you like sharing food with friends?",
+        he: 'אתם אוהבים לחלוק אוכל עם חברים? Yes, I love sharing. או Sometimes. או Not my chocolate!',
+        a: [
+          { k: ['sometimes depend chocolate'], r: "Ha! Some food is too good to share." },
+          { k: ['no not'], n: 'know', r: "That is okay! Your food, your choice." },
+          { k: ['yes love like share sharing'], r: "Lovely! Sharing makes food taste better." }
+        ],
+        o: "Sharing is caring, as people say!",
+        t: ["Yes, I love sharing.", "Sometimes.", "Not my chocolate!"],
+        m: "Yes, I like sharing, but not my chocolate!",
+        x: [["yes", 2], ["i like sharing", 2], ["no", 1], ["i don't share", 1], ["sometimes", 0], ["not chocolate", 0], ["i don't know", -1], ["pizza", -1]]
+      },
+      {
+        c: "Imagine a funny news story about your school. What happened?",
+        he: 'דמיינו ידיעה מצחיקה על בית הספר שלכם. מה קרה? A goat came to our class.',
+        a: [],
+        o: "Ha! That is front page news!",
+        t: ["A goat came to our class.", "Our teacher sang in the playground.", "It rained chocolate!"],
+        m: "A goat walked into our classroom and ate a book.",
+        x: [["a cat came to school", -1], ["it rain chocolate", -1]]
+      }
+    ],
+    end: "Thanks, reporter! Now I am going to eat some watermelon. Bye!"
+  },
+  {
+    id: 'ta2u08', title: 'The runaway robot',
+    he: 'מדברים עם צ׳אצ׳ו על הרובוט שיצא לטיול ועל רובוטים שעוזרים',
+    turns: [
+      {
+        c: "The robot cleaned the bakery floor. Would you like a cleaning robot at home?",
+        he: 'הייתם רוצים רובוט ניקיון? Yes, please! או No, thanks.',
+        a: [
+          { k: ['no not'], n: 'know', r: "No robot for you? That is fine. Brooms are good too!" },
+          { k: ['yes please sure love like want'], r: "Me too! Then there is more time to play." }
+        ],
+        o: "Robots are fun! But I like my broom.",
+        t: ["Yes, please!", "No, thanks."],
+        m: "Yes, please! Then I would have more time to play.",
+        x: [["yes", 1], ["yes please", 1], ["no", 0], ["no thanks", 0], ["i don't know", -1], ["a dog", -1]]
+      },
+      {
+        c: "Which job at school would a robot be good at?",
+        he: 'באיזו עבודה בבית הספר רובוט היה טוב? Cleaning the classrooms. או Helping in the library.',
+        a: [
+          { k: ['clean cleaning floor tidy'], r: "Cleaning! Like the robot in the story." },
+          { k: ['library book books'], r: "The library! A robot that loves books." },
+          { k: ['cook food lunch kitchen'], r: "Making lunch! A robot chef. Yum." },
+          { k: ['homework teach test maths math'], r: "A robot teacher? Ha! A very clever robot." }
+        ],
+        o: "Great idea! That robot would be very busy.",
+        t: ["Cleaning the classrooms.", "Helping in the library.", "Making lunch."],
+        m: "A robot would be good at cleaning the classrooms.",
+        x: [["cleaning", 0], ["clean the floor", 0], ["library", 1], ["books", 1], ["cook lunch", 2], ["teach maths", 3], ["homework", 3], ["play", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Mr Oren was putting bread on the shelves. What were you doing at five o'clock yesterday?",
+        he: 'מה עשיתם אתמול בחמש? I was doing my homework. או I was playing in the park.',
+        a: [],
+        o: "Thank you for telling me!",
+        t: ["I was doing my homework.", "I was playing in the park.", "I was watching TV."],
+        m: "At five o'clock I was playing football in the park.",
+        x: [["i was play football", -1], ["doing homework", -1]]
+      },
+      {
+        c: "If you built a robot, what would you call it?",
+        he: 'אילו בניתם רובוט, איך הייתם קוראים לו? I would call it Robo. או Sparky.',
+        a: [],
+        o: "What a great name! Your robot is going to love it.",
+        t: ["I would call it Robo.", "I would call it Sparky.", "I would call it Bob."],
+        m: "I would call it Sparky, because it is very fast.",
+        x: [["robo", -1], ["i call him max", -1]]
+      }
+    ],
+    end: "Thank you! Now I am going to read the news. Bye bye!"
+  },
+  {
+    id: 'ta2w01', title: "Chacho's picnic",
+    he: 'מזמינים לפיקניק, עם Would you like to...? ו-on Friday at five',
+    turns: [
+      {
+        c: "I am having a picnic in the park! Would you like to come?",
+        he: 'רוצים לבוא לפיקניק? למשל: Yes, I would love to! או Sorry, I am busy.',
+        a: [
+          { k: ['no not sorry busy'], n: 'know', r: "That is okay. Maybe next time! I will save you a cracker." },
+          { k: ['yes love like sure please okay ok'], r: "Yay! It is going to be so much fun." }
+        ],
+        o: "Thank you! I hope you can come.",
+        t: ["Yes, I would love to!", "Sorry, I am busy."],
+        m: "Yes, I would love to come!",
+        x: [["yes", 1], ["i would like to come", 1], ["sorry i can't", 0], ["no i am busy", 0], ["what food", -1]]
+      },
+      {
+        c: "When is a good day and time for a picnic?",
+        he: "מתי כדאי לעשות את הפיקניק? יום ושעה. למשל: On Friday at five o'clock.",
+        a: [],
+        o: "Perfect! I will write it in my diary.",
+        t: ["On Friday at five o'clock.", "On Saturday at ten.", "On Sunday afternoon."],
+        m: "It is on Friday at five o'clock.",
+        x: [["friday in 5", -1], ["at saturday morning", -1]]
+      },
+      {
+        c: "What food would you like to bring to the picnic?",
+        he: 'איזה אוכל תביאו לפיקניק? למשל: I would like to bring sandwiches.',
+        a: [],
+        o: "Yum! Everybody is going to love that.",
+        t: ["I would like to bring sandwiches.", "Some fruit and cookies.", "Some watermelon!"],
+        m: "I would like to bring sandwiches.",
+        x: [["i bring cake", -1], ["chips and juice", -1]]
+      },
+      {
+        c: "Now you invite me! Ask me to something with Would you like to...?",
+        he: 'עכשיו אתם מזמינים את צ׳אצ׳ו. למשל: Would you like to come to my party?',
+        a: [
+          { k: ['would'], r: "Yes, I would love to! Thank you for asking me." },
+          { k: ['want come'], r: "Would I like to come? Yes, I would love to!" }
+        ],
+        o: "Thank you! I would love to come.",
+        t: ["Would you like to come to my party?", "Would you like to play with me?", "Do you want to come to the beach?"],
+        m: "Would you like to come to my party?",
+        x: [["would you like to come to the beach", 0], ["you want come to my house", 1], ["come to my party", 1], ["hello", -1]]
+      }
+    ],
+    end: "See you at the picnic! I will bring the crackers. Bye bye!"
+  },
+  {
+    id: 'ta2w02', title: "Chacho's holiday",
+    he: 'מספרים לצ׳אצ׳ו על חופשה או טיול, בעבר: went, swam, saw',
+    turns: [
+      {
+        c: "Last summer I flew to Eilat and swam with fish! Did you go on a trip this year?",
+        he: "יצאתם לטיול השנה? למשל: Yes, we went to the north. או No, we didn't.",
+        a: [
+          { k: ['no not'], n: 'know', r: "That is okay. Days at home are fun too!" },
+          { k: ['yes went go visit travel trip'], r: "You went on a trip? Fabulous! I love trips." }
+        ],
+        o: "Thank you for telling me!",
+        t: ["Yes, we went to the north.", "No, we didn't."],
+        m: "Yes, we went to the north.",
+        x: [["yes", 1], ["we go to eilat", 1], ["no", 0], ["we didn't go", 0], ["summer", -1]]
+      },
+      {
+        c: "Think of a fun trip or holiday. Where did you go?",
+        he: 'חשבו על טיול או חופשה כיפית. לאן נסעתם? למשל: We went to the beach.',
+        a: [],
+        o: "Ooh, that sounds lovely! I want to fly there.",
+        t: ["We went to the beach.", "I went to Eilat.", "We went to the Galilee."],
+        m: "We went to the beach in Eilat.",
+        x: [["i go to tel aviv", -1], ["the north", -1]]
+      },
+      {
+        c: "What did you do there? Did you swim, eat or see something new?",
+        he: 'מה עשיתם שם? בעבר: swam, ate, saw. למשל: We swam in the sea.',
+        a: [
+          { k: ['swim swam swimming sea pool'], r: "You swam! Lucky you. I only swim in my bath." },
+          { k: ['eat ate food ice_cream pizza'], r: "You ate yummy food! Holidays are for eating." },
+          { k: ['see saw seen look'], r: "You saw something new! That is the best part." }
+        ],
+        o: "That sounds like a great time!",
+        t: ["We swam in the sea.", "We ate ice cream every day.", "I saw lots of fish."],
+        m: "We swam in the sea every day.",
+        x: [["we swim in the sea", 0], ["i eat pizza", 1], ["we see a castle", 2], ["we played games", -1], ["we sleep", -1]]
+      },
+      {
+        c: "How was it? Was it great, fun or a bit boring?",
+        he: 'איך היה? בעבר: It was. למשל: It was great! או It was a bit boring.',
+        a: [
+          { k: ['boring bad not'], n: 'not_bad', r: "Oh, it was boring? Not every trip is perfect." },
+          { k: ['great fun good amazing cool nice wonderful best'], r: "It was great? Fabulous! I am so happy for you." }
+        ],
+        o: "Thank you for telling me about it!",
+        t: ["It was great!", "It was a bit boring."],
+        m: "It was great! I loved it.",
+        x: [["it is great", 1], ["was so fun", 1], ["boring", 0], ["not good", 0], ["hot", -1], ["not bad", -1]]
+      }
+    ],
+    end: "Thank you! Now I am going to plan my next trip. Bye bye!"
+  },
+  {
+    id: 'ta2w03', title: "Chacho's cool job",
+    he: 'מדברים על עבודות מעניינות, עם A vet helps animals',
+    turns: [
+      {
+        c: "I have a cool job. I sell clothes in my shop! What job do you think is cool?",
+        he: 'איזו עבודה נראית לכם מגניבה? למשל: I think a vet has a cool job.',
+        a: [
+          { k: ['vet animal animals'], r: "A vet! A vet helps animals. Parrots too!" },
+          { k: ['doctor nurse'], r: "A doctor helps sick people. That is a great job." },
+          { k: ['chef cook'], r: "A chef works in a kitchen. Yum!" },
+          { k: ['pilot plane'], r: "A pilot flies a plane. Just like me! Ha!" }
+        ],
+        o: "Ooh, that is an interesting job!",
+        t: ["I think a vet has a cool job.", "A chef!", "A pilot is cool."],
+        m: "I think a vet has a cool job.",
+        x: [["vet", 0], ["a doctor", 1], ["chef", 2], ["pilot", 3], ["football player", -1], ["teacher", -1]]
+      },
+      {
+        c: "What does a person in that job do every day?",
+        he: 'מה עושים בעבודה הזאת? זוכרים s בסוף. למשל: A vet helps sick animals.',
+        a: [],
+        o: "Wow, that is a busy day at work!",
+        t: ["A vet helps sick animals.", "A chef cooks food.", "A pilot flies planes."],
+        x: [["he help animals", -1], ["cook food", -1]]
+      },
+      {
+        c: "Which job would you like to try for one day? Why?",
+        he: 'איזו עבודה הייתם רוצים לנסות ליום אחד, ולמה? למשל: I would like to be a vet.',
+        a: [],
+        o: "What a fun idea! One day is a great start.",
+        t: ["I would like to be a vet.", "A chef, because I love cooking.", "A pilot, because I love planes."],
+        m: "I would like to be a vet for one day.",
+        x: [["i want be a doctor", -1], ["firefighter because it is exciting", -1]]
+      },
+      {
+        c: "Do you think a firefighter has an exciting job or a boring job?",
+        he: 'עבודה של כבאי מרגשת או משעממת? למשל: I think it is exciting.',
+        a: [
+          { k: ['boring'], r: "Boring? Maybe on a quiet day! But it is very important." },
+          { k: ['exciting excited interesting cool fun scary dangerous hard'], r: "I think so too! A firefighter helps people every day." }
+        ],
+        o: "Firefighters are very brave people!",
+        t: ["I think it is exciting.", "I think it is a bit boring."],
+        m: "I think it is an exciting job.",
+        x: [["exciting", 1], ["is very interesting", 1], ["boring", 0], ["i don't know", -1], ["scary", 1]]
+      }
+    ],
+    end: "Thank you! Now I am going back to my job. I sell the best hats! Bye bye!"
+  },
+  {
+    id: 'ta2w04', title: 'A postcard from Chacho',
+    he: "מדברים על גלויה מטיול: We're in..., It's beautiful, See you soon!",
+    turns: [
+      {
+        c: "Hi! I am in the Galilee, and it is beautiful! Where would you like to send a postcard from?",
+        he: 'מאיזה מקום הייתם רוצים לשלוח גלויה? למשל: From the beach in Eilat.',
+        a: [],
+        o: "Ooh, what a great place for a postcard!",
+        t: ["From the beach in Eilat.", "From Paris!", "From a big city."],
+        m: "I would like to send one from Eilat.",
+        x: [["from london", -1], ["the north", -1]]
+      },
+      {
+        c: "What is the weather like there, do you think?",
+        he: "איך מזג האוויר שם? למשל: It's sunny and hot. או It's cold and rainy.",
+        a: [
+          { k: ['sun sunny hot warm'], r: "Sunny and hot! Do not forget your hat." },
+          { k: ['rain rainy cold snow snowy wind windy'], r: "Brr! Take a warm coat and an umbrella." }
+        ],
+        o: "Thank you! I will pack the right clothes.",
+        t: ["It is sunny and hot.", "It is cold and rainy."],
+        m: "It's sunny and beautiful.",
+        x: [["is sunny", 0], ["very hot", 0], ["it snow", 1], ["cold", 1], ["nice", -1]]
+      },
+      {
+        c: "On your trip, real or made up, what did you do?",
+        he: 'מה עשיתם בטיול, אמיתי או מדומיין? בעבר. למשל: We took a boat trip.',
+        a: [],
+        o: "Wow, what a fun day!",
+        t: ["We took a boat trip.", "I swam in the sea.", "We went to a museum."],
+        m: "Yesterday we took a boat trip.",
+        x: [["we go swim", -1], ["eat falafel", -1]]
+      },
+      {
+        c: "How do you like to end a postcard to a friend?",
+        he: 'איך אתם אוהבים לסיים גלויה לחבר? למשל: See you soon! או Love, from me.',
+        a: [
+          { k: ['see_you soon bye love miss'], r: "Lovely! See you soon is warm and friendly." }
+        ],
+        o: "Thank you! A short, warm goodbye is the best.",
+        t: ["See you soon!", "Love, from me.", "Bye for now!"],
+        m: "See you soon!",
+        x: [["see you soon", 0], ["bye bye", 0], ["i miss you", 0], ["the end", -1], ["thank you", -1]]
+      }
+    ],
+    end: "I am going to write my postcards now. See you soon, my friend!"
   }
 ]);
 

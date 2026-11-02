@@ -3,8 +3,9 @@
 window.EQ_MISSIONS = window.EQ_MISSIONS || {};
 window.EQ_MISSIONS.a1 = [
 {
-  id: 'a1g01', url: 'https://test-english.com/grammar-points/a1/present-simple-forms-of-to-be/', type: 'grammar',
+  id: 'a1g01', type: 'grammar',
   title: 'am, is, are', dinner: 'How are you today, and what is your favourite food?',
+  kid: 'am, is, are', he: 'הפועל to be: am, is, are',
   hook: { q: 'Which animal is the tallest in the world?', o: ['The giraffe', 'The elephant', 'The horse'], a: 0,
     reveal: 'The *giraffe*! A giraffe *is* about 5 metres tall. Giraffes *are* the tallest animals in the world.' },
   learn: { kind: 'rule', title: 'The verb "be": am, is, are', form: ['I am', 'he / she / it is', 'you / we / they are'],
@@ -39,8 +40,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g02', url: 'https://test-english.com/grammar-points/a1/this-that-these-those/', type: 'grammar',
+  id: 'a1g02', type: 'grammar',
   title: 'this, that, these, those', dinner: 'What is this on your plate?',
+  kid: 'this, that, these, those', he: 'מילות הצבעה: this, that, these, those',
   hook: { q: 'How many legs does a spider have?', o: ['6', '8', '10'], a: 1,
     reveal: '*Eight*! *These* eight legs help a spider run very fast.' },
   learn: { kind: 'rule', title: 'Near or far? One or many?', form: ['this (one, near)', 'that (one, far)', 'these (many, near)', 'those (many, far)'],
@@ -76,8 +78,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g03', url: 'https://test-english.com/grammar-points/a1/possessive-adjectives/', type: 'grammar',
+  id: 'a1g03', type: 'grammar',
   title: 'my, your, his, her', dinner: 'What is your favourite thing in your room?',
+  kid: 'my, your, his, her', he: 'מילות שייכות: my, your, his, her',
   hook: { q: 'Which planet is the biggest?', o: ['Jupiter', 'Mars', 'Earth'], a: 0,
     reveal: '*Jupiter*! *Its* size is huge: more than 1,300 Earths can fit inside it.' },
   learn: { kind: 'rule', title: 'I → my, she → her', form: ['I → my', 'you → your', 'he → his', 'she → her', 'it → its', 'we → our', 'they → their'],
@@ -112,8 +115,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1v01', url: 'https://test-english.com/vocabulary/a1/common-things-a1-english-vocabulary/', type: 'vocabulary',
+  id: 'a1v01', type: 'vocabulary',
   title: 'Common things', dinner: 'What do you have in your school bag?',
+  kid: 'Things I use every day', he: 'מילים: חפצים יומיומיים',
   hook: { q: 'Before clocks, what did people use to tell the time?', o: ['The sun', 'The moon', 'Phones'], a: 0,
     reveal: '*The sun*! People used a sundial: its shadow showed the time. Today we use a *clock* or a *phone*.' },
   learn: { kind: 'words', title: 'Things you use every day', words: [
@@ -158,8 +162,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1v02', url: 'https://test-english.com/vocabulary/a1/common-verbs-and-verb-phrases-a1-english-vocabulary/', type: 'vocabulary',
+  id: 'a1v02', type: 'vocabulary',
   title: 'My day', dinner: 'What time do you get up and go to bed?',
+  kid: 'My day', he: 'מילים: פעלים של היום שלי',
   hook: { q: 'About how many hours does a cat sleep in one day?', o: ['About 5', 'About 15', 'About 23'], a: 1,
     reveal: 'About *15 hours*! A cat *sleeps* more than it *plays*. Today: words for your day.' },
   learn: { kind: 'words', title: 'Things you do every day', words: [
@@ -204,8 +209,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l01', url: 'https://test-english.com/listening/a1/giving-personal-information-a1-english-listening-test/', type: 'listening',
+  id: 'a1l01', type: 'listening',
   title: 'Joining a club', dinner: 'How do you spell your name in English?',
+  kid: 'Tom joins a swim club', he: 'האזנה: טום נרשם לחוג שחייה',
   hook: { q: 'Which first name do more people in the world have than any other?', o: ['Mohammed', 'John', 'Maria'], a: 0,
     reveal: '*Mohammed*! Many millions of people have this name. And what is *your* name?' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -257,8 +263,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l02', url: 'https://test-english.com/listening/a1/who-is-in-your-new-class-a1-english-listening-test/', type: 'listening',
+  id: 'a1l02', type: 'listening',
   title: 'My new class', dinner: 'Who sits next to you in class?',
+  kid: 'My new class', he: 'האזנה: לילי מספרת על הכיתה החדשה',
   hook: { q: 'In which country is the biggest school in the world, with more than 50,000 students?', o: ['India', 'The USA', 'China'], a: 0,
     reveal: 'In *India*! A school in the city of Lucknow has more than 50,000 students. That\'s a big class photo!' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -279,7 +286,7 @@ window.EQ_MISSIONS.a1 = [
       ] },
       { lines: [
         ['M', 'What does Sara like?'],
-        ['L', 'She likes drawing. She draws animals. Her cats are really good!'],
+        ['L', 'She likes drawing. She draws animals. Her cat drawings are really good!'],
         ['M', 'And is there a funny boy in your class?'],
         ['L', 'Yes, Ben! He has glasses, and he tells jokes all the time.']
       ], items: [
@@ -309,8 +316,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l03', url: 'https://test-english.com/listening/a1/how-often-do-you-a1-english-listening-test/', type: 'listening',
+  id: 'a1l03', type: 'listening',
   title: 'How often?', dinner: 'How often do you eat vegetables?',
+  kid: 'How often?', he: 'האזנה: סקר בבית הספר, כל כמה זמן',
   hook: { q: 'What is the most popular drink in the world, after water?', o: ['Tea', 'Coffee', 'Orange juice'], a: 0,
     reveal: '*Tea*! Many people drink it *every day*. How often do *you* drink tea?' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -359,8 +367,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1r01', url: 'https://test-english.com/reading/a1/guess-who-a1-english-reading-test/', type: 'reading',
+  id: 'a1r01', type: 'reading',
   title: 'Guess who?', dinner: 'Can you describe an animal so I can guess it?',
+  kid: 'Guess who?', he: 'קריאה: נחשו מי אני',
   hook: { q: 'Which animal can sleep standing up?', o: ['A horse', 'A dog', 'A fish'], a: 0,
     reveal: 'A *horse*! Horses can rest standing up. Now read the clues and guess the animals.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'Three animals talk about themselves. Read the clues and guess who they are!',
@@ -394,8 +403,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1u02', url: 'https://test-english.com/use-of-english/a1/a1-english-test-2-multiple-choice-questions/', type: 'use-of-english',
+  id: 'a1u02', type: 'use-of-english',
   title: 'A cat at school', dinner: 'What animal would you like to bring to school?',
+  kid: 'A cat at school', he: 'כתבה: חתול בבית הספר',
   hook: { q: 'What do we call a baby cat?', o: ['A kitten', 'A puppy', 'A calf'], a: 0,
     reveal: 'A *kitten*! Today\'s news story is about a cat that goes to school every day. (It is a made-up story!)' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a funny news story (it is made up!) and choose the right word for each gap.',
@@ -427,8 +437,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g04', url: 'https://test-english.com/grammar-points/a1/a-an-plurals/', type: 'grammar',
+  id: 'a1g04', type: 'grammar',
   title: 'a, an and plurals', dinner: 'How many apples and bananas do we have at home?',
+  kid: 'a, an and plurals', he: 'a, an וצורת הרבים',
   hook: { q: 'How many teeth does an adult usually have?', o: ['20', '32', '50'], a: 1,
     reveal: '*32 teeth*! A young child has 20. One *tooth*, two *teeth*: some plurals are strange!' },
   learn: { kind: 'rule', title: 'One or many?', form: ['a + consonant sound: a cat, a banana', 'an + vowel sound: an apple, an egg', 'many: cat → cats, bus → buses, baby → babies'],
@@ -466,8 +477,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g05', url: 'https://test-english.com/grammar-points/a1/adjectives/', type: 'grammar',
+  id: 'a1g05', type: 'grammar',
   title: 'Adjectives: a big dog', dinner: 'Can you describe your best friend with three adjectives?',
+  kid: 'Adjectives: a big dog', he: 'שמות תואר: a big dog',
   hook: { q: 'Which is the biggest animal that ever lived?', o: ['The T. rex', 'The blue whale', 'The African elephant'], a: 1,
     reveal: 'The *blue whale*! It is a *very big* animal, about 30 metres long. *Big*, *blue*, *long*: these words are adjectives.' },
   learn: { kind: 'rule', title: 'Words that describe', form: ['adjective + noun: a red car', 'be + adjective: The car is red.', 'no -s: big dogs (not bigs dogs)'],
@@ -504,8 +516,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g06', url: 'https://test-english.com/grammar-points/a1/present-simple/', type: 'grammar',
+  id: 'a1g06', type: 'grammar',
   title: 'I play, she plays', dinner: 'What do you do every day after school?',
+  kid: 'I play, she plays', he: 'הווה פשוט: I play, she plays',
   hook: { q: 'What do bees make?', o: ['Milk', 'Honey', 'Bread'], a: 1,
     reveal: '*Honey*! A bee *visits* many flowers every day. Today: I make, she makes, does she make?' },
   learn: { kind: 'rule', title: 'The present simple', form: ['I / you / we / they play', 'he / she / it plays', 'don\'t / doesn\'t + play', 'Do you play? Does she play?'],
@@ -542,8 +555,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g07', url: 'https://test-english.com/grammar-points/a1/questions/', type: 'grammar',
+  id: 'a1g07', type: 'grammar',
   title: 'Who? What? Where?', dinner: 'What questions can you ask me about my day?',
+  kid: 'Who? What? Where?', he: 'מילות שאלה: who, what, where',
   hook: { q: 'How many colours are there in a rainbow?', o: ['5', '7', '10'], a: 1,
     reveal: 'We usually say *seven*: red, orange, yellow, green, blue, indigo and violet. *How many*, *what*, *where*: today we ask questions!' },
   learn: { kind: 'rule', title: 'Asking questions', form: ['question word + be + subject: Where is Dana?', 'question word + do / does + subject + verb: Where do you live?'],
@@ -579,8 +593,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g08', url: 'https://test-english.com/grammar-points/a1/adverbs-frequency/', type: 'grammar',
+  id: 'a1g08', type: 'grammar',
   title: 'always, often, never', dinner: 'What do you usually do at the weekend?',
+  kid: 'always, often, never', he: 'מילות תדירות: always, often, never',
   hook: { q: 'How often can we see a full moon?', o: ['Every night', 'About once a month', 'Once a year'], a: 1,
     reveal: 'About *once a month*! The moon is *always* there, but we *sometimes* see all of it and *sometimes* only a part.' },
   learn: { kind: 'rule', title: 'How often?', form: ['always (every time)', 'usually', 'often', 'sometimes', 'never (not at any time)'],
@@ -600,7 +615,7 @@ window.EQ_MISSIONS.a1 = [
     { name: 'Where does it go?', items: [
       { k: 'mc', q: 'Choose the right sentence:', o: ['I often watch films.', 'I watch often films.', 'I often films watch.'], a: 0, why: 'before the main verb: often watch.' },
       { k: 'tf', q: '"She is never late."', a: true, why: 'after is: is never.' },
-      { k: 'type', q: 'We ___ eat pizza on Fridays. It\'s our favourite!', hint: '(usually / never)', a: ['usually'], why: 'It\'s our favourite → usually.' },
+      { k: 'type', q: 'We ___ eat pizza on Fridays. It\'s our favourite!', hint: '(usually / never)', a: ['usually', 'always', 'often'], why: 'It\'s our favourite → usually.' },
       { k: 'tf', q: '"He always is happy."', a: false, fix: 'He is always happy.', why: 'after is: is always.' }
     ] },
     { name: 'Build it', items: [
@@ -617,8 +632,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1g09', url: 'https://test-english.com/grammar-points/a1/object-pronouns/', type: 'grammar',
+  id: 'a1g09', type: 'grammar',
   title: 'I or me? she or her?', dinner: 'Who do you sit with at lunch, and what do you talk about?',
+  kid: 'I or me? she or her?', he: 'כינויי מושא: me, him, her',
   hook: { q: 'Which animal knows that it is looking at itself in a mirror?', o: ['A goldfish', 'A frog', 'A dolphin'], a: 2,
     reveal: 'A *dolphin*! Put a mirror in front of *it*, and it knows: "That\'s *me*!"' },
   learn: { kind: 'rule', title: 'Before or after the verb', form: ['I → me', 'you → you', 'he → him', 'she → her', 'it → it', 'we → us', 'they → them'],
@@ -636,7 +652,7 @@ window.EQ_MISSIONS.a1 = [
     ] },
     { name: 'Fix it', items: [
       { k: 'tf', q: '"Me like ice cream."', a: false, fix: 'I like ice cream.', why: 'before the verb → I.' },
-      { k: 'type', q: 'Our teacher is great. We all like ___.', hint: '(she / her)', a: ['her'], why: 'after the verb → her.' },
+      { k: 'type', q: 'Our teacher, Mrs Cohen, is great. We all like ___.', hint: '(she / her)', a: ['her'], why: 'after the verb → her.' },
       { k: 'tf', q: '"Can you help me, please?"', a: true, why: 'after help → me.' },
       { k: 'mc', q: 'I love this song. Listen to ___!', o: ['it', 'its', 'she'], a: 0, why: 'the song = it; after to → it.' }
     ] },
@@ -654,8 +670,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1u01', url: 'https://test-english.com/use-of-english/a1/a1-test-1/', type: 'use-of-english',
+  id: 'a1u01', type: 'use-of-english',
   title: 'Max the robot waiter', dinner: 'Would you like a robot at home, and what would it do?',
+  kid: 'Max the robot waiter', he: 'כתבה: מקס, רובוט מלצר',
   hook: { q: 'In which country was the first pizza made?', o: ['The USA', 'Italy', 'Greece'], a: 1,
     reveal: 'In *Italy*, in the city of Naples! Today\'s news story is about a robot that brings pizza. (It is a made-up story!)' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a funny news story (it is made up!) and choose the right word for each gap.',
@@ -687,8 +704,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1u03', url: 'https://test-english.com/use-of-english/a1/a1-english-test-3-text-multiple-choice-gaps/', type: 'use-of-english',
+  id: 'a1u03', type: 'use-of-english',
   title: 'The longest sandwich', dinner: 'What is your favourite sandwich?',
+  kid: 'The longest sandwich', he: 'כתבה: הכריך הארוך בעולם',
   hook: { q: 'The word "sandwich" comes from…', o: ['a man', 'a city in Italy', 'a song'], a: 0,
     reveal: 'A *man*: the Earl of Sandwich, in England. The story says he ate meat between two pieces of bread when he played cards. Today\'s news: a very long sandwich! (It is a made-up story!)' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a news story (it is made up!) and choose the right word for each gap.',
@@ -720,8 +738,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1u04', url: 'https://test-english.com/use-of-english/a1/a1-english-test-4-multiple-choice-questions/', type: 'use-of-english',
+  id: 'a1u04', type: 'use-of-english',
   title: 'Grandma on a skateboard', dinner: 'What fun thing would you like to do when you are seventy?',
+  kid: 'Grandma on a skateboard', he: 'כתבה: סבתא על סקייטבורד',
   hook: { q: 'How old was the oldest person in history?', o: ['99', '122', '150'], a: 1,
     reveal: '*122* years old: Jeanne Calment from France. She is the oldest person we know of. Today\'s news is about a grandma who loves her skateboard. (It is a made-up story!)' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a short news story (it is made up!), choose the right words, then answer some quick questions.',
@@ -753,8 +772,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1v03', url: 'https://test-english.com/vocabulary/a1/family-and-relatives-a1-english-vocabulary/', type: 'vocabulary',
+  id: 'a1v03', type: 'vocabulary',
   title: 'My family', dinner: 'How many cousins do you have, and who is the oldest?',
+  kid: 'My family', he: 'מילים: בני המשפחה',
   hook: { q: 'Which animal mother carries her baby in a pocket?', o: ['The kangaroo', 'The cat', 'The bear'], a: 0,
     reveal: 'The *kangaroo*! A baby kangaroo lives in its *mother*\'s pocket for about six months. Today: family words.' },
   learn: { kind: 'words', title: 'People in your family', words: [
@@ -800,8 +820,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1v04', url: 'https://test-english.com/vocabulary/a1/opposite-adjectives-for-describing-people-and-things-a1-english-vocabulary/', type: 'vocabulary',
+  id: 'a1v04', type: 'vocabulary',
   title: 'Opposites', dinner: 'Who is the tallest person in our family?',
+  kid: 'Opposites', he: 'מילים: הפכים לתיאור',
   hook: { q: 'Which of these animals is the slowest?', o: ['A snail', 'A rabbit', 'A horse'], a: 0,
     reveal: 'A *snail*! It is very *slow*. A rabbit is *fast*. Slow and fast are opposites, and today you learn more of them.' },
   learn: { kind: 'words', title: 'Words and their opposites', words: [
@@ -848,8 +869,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1v05', url: 'https://test-english.com/vocabulary/a1/daily-routines-a1-english-vocabulary/', type: 'vocabulary',
+  id: 'a1v05', type: 'vocabulary',
   title: 'Morning to night', dinner: 'What time did you wake up today?',
+  kid: 'Morning to night', he: 'מילים: סדר היום',
   hook: { q: 'How do astronauts on the space station wash their hair?', o: ['With a special shampoo and very little water', 'In a normal shower', 'They never wash it'], a: 0,
     reveal: 'With a *special shampoo* and very little water. In space you can\'t *have a shower* like at home!' },
   learn: { kind: 'words', title: 'Your day, step by step', words: [
@@ -896,8 +918,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l04', url: 'https://test-english.com/listening/a1/what-are-you-doing-a1-english-listening-test/', type: 'listening',
+  id: 'a1l04', type: 'listening',
   title: 'What are you doing?', dinner: 'What is your best friend doing right now, do you think?',
+  kid: 'What are you doing?', he: 'האזנה: שיחת טלפון בשבת בבוקר',
   hook: { q: 'Who made the first phone call, in 1876?', o: ['Alexander Graham Bell', 'Thomas Edison', 'Albert Einstein'], a: 0,
     reveal: '*Alexander Graham Bell*! He called his helper, Mr Watson. Today friends call and ask: What *are* you *doing*?' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -949,8 +972,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l05', url: 'https://test-english.com/listening/a1/tell-me-about-your-life-a1-english-listening-test/', type: 'listening',
+  id: 'a1l05', type: 'listening',
   title: 'Life on a kibbutz', dinner: 'What is your favourite part of the day, and why?',
+  kid: 'Life on a kibbutz', he: 'האזנה: החיים בקיבוץ',
   hook: { q: 'How many litres of milk can one cow give in a day?', o: ['About 2', 'About 30', 'About 300'], a: 1,
     reveal: 'About *30 litres*! That\'s a lot of milk. Today you meet a girl who *gets up* early to help with the cows.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1001,8 +1025,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l06', url: 'https://test-english.com/listening/a1/what-are-you-going-to-do-a1-english-listening-test/', type: 'listening',
+  id: 'a1l06', type: 'listening',
   title: 'Holiday plans', dinner: 'What are you going to do this weekend?',
+  kid: 'Holiday plans', he: 'האזנה: תוכניות לחופשה',
   hook: { q: 'Where is the lowest place on land in the world?', o: ['The Dead Sea', 'The Sahara', 'Mount Everest'], a: 0,
     reveal: 'The *Dead Sea*! It is about 430 metres below the level of the sea. And today, Ido *is going to* visit it.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1051,8 +1076,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l07', url: 'https://test-english.com/listening/a1/comparing-things-and-people-a1-english-listening-test/', type: 'listening',
+  id: 'a1l07', type: 'listening',
   title: 'Which dog?', dinner: 'Which is better, a cat or a dog, and why?',
+  kid: 'Which dog?', he: 'האזנה: בוחרים כלב בבית מחסה',
   hook: { q: 'Which animal is faster?', o: ['A cheetah', 'A horse', 'They are the same'], a: 0,
     reveal: 'A *cheetah*! It can run at about 100 kilometres an hour. It is much *faster than* a horse.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1100,8 +1126,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l08', url: 'https://test-english.com/listening/a1/describing-rooms-there-is-are-prepositions-of-place-a1-english-listening-test/', type: 'listening',
+  id: 'a1l08', type: 'listening',
   title: 'My new room', dinner: 'What is there on the wall in your room?',
+  kid: 'My new room', he: 'האזנה: החדר החדש של אלה',
   hook: { q: 'In Japan, many people sleep on a futon. What is a futon?', o: ['A bed you put on the floor', 'A big chair', 'A kind of food'], a: 0,
     reveal: 'A *bed on the floor*! In the morning people put it *in* a cupboard, so *there is* more space in the room.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1151,8 +1178,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1l09', url: 'https://test-english.com/listening/a1/countries-nationalities-and-languages-a1-english-listening-test/', type: 'listening',
+  id: 'a1l09', type: 'listening',
   title: 'International camp', dinner: 'Which country would you like to visit, and why?',
+  kid: 'A camp of many countries', he: 'האזנה: מחנה של ילדים מארצות שונות',
   hook: { q: 'Which language do most people in Brazil speak?', o: ['Portuguese', 'Spanish', 'English'], a: 0,
     reveal: '*Portuguese*! Brazil is in South America, and most people there speak *Portuguese*, not Spanish.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1203,8 +1231,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1r02', url: 'https://test-english.com/reading/a1/about-my-family/', type: 'reading',
+  id: 'a1r02', type: 'reading',
   title: 'About my family', dinner: 'Who in our family is the funniest, and why?',
+  kid: 'About my family', he: 'קריאה: המשפחה שלי',
   hook: { q: 'Which hair colour is the rarest in the world?', o: ['Red', 'Black', 'Brown'], a: 0,
     reveal: '*Red*! Only about 1 or 2 people in 100 have red hair. Now read about a family and how they look.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'Michal writes about her family for a school project. Read and meet them!',
@@ -1240,8 +1269,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1r03', url: 'https://test-english.com/reading/a1/neighborhood-reading-test/', type: 'reading',
+  id: 'a1r03', type: 'reading',
   title: 'My neighbourhood', dinner: 'What is your favourite place near our home?',
+  kid: 'My neighbourhood', he: 'קריאה: השכונה שלי',
   hook: { q: 'What do we call a shop that sells bread and cakes?', o: ['A bakery', 'A library', 'A chemist'], a: 0,
     reveal: 'A *bakery*! And there is a very good bakery near Adam\'s home. Mmm!' },
   learn: { kind: 'intro', title: 'Before you read', line: 'Adam writes about the place where he lives. Read and find out what is near his home.',
@@ -1276,8 +1306,9 @@ window.EQ_MISSIONS.a1 = [
   ]
 },
 {
-  id: 'a1r04', url: 'https://test-english.com/reading/a1/the-british-ways-a1-english-reading-test/', type: 'reading',
+  id: 'a1r04', type: 'reading',
   title: 'The British way', dinner: 'What is one thing that is different in another country you know?',
+  kid: 'Hello from London', he: 'קריאה: החיים בלונדון',
   hook: { q: 'In Britain, on which side of the road do cars drive?', o: ['On the left', 'On the right', 'In the middle'], a: 0,
     reveal: 'On the *left*! In Israel cars drive on the right, so be careful when you cross the road in London.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'Yoav is from Israel. Now he lives in London with his family. He writes about life there.',
@@ -1309,6 +1340,1392 @@ window.EQ_MISSIONS.a1 = [
   use: [
     { k: 'type', q: 'In Britain, cars drive on the ___.', a: ['left'], why: 'In Britain, cars drive on the left.',
       he: 'בבריטניה נוהגים בצד שמאל של הכביש, הפוך מישראל.' }
+  ]
+},
+// Month 2 (2026-11-01): the next topics of each section, about four more weeks.
+{
+  id: 'a1g10', type: 'grammar',
+  title: 'Whose? It\'s Maya\'s', kid: 'Whose is it?', he: 'של מי זה? (whose, \'s)',
+  dinner: 'Whose plate has the most colours tonight?',
+  hook: { q: 'Whose eggs are the biggest of all the birds?', o: ['The ostrich\'s', 'The eagle\'s', 'The penguin\'s'], a: 0,
+    reveal: 'The *ostrich\'s*! One *ostrich\'s* egg is as big as about twenty chicken eggs.' },
+  learn: { kind: 'rule', title: 'Whose is it? It\'s Maya\'s.', form: ['Whose + thing? → Whose bag is this?', 'name + \'s → Maya\'s bag', 'two or more (…s) + \' → the girls\' room'],
+    lines: ['Ask with *whose*: *Whose* pen is this? *Whose* shoes are these?',
+      'Answer with *\'s*: It\'s *Dan\'s* pen. They\'re *Noa\'s* shoes. Or just: It\'s *Dan\'s*.',
+      'Two or more people: the *girls\'* room, the *teachers\'* room (s + \').',
+      '*Whose* is not *who\'s* (who\'s = who is).'],
+    ex: ['*Whose* cat is this? It\'s *Tom\'s*.', 'This is my *friend\'s* bike.'],
+    he: '"התיק של מאיה" באנגלית הוא לא the bag of Maya אלא Maya\'s bag: קודם השם, אחריו \'s, ואז הדבר. שואלים Whose? = של מי?' },
+  steps: [
+    { name: 'Whose is it?', items: [
+      { k: 'mc', q: '"___ bag is this?" "It\'s Ben\'s."', o: ['Whose', 'Who', 'Who\'s'], a: 0, why: 'Whose = של מי, before a noun: Whose bag?' },
+      { k: 'mc', pic: 'bike', q: 'Lior has a red bike. It is ___ bike.', o: ['Lior\'s', 'Liors', 'Lior'], a: 0, why: 'name + \'s: Lior\'s bike.' },
+      { k: 'mc', pic: 'dog', q: 'Maya has a dog. It is ___.', o: ['Maya\'s dog', 'dog\'s Maya', 'Maya dog'], a: 0, why: 'first the name + \'s, then the thing: Maya\'s dog.' },
+      { k: 'mc', q: 'Two girls live in one room. It is the ___ room.', o: ['girls\'', 'girl\'s', 'girls'], a: 0, why: 'two girls → girls + \' → the girls\' room.',
+        he: 'כשיש כמה (girls), מוסיפים רק גרש אחרי ה-s: the girls\' room.' }
+    ] },
+    { name: 'Right or wrong?', items: [
+      { k: 'tf', q: '"This is my teacher car."', a: false, fix: 'This is my teacher\'s car.', why: 'my teacher + \'s: my teacher\'s car.' },
+      { k: 'type', q: '"Whose hat is this?" "It\'s ___." (Chacho)', a: ['Chacho\'s'], why: 'name + \'s: Chacho\'s.' },
+      { k: 'mc', q: '"Whose shoes are ___?" "They\'re Noa\'s."', o: ['these', 'this', 'that'], a: 0, why: 'Review: many shoes, near → these.' },
+      { k: 'mc', q: '"Is this ___ pencil?" "Yes, it\'s mine. Thank you!"', o: ['your', 'you', 'you\'re'], a: 0, why: 'Review: you → your + a noun.' },
+      { k: 'tf', q: '"Whose books are on the floor?"', a: true, why: 'Whose + books + are…?' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'Whose phone is on the table?', why: 'Whose + phone + is…?' },
+      { k: 'spot', s: 'That is *Dans* ball.', fix: 'Dan\'s', why: 'name + \'s: Dan\'s ball.' },
+      { k: 'build', s: 'This is my friend\'s cat.', why: 'my friend\'s cat = the cat of my friend.' }
+    ] }
+  ],
+  use: [
+    { k: 'teach', s: 'This is *Maya* bag.', fix: 'Maya\'s', why: 'name + \'s: Maya\'s bag.' },
+    { k: 'type', q: 'Your friend has a blue pencil. Say: "This is my ___ pencil."', a: ['friend\'s'], why: 'my friend + \'s: my friend\'s pencil.' },
+    { k: 'mc', q: 'Choose the right sentence:', o: ['Whose umbrella is this?', 'Who\'s umbrella is this?', 'Whose umbrella this is?'], a: 0,
+      why: 'Whose + umbrella + is this? (who\'s = who is)' }
+  ]
+},
+{
+  id: 'a1g11', type: 'grammar',
+  title: 'at, in, on: time', kid: 'When is it?', he: 'מילות זמן: at, in, on',
+  dinner: 'What is your favourite day of the week, and why?',
+  hook: { q: 'In Israel, in which month is the shortest day of the year?', o: ['June', 'December', 'April'], a: 1,
+    reveal: '*December*! The shortest day is *in* December, *on* 21 or 22 December. It gets dark very early *in* the evening.' },
+  learn: { kind: 'rule', title: 'at, in, on for time', form: ['at + a time: at seven o\'clock, at night', 'on + a day or a date: on Monday, on 5 May', 'in + a month, a season, a year: in June, in winter, in 2026', 'in the morning / afternoon / evening'],
+    lines: ['*at* + the clock: *at* eight o\'clock, *at* half past three. Also *at* night, *at* the weekend.',
+      '*on* + days and dates: *on* Sunday, *on* my birthday, *on* 1 September.',
+      '*in* + longer times: *in* July, *in* the summer, *in* 2010. And *in* the morning, *in* the evening.'],
+    ex: ['School starts *at* eight o\'clock.', 'It is hot *in* August.'],
+    he: 'בעברית אומרים "ב" לכל זמן. באנגלית: at לשעה, on ליום ולתאריך, in לחודש, לעונה ולשנה. וגם: in the morning, אבל at night.' },
+  steps: [
+    { name: 'at, in or on?', items: [
+      { k: 'mc', q: 'The film starts ___ six o\'clock.', o: ['at', 'on', 'in'], a: 0, why: 'a time on the clock → at.' },
+      { k: 'mc', q: 'We have English ___ Tuesday.', o: ['on', 'in', 'at'], a: 0, why: 'a day → on.' },
+      { k: 'mc', pic: 'rain', q: 'It often rains ___ winter.', o: ['in', 'on', 'at'], a: 0, why: 'a season → in.' },
+      { k: 'mc', q: 'I read a book ___ the evening.', o: ['in', 'on', 'at'], a: 0, why: 'in the morning, in the afternoon, in the evening.' }
+    ] },
+    { name: 'Right or wrong?', items: [
+      { k: 'tf', q: '"My birthday is on March."', a: false, fix: 'My birthday is in March.', why: 'a month → in.' },
+      { k: 'type', q: 'I go to bed ___ nine o\'clock.', a: ['at'], why: 'a time on the clock → at.' },
+      { k: 'tf', q: '"Owls hunt at night."', a: true, why: 'at night (but in the morning).' },
+      { k: 'mc', q: 'Omer ___ football on Fridays.', o: ['plays', 'play', 'playing'], a: 0, why: 'Review: Omer = he → plays.' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'The party is at five o\'clock.', why: 'a time → at five o\'clock.' },
+      { k: 'spot', s: 'I get up *in* seven o\'clock.', fix: 'at', why: 'a time on the clock → at.' },
+      { k: 'build', s: 'What do you do on Saturday?', why: 'a day → on Saturday.' }
+    ] }
+  ],
+  use: [
+    { k: 'teach', s: 'See you *in* Monday!', fix: 'on', why: 'a day → on Monday.' },
+    { k: 'type', q: 'I usually go to school ___ the morning.', a: ['in'], why: 'in the morning.' },
+    { k: 'mc', q: '"___ you get up early on Sundays?" "Yes, I do."', o: ['Do', 'Does', 'Are'], a: 0, why: 'Review: you → Do you…?' }
+  ]
+},
+{
+  id: 'a1g12', type: 'grammar',
+  title: 'at, in, on: place', kid: 'Where is it?', he: 'איפה זה? at, in, on למקום',
+  dinner: 'Where do you like to be on a hot day?',
+  hook: { q: 'Where do almost all penguins live?', o: ['In the south of the world', 'At the North Pole', 'In the desert'], a: 0,
+    reveal: 'In the *south* of the world! There are no penguins *at* the North Pole. Many penguins live *on* the ice or *on* islands, and they swim *in* the sea.' },
+  learn: { kind: 'rule', title: 'in, on, at for places', form: ['in = inside: in the box, in Haifa', 'on = on top of a thing: on the table, on the wall', 'at = at a place, at a point: at school, at the bus stop'],
+    lines: ['*in* = inside something: *in* my bag, *in* the kitchen. Also cities and countries: *in* Eilat, *in* Israel.',
+      '*on* = on the top or the side of a thing: *on* the table, *on* the wall, *on* the floor.',
+      '*at* = a place where we do something: *at* school, *at* the beach, *at* the bus stop, *at* home.'],
+    ex: ['The cat is *in* the box.', 'We are *at* the beach.'],
+    he: 'בעברית "ב" או "על". באנגלית: in = בתוך (גם עיר ומדינה), on = על משטח (שולחן, קיר, רצפה), at = במקום שעושים בו משהו: at school, at the beach, at home.' },
+  steps: [
+    { name: 'in, on or at?', items: [
+      { k: 'mc', pic: 'ice cream', q: 'Put the ice cream ___ the freezer!', o: ['in', 'at', 'of'], a: 0, why: 'inside the freezer → in.' },
+      { k: 'mc', q: 'There is a picture ___ the wall.', o: ['on', 'in', 'at'], a: 0, why: 'on the wall.' },
+      { k: 'mc', q: 'My grandma lives ___ Haifa.', o: ['in', 'on', 'at'], a: 0, why: 'a city → in.' },
+      { k: 'mc', pic: 'bus', q: 'We wait for the bus ___ the bus stop.', o: ['at', 'on', 'of'], a: 0, why: 'a point where we do something → at the bus stop.' }
+    ] },
+    { name: 'Right or wrong?', items: [
+      { k: 'tf', q: '"The book is in the table."', a: false, fix: 'The book is on the table.', why: 'on top of the table → on.' },
+      { k: 'type', q: 'Let\'s swim ___ the sea!', a: ['in'], why: 'in the sea (inside the water).' },
+      { k: 'tf', q: '"I am at the bus stop."', a: true, why: 'at the bus stop.' },
+      { k: 'mc', q: 'Where ___ the keys?', o: ['are', 'is', 'am'], a: 0, why: 'Review: the keys = they → are.' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'The bird is on the roof.', why: 'on the roof.' },
+      { k: 'spot', s: 'We play football *on* the park.', fix: 'in', why: 'in the park (or at the park), not on.' },
+      { k: 'build', s: 'Is your phone in your bag?', why: 'inside the bag → in.' }
+    ] }
+  ],
+  use: [
+    { k: 'teach', s: 'Dana lives *at* Tel Aviv.', fix: 'in', why: 'a city → in Tel Aviv.' },
+    { k: 'type', q: 'I learn English ___ school.', a: ['at', 'in'], why: 'at school (in school is OK too).' },
+    { k: 'mc', q: 'She ___ a cat. It sleeps on the sofa.', o: ['has', 'have', 'is'], a: 0, why: 'Review: she → has.' }
+  ]
+},
+{
+  id: 'a1g13', type: 'grammar',
+  title: 'can, can\'t', kid: 'What can you do?', he: 'יכול או לא יכול: can, can\'t',
+  dinner: 'What is something new you can do this year?',
+  hook: { q: 'Which of these animals can\'t jump?', o: ['A kangaroo', 'An elephant', 'A frog'], a: 1,
+    reveal: 'The *elephant*! Elephants *can* swim very well, but they *can\'t* jump.' },
+  learn: { kind: 'rule', title: 'can and can\'t', form: ['I / you / he / she / we / they + can + verb', 'can\'t = cannot', 'Can you…? Yes, I can. / No, I can\'t.'],
+    lines: ['*can* = I am able to: I *can* swim. She *can* draw horses.',
+      'No *s*, no *to*: He *can* ride a bike (not he cans, not can to ride).',
+      '*can\'t* = not able: Fish *can\'t* walk. Questions: *Can* you whistle? Yes, I *can*.',
+      'We also ask with *can*: *Can* I open the window? *Can* you help me, please?'],
+    ex: ['Owls *can* see at night.', '*Can* you swim? Yes, I *can*.'],
+    he: 'אחרי can בא פועל רגיל, בלי s ובלי to: She can swim. בשאלה can עובר להתחלה: Can you swim? וגם בבקשה: Can I go out?' },
+  steps: [
+    { name: 'Can or can\'t?', items: [
+      { k: 'mc', pic: 'fish', q: 'Fish ___ walk.', o: ['can\'t', 'can', 'cans'], a: 0, why: 'Fish swim, but they can\'t walk.' },
+      { k: 'mc', pic: 'owl', q: 'An owl ___ fly.', o: ['can', 'can\'t', 'cans'], a: 0, why: 'Owls fly. can + fly (no s).' },
+      { k: 'mc', pic: 'guitar', q: 'Lea ___ play the guitar. She plays every day.', o: ['can', 'cans', 'can to'], a: 0, why: 'can + verb, no s and no to.' },
+      { k: 'mc', q: '"Can you ride a bike?" "Yes, I ___."', o: ['can', 'do', 'am'], a: 0, why: 'Can you…? → Yes, I can.' }
+    ] },
+    { name: 'Right or wrong?', items: [
+      { k: 'tf', q: '"He cans swim."', a: false, fix: 'He can swim.', why: 'can never takes s.' },
+      { k: 'tf', q: '"She can to speak English."', a: false, fix: 'She can speak English.', why: 'can + verb, no to.' },
+      { k: 'type', q: '"___ I have some water, please?" "Of course!"', a: ['can', 'could', 'may'], why: 'Can I…? asks for something.' },
+      { k: 'mc', q: 'My cat ___ fish.', o: ['likes', 'like', 'liking'], a: 0, why: 'Review: my cat = it → likes.' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'Can you play the piano?', why: 'A question: Can + you + play…?' },
+      { k: 'spot', s: 'Penguins can\'t fly, but they *can\'t* swim very well.', fix: 'can', why: 'Penguins swim very well → they can swim.' },
+      { k: 'build', s: 'Our teacher can speak three languages.', why: 'can + speak.' }
+    ] }
+  ],
+  use: [
+    { k: 'teach', s: 'I can *runs* very fast!', fix: 'run', why: 'can + run (no s).' },
+    { k: 'type', q: 'About you: I ___ swim.', hint: '(can / can\'t)', a: ['can', 'can\'t', 'cannot', 'can not'], why: 'can = I am able; can\'t = I am not able. Both are right: it is about you!' },
+    { k: 'mc', q: 'My dog ___ always hungry.', o: ['is', 'are', 'am'], a: 0, why: 'Review: my dog = it → is always.' }
+  ]
+},
+{
+  id: 'a1g14', type: 'grammar',
+  title: 'I\'m doing, she\'s doing', kid: 'What are you doing now?', he: 'מה קורה עכשיו? (present continuous)',
+  dinner: 'What is everyone doing right now, at this table?',
+  hook: { q: 'Right now, is the Earth moving?', o: ['Yes, it is.', 'No, it isn\'t.'], a: 0,
+    reveal: '*Yes, it is*! The Earth *is turning* all the time, and it *is going* around the sun. We *are moving* right now!' },
+  learn: { kind: 'rule', title: 'Now: am / is / are + -ing', form: ['I am (I\'m) + verb-ing', 'he / she / it is + verb-ing', 'you / we / they are + verb-ing'],
+    lines: ['For things happening *now*: I *am reading*. She *is sleeping*. They *are playing*.',
+      'Not: I\'m *not watching* TV. He *isn\'t eating*. Questions: *Are* you *listening*? *Is* it *raining*?',
+      'Spelling: make → *making*, swim → *swimming*, sit → *sitting*.'],
+    ex: ['Look! The baby *is laughing*.', '*Are* you *doing* your homework?'],
+    he: 'כשמשהו קורה עכשיו ממש: am, is, are ועוד פועל עם ing. I am eating = אני אוכל (עכשיו). אל תשכחו את am, is, are!' },
+  steps: [
+    { name: 'What is happening?', items: [
+      { k: 'mc', q: 'Shh! The baby ___.', o: ['is sleeping', 'sleeping', 'are sleeping'], a: 0, why: 'the baby = he or she → is sleeping.' },
+      { k: 'mc', pic: 'rain', q: 'Take an umbrella. It ___.', o: ['is raining', 'rains', 'raining'], a: 0, why: 'now → it is raining.' },
+      { k: 'mc', q: 'We ___ a game now.', o: ['are playing', 'is playing', 'playing'], a: 0, why: 'we → are playing.' },
+      { k: 'mc', q: '"What are you doing?" "I ___ a book."', o: ['am reading', 'reading', 'is reading'], a: 0, why: 'I → am reading.' }
+    ] },
+    { name: 'Right or wrong?', items: [
+      { k: 'tf', q: '"She eating an apple."', a: false, fix: 'She is eating an apple.', why: 'Don\'t forget is: she is eating.' },
+      { k: 'type', q: 'Look! The dog ___ in the sea.', hint: '(swim)', a: ['is swimming', '\'s swimming'], why: 'the dog = it → is swimming (swim → swimming, two m).' },
+      { k: 'tf', q: '"They are sitting on the grass."', a: true, why: 'they → are sitting.' },
+      { k: 'mc', q: '"___ you like swimming?" "Yes, I do."', o: ['Do', 'Are', 'Does'], a: 0, why: 'Review: a thing you like (not only now) → Do you like…?' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'Are you listening to me?', why: 'A question: Are + you + listening?' },
+      { k: 'spot', s: 'I am *make* a cake.', fix: 'making', why: 'am + verb-ing: I am making.' },
+      { k: 'build', s: 'The children are not sleeping.', why: 'they → are not (aren\'t) + sleeping.' }
+    ] }
+  ],
+  use: [
+    { k: 'teach', s: 'Chacho *are* singing a song!', fix: 'is', why: 'Chacho = he → is singing.' },
+    { k: 'type', q: 'About you: Right now I am ___ English.', hint: '(learn)', a: ['learning'], why: 'am + learning. Yes, you are learning English right now!' },
+    { k: 'mc', q: '___ cookies on my plate are yummy.', o: ['These', 'This', 'That'], a: 0, why: 'Review: many, near → these.' }
+  ]
+},
+{
+  id: 'a1g15', type: 'grammar',
+  title: 'I play or I\'m playing?', kid: 'Every day or right now?', he: 'כל יום או עכשיו? (simple / continuous)',
+  dinner: 'What do you usually do after school, and what are you doing this evening?',
+  hook: { q: 'What do young sunflowers do every day?', o: ['They turn to follow the sun', 'They close at twelve o\'clock', 'They change colour'], a: 0,
+    reveal: 'They *follow* the sun! Every day young sunflowers *turn* from east to west. Look at them now, in the morning: they *are looking* east!' },
+  learn: { kind: 'rule', title: 'Every day or now?', form: ['every day, usually, often: I play / she plays', 'now, at the moment, Look!: I am playing / she is playing'],
+    lines: ['Present simple = a habit, or always true: I *walk* to school every day. Cats *like* fish.',
+      'Present continuous = happening now: Today I *am taking* the bus. Look! The cat *is eating*.',
+      'Words that help: *every day, usually, never* → simple. *now, right now, Look!, Listen!* → continuous.',
+      'Some verbs don\'t take -ing: I *like*, I *want*, I *know* (not I\'m liking).'],
+    ex: ['I *play* football on Fridays.', 'Look! I *am playing* football now.'],
+    he: 'בעברית "אני משחק" זה גם תמיד וגם עכשיו. באנגלית: הרגל = I play. עכשיו = I am playing. מילים כמו every day או now עוזרות לבחור.' },
+  steps: [
+    { name: 'Every day or now?', items: [
+      { k: 'mc', q: 'Dana ___ to school every day.', o: ['walks', 'is walking', 'walking'], a: 0, why: 'every day → present simple: she walks.' },
+      { k: 'mc', pic: 'guitar', q: 'Listen! Somebody ___ the guitar.', o: ['is playing', 'plays', 'play'], a: 0, why: 'Listen! → now: is playing.' },
+      { k: 'mc', pic: 'milk', q: 'I usually ___ milk in the morning.', o: ['drink', 'am drinking', 'drinking'], a: 0, why: 'usually → present simple: I drink.' },
+      { k: 'mc', q: 'Look! The cat ___ my sandwich!', o: ['is eating', 'eats', 'eat'], a: 0, why: 'Look! → now: is eating.' }
+    ] },
+    { name: 'Right or wrong?', items: [
+      { k: 'tf', q: '"I am liking pizza."', a: false, fix: 'I like pizza.', why: 'like doesn\'t take -ing: I like.' },
+      { k: 'tf', q: '"It is raining now."', a: true, why: 'now → is raining.' },
+      { k: 'type', q: 'Mr Levi ___ the newspaper every morning.', hint: '(read)', a: ['reads'], why: 'Review: every morning, he → reads.' },
+      { k: 'mc', q: 'Choose the right sentence:', o: ['We always eat dinner at seven.', 'We eat always dinner at seven.', 'Always we eats dinner at seven.'], a: 0, why: 'Review: always comes before the main verb.' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'What are you doing right now?', why: 'right now → What are you doing?' },
+      { k: 'spot', s: 'He is *play* football now.', fix: 'playing', why: 'is + verb-ing: is playing.' },
+      { k: 'build', s: 'Does she usually walk to school?', why: 'usually → present simple: Does she walk…?' }
+    ] }
+  ],
+  use: [
+    { k: 'teach', s: 'Every day Chacho *wearing* a new hat.', fix: 'wears', why: 'every day → present simple: Chacho wears.' },
+    { k: 'type', q: 'About you: Right now I ___ this question!', hint: '(answer)', a: ['am answering', '\'m answering'], why: 'right now → I am answering.' },
+    { k: 'mc', q: 'Which sentence is about now?', o: ['She is cooking.', 'She cooks every day.', 'She often cooks.'], a: 0, why: 'is cooking = now.' }
+  ]
+},
+{
+  id: 'a1g16', type: 'grammar',
+  title: 'Sit down! Don\'t run!', kid: 'Mix it, cut it, try it!', he: 'הוראות: Sit down! Don\'t run!',
+  dinner: 'What can you cook or make, and what are the steps?',
+  hook: { q: 'What do you need to make popcorn?', o: ['Corn', 'Rice', 'Potatoes'], a: 0,
+    reveal: '*Corn*! *Put* the corn in a hot pot, *close* the lid and *listen*: pop, pop, pop! And *don\'t touch* the hot pot!' },
+  learn: { kind: 'rule', title: 'Telling people what to do', form: ['verb: Open your books.', 'Don\'t + verb: Don\'t run.', 'Please + verb: Please sit down.', 'Let\'s + verb: Let\'s play!'],
+    lines: ['Start with the verb: *Open* the door. *Mix* the eggs. *Come* here!',
+      'Not: *Don\'t* + verb: *Don\'t* touch it! *Don\'t* forget your hat.',
+      'Be kind and add *please*: *Please* close the window. Close the window, *please*.',
+      '*Let\'s* = you and me: *Let\'s* play a game!'],
+    ex: ['*Wash* your hands before lunch.', '*Don\'t* be late!'],
+    he: 'כשאומרים למישהו מה לעשות מתחילים בפועל, בלי you: Sit down. ו"אל" = Don\'t + פועל. ו-please הופך כל בקשה לנעימה.' },
+  steps: [
+    { name: 'A recipe: fruit salad', items: [
+      { k: 'mc', pic: 'banana', q: '___ the apples and the bananas.', o: ['Cut', 'Cuts', 'Cutting'], a: 0, why: 'Start with the verb: Cut.' },
+      { k: 'mc', pic: 'apple', q: '___ eat the apple seeds.', o: ['Don\'t', 'Not', 'No'], a: 0, why: 'Don\'t + verb: Don\'t eat.' },
+      { k: 'mc', q: '___ is your bowl, and that is my bowl.', o: ['This', 'These', 'Those'], a: 0, why: 'Review: one, near → this.' },
+      { k: 'mc', q: 'The fruit salad is ready. ___ eat it together!', o: ['Let\'s', 'Lets', 'Let'], a: 0, why: 'Let\'s = let us (you and me).' }
+    ] },
+    { name: 'Game rules', items: [
+      { k: 'tf', q: '"Don\'t looks at the cards!"', a: false, fix: 'Don\'t look at the cards!', why: 'Don\'t + verb (no s).' },
+      { k: 'type', q: '___ say the answer! Your friend wants to guess.', a: ['don\'t', 'do not'], why: 'Don\'t + verb: Don\'t say.' },
+      { k: 'tf', q: '"Please wait for your turn."', a: true, why: 'Please + verb: Please wait.' },
+      { k: 'mc', q: 'It is your turn. ___ the dice!', o: ['Throw', 'You throws', 'Throwing'], a: 0, why: 'Start with the verb: Throw.' }
+    ] },
+    { name: 'A class trip', items: [
+      { k: 'build', s: 'Don\'t forget your water bottle.', why: 'Don\'t + forget.' },
+      { k: 'spot', s: '*Walks* with your group, please.', fix: 'Walk', why: 'Start with the verb, no s: Walk.' },
+      { k: 'build', s: 'Let\'s sing a song!', why: 'Let\'s + sing.' }
+    ] }
+  ],
+  use: [
+    { k: 'teach', s: '*No* run in the classroom, please.', fix: 'Don\'t', why: 'Don\'t + verb: Don\'t run.' },
+    { k: 'type', q: 'Tell a friend: "___ your hands before you eat."', hint: '(wash)', a: ['wash', 'please wash'], why: 'Start with the verb: Wash your hands.' },
+    { k: 'mc', q: 'Chacho ___ fruit salad every Friday.', o: ['makes', 'make', 'making'], a: 0, why: 'Review: Chacho = he → makes.' }
+  ]
+},
+{
+  id: 'a1g17', type: 'grammar',
+  title: 'was, were', kid: 'Where were you?', he: 'היה, היו: was, were',
+  dinner: 'What was the best part of your day today?',
+  hook: { q: 'Long ago, woolly mammoths were alive. What were they covered in?', o: ['Long hair', 'Feathers', 'Scales'], a: 0,
+    reveal: 'Long *hair*! Woolly mammoths *were* big and hairy, and their home *was* very, very cold.' },
+  learn: { kind: 'rule', title: 'The past of be: was, were', form: ['I / he / she / it → was', 'you / we / they → were', 'wasn\'t = was not, weren\'t = were not'],
+    lines: ['Now → am / is / are. Yesterday → *was* / *were*.',
+      'I *was* tired yesterday. She *was* at the beach. We *were* happy. They *were* at school.',
+      'Not: I *wasn\'t* hungry. They *weren\'t* at home. Questions: *Were* you at the park? *Was* it fun?'],
+    ex: ['It *was* hot yesterday.', '*Were* you at school on Monday?'],
+    he: 'בעבר: I, he, she, it → was. you, we, they → were. בשאלה was או were עוברים להתחלה: Was it fun? = היה כיף?' },
+  steps: [
+    { name: 'was or were?', items: [
+      { k: 'mc', q: 'Yesterday I ___ at the beach.', o: ['was', 'were', 'am'], a: 0, why: 'yesterday, I → was.' },
+      { k: 'mc', q: 'The children ___ very happy at the party.', o: ['were', 'was', 'is'], a: 0, why: 'the children = they → were.' },
+      { k: 'mc', q: 'It ___ cold last night.', o: ['was', 'were', 'are'], a: 0, why: 'last night, it → was.' },
+      { k: 'mc', q: '"___ you at the park yesterday?" "Yes, I was."', o: ['Were', 'Was', 'Are'], a: 0, why: 'you → Were you…?' }
+    ] },
+    { name: 'Now or before?', items: [
+      { k: 'tf', q: '"We was at the zoo on Sunday."', a: false, fix: 'We were at the zoo on Sunday.', why: 'we → were.' },
+      { k: 'mc', q: 'Today Tom is ten. Last year he ___ nine.', o: ['was', 'is', 'were'], a: 0, why: 'last year, he → was.' },
+      { k: 'type', q: 'The film ___ great! I loved it.', a: ['was'], why: 'the film = it → was.' },
+      { k: 'mc', q: 'Right now my friends ___ at the park.', o: ['are', 'were', 'was'], a: 0, why: 'Review: now, they → are.' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'Where were you on Monday?', why: 'you → Where were you…?' },
+      { k: 'spot', s: 'My shoes *was* wet after the rain.', fix: 'were', why: 'my shoes = they → were.' },
+      { k: 'build', s: 'It was a very good day.', why: 'it → was.' }
+    ] }
+  ],
+  use: [
+    { k: 'teach', s: 'I *were* so tired last night!', fix: 'was', why: 'I → was.' },
+    { k: 'type', q: 'About you: Yesterday I ___ at school.', hint: '(was / wasn\'t)', a: ['was', 'wasn\'t', 'was not'], why: 'I → was or wasn\'t. Both are right: it is about you!' },
+    { k: 'mc', q: 'The cake was great. We all loved ___.', o: ['it', 'its', 'them'], a: 0, why: 'Review: the cake = it → after the verb: it.' }
+  ]
+},
+{
+  id: 'a1v06', type: 'vocabulary',
+  title: 'Days, months and seasons', kid: 'Days and months', he: 'ימים, חודשים ועונות',
+  dinner: 'What is your favourite season, and why?',
+  hook: { q: 'How many days are there in February, most years?', o: ['28', '30', '31'], a: 0,
+    reveal: '*28*! But about every four years, February has 29 days. The other *months* have 30 or 31 days.' },
+  learn: { kind: 'words', title: 'Words for the calendar', words: [
+    { w: 'Monday', d: 'the day after Sunday', ex: 'We have art on *Monday*.' },
+    { w: 'weekend', d: 'the end of the week; in Israel it is Friday and Saturday', ex: 'See you after the *weekend*!' },
+    { w: 'month', d: 'one of the 12 parts of the year', ex: 'December is the last *month* of the year.' },
+    { w: 'season', d: 'spring, summer, autumn or winter', ex: 'Which *season* do you like?' },
+    { w: 'summer', d: 'the hot season', ex: 'In *summer* we go to the beach.', pic: 'sun' },
+    { w: 'winter', d: 'the cold season; in Israel it rains', ex: 'It rains a lot in *winter*.', pic: 'rain' },
+    { w: 'spring', d: 'the season of new flowers', ex: 'In *spring* there are flowers everywhere.', pic: 'flower' },
+    { w: 'autumn', d: 'the season after summer', ex: 'In *autumn* the days get shorter.', pic: 'tree' }
+  ] },
+  steps: [
+    { name: 'Which word?', items: [
+      { k: 'mc', q: 'The day after Sunday is ___.', o: ['Monday', 'Tuesday', 'Saturday'], a: 0, why: 'Sunday, then Monday.' },
+      { k: 'mc', pic: 'rain', q: 'In Israel, the rainy season is ___.', o: ['winter', 'summer', 'Monday'], a: 0, why: 'In Israel it rains in winter.' },
+      { k: 'mc', q: 'January, February, ___, April', o: ['March', 'May', 'June'], a: 0, why: 'January, February, March, April.' },
+      { k: 'mc', pic: 'flower', q: 'Spring, summer, ___, winter', o: ['autumn', 'Monday', 'March'], a: 0, why: 'the four seasons: spring, summer, autumn, winter.' }
+    ] },
+    { name: 'Play', items: [
+      { k: 'sort', q: 'A day or a month?', g: ['a day', 'a month'],
+        w: [['Tuesday', 0], ['Friday', 0], ['Sunday', 0], ['July', 1], ['October', 1], ['April', 1]],
+        why: 'days: Tuesday, Friday, Sunday · months: July, October, April',
+        he: 'באנגלית ימים וחודשים נכתבים תמיד באות גדולה: Monday, July.' },
+      { k: 'hear', say: 'Our school trip is in October.', q: 'When is the school trip?', o: ['in October', 'in August', 'in April'], a: 0, why: '"Our school trip is in October."' },
+      { k: 'spell', w: 'summer', clue: 'The hot season, time for the beach.', why: 'summer: s-u-m-m-e-r (two m).' },
+      { k: 'mc', q: 'There are twelve ___ in a year.', o: ['months', 'days', 'seasons'], a: 0, why: '12 months in a year (and four seasons).' }
+    ] },
+    { name: 'In a text', items: [
+      { k: 'gaps', title: 'My year',
+        t: 'In Israel, [1] is hot and sunny, and we swim in the sea. In [2] it is cold and it rains. My favourite [3] is spring: there are flowers everywhere. School starts in [4], after the summer holiday. And my favourite day of the week? [5], the first day of the weekend!',
+        gaps: [
+          { o: ['summer', 'winter', 'Monday'], a: 0, why: 'hot and sunny → summer.' },
+          { o: ['winter', 'summer', 'August'], a: 0, why: 'cold and rainy → winter.' },
+          { o: ['season', 'month', 'day'], a: 0, why: 'spring is a season.' },
+          { o: ['September', 'Sunday', 'spring'], a: 0, why: 'In Israel, school starts in September.' },
+          { o: ['Friday', 'Tuesday', 'March'], a: 0, why: 'In Israel, the weekend is Friday and Saturday.' }
+        ] }
+    ] }
+  ],
+  use: [
+    { k: 'teach', s: 'I swim in the sea in *winter*, when it is very hot.', fix: 'summer', why: 'very hot → summer.' },
+    { k: 'type', q: 'About you: My favourite season is ___.', a: ['spring', 'summer', 'autumn', 'winter', 'fall'], why: 'spring, summer, autumn or winter: all four are right!' },
+    { k: 'build', s: 'What day is it today?', why: 'What day + is it + today?' },
+    { k: 'mc', q: 'Chacho ___ go to school. He is a parrot!', o: ['doesn\'t', 'don\'t', 'isn\'t'], a: 0, why: 'Review: Chacho = he → doesn\'t + verb.' }
+  ]
+},
+{
+  id: 'a1v07', type: 'vocabulary',
+  title: 'Food and meals', kid: 'Yummy food', he: 'אוכל וארוחות',
+  dinner: 'What is on your plate tonight? Can you name three things in English?',
+  hook: { q: 'Which fruit has its seeds on the outside?', o: ['The strawberry', 'The apple', 'The orange'], a: 0,
+    reveal: 'The *strawberry*! One strawberry has about 200 little seeds on the outside.' },
+  learn: { kind: 'words', title: 'Meals and food', words: [
+    { w: 'breakfast', d: 'the meal in the morning', ex: 'I have *breakfast* at seven.' },
+    { w: 'lunch', d: 'the meal in the middle of the day', ex: 'We have *lunch* at one o\'clock.' },
+    { w: 'dinner', d: 'the meal in the evening', ex: 'What\'s for *dinner*?' },
+    { w: 'snack', d: 'a little food between meals', ex: 'I eat a *snack* after school.', pic: 'cookie' },
+    { w: 'bread', d: 'you make a sandwich with it', ex: 'Can I have some *bread*, please?', pic: 'bread' },
+    { w: 'cheese', d: 'food made from milk; it is yellow or white', ex: 'I like *cheese* on my pizza.', pic: 'cheese' },
+    { w: 'vegetables', d: 'carrots, tomatoes, cucumbers…', ex: 'We eat *vegetables* every day.', pic: 'carrot' },
+    { w: 'fruit', d: 'apples, bananas, grapes…', ex: 'Do you want some *fruit*?', pic: 'grapes' }
+  ] },
+  steps: [
+    { name: 'Which word?', items: [
+      { k: 'mc', q: 'The meal in the morning is ___.', o: ['breakfast', 'dinner', 'lunch'], a: 0, why: 'breakfast = the morning meal.' },
+      { k: 'mc', pic: 'cheese', q: 'What is this?', o: ['cheese', 'bread', 'an egg'], a: 0, why: 'cheese is made from milk.' },
+      { k: 'mc', pic: 'carrot', q: 'A carrot is a ___.', o: ['vegetable', 'fruit', 'drink'], a: 0, why: 'carrots are vegetables.' },
+      { k: 'mc', q: 'It is one o\'clock. It\'s time for ___.', o: ['lunch', 'breakfast', 'dinner'], a: 0, why: 'the middle of the day → lunch.' }
+    ] },
+    { name: 'Play', items: [
+      { k: 'sort', q: 'Fruit or vegetables?', g: ['fruit', 'vegetables'],
+        w: [['banana', 0], ['grapes', 0], ['watermelon', 0], ['carrot', 1], ['cucumber', 1], ['potato', 1]],
+        why: 'fruit: banana, grapes, watermelon · vegetables: carrot, cucumber, potato' },
+      { k: 'hear', say: 'I have bread and cheese for breakfast.', q: 'What is for breakfast?', o: ['bread and cheese', 'eggs and milk', 'fruit'], a: 0, why: '"I have bread and cheese for breakfast."' },
+      { k: 'spell', w: 'bread', clue: 'You make a sandwich with it.', why: 'bread: b-r-e-a-d.' },
+      { k: 'mc', q: 'I\'m hungry after school. Can I have a ___, please?', o: ['snack', 'dinner', 'breakfast'], a: 0, why: 'a little food between meals → a snack.' }
+    ] },
+    { name: 'In a text', items: [
+      { k: 'gaps', title: 'Food at camp',
+        t: 'At summer camp we have three meals a day. For [1] in the morning we eat bread, cheese and eggs. At one o\'clock we have [2]. After the pool there is a [3]: fruit and cookies. In the evening we have [4] together outside. My favourite [5] is watermelon. Yum!',
+        gaps: [
+          { o: ['breakfast', 'dinner', 'snack'], a: 0, why: 'in the morning → breakfast.' },
+          { o: ['lunch', 'breakfast', 'fruit'], a: 0, why: 'one o\'clock → lunch.' },
+          { o: ['snack', 'dinner', 'breakfast'], a: 0, why: 'a little food between meals → a snack.' },
+          { o: ['dinner', 'breakfast', 'lunch'], a: 0, why: 'in the evening → dinner.' },
+          { o: ['fruit', 'vegetable', 'meal'], a: 0, why: 'watermelon is a fruit.' }
+        ] }
+    ] }
+  ],
+  use: [
+    { k: 'teach', s: 'I eat *dinner* at seven in the morning.', fix: 'breakfast', why: 'in the morning → breakfast.' },
+    { k: 'type', q: 'There are grapes in the fridge. Do you want ___?', hint: '(they / them)', a: ['them'], why: 'Review: grapes = they → after the verb: them.' },
+    { k: 'build', s: 'What do you have for lunch?', why: 'What + do you have + for lunch?' },
+    { k: 'mc', q: '___ you like vegetables?', o: ['Do', 'Does', 'Are'], a: 0, why: 'Review: you → Do you like…?' }
+  ]
+},
+{
+  id: 'a1v08', type: 'vocabulary',
+  title: 'Countries and nationalities', kid: 'Around the world', he: 'מדינות ולאומים',
+  dinner: 'Which country\'s food would you like to try?',
+  hook: { q: 'Which country has the most people in the world?', o: ['India', 'Italy', 'The USA'], a: 0,
+    reveal: '*India*! More than 1,400 million people live there. *Indian* people speak many different languages.' },
+  learn: { kind: 'words', title: 'Where from?', words: [
+    { w: 'Israeli', d: 'from Israel', ex: 'Haifa is an *Israeli* city.' },
+    { w: 'Egyptian', d: 'from Egypt', ex: 'The pyramids are *Egyptian*.' },
+    { w: 'Italian', d: 'from Italy', ex: 'Pizza is *Italian* food.', pic: 'pizza' },
+    { w: 'French', d: 'from France', ex: 'People in Paris speak *French*.' },
+    { w: 'Spanish', d: 'from Spain', ex: 'Madrid is a *Spanish* city.' },
+    { w: 'Chinese', d: 'from China', ex: 'Pandas are *Chinese* animals.' },
+    { w: 'American', d: 'from the USA', ex: 'New York is an *American* city.' },
+    { w: 'British', d: 'from Britain (the UK)', ex: 'London is a *British* city.' }
+  ] },
+  steps: [
+    { name: 'Which word?', items: [
+      { k: 'mc', pic: 'pizza', q: 'Marco is from Italy. He is ___.', o: ['Italian', 'Italy', 'French'], a: 0, why: 'from Italy → Italian.' },
+      { k: 'mc', q: 'Paris is in ___.', o: ['France', 'French', 'Spain'], a: 0, why: 'the country is France; the nationality is French.' },
+      { k: 'mc', q: 'The pyramids of Giza are in ___.', o: ['Egypt', 'China', 'Italy'], a: 0, why: 'Giza is in Egypt.' }
+    ] },
+    { name: 'Play', items: [
+      { k: 'sort', q: 'A country or a nationality?', g: ['country', 'nationality'],
+        w: [['France', 0], ['China', 0], ['Egypt', 0], ['British', 1], ['Spanish', 1], ['American', 1]],
+        why: 'countries: France, China, Egypt · nationalities: British, Spanish, American' },
+      { k: 'hear', say: 'Hi! I\'m Li. I\'m from China.', q: 'What nationality is Li?', o: ['Chinese', 'Japanese', 'American'], a: 0, why: 'from China → Chinese.' },
+      { k: 'spell', w: 'country', clue: 'France, Egypt and Israel: each one is a ___.', why: 'country: c-o-u-n-t-r-y.' },
+      { k: 'mc', q: 'People from the USA are ___.', o: ['American', 'British', 'USA'], a: 0, why: 'the USA → American.',
+        he: 'גם שמות הלאומים נכתבים באות גדולה: American, Israeli.' }
+    ] },
+    { name: 'In a text', items: [
+      { k: 'gaps', title: 'A world party',
+        t: 'At our school we have a world party. Every class chooses a [1]. Our class chooses Italy, so we make [2] food: pizza and pasta! Class 3 chooses Egypt and makes a big pyramid. Class 4 chooses China. They make [3] lanterns, red and gold. Class 5 chooses [4] and makes a small Eiffel Tower, like the big one in Paris. And the music? It\'s from all over the [5].',
+        gaps: [
+          { o: ['country', 'nationality', 'language'], a: 0, why: 'Italy, Egypt, China → countries.' },
+          { o: ['Italian', 'Italy', 'French'], a: 0, why: 'from Italy → Italian food.' },
+          { o: ['Chinese', 'China', 'Spanish'], a: 0, why: 'from China → Chinese lanterns.' },
+          { o: ['France', 'French', 'Spain'], a: 0, why: 'the Eiffel Tower is in Paris, in France (a country).' },
+          { o: ['world', 'countries', 'nationality'], a: 0, why: 'all over the world.' }
+        ] }
+    ] }
+  ],
+  use: [
+    { k: 'teach', s: 'Pizza is *Italy* food.', fix: 'Italian', why: 'food from Italy → Italian food.' },
+    { k: 'type', q: 'Big Ben is in London. London is a ___ city.', a: ['British', 'English'], why: 'London is in Britain → British (or English).' },
+    { k: 'build', s: 'My new friend is from France.', why: 'be + from + a country.' },
+    { k: 'mc', q: 'Li and Wei ___ from China.', o: ['are', 'is', 'am'], a: 0, why: 'Review: Li and Wei = they → are.' },
+    { k: 'mc', q: 'Pierre ___ French and English.', o: ['speaks', 'speak', 'speaking'], a: 0, why: 'Review: Pierre = he → speaks.' }
+  ]
+},
+{
+  id: 'a1v09', type: 'vocabulary',
+  title: 'Shops and shopping', kid: 'Let\'s go shopping!', he: 'חנויות וקניות',
+  dinner: 'If you had your own shop, what would it sell?',
+  hook: { q: 'When did a supermarket first give people shopping trolleys?', o: ['In 1937', 'In 1837', 'In 2007'], a: 0,
+    reveal: 'In *1937*, in the USA. Before that, people carried a *basket* in the shop.' },
+  learn: { kind: 'words', title: 'At the shops', words: [
+    { w: 'supermarket', d: 'a big shop for food and many other things', ex: 'We buy milk at the *supermarket*.', pic: 'milk' },
+    { w: 'bakery', d: 'a shop that sells bread and cakes', ex: 'The *bakery* smells great!', pic: 'cake' },
+    { w: 'bookshop', d: 'a shop that sells books', ex: 'There is a new *bookshop* in town.', pic: 'book' },
+    { w: 'toy shop', d: 'a shop that sells toys and games', ex: 'There is a big *toy shop* near the park.', pic: 'teddy bear' },
+    { w: 'market', d: 'a place, often outside, with many stalls of fruit and vegetables', ex: 'We buy fruit at the *market*.', pic: 'watermelon' },
+    { w: 'buy', d: 'get something for money', ex: 'I want to *buy* a new pencil.', pic: 'pencil' },
+    { w: 'pay', d: 'give money for something', ex: 'You *pay* here, please.' },
+    { w: 'price', d: 'how much something costs', ex: 'The *price* is ten shekels.' }
+  ] },
+  steps: [
+    { name: 'Which shop?', items: [
+      { k: 'mc', pic: 'bread', q: 'You buy bread and cakes at the ___.', o: ['bakery', 'bookshop', 'toy shop'], a: 0, why: 'bread and cakes → the bakery.' },
+      { k: 'mc', pic: 'teddy bear', q: 'You buy a teddy bear at the ___.', o: ['toy shop', 'bakery', 'market'], a: 0, why: 'toys → the toy shop.' },
+      { k: 'mc', q: 'I give the money to the shopkeeper. I ___.', o: ['pay', 'sell', 'cost'], a: 0, why: 'give money → pay.' }
+    ] },
+    { name: 'Play', items: [
+      { k: 'sort', q: 'Where can you buy it?', g: ['at the bakery', 'at the bookshop'],
+        w: [['bread', 0], ['a cake', 0], ['cookies', 0], ['a dictionary', 1], ['a comic', 1], ['a storybook', 1]],
+        why: 'bakery: bread, a cake, cookies · bookshop: a dictionary, a comic, a storybook' },
+      { k: 'hear', say: 'The ice cream is eight shekels.', q: 'How much is the ice cream?', o: ['eight shekels', 'eighteen shekels', 'eighty shekels'], a: 0, why: '"The ice cream is eight shekels."' },
+      { k: 'spell', w: 'market', clue: 'You buy fruit and vegetables at the ___.', why: 'market: m-a-r-k-e-t.' },
+      { k: 'mc', q: '"Can I ___ you?" says the shopkeeper.', o: ['help', 'pay', 'buy'], a: 0, why: 'Can I help you? = מה תרצו?' }
+    ] },
+    { name: 'In a text', items: [
+      { k: 'gaps', title: 'Shopping day',
+        t: 'On Friday morning, Amir and his aunt go [1]. First they go to the [2] for fruit and vegetables. Then they go to the [3] for fresh bread. Amir wants a comic, so they go to the [4] too. The comic\'s [5] is twelve shekels. Amir [6] for it with his coins. "Thank you!" he says.',
+        gaps: [
+          { o: ['shopping', 'shop', 'shops'], a: 0, why: 'go shopping.' },
+          { o: ['market', 'bakery', 'bookshop'], a: 0, why: 'fruit and vegetables → the market.' },
+          { o: ['bakery', 'bookshop', 'toy shop'], a: 0, why: 'bread → the bakery.' },
+          { o: ['bookshop', 'bakery', 'market'], a: 0, why: 'a comic → the bookshop.' },
+          { o: ['price', 'money', 'shop'], a: 0, why: 'how much it costs → the price.' },
+          { o: ['pays', 'buys', 'sells'], a: 0, why: 'pay for something.' }
+        ] }
+    ] }
+  ],
+  use: [
+    { k: 'teach', s: 'I *pay* a new book at the bookshop.', fix: 'buy', why: 'buy a book; pay for a book.' },
+    { k: 'type', q: '"How ___ is this pencil?" "Three shekels."', a: ['much'], why: 'Review: How much…? asks about the price.' },
+    { k: 'build', s: 'I want to buy a present.', why: 'want to + buy.' },
+    { k: 'mc', q: '___ apples over there are green, and these apples are red.', o: ['Those', 'That', 'This'], a: 0, why: 'Review: many, far → those.' }
+  ]
+},
+{
+  id: 'a1u05', type: 'use-of-english',
+  title: 'A goat at the beach', kid: 'A goat at the beach!', he: 'חדשות: עז בחוף הים',
+  dinner: 'Which animal would you take to the beach, and what would it do there?',
+  hook: { q: 'Can goats climb trees?', o: ['Yes, they can.', 'No, they can\'t.'], a: 0,
+    reveal: '*Yes, they can*! In Morocco, goats climb argan trees and eat the fruit. Today\'s news: a goat at the beach! (It is a made-up story!)' },
+  learn: { kind: 'intro', title: 'Newsroom', line: 'Read a funny news story (it is made up!) and choose the right word for each gap.',
+    predict: { q: 'A goat goes to the beach. What do you think she does there?', o: ['She eats a sandwich.', 'She swims to Cyprus.', 'She sells ice cream.'] } },
+  steps: [
+    { name: 'The story', items: [
+      { k: 'gaps', title: 'Bella the beach goat',
+        t: 'Every Saturday a white goat [1] Bella walks to the beach in Haifa with her owner, Sami. Bella [2] swim, but she loves the sand. Today she [3] sitting next to a big umbrella. A girl [4] a sandwich, and Bella wants it! "Bella, [5] eat that!" says Sami. Too late: the sandwich is in Bella\'s mouth! The girl laughs. "That [6] my lunch, but it\'s OK," she says. Now Bella and the girl [7] good friends, and the girl visits [8] every Saturday.',
+        gaps: [
+          { o: ['called', 'calls', 'name'], a: 0, why: 'a goat called Bella = her name is Bella.' },
+          { o: ['can\'t', 'isn\'t', 'aren\'t'], a: 0, why: 'can\'t + swim.' },
+          { o: ['is', 'are', 'does'], a: 0, why: 'now: she is sitting.' },
+          { o: ['has', 'have', 'having'], a: 0, why: 'a girl = she → has.' },
+          { o: ['don\'t', 'doesn\'t', 'not'], a: 0, why: 'Don\'t + verb: Don\'t eat that!' },
+          { o: ['was', 'were', 'are'], a: 0, why: 'the sandwich is gone now → past: That was my lunch.' },
+          { o: ['are', 'is', 'am'], a: 0, why: 'Bella and the girl = they → are.' },
+          { o: ['her', 'she', 'hers'], a: 0, why: 'after the verb visits → her.' }
+        ] }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'mc', q: 'Sami ___ to the beach every Saturday.', o: ['goes', 'go', 'going'], a: 0, why: 'Review: Sami = he → goes.' },
+      { k: 'mc', q: '"___ do Bella and Sami go every Saturday?" "To the beach."', o: ['Where', 'What', 'Who'], a: 0, why: 'Review: a place → Where.' },
+      { k: 'tf', q: '"Bella never eat sand."', a: false, fix: 'Bella never eats sand.', why: 'Review: Bella = she → eats.' },
+      { k: 'type', q: 'Bella is a goat. ___ owner is Sami.', hint: '(her / she)', a: ['her'], why: 'Review: her + a noun: her owner.' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'Bella is sitting next to the umbrella.', why: 'now: is + sitting.' },
+    { k: 'mc', q: 'Choose the right sentence:', o: ['There is a goat on the beach.', 'There are a goat on the beach.', 'There is goat on the beach.'], a: 0,
+      why: 'one goat → There is a goat.' }
+  ]
+},
+{
+  id: 'a1u06', type: 'use-of-english',
+  title: 'A snowman in Eilat', kid: 'Snow in Eilat?', he: 'חדשות: איש שלג באילת',
+  dinner: 'What would you do on a snowy day?',
+  hook: { q: 'Does it ever snow in Jerusalem?', o: ['Yes, sometimes, in winter.', 'No, never.'], a: 0,
+    reveal: '*Yes, sometimes*! On some winter days Jerusalem is white with snow. Eilat is much hotter. Today\'s news: a snowman in Eilat! (It is a made-up story!)' },
+  learn: { kind: 'intro', title: 'Newsroom', line: 'Read a short news story (it is made up!), choose the right words, then answer some quick questions.',
+    predict: { q: 'A school in Eilat gets a mountain of snow. What do you think the children make?', o: ['A snowman', 'A sandwich', 'A boat'] } },
+  steps: [
+    { name: 'The story', items: [
+      { k: 'gaps', title: 'Snow day in Eilat',
+        t: 'Eilat [1] very hot in summer. But yesterday there [2] a big surprise at Palm Tree School: a mountain of snow in the playground! It was from a snow machine. The children [3] so happy. "Put on your hats and [4] a snowman!" said the teacher. Today the snowman [5] in the school freezer. He is wearing a funny hat, and the children say hello to [6] every morning.',
+        gaps: [
+          { o: ['is', 'are', 'be'], a: 0, why: 'Eilat = it → is.' },
+          { o: ['was', 'were', 'is'], a: 0, why: 'yesterday, a surprise → was.' },
+          { o: ['were', 'was', 'is'], a: 0, why: 'yesterday, the children = they → were.' },
+          { o: ['make', 'makes', 'making'], a: 0, why: 'telling people what to do → the verb: make.' },
+          { o: ['is', 'are', 'am'], a: 0, why: 'today, the snowman = he → is.' },
+          { o: ['him', 'he', 'his'], a: 0, why: 'after to → him.' }
+        ] }
+    ] },
+    { name: 'Quick questions', items: [
+      { k: 'mc', q: '"___ you ski?" "No, I can\'t."', o: ['Can', 'Do', 'Are'], a: 0, why: 'No, I can\'t → the question is Can you…?' },
+      { k: 'mc', pic: 'snowman', q: 'The snowman ___ a carrot nose.', o: ['has', 'have', 'is'], a: 0, why: 'Review: the snowman = he → has.' },
+      { k: 'mc', q: 'The children love ___ snowman.', o: ['their', 'they', 'them'], a: 0, why: 'Review: they → their + a noun.' },
+      { k: 'mc', q: 'Look! The children ___ in the snow.', o: ['are playing', 'is playing', 'plays'], a: 0, why: 'Look! → now: they are playing.' },
+      { k: 'mc', pic: 'carrot', q: 'I have ___ orange carrot for the snowman.', o: ['an', 'a', 'two'], a: 0, why: 'Review: orange starts with a vowel sound → an.' },
+      { k: 'type', q: 'Yesterday it ___ very cold.', hint: '(be)', a: ['was'], why: 'yesterday, it → was.' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'The snowman is in the freezer.', why: 'the snowman = he → is.' }
+  ]
+},
+{
+  id: 'a1l10', type: 'listening',
+  title: 'My favourite room', kid: 'My favourite room', he: 'הבית: החדר האהוב עליי',
+  dinner: 'Which room in our home do you like best, and why?',
+  hook: { q: 'An igloo is a house made of…', o: ['snow', 'wood', 'glass'], a: 0,
+    reveal: '*Snow*! Inuit people in the far north of Canada make igloos from blocks of snow, mostly for winter trips. Inside, it is warmer than outside.' },
+  learn: { kind: 'keys', title: 'Key words before you listen', words: [
+    { w: 'living room', d: 'the room with the sofa and the TV' },
+    { w: 'balcony', d: 'a small place outside a flat, up high' },
+    { w: 'cosy', d: 'warm, soft and nice' }
+  ], predict: { q: 'Rami and Shira talk about their favourite rooms. Which room do you think Rami likes best?', o: ['The kitchen', 'The bathroom', 'The living room'] } },
+  show: { cast: 'Rami and Shira make a short video for a school project: "My favourite room".', names: { R: 'Rami', S: 'Shira' }, voices: { R: 'am_adam', S: 'af_heart' },
+    parts: [
+      { lines: [
+        ['R', 'Hi! I\'m Rami. My favourite room is the kitchen.'],
+        ['S', 'The kitchen? Why?'],
+        ['R', 'Because it always smells good! My grandpa cooks there every day. There\'s a big table, and we eat together.']
+      ], items: [
+        { k: 'mc', q: 'What is Rami\'s favourite room?', o: ['the kitchen', 'the living room', 'his bedroom'], a: 0, why: '"My favourite room is the kitchen."' },
+        { k: 'mc', q: 'Who cooks in the kitchen every day?', o: ['Rami\'s grandpa', 'Rami\'s mum', 'Rami'], a: 0, why: '"My grandpa cooks there every day."' }
+      ] },
+      { lines: [
+        ['S', 'My favourite room is my bedroom. It\'s small, but it\'s very cosy.'],
+        ['R', 'What\'s in it?'],
+        ['S', 'A bed, a desk and a lot of books. And there are stars on the wall. They shine at night!']
+      ], items: [
+        { k: 'tf', q: 'Shira\'s bedroom is very big.', a: false, fix: 'It is small, but very cosy.', why: '"It\'s small, but it\'s very cosy."' },
+        { k: 'mc', q: 'What is on the wall?', o: ['stars', 'books', 'a lamp'], a: 0, why: '"there are stars on the wall."' }
+      ] },
+      { lines: [
+        ['R', 'Do you do your homework in your bedroom?'],
+        ['S', 'No, I do it on the balcony. I can see the sea from there!'],
+        ['R', 'Wow! I do my homework at the kitchen table, of course.']
+      ], items: [
+        { k: 'mc', q: 'Where does Shira do her homework?', o: ['on the balcony', 'in her bedroom', 'in the kitchen'], a: 0, why: '"I do it on the balcony."' },
+        { k: 'type', q: 'From the balcony, Shira can see the ___.', a: ['sea'], why: '"I can see the sea from there!"' }
+      ] }
+    ] },
+  steps: [
+    { name: 'Listen again', items: [
+      { k: 'mc', clip: 0, q: 'In Rami\'s kitchen there is a big ___.', o: ['table', 'sofa', 'bed'], a: 0, why: '"There\'s a big table, and we eat together."' },
+      { k: 'hear', say: 'There is a sofa and a TV in the living room.', q: 'What is in the living room?', o: ['a sofa and a TV', 'a bed and a desk', 'a table and a fridge'], a: 0, why: 'There is a sofa and a TV in the living room.' },
+      { k: 'sort', q: 'Which room?', g: ['kitchen', 'bathroom', 'bedroom'],
+        w: [['fridge', 0], ['oven', 0], ['shower', 1], ['bath', 1], ['bed', 2], ['pillow', 2]],
+        why: 'kitchen: fridge, oven · bathroom: shower, bath · bedroom: bed, pillow' }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'type', q: 'Rami\'s grandpa ___ every day.', hint: '(cook)', a: ['cooks'], why: 'he → cooks (he, she, it + s).',
+        he: 'בהווה, אחרי he, she, it מוסיפים s לפועל: he cooks, she reads.' },
+      { k: 'mc', q: 'There ___ two beds in my room.', o: ['are', 'is', 'am'], a: 0, why: 'two beds → there are.' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'My favourite room is very cosy.', why: 'My favourite room + is + very cosy.' },
+    { k: 'type', q: 'I ___ my homework in my room.', hint: '(do / does)', a: ['do'], why: 'I → do.' }
+  ]
+},
+{
+  id: 'a1l11', type: 'listening',
+  title: 'What\'s your job?', kid: 'Jobs Day at school', he: 'מה העבודה שלך? מקצועות',
+  dinner: 'What job would you like to do one day, and why?',
+  hook: { q: 'In 1963, Valentina Tereshkova was the first woman to go to…', o: ['space', 'the North Pole', 'the top of Mount Everest'], a: 0,
+    reveal: '*Space*! Valentina Tereshkova, from Russia, was the first woman in space. What a job! Today grown-ups come to a class and talk about their jobs.' },
+  learn: { kind: 'keys', title: 'Key words before you listen', words: [
+    { w: 'vet', d: 'a doctor for animals' },
+    { w: 'firefighter', d: 'a person who stops fires' },
+    { w: 'uniform', d: 'special clothes for a job or a school' }
+  ], predict: { q: 'Two grown-ups visit a class and talk about their jobs. Which job do you think the kids like best?', o: ['The vet', 'The firefighter', 'Both!'] } },
+  show: { cast: 'It\'s Jobs Day at school. Two grown-ups visit Ms Levi\'s class.', names: { T: 'Ms Levi', N: 'Nadia', D: 'Dan', L: 'Lina', O: 'Omer' },
+    voices: { T: 'bf_emma', N: 'af_sarah', D: 'am_michael', L: 'af_sky', O: 'am_puck' },
+    parts: [
+      { lines: [
+        ['T', 'Good morning, class! Today is Jobs Day. Please say hello to Nadia.'],
+        ['N', 'Hello, everyone! I\'m a vet, a doctor for animals. I work in a big animal hospital in Haifa.'],
+        ['T', 'Do you only help cats and dogs?'],
+        ['N', 'No! I help horses, rabbits and birds too.']
+      ], items: [
+        { k: 'mc', q: 'What is Nadia\'s job?', o: ['She is a vet.', 'She is a teacher.', 'She is a firefighter.'], a: 0, why: '"I\'m a vet, a doctor for animals."' },
+        { k: 'mc', q: 'Where does Nadia work?', o: ['in an animal hospital', 'at a school', 'at a zoo'], a: 0, why: '"I work in a big animal hospital in Haifa."' }
+      ] },
+      { lines: [
+        ['T', 'Thank you, Nadia. And this is Dan.'],
+        ['D', 'Hi! I\'m a firefighter. At work I wear a big helmet and a uniform.'],
+        ['T', 'Is it a hard job?'],
+        ['D', 'Yes, it is. But I love it, because we help people every day.']
+      ], items: [
+        { k: 'mc', q: 'What does Dan wear at work?', o: ['a helmet and a uniform', 'a white coat', 'a cap and glasses'], a: 0, why: '"At work I wear a big helmet and a uniform."' },
+        { k: 'tf', q: 'Dan doesn\'t like his job.', a: false, fix: 'He loves his job.', why: '"But I love it, because we help people every day."' }
+      ] },
+      { lines: [
+        ['T', 'Now it\'s your turn, children. Lina, what do you want to be?'],
+        ['L', 'I want to be a vet, like Nadia. I love animals!'],
+        ['T', 'And you, Omer?'],
+        ['O', 'I want to be a pilot. I want to fly to every country in the world!']
+      ], items: [
+        { k: 'mc', q: 'What does Lina want to be?', o: ['a vet', 'a pilot', 'a firefighter'], a: 0, why: '"I want to be a vet, like Nadia."' },
+        { k: 'mc', q: 'Why does Omer want to be a pilot?', o: ['He wants to fly to every country.', 'He loves animals.', 'He likes uniforms.'], a: 0, why: '"I want to fly to every country in the world!"' }
+      ] }
+    ] },
+  steps: [
+    { name: 'Listen again', items: [
+      { k: 'mc', clip: 0, q: 'Nadia helps horses, rabbits and ___.', o: ['birds', 'fish', 'cows'], a: 0, why: '"I help horses, rabbits and birds too."' },
+      { k: 'hear', say: 'My aunt is a teacher. She works at a school.', q: 'Where does the aunt work?', o: ['at a school', 'at a hospital', 'at a bakery'], a: 0, why: 'She is a teacher. She works at a school.' },
+      { k: 'type', q: 'A ___ is a doctor for animals.', a: ['vet'], why: 'a vet = a doctor for animals.' }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'mc', q: 'Dan ___ a big helmet at work.', o: ['wears', 'wear', 'wearing'], a: 0, why: 'he → wears (he, she, it + s).' },
+      { k: 'mc', q: 'Nadia loves animals. She helps ___ every day.', o: ['them', 'they', 'their'], a: 0, why: 'after the verb help → them.',
+        he: 'אחרי פועל באים me, you, him, her, it, us, them. they בא רק לפני הפועל.' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'I want to be a vet.', why: 'I want + to be + a vet.' },
+    { k: 'type', q: 'When I grow up, I want to ___ a teacher.', a: ['be'], why: 'want to be + a job.',
+      he: 'רוצים להיות... = want to be. אחרי to בא הפועל בלי שינוי: to be, to fly.' }
+  ]
+},
+{
+  id: 'a1l12', type: 'listening',
+  title: 'Would you like to come?', kid: 'Come to my party!', he: 'הזמנות: Would you like to...?',
+  dinner: 'Who would you like to invite for a fun day out, and where would you go?',
+  hook: { q: 'At a beach in Israel, which flag means "You can swim here"?', o: ['white', 'red', 'black'], a: 0,
+    reveal: 'The *white* flag! A red flag means swimming is dangerous today, and a black flag means no swimming. Today Yara invites her friends to a party at the beach.' },
+  learn: { kind: 'keys', title: 'Key words before you listen', words: [
+    { w: 'Would you like to…?', d: 'a nice way to ask: do you want to…?' },
+    { w: 'I\'d love to!', d: 'yes, I want to, very much' },
+    { w: 'Sorry, I can\'t.', d: 'a nice way to say no' }
+  ], predict: { q: 'Yara invites two friends to her birthday party. Do you think they can both come?', o: ['Yes, both', 'Only one', 'No, nobody'] } },
+  show: { cast: 'Yara invites her friends Tom and Maya to her birthday party at the beach.', names: { Y: 'Yara', T: 'Tom', M: 'Maya' }, voices: { Y: 'af_bella', T: 'am_echo', M: 'bf_isabella' },
+    parts: [
+      { lines: [
+        ['Y', 'Hi Tom! It\'s my birthday on Friday. Would you like to come to my party at the beach?'],
+        ['T', 'I\'d love to! What time?'],
+        ['Y', 'At four o\'clock. We\'re going to play beach ball and eat watermelon.']
+      ], items: [
+        { k: 'mc', q: 'When is Yara\'s birthday?', o: ['on Friday', 'on Saturday', 'today'], a: 0, why: '"It\'s my birthday on Friday."' },
+        { k: 'type', q: 'The party is at ___ o\'clock.', a: ['four', '4'], why: '"At four o\'clock."' }
+      ] },
+      { lines: [
+        ['Y', 'Maya, would you like to come to my party on Friday?'],
+        ['M', 'Oh, sorry, I can\'t. I have a swimming lesson on Friday afternoon.'],
+        ['Y', 'Oh no! Would you like to come to the park with me on Saturday morning?'],
+        ['M', 'Yes, I\'d love to!']
+      ], items: [
+        { k: 'tf', q: 'Maya can come to the party.', a: false, fix: 'She can\'t come. She has a swimming lesson.', why: '"Sorry, I can\'t. I have a swimming lesson."' },
+        { k: 'mc', q: 'Where are Yara and Maya going to go on Saturday?', o: ['to the park', 'to the beach', 'to a swimming lesson'], a: 0, why: '"Would you like to come to the park with me on Saturday morning?" "Yes, I\'d love to!"' }
+      ] },
+      { lines: [
+        ['T', 'Yara, can I bring something to the party?'],
+        ['Y', 'Yes, please! Can you bring a ball?'],
+        ['T', 'Sure! And I can bring some cups for the juice.']
+      ], items: [
+        { k: 'mc', q: 'What does Yara ask Tom to bring?', o: ['a ball', 'a cake', 'some juice'], a: 0, why: '"Can you bring a ball?"' },
+        { k: 'type', q: 'Tom can bring some ___ for the juice too.', a: ['cups'], why: '"I can bring some cups for the juice."' }
+      ] }
+    ] },
+  steps: [
+    { name: 'Listen again', items: [
+      { k: 'mc', clip: 0, q: 'At the party, they are going to eat ___.', o: ['watermelon', 'pizza', 'ice cream'], a: 0, why: '"We\'re going to play beach ball and eat watermelon."' },
+      { k: 'hear', say: 'Would you like to come to the cinema with me on Sunday?', q: 'What day is the invitation for?', o: ['on Sunday', 'on Monday', 'today'], a: 0, why: '…the cinema with me on Sunday?' },
+      { k: 'mc', q: 'Which is a nice way to say no?', o: ['Sorry, I can\'t.', 'I\'d love to!', 'Yes, please!'], a: 0, why: 'Sorry, I can\'t. = a nice no. The others say yes.',
+        he: 'Would you like to...? = הייתם רוצים...? עונים: I\'d love to! (כן, בשמחה) או Sorry, I can\'t. (סליחה, אני לא יכול).' }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'mc', q: 'Maya ___ a swimming lesson on Friday.', o: ['has', 'have', 'is'], a: 0, why: 'she → has.' },
+      { k: 'mc', q: 'Yara: "It\'s ___ birthday on Friday."', o: ['my', 'me', 'I'], a: 0, why: 'my + a noun: my birthday.' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'Would you like to come to my party?', why: 'Would you like + to come + to my party?' },
+    { k: 'type', q: '"Would you like to play with us?" "Yes, I\'d ___ to!"', a: ['love'], why: 'Yes, I\'d love to! = yes, very much.' }
+  ]
+},
+{
+  id: 'a1l13', type: 'listening',
+  title: 'What did you do last weekend?', kid: 'My fun weekend', he: 'מה עשיתם בסוף השבוע? (Past simple)',
+  dinner: 'What was the best part of your weekend?',
+  hook: { q: 'Who was the first person to walk on the Moon, in 1969?', o: ['Neil Armstrong', 'Yuri Gagarin', 'Isaac Newton'], a: 0,
+    reveal: '*Neil Armstrong*, from the USA! He *walked* on the Moon in July 1969. walk → *walked*: that is the past.' },
+  learn: { kind: 'keys', title: 'Key words before you listen', words: [
+    { w: 'went', d: 'go in the past: Yesterday I went to the beach.' },
+    { w: 'saw', d: 'see in the past: I saw a lion.' },
+    { w: 'was / were', d: 'is / are in the past: It was fun!' }
+  ], predict: { q: 'Adam asks Noor about her weekend. Do you think it was fun?', o: ['Yes, very fun', 'No, it was boring', 'She doesn\'t say'] } },
+  show: { cast: 'It\'s Sunday morning at school. Adam asks Noor about her weekend.', names: { A: 'Adam', N: 'Noor' }, voices: { A: 'am_liam', N: 'af_river' },
+    parts: [
+      { lines: [
+        ['A', 'Hi Noor! What did you do last weekend?'],
+        ['N', 'On Friday I went to the zoo with my cousins. It was great!'],
+        ['A', 'Cool! What did you see?'],
+        ['N', 'We saw two lions, a lot of monkeys and a very big elephant.']
+      ], items: [
+        { k: 'mc', q: 'Where did Noor go on Friday?', o: ['to the zoo', 'to the beach', 'to the park'], a: 0, why: '"On Friday I went to the zoo."' },
+        { k: 'mc', q: 'Who did she go with?', o: ['her cousins', 'her class', 'Adam'], a: 0, why: '"with my cousins"' }
+      ] },
+      { lines: [
+        ['A', 'Were the lions scary?'],
+        ['N', 'No, they were very sleepy! They slept in the sun all day. But the monkeys were very funny.']
+      ], items: [
+        { k: 'tf', q: 'The lions were very sleepy.', a: true, why: '"they were very sleepy!"' },
+        { k: 'mc', q: 'Which animals were funny?', o: ['the monkeys', 'the lions', 'the elephants'], a: 0, why: '"the monkeys were very funny."' }
+      ] },
+      { lines: [
+        ['N', 'And you, Adam? What did you do?'],
+        ['A', 'On Saturday I played football in the park. Then I ate falafel with my dad. It was a fun weekend!'],
+        ['N', 'Yum! I love falafel.']
+      ], items: [
+        { k: 'mc', q: 'What did Adam do on Saturday?', o: ['He played football.', 'He went to the zoo.', 'He went to the beach.'], a: 0, why: '"On Saturday I played football in the park."' },
+        { k: 'type', q: 'Adam ___ falafel with his dad.', hint: '(ate / eat)', a: ['ate'], why: '"Then I ate falafel with my dad." ate = eat in the past.' }
+      ] }
+    ] },
+  steps: [
+    { name: 'Listen again', items: [
+      { k: 'mc', clip: 0, q: 'At the zoo, Noor saw a very big ___.', o: ['elephant', 'lion', 'monkey'], a: 0, why: '"and a very big elephant."' },
+      { k: 'hear', say: 'Last weekend we went to the beach. It was sunny.', q: 'Where did they go?', o: ['to the beach', 'to the zoo', 'to school'], a: 0, why: 'we went to the beach.' },
+      { k: 'sort', q: 'Now, or in the past?', g: ['now', 'in the past'],
+        w: [['go', 0], ['see', 0], ['is', 0], ['went', 1], ['saw', 1], ['was', 1]],
+        why: 'go → went · see → saw · is → was',
+        he: 'בעבר הרבה פעלים מקבלים ed: play → played. יש פעלים מיוחדים: go → went, see → saw, eat → ate.' }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'mc', q: 'Noor ___ monkeys. They are funny!', o: ['likes', 'like', 'liking'], a: 0, why: 'she → likes (he, she, it + s).' },
+      { k: 'mc', q: 'Adam plays football with ___ friends.', o: ['his', 'her', 'him'], a: 0, why: 'Adam = he → his friends.' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'We saw a very big elephant.', why: 'see in the past → saw: We saw…' },
+    { k: 'type', q: 'Last weekend I ___ to the park.', hint: '(go → ?)', a: ['went'], why: 'go in the past → went.' }
+  ]
+},
+{
+  id: 'a1l14', type: 'listening',
+  title: 'Lunch at the café', kid: 'Lunch at the café', he: 'מזמינים אוכל במסעדה',
+  dinner: 'If you had a café, what would you put on the menu?',
+  hook: { q: 'Hummus is made mostly from…', o: ['chickpeas', 'potatoes', 'rice'], a: 0,
+    reveal: '*Chickpeas*! Hummus is chickpeas with tahini, lemon and garlic. And in today\'s show, somebody orders hummus.' },
+  learn: { kind: 'keys', title: 'Key words before you listen', words: [
+    { w: 'menu', d: 'a list of the food and drinks in a café' },
+    { w: 'order', d: 'say what food you want in a café' },
+    { w: 'waiter', d: 'a person who brings food to the tables' }
+  ], predict: { q: 'Rana and her grandpa are at a café. What do you think Rana orders?', o: ['A pizza', 'Hummus', 'A salad'] } },
+  show: { cast: 'Rana and her grandpa have lunch at a small café by the sea in Akko.', names: { W: 'Waiter', R: 'Rana', G: 'Grandpa' }, voices: { W: 'bm_lewis', R: 'af_nova', G: 'am_onyx' },
+    parts: [
+      { lines: [
+        ['W', 'Hello! Here\'s the menu. What would you like?'],
+        ['G', 'I\'d like the fish, please, with a salad.'],
+        ['W', 'And for you?'],
+        ['R', 'Can I have a cheese pizza, please?']
+      ], items: [
+        { k: 'mc', q: 'What does Grandpa order?', o: ['fish and a salad', 'a cheese pizza', 'hummus'], a: 0, why: '"I\'d like the fish, please, with a salad."' },
+        { k: 'mc', q: 'What does Rana ask for first?', o: ['a cheese pizza', 'fish', 'a salad'], a: 0, why: '"Can I have a cheese pizza, please?"' }
+      ] },
+      { lines: [
+        ['W', 'Sorry, we don\'t have pizza today. We have pasta with tomatoes, or hummus with warm pitta.'],
+        ['R', 'Oh! Then I\'d like the hummus, please.'],
+        ['W', 'And to drink?'],
+        ['R', 'Orange juice, please. And some water for my grandpa.']
+      ], items: [
+        { k: 'tf', q: 'The café has pizza today.', a: false, fix: 'They don\'t have pizza today.', why: '"Sorry, we don\'t have pizza today."' },
+        { k: 'type', q: 'Rana wants ___ juice.', a: ['orange'], why: '"Orange juice, please."' }
+      ] },
+      { lines: [
+        ['G', 'How\'s the hummus?'],
+        ['R', 'It\'s delicious! Can we have some ice cream after lunch?'],
+        ['G', 'Yes, of course. Excuse me! Two ice creams, please. Chocolate and strawberry.']
+      ], items: [
+        { k: 'mc', q: 'What does Rana think of the hummus?', o: ['It\'s delicious.', 'It\'s cold.', 'It\'s not very good.'], a: 0, why: '"It\'s delicious!"' },
+        { k: 'mc', pic: 'ice cream', q: 'What do they order after lunch?', o: ['two ice creams', 'two juices', 'a cake'], a: 0, why: '"Two ice creams, please."' }
+      ] }
+    ] },
+  steps: [
+    { name: 'Listen again', items: [
+      { k: 'mc', clip: 1, q: 'The pasta comes with ___.', o: ['tomatoes', 'cheese', 'fish'], a: 0, why: '"We have pasta with tomatoes."' },
+      { k: 'hear', say: 'Can I have a lemonade, please?', q: 'What does he want?', o: ['a lemonade', 'a lemon cake', 'a lemon'], a: 0, why: 'Can I have a lemonade, please?' },
+      { k: 'sort', q: 'Food or drink?', g: ['food', 'drink'],
+        w: [['hummus', 0], ['pasta', 0], ['salad', 0], ['juice', 1], ['water', 1], ['lemonade', 1]],
+        why: 'food: hummus, pasta, salad · drink: juice, water, lemonade',
+        he: 'בבית קפה מבקשים בנימוס: I\'d like..., please. או Can I have..., please?' }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'mc', q: '___ you like hummus?', o: ['Do', 'Does', 'Are'], a: 0, why: 'you → Do you like…?' },
+      { k: 'mc', q: 'I\'d like ___ ice cream, please.', o: ['an', 'a', 'two'], a: 0, why: 'ice cream starts with a vowel sound → an ice cream.' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'Can I have a pizza, please?', why: 'Can I have + a pizza + please?' },
+    { k: 'type', q: 'I\'d ___ the hummus, please.', a: ['like'], why: 'I\'d like… = I want…, but more polite.' }
+  ]
+},
+{
+  id: 'a1l15', type: 'listening',
+  title: 'Free time', kid: 'What do you do for fun?', he: 'שעות הפנאי: מה עושים בזמן החופשי',
+  dinner: 'What is your favourite thing to do on a free afternoon?',
+  hook: { q: 'Where do people think the first kites were made?', o: ['in China', 'in Brazil', 'in England'], a: 0,
+    reveal: 'In *China*, more than 2,000 years ago! Today people fly kites all over the world in their free time.' },
+  learn: { kind: 'keys', title: 'Key words before you listen', words: [
+    { w: 'free time', d: 'time with no school and no homework' },
+    { w: 'hobby', d: 'something you love to do in your free time' },
+    { w: 'collect', d: 'keep a lot of things of one kind, like stickers' }
+  ], predict: { q: 'A radio show asks two kids about their free time. What do you think they do?', o: ['They play sports', 'They draw', 'Different things'] } },
+  show: { cast: 'Kids\' Radio asks Dina and Karim: What do you do in your free time?', names: { H: 'Host', D: 'Dina', K: 'Karim' }, voices: { H: 'am_eric', D: 'af_jessica', K: 'am_adam' },
+    parts: [
+      { lines: [
+        ['H', 'Welcome to Kids\' Radio! Today\'s question is: What do you do in your free time? Dina?'],
+        ['D', 'I love drawing. I draw animals and funny people. I draw every day after school.'],
+        ['H', 'Every day? Wow!']
+      ], items: [
+        { k: 'mc', q: 'What does Dina love?', o: ['drawing', 'reading', 'dancing'], a: 0, why: '"I love drawing."' },
+        { k: 'mc', q: 'When does Dina draw?', o: ['every day after school', 'only on Fridays', 'in the morning'], a: 0, why: '"I draw every day after school."' }
+      ] },
+      { lines: [
+        ['H', 'Karim, what about you?'],
+        ['K', 'I play table tennis on Mondays and Thursdays. And I collect stickers. I have three hundred!']
+      ], items: [
+        { k: 'type', q: 'Karim collects ___.', a: ['stickers'], why: '"And I collect stickers."' },
+        { k: 'tf', q: 'Karim plays table tennis every day.', a: false, fix: 'He plays on Mondays and Thursdays.', why: '"I play table tennis on Mondays and Thursdays."' }
+      ] },
+      { lines: [
+        ['H', 'Do you two like the same things?'],
+        ['D', 'No! Karim loves sports, and I don\'t. But we both love kites!'],
+        ['K', 'Yes! On Saturdays we fly kites at the beach.']
+      ], items: [
+        { k: 'mc', pic: 'kite', q: 'What do Dina and Karim both love?', o: ['kites', 'sports', 'drawing'], a: 0, why: '"But we both love kites!"' },
+        { k: 'mc', q: 'Where do they fly kites?', o: ['at the beach', 'in the park', 'at school'], a: 0, why: '"On Saturdays we fly kites at the beach."' }
+      ] }
+    ] },
+  steps: [
+    { name: 'Listen again', items: [
+      { k: 'mc', clip: 1, q: 'Karim has ___ stickers.', o: ['three hundred', 'thirty', 'three'], a: 0, why: '"I have three hundred!"' },
+      { k: 'hear', say: 'I never watch TV. I always read in my free time.', q: 'What does she do in her free time?', o: ['She reads.', 'She watches TV.', 'She draws.'], a: 0, why: 'I always read in my free time.' }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'mc', q: 'Dina ___ after school.', o: ['always draws', 'is always draws', 'draws always'], a: 0, why: 'always comes before the verb: always draws.',
+        he: 'always, often, never באים לפני הפועל: she always draws. עם is הם באים אחריו: she is always happy.' },
+      { k: 'mc', q: '___ Karim like sports?', o: ['Does', 'Do', 'Is'], a: 0, why: 'Karim = he → Does he like…?' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'I love drawing funny animals.', why: 'I love + drawing + funny animals.' },
+    { k: 'type', q: 'In my free time, I ___ to the park.', hint: '(go / goes)', a: ['go'], why: 'I → go.' }
+  ]
+},
+{
+  id: 'a1l16', type: 'listening',
+  title: 'City transport', kid: 'Bus, train or bike?', he: 'תחבורה בעיר: אוטובוס, רכבת, אופניים',
+  dinner: 'What is the best way to get around our town, and why?',
+  hook: { q: 'In which city did the first underground train in the world start, in 1863?', o: ['London', 'Paris', 'New York'], a: 0,
+    reveal: '*London*! The first underground train started there in 1863. People in London call it "the Tube".' },
+  learn: { kind: 'keys', title: 'Key words before you listen', words: [
+    { w: 'bus stop', d: 'the place where you wait for the bus' },
+    { w: 'station', d: 'the place where you get on a train' },
+    { w: 'helmet', d: 'a hard hat for your head when you ride a bike' }
+  ], predict: { q: 'Gili is new in town. She asks how to get to the swimming pool. What do you think is best?', o: ['By bus', 'By train', 'By bike'] } },
+  show: { cast: 'Gili is new in Palm Town, a small made-up town. Her neighbour Sami tells her how to get around.', names: { G: 'Gili', S: 'Sami' }, voices: { G: 'af_sky', S: 'am_echo' },
+    parts: [
+      { lines: [
+        ['G', 'Hi Sami! How do you go to school?'],
+        ['S', 'I take the number five bus. The bus stop is next to the bakery. The bus comes every ten minutes.'],
+        ['G', 'Great! Is it a long ride?'],
+        ['S', 'No, only fifteen minutes.']
+      ], items: [
+        { k: 'mc', pic: 'bus', q: 'Which bus does Sami take?', o: ['number five', 'number ten', 'number fifteen'], a: 0, why: '"I take the number five bus."' },
+        { k: 'type', q: 'The bus comes every ___ minutes.', a: ['ten', '10'], why: '"The bus comes every ten minutes."' }
+      ] },
+      { lines: [
+        ['G', 'And how can I go to the big city?'],
+        ['S', 'By train. The station is near the park. The train is fast. It takes thirty minutes.']
+      ], items: [
+        { k: 'mc', q: 'Where is the train station?', o: ['near the park', 'next to the bakery', 'next to the school'], a: 0, why: '"The station is near the park."' },
+        { k: 'tf', q: 'The train is slow.', a: false, fix: 'The train is fast.', why: '"The train is fast."' }
+      ] },
+      { lines: [
+        ['G', 'And the swimming pool?'],
+        ['S', 'Go by bike! There\'s a bike path all the way there. But always wear a helmet!'],
+        ['G', 'Thanks, Sami! I love my bike.']
+      ], items: [
+        { k: 'mc', pic: 'bike', q: 'How can Gili go to the pool?', o: ['by bike', 'by bus', 'by train'], a: 0, why: '"Go by bike!"' },
+        { k: 'mc', q: 'What does Sami say about the bike?', o: ['Always wear a helmet.', 'Ride it on the road.', 'Don\'t ride it to the pool.'], a: 0, why: '"But always wear a helmet!"' }
+      ] }
+    ] },
+  steps: [
+    { name: 'Listen again', items: [
+      { k: 'mc', clip: 0, q: 'The bus stop is next to the ___.', o: ['bakery', 'park', 'pool'], a: 0, why: '"The bus stop is next to the bakery."' },
+      { k: 'hear', say: 'I go to school on foot. It takes five minutes.', q: 'How does he go to school?', o: ['on foot', 'by bus', 'by car'], a: 0, why: 'I go to school on foot.',
+        he: 'by bus, by train, by bike (בלי the!). ברגל = on foot.' }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'mc', q: 'Sami ___ the bus to school.', o: ['takes', 'take', 'taking'], a: 0, why: 'he → takes (he, she, it + s).' },
+      { k: 'mc', q: 'How ___ you go to school?', o: ['do', 'does', 'are'], a: 0, why: 'you → How do you go…?' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'I take the bus to school.', why: 'I take + the bus + to school.' },
+    { k: 'type', q: 'I go to the beach ___ bike.', a: ['by'], why: 'by bike, by bus, by train.' }
+  ]
+},
+{
+  id: 'a1l17', type: 'listening',
+  title: 'Describing people', kid: 'Where is my friend?', he: 'מתארים אנשים: שיער, עיניים, בגדים',
+  dinner: 'Can you describe a friend, so I can guess who it is?',
+  hook: { q: 'What eye colour do most people in the world have?', o: ['brown', 'blue', 'green'], a: 0,
+    reveal: '*Brown*! Most people in the world have brown eyes. Blue and green eyes are not so common.' },
+  learn: { kind: 'keys', title: 'Key words before you listen', words: [
+    { w: 'curly', d: 'hair that goes round and round, like springs' },
+    { w: 'straight', d: 'hair that is not curly' },
+    { w: 'crowd', d: 'a lot of people in one place' }
+  ], predict: { q: 'Lior has a seat for his friend Hala at the school show. How do you think he finds her?', o: ['A friend helps him', 'She calls him', 'She waves to him'] } },
+  show: { cast: 'At the school show, Lior has a seat for his friend Hala. His classmate Tamar helps him look for her in the crowd.', names: { L: 'Lior', T: 'Tamar' }, voices: { L: 'am_puck', T: 'bf_lily' },
+    parts: [
+      { lines: [
+        ['L', 'Tamar, can you help me? I\'m looking for Hala. I have a seat for her.'],
+        ['T', 'Sure! What does she look like?'],
+        ['L', 'She\'s tall, and she has long black hair. It\'s curly.']
+      ], items: [
+        { k: 'mc', q: 'What does Hala look like?', o: ['tall, with long curly hair', 'short, with straight hair', 'tall, with short hair'], a: 0, why: '"She\'s tall, and she has long black hair. It\'s curly."' },
+        { k: 'tf', q: 'Hala has straight hair.', a: false, fix: 'She has curly hair.', why: '"It\'s curly."' }
+      ] },
+      { lines: [
+        ['T', 'What is she wearing?'],
+        ['L', 'A yellow T-shirt and blue jeans. And she has glasses. Big red glasses.'],
+        ['T', 'Is that her, next to the door?'],
+        ['L', 'No, that girl has short hair.']
+      ], items: [
+        { k: 'mc', pic: 'T-shirt', q: 'What colour is Hala\'s T-shirt?', o: ['yellow', 'blue', 'red'], a: 0, why: '"A yellow T-shirt and blue jeans."' },
+        { k: 'type', q: 'Hala has big red ___.', a: ['glasses'], why: '"Big red glasses."' }
+      ] },
+      { lines: [
+        ['T', 'Look! There, near the stage. A tall girl with curly hair and red glasses!'],
+        ['L', 'Yes! That\'s Hala! Hala! Over here!']
+      ], items: [
+        { k: 'mc', q: 'Where is Hala?', o: ['near the stage', 'next to the door', 'on the stage'], a: 0, why: '"There, near the stage."' },
+        { k: 'mc', q: 'What does Lior call out to Hala?', o: ['Over here!', 'Goodbye!', 'Sit down!'], a: 0, why: '"Hala! Over here!"' }
+      ] }
+    ] },
+  steps: [
+    { name: 'Listen again', items: [
+      { k: 'mc', clip: 0, q: 'Lior has a ___ for Hala.', o: ['seat', 'present', 'T-shirt'], a: 0, why: '"I have a seat for her."' },
+      { k: 'hear', say: 'My brother has short brown hair and blue eyes.', q: 'What colour are his eyes?', o: ['blue', 'brown', 'green'], a: 0, why: 'short brown hair and blue eyes.' }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'mc', q: 'Hala ___ long black hair.', o: ['has', 'have', 'is'], a: 0, why: 'she → has. For hair and eyes we use have / has.',
+        he: 'לתיאור שיער ועיניים משתמשים ב-have / has: She has curly hair. לא אומרים She is curly hair.' },
+      { k: 'mc', q: 'She has ___.', o: ['long black hair', 'black long hair', 'hair long black'], a: 0, why: 'adjectives come before the noun: long black hair.' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'She has big red glasses.', why: 'She has + big red + glasses.' },
+    { k: 'type', q: 'Hala ___ wearing a yellow T-shirt.', hint: '(am / is / are)', a: ['is'], why: 'she → is wearing.' }
+  ]
+},
+{
+  id: 'a1r05', type: 'reading',
+  title: 'My life abroad', kid: 'A year in Japan', he: 'החיים שלי בחו״ל: שנה ביפן',
+  dinner: 'If we lived in another country for a year, which country would you choose?',
+  hook: { q: 'In many schools in Japan, who cleans the classrooms?', o: ['the students', 'the teachers', 'robots'], a: 0,
+    reveal: '*The students*! In many Japanese schools, children clean their classrooms together every day. Shai does it too!' },
+  learn: { kind: 'intro', title: 'Before you read', line: 'Shai is nine. His family is living in Japan for one year. He writes a letter to his class in Israel.',
+    predict: { q: 'What do you think is different for Shai in Japan?', o: ['School', 'Food', 'A lot of things!'] } },
+  story: { title: 'A letter from Japan', chunks: [
+    { text: 'Dear class, hello from Japan! My family and I are living in Osaka for one year. Our flat is small, but I love it. In Japan, people take off their shoes at the door. Then they wear slippers in the house. Everybody does it here!',
+      items: [
+        { k: 'mc', q: 'Where does Shai live now?', o: ['in Osaka, in Japan', 'in Tokyo, in Japan', 'in Tel Aviv'], a: 0, why: '"My family and I are living in Osaka for one year."' },
+        { k: 'tf', q: 'In Japan, people wear their shoes in the house.', a: false, fix: 'They take off their shoes at the door.', why: '"people take off their shoes at the door."' },
+        { k: 'find', q: 'Find a word for soft shoes you wear in the house.', a: 'slippers', why: 'slippers = soft shoes for the house.' }
+      ] },
+    { text: 'The school year here starts in April, not in September! My school is big, and I wear a uniform. At my school, we clean our classroom every day. I clean the windows with my friend Kenta. It\'s fun! We have lunch in the classroom: rice, soup and fish.',
+      items: [
+        { k: 'mc', q: 'When does the school year start in Japan?', o: ['in April', 'in September', 'in January'], a: 0, why: '"The school year here starts in April."' },
+        { k: 'mc', q: 'What does Shai clean?', o: ['the windows', 'the floor', 'the desks'], a: 0, why: '"I clean the windows with my friend Kenta."' },
+        { k: 'find', q: 'Find the opposite of "small".', a: 'big', why: 'small ↔ big.' }
+      ] },
+    { text: 'Japanese is a hard language, but I can say some words now. "Konnichiwa" means "hello", and "arigato" means "thank you". I miss falafel and the beach in Israel, but I love Japan. See you next summer! Shai',
+      items: [
+        { k: 'mc', q: 'What does "arigato" mean?', o: ['thank you', 'hello', 'goodbye'], a: 0, why: '"arigato" means "thank you".' },
+        { k: 'tf', q: 'Shai misses falafel.', a: true, why: '"I miss falafel and the beach in Israel."' }
+      ] }
+  ] },
+  steps: [
+    { name: 'The big question', items: [
+      { k: 'mc', q: 'What is the best title for the text?', o: ['My year in Japan', 'My new bike', 'A day at the beach'], a: 0, why: 'Shai writes about his life in Japan.' }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'mc', q: 'Shai ___ the windows with Kenta.', o: ['cleans', 'clean', 'cleaning'], a: 0, why: 'he → cleans (he, she, it + s).' },
+      { k: 'mc', q: 'Kenta is Shai\'s friend. Shai cleans the windows with ___.', o: ['him', 'he', 'his'], a: 0, why: 'after with → him.' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'I would like to visit Japan.', why: 'I would like + to visit + Japan.' },
+    { k: 'type', q: 'In Japan, the school year starts in ___.', a: ['April'], why: 'In Japan, school starts in April.',
+      he: 'שמות של חודשים באנגלית נכתבים תמיד באות גדולה: April, September.' }
+  ]
+},
+{
+  id: 'a1r06', type: 'reading',
+  title: 'Top things that I do', kid: 'My top five things', he: 'הדברים שהכי כיף לי לעשות',
+  dinner: 'What are your top three things to do, and which one is number one?',
+  hook: { q: 'How many pieces are there on a chess board at the start of a game?', o: ['32', '16', '64'], a: 0,
+    reveal: '*32*: 16 white pieces and 16 black pieces. And chess is on Salma\'s top five list!' },
+  learn: { kind: 'intro', title: 'Before you read', line: 'Salma is ten. She writes a list for her class: "My top five things to do". Read her list!',
+    predict: { q: 'What do you think is number one on her list?', o: ['A sport', 'A game', 'Cooking'] } },
+  story: { title: 'My top five', chunks: [
+    { text: 'Number five: I ride my bike in the park on Saturdays. Number four: I bake cookies with my big sister. We often make chocolate cookies, but sometimes we make lemon ones. They are yummy!',
+      items: [
+        { k: 'mc', pic: 'bike', q: 'When does Salma ride her bike?', o: ['on Saturdays', 'every day', 'after school'], a: 0, why: '"I ride my bike in the park on Saturdays."' },
+        { k: 'mc', q: 'Who does Salma bake with?', o: ['her big sister', 'her grandpa', 'her friend'], a: 0, why: '"I bake cookies with my big sister."' },
+        { k: 'find', q: 'Find a word that means "very good to eat".', a: 'yummy', why: 'yummy = very good to eat.' }
+      ] },
+    { text: 'Number three: I read comics in bed before I go to sleep. My favourite comic is about a cat who can fly! Number two: I swim at the sports centre twice a week. I\'m in the swimming team.',
+      items: [
+        { k: 'tf', q: 'Salma reads comics in the morning.', a: false, fix: 'She reads comics in bed before she goes to sleep.', why: '"I read comics in bed before I go to sleep."' },
+        { k: 'mc', q: 'How often does Salma swim?', o: ['twice a week', 'every day', 'once a month'], a: 0, why: '"I swim at the sports centre twice a week."' },
+        { k: 'find', q: 'Find a word for stories with a lot of pictures.', a: 'comics', why: 'comics = stories with pictures.' }
+      ] },
+    { text: 'And number one: I play chess with my grandpa every Friday. He is a very good player, and he always wins! But I learn a lot from him. One day I\'m going to win!',
+      items: [
+        { k: 'mc', q: 'What is number one for Salma?', o: ['playing chess with her grandpa', 'swimming', 'reading comics'], a: 0, why: '"And number one: I play chess with my grandpa."' },
+        { k: 'mc', q: 'Who wins the games?', o: ['her grandpa', 'Salma', 'nobody'], a: 0, why: '"he always wins!"' }
+      ] }
+  ] },
+  steps: [
+    { name: 'The big question', items: [
+      { k: 'mc', q: 'What is the text about?', o: ['things Salma loves to do', 'Salma\'s new school', 'a chess game in a big city'], a: 0, why: 'Salma writes about her top five things to do.' }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'mc', q: 'Salma ___ her bike in the park.', o: ['rides', 'ride', 'riding'], a: 0, why: 'she → rides (he, she, it + s).' },
+      { k: 'mc', q: 'Her grandpa ___.', o: ['always wins', 'is always wins', 'wins always'], a: 0, why: 'always comes before the verb: always wins.' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'I love riding my bike.', why: 'I love + riding + my bike.' },
+    { k: 'type', q: 'I ___ my bike in the park.', hint: '(ride / rides)', a: ['ride'], why: 'I → ride.',
+      he: 'אחרי I, you, we, they הפועל בלי s: I ride. אחרי he, she, it מוסיפים s: she rides.' }
+  ]
+},
+{
+  id: 'a1r07', type: 'reading',
+  title: 'A day in the life of a pilot', kid: 'Flying a big plane', he: 'יום בחיים של טייסת מטוסי נוסעים',
+  dinner: 'Which city would you like to fly to, and why?',
+  hook: { q: 'How high do big passenger planes usually fly?', o: ['about 10 kilometres', 'about 1 kilometre', 'about 100 kilometres'], a: 0,
+    reveal: 'About *10 kilometres* up! That is higher than the tallest mountain in the world. Now meet Mira, a pilot.' },
+  learn: { kind: 'intro', title: 'Before you read', line: 'Mira is an airline pilot. She tells us about one day at work.',
+    predict: { q: 'What do you think a pilot does first at the airport?', o: ['She checks the weather', 'She eats a cake', 'She goes swimming'] } },
+  story: { title: 'Captain Mira', chunks: [
+    { text: 'My name is Mira, and I am a pilot. On work days I get up very early, at four o\'clock! I put on my uniform and my hat, and I drive to the airport. There, I meet the other pilot, and we check the weather together.',
+      items: [
+        { k: 'mc', q: 'What time does Mira get up on work days?', o: ['at four o\'clock', 'at six o\'clock', 'at nine o\'clock'], a: 0, why: '"I get up very early, at four o\'clock!"' },
+        { k: 'tf', q: 'Mira flies the plane alone.', a: false, fix: 'She flies with another pilot.', why: '"I meet the other pilot, and we check the weather together."' },
+        { k: 'find', q: 'Find the place where planes go up and come down.', a: 'airport', why: 'Planes go up and come down at the airport.' }
+      ] },
+    { text: 'Today we fly from Tel Aviv to Rome, in Italy. It takes about four hours. Before we go, I talk to the passengers: "Good morning, everyone, and welcome!" From the window, we can see the sea and the mountains.',
+      items: [
+        { k: 'mc', q: 'Where does Mira fly today?', o: ['to Rome', 'to London', 'to Paris'], a: 0, why: '"Today we fly from Tel Aviv to Rome."' },
+        { k: 'mc', q: 'How long is the flight?', o: ['about four hours', 'about one hour', 'about ten hours'], a: 0, why: '"It takes about four hours."' },
+        { k: 'find', q: 'Find a word for the people who travel on the plane.', a: 'passengers', why: 'passengers = the people who travel on the plane.' }
+      ] },
+    { text: 'In Rome, we have lunch and rest. In the afternoon, we fly back to Tel Aviv. I get home at eight in the evening. I\'m tired, but happy. I love my job, because every day I see the world from the sky!',
+      items: [
+        { k: 'mc', q: 'What does Mira do in Rome?', o: ['She has lunch and rests.', 'She visits a museum.', 'She stays there for a week.'], a: 0, why: '"In Rome, we have lunch and rest."' },
+        { k: 'tf', q: 'Mira loves her job.', a: true, why: '"I love my job, because every day I see the world from the sky!"' }
+      ] }
+  ] },
+  steps: [
+    { name: 'The big question', items: [
+      { k: 'mc', q: 'What is the best title for the text?', o: ['A pilot\'s day at work', 'A holiday in Italy', 'How to make a plane'], a: 0, why: 'Mira tells us about her work day.' }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'mc', q: 'Mira ___ up at four o\'clock.', o: ['gets', 'get', 'getting'], a: 0, why: 'she → gets (he, she, it + s).' },
+      { k: 'mc', q: '"___ she like her job?" "Yes, she does."', o: ['Does', 'Do', 'Is'], a: 0, why: 'she → Does she like…?' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'I want to fly a plane.', why: 'I want + to fly + a plane.' },
+    { k: 'type', q: 'A pilot works at the ___.', a: ['airport'], why: 'Pilots fly from the airport.',
+      he: 'pilot = טייס או טייסת. passengers = נוסעים. airport = שדה תעופה.' }
+  ]
+},
+{
+  id: 'a1r08', type: 'reading',
+  title: 'A sportswoman\'s day', kid: 'A swimmer\'s busy day', he: 'סדר היום של ספורטאית',
+  dinner: 'Which sport would you like to try, and why?',
+  hook: { q: 'How long is an Olympic swimming pool?', o: ['50 metres', '25 metres', '100 metres'], a: 0,
+    reveal: '*50 metres*! Nili swims in a pool like this every day. Her day is very busy!' },
+  learn: { kind: 'intro', title: 'Before you read', line: 'Nili is a swimmer. We made her up, but her day is like the day of a real sportswoman. Read about it!',
+    predict: { q: 'What time do you think Nili gets up?', o: ['At five', 'At eight', 'At eleven'] } },
+  story: { title: 'Nili\'s day', chunks: [
+    { text: 'I\'m Nili, and I\'m a swimmer. My day starts very early. I get up at five o\'clock and I have a quick breakfast: bread, cheese and a banana. At six I\'m in the pool. I swim for two hours with my team.',
+      items: [
+        { k: 'mc', q: 'What time does Nili get up?', o: ['at five o\'clock', 'at six o\'clock', 'at seven o\'clock'], a: 0, why: '"I get up at five o\'clock."' },
+        { k: 'mc', q: 'How long does she swim in the morning?', o: ['two hours', 'one hour', 'five hours'], a: 0, why: '"I swim for two hours with my team."' },
+        { k: 'find', q: 'Find a word that means "fast".', a: 'quick', why: 'quick = fast.' }
+      ] },
+    { text: 'After that, I go home and I sleep for one hour. Then I study. I study English online. In the afternoon, I go to the gym. My coach is very kind, and she is never late!',
+      items: [
+        { k: 'tf', q: 'Nili sleeps after the morning swim.', a: true, why: '"After that, I go home and I sleep for one hour."' },
+        { k: 'mc', q: 'Where does Nili go in the afternoon?', o: ['to the gym', 'to school', 'to the beach'], a: 0, why: '"In the afternoon, I go to the gym."' },
+        { k: 'find', q: 'Find the word for the person who helps Nili get better at her sport.', a: 'coach', why: 'a coach helps sportspeople get better.' }
+      ] },
+    { text: 'At five o\'clock I swim again for one hour. In the evening I have dinner at home and I talk to my friends. I go to bed at nine o\'clock. It\'s early, but I need a lot of sleep. It\'s a busy life, but I love it!',
+      items: [
+        { k: 'mc', q: 'What time does Nili go to bed?', o: ['at nine o\'clock', 'at eleven o\'clock', 'at five o\'clock'], a: 0, why: '"I go to bed at nine o\'clock."' },
+        { k: 'tf', q: 'Nili doesn\'t like her busy life.', a: false, fix: 'She loves her busy life.', why: '"It\'s a busy life, but I love it!"' }
+      ] }
+  ] },
+  steps: [
+    { name: 'The big question', items: [
+      { k: 'mc', q: 'What is the text about?', o: ['a swimmer\'s day', 'how to swim', 'a swimming race'], a: 0, why: 'Nili tells us about her day, from morning to night.' }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'mc', q: 'Nili ___ in the morning.', o: ['always swims', 'is always swims', 'swims always'], a: 0, why: 'always comes before the verb: always swims.' },
+      { k: 'mc', q: 'Her coach is kind. Nili likes ___ a lot.', o: ['her', 'she', 'hers'], a: 0, why: 'after the verb like → her.' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'Nili is a very good swimmer.', why: 'Nili + is + a very good swimmer.' },
+    { k: 'type', q: 'I ___ up at seven o\'clock.', hint: '(get / gets)', a: ['get'], why: 'I → get.',
+      he: 'get up = לקום מהמיטה. go to bed = ללכת לישון. אחרי I הפועל בלי s.' }
+  ]
+},
+{
+  id: 'a1u07', type: 'use-of-english',
+  title: 'Speedy wins the race', kid: 'A very fast tortoise?', he: 'חדשות מצחיקות: צב במרוץ',
+  dinner: 'If you had a pet tortoise, what name would you give it?',
+  hook: { q: 'How long can a giant tortoise live?', o: ['more than 100 years', 'about 10 years', 'about 30 years'], a: 0,
+    reveal: '*More than 100 years*! Some giant tortoises live for more than 150 years. Today\'s news is about a tortoise in a race. (It is a made-up story!)' },
+  learn: { kind: 'intro', title: 'Newsroom', line: 'Read a funny news story (it is made up!) and choose the right word for each gap. Then a quick review.',
+    predict: { q: 'A tortoise is in a race at school. What do you think happens?', o: ['It wins!', 'It sleeps.', 'It goes home.'] } },
+  steps: [
+    { name: 'The story', items: [
+      { k: 'gaps', title: 'Speedy wins the race',
+        t: 'Speedy [1] a small green tortoise. He lives [2] a school in Nazareth. Every morning the children [3] him lettuce and carrots. Speedy is very slow, but he [4] stops! On Sports Day, the children [5] a race for their pets. There [6] four animals in the race: a dog, a rabbit, a cat and Speedy. The dog runs after a ball, the rabbit eats [7] carrots, and the cat [8] asleep in the sun. Who wins? Speedy, of course!',
+        gaps: [
+          { o: ['is', 'are', 'has'], a: 0, why: 'Speedy = he → is.' },
+          { o: ['at', 'on', 'to'], a: 0, why: 'He lives at a school.' },
+          { o: ['give', 'gives', 'giving'], a: 0, why: 'the children = they → give.' },
+          { o: ['never', 'not', 'is never'], a: 0, why: 'never + verb: he never stops.' },
+          { o: ['have', 'has', 'having'], a: 0, why: 'the children = they → have.' },
+          { o: ['are', 'is', 'am'], a: 0, why: 'four animals → there are.' },
+          { o: ['some', 'a', 'an'], a: 0, why: 'carrots (many) → some carrots.' },
+          { o: ['falls', 'fall', 'falling'], a: 0, why: 'the cat = it → falls (asleep).' }
+        ] }
+    ] },
+    { name: 'Quick review', items: [
+      { k: 'mc', q: 'Is this ___ tortoise?', o: ['your', 'you', 'yours'], a: 0, why: 'your + a noun: your tortoise.' },
+      { k: 'mc', q: '___ animals are very fast.', o: ['These', 'This', 'That'], a: 0, why: 'animals (many) → these.' },
+      { k: 'tf', q: '"The rabbit like carrots."', a: false, fix: 'The rabbit likes carrots.', why: 'the rabbit = it → likes.' },
+      { k: 'type', q: 'The children love Speedy. They play with ___ every day.', hint: '(he / him)', a: ['him'], why: 'after with → him.' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'The tortoise is slow, but he wins.', why: 'slow, but he wins = a surprise!' },
+    { k: 'type', q: 'Speedy is slow. The dog is ___ than Speedy.', hint: '(fast)', a: ['faster'], why: 'fast → faster than.',
+      he: 'להשוואה מוסיפים er ואחריו than: faster than = מהיר יותר מ...' }
+  ]
+},
+{
+  id: 'a1u08', type: 'use-of-english',
+  title: 'The giant watermelon', kid: 'The giant watermelon', he: 'חדשות מצחיקות: האבטיח הענק',
+  dinner: 'What is your favourite fruit on a hot day?',
+  hook: { q: 'How much of a watermelon is water?', o: ['about 92%', 'about 50%', 'about 20%'], a: 0,
+    reveal: 'About *92%*! That is why watermelon is so good on a hot day. Today\'s news is about a very big watermelon. (It is a made-up story!)' },
+  learn: { kind: 'intro', title: 'Newsroom', line: 'Read a funny news story (it is made up!), choose the right words, then answer some quick questions.',
+    predict: { q: 'A farmer has a giant watermelon. What do you think she does with it?', o: ['She gives it to a school.', 'She makes a hat from it.', 'She keeps it in her bedroom.'] } },
+  steps: [
+    { name: 'The story', items: [
+      { k: 'gaps', title: 'A watermelon for everyone',
+        t: 'Hanna is a farmer in a small village in the north. [1] summer, she has a big surprise: a giant watermelon! It is [2] than a big dog. "I can\'t carry [3]!" she says. So she calls the school near [4] farm. Twenty children come with a big cart. They [5] the watermelon to the school. Then the teacher cuts it, and everybody eats [6] piece. "It\'s [7] sweet!" says Omar. And the seeds? The children [8] them in the school garden. Who knows? Next year the school can have its own giant watermelon!',
+        gaps: [
+          { o: ['This', 'These', 'Those'], a: 0, why: 'summer (one) → this summer.' },
+          { o: ['bigger', 'big', 'more big'], a: 0, why: 'big → bigger + than.' },
+          { o: ['it', 'he', 'its'], a: 0, why: 'the watermelon = it; after the verb carry → it.' },
+          { o: ['her', 'she', 'hers'], a: 0, why: 'her + a noun: her farm.' },
+          { o: ['push', 'pushes', 'pushing'], a: 0, why: 'they → push.' },
+          { o: ['a', 'an', 'two'], a: 0, why: 'piece starts with a consonant sound → a piece.' },
+          { o: ['very', 'much', 'a lot'], a: 0, why: 'very + adjective: very sweet.' },
+          { o: ['plant', 'plants', 'planting'], a: 0, why: 'the children = they → plant.' }
+        ] }
+    ] },
+    { name: 'Quick questions', items: [
+      { k: 'mc', q: 'The children ___ very happy.', o: ['are', 'is', 'am'], a: 0, why: 'the children = they → are.' },
+      { k: 'mc', pic: 'watermelon', q: 'Look at ___ watermelon over there!', o: ['that', 'those', 'these'], a: 0, why: 'one, far → that.' },
+      { k: 'tf', q: '"Omar have a big piece."', a: false, fix: 'Omar has a big piece.', why: 'Omar = he → has.' },
+      { k: 'type', q: 'Hanna ___ in a village.', hint: '(live)', a: ['lives'], why: 'she → lives (he, she, it + s).' }
+    ] }
+  ],
+  use: [
+    { k: 'build', s: 'The children love sweet watermelon.', why: 'they → love; sweet + watermelon.' },
+    { k: 'type', q: 'I ___ watermelon on hot days.', hint: '(eat / eats)', a: ['eat'], why: 'I → eat.' }
+  ]
+},
+// ---- The Writer's Desk (writing days) ----
+{
+  id: 'a1w01', type: 'writing',
+  title: 'My family', kid: 'All about my family', he: 'כתיבה: המשפחה שלי', dinner: 'Who in our family makes you laugh the most?',
+  hook: { q: 'In English, what do we call your mum\'s brother?', o: ['Uncle', 'Cousin', 'Grandpa'], a: 0,
+    reveal: 'Your mum\'s brother is your *uncle*. His children are your *cousins*.' },
+  learn: { kind: 'rule', title: 'Writing about a person', form: ['This is my ...', 'He / She is ...', 'He / She likes ...'],
+    lines: ['Start with who it is: *This is my* sister.', 'Say one thing about them: *She is* ten. *He is* funny.',
+      'Say what they like: *She likes* cats. (he / she → like*s*)'],
+    ex: ['*This is my* brother. *He likes* football.', 'My grandma *is* very kind.'],
+    he: 'מתחילים במי זה (This is my...), ואחר כך משפט אחד או שניים עליו. זוכרים: he / she likes, עם s בסוף.' },
+  steps: [
+    { name: 'Family words', items: [
+      { k: 'mc', q: 'My dad\'s mother is my ___.', o: ['grandma', 'aunt', 'sister'], a: 0, why: 'Your dad\'s mother (or your mum\'s mother) is your grandma.' },
+      { k: 'mc', q: 'This is my sister. ___ is nine.', o: ['She', 'He', 'It'], a: 0, why: 'sister → she.' },
+      { k: 'mc', q: 'My brother ___ pizza.', o: ['likes', 'like', 'liking'], a: 0, why: 'he / she → likes (with s).' },
+      { k: 'tf', q: '"he is my cousin."', a: false, fix: 'He is my cousin.', why: 'A sentence starts with a capital letter: He.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'This is my little brother.', why: 'This is + my + who.' },
+      { k: 'spot', s: 'My aunt *live* in Haifa.', fix: 'lives', why: 'my aunt = she → lives.' },
+      { k: 'build', s: 'She likes cats and dogs.', why: 'She + likes + what she likes.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write about one person in your family.', tip: 'Write my mum, my brother or my grandpa. No names needed.',
+      frame: 'This is my ___. ___ is very ___.', fill: ['big sister', 'She', 'funny'], model: 'This is my big sister. She is very funny.',
+      len: [3, 14], need: [{ t: 'Use He or She', any: ['he', 'she'] }], ideas: ['mum', 'dad', 'brother', 'She', 'He', 'kind'],
+      why: 'First say who it is, then one thing about them.', he: 'כותבים מי זה, ואז He או She ומילה שמתארת: funny, kind, tall.' }
+  ]
+},
+{
+  id: 'a1w02', type: 'writing',
+  title: 'My day', kid: 'A day in my life', he: 'כתיבה: היום שלי', dinner: 'What is the best part of your day?',
+  hook: { q: 'How many hours a night do kids from 6 to 12 need to sleep?', o: ['About 5', 'About 7', 'About 10'], a: 2,
+    reveal: 'Kids from 6 to 12 need about *9 to 12 hours* of sleep. So go to bed early!' },
+  learn: { kind: 'rule', title: 'Your day in order', form: ['First,', 'Then', 'After that,'],
+    lines: ['For every day, use the present simple: I *get up*, I *have* breakfast.', 'Put things in order: *First*, ... *Then* ... *After that*, ...',
+      'Times: *at* seven o\'clock, *in* the morning, *in* the evening.'],
+    ex: ['*First*, I get up at seven.', '*Then* I have breakfast.'],
+    he: 'כדי לספר על היום משתמשים בהווה פשוט (I get up), ובמילים שמסדרות: First, Then, After that. שעה: at seven.' },
+  steps: [
+    { name: 'When and in what order', items: [
+      { k: 'mc', q: 'I get up ___ seven o\'clock.', o: ['at', 'in', 'on'], a: 0, why: 'A time → at.' },
+      { k: 'mc', q: 'I read a book ___ the evening.', o: ['in', 'at', 'on'], a: 0, why: 'in the morning, in the afternoon, in the evening.' },
+      { k: 'mc', q: '___, I get up. Then I have breakfast.', o: ['First', 'After', 'Then'], a: 0, why: 'First → the first thing you do.' },
+      { k: 'tf', q: '"I brush my teeth after breakfast."', a: true, why: 'I + brush: the present simple, for every day.' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'After that, I play with my friends.', why: 'After that, + what comes next.' },
+      { k: 'spot', s: 'I *eats* dinner at seven.', fix: 'eat', why: 'I → eat (no s).' },
+      { k: 'build', s: 'I go to bed at nine.', why: 'I + go to bed + at + the time.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write about your morning: two things you do.', tip: 'Put them in order.',
+      frame: 'First, I ___. Then I ___.', fill: ['get up at seven', 'have breakfast'], model: 'First, I get up at seven. Then I have breakfast.',
+      len: [2, 16], ideas: ['get up', 'get dressed', 'eat', 'wash my face', 'at seven'],
+      why: 'First and Then put your day in order.', he: 'כותבים שני דברים שאתם עושים בבוקר, לפי הסדר.' }
+  ]
+},
+{
+  id: 'a1w03', type: 'writing',
+  title: 'My hobby', kid: 'My hobby', he: 'כתיבה: התחביב שלי', dinner: 'What hobby would you like to try one day?',
+  hook: { q: 'Which is the most popular sport in the world?', o: ['Football', 'Tennis', 'Swimming'], a: 0,
+    reveal: '*Football*! Billions of people play it or watch it.' },
+  learn: { kind: 'rule', title: 'like + -ing', form: ['I like', 'verb + ing'],
+    lines: ['To talk about a hobby: I *like* draw*ing*. I *love* swimm*ing*.', 'Say when: *on* Fridays, *after* school, *every* day.',
+      'Say why with *because*: I like it *because* it is fun.'],
+    ex: ['I *love* danc*ing*.', 'I play the guitar *every* day.'],
+    he: 'אחרי like או love מוסיפים ing לפועל: I like reading. כדי להסביר למה: because.' },
+  steps: [
+    { name: 'Hobby words', items: [
+      { k: 'mc', q: 'I like ___ pictures.', o: ['drawing', 'draw', 'draws'], a: 0, why: 'like + verb-ing.' },
+      { k: 'mc', q: 'I play basketball ___ Tuesdays.', o: ['on', 'in', 'at'], a: 0, why: 'Days → on.' },
+      { k: 'mc', q: 'I love reading ___ it is fun.', o: ['because', 'but', 'or'], a: 0, why: 'because → the reason.' },
+      { k: 'tf', q: '"I like swim."', a: false, fix: 'I like swimming.', why: 'like + swimming (verb + ing).' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'My hobby is playing the guitar.', why: 'My hobby is + verb-ing.' },
+      { k: 'spot', s: 'I *likes* cooking with my dad.', fix: 'like', why: 'I → like (no s).' },
+      { k: 'build', s: 'I go swimming every Friday.', why: 'go + swimming, then when.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write about your hobby and why you like it.',
+      frame: 'My hobby is ___. I like it because ___.', fill: ['dancing', 'it is fun'], model: 'My hobby is dancing. I like it because it is fun.',
+      len: [2, 16], ideas: ['drawing', 'football', 'reading', 'music', 'it is fun'],
+      why: 'because tells us why you like it.', he: 'כותבים את התחביב, ואחרי because את הסיבה.' }
+  ]
+},
+{
+  id: 'a1w04', type: 'writing',
+  title: 'Near my home', kid: 'Near my home', he: 'כתיבה: ליד הבית שלי', dinner: 'What is your favourite place near our home?',
+  hook: { q: 'Which city in Israel is next to the Red Sea?', o: ['Eilat', 'Haifa', 'Tiberias'], a: 0,
+    reveal: '*Eilat*! It has beaches and a coral reef with colourful fish.' },
+  learn: { kind: 'rule', title: 'There is, there are', form: ['There is + a ...', 'There are + two ...'],
+    lines: ['One thing: *There is* a park near my home.', 'Two or more: *There are* two shops.', 'Say where: *near* my home, *next to* the park.'],
+    ex: ['*There is* a big park near my home.', '*There are* lots of trees.'],
+    he: 'There is לדבר אחד, There are לכמה דברים. near = ליד, next to = צמוד ל.' },
+  steps: [
+    { name: 'There is or there are?', items: [
+      { k: 'mc', q: '___ a playground near my home.', o: ['There is', 'There are', 'It are'], a: 0, why: 'a playground = one → There is.' },
+      { k: 'mc', q: 'There are three ___ near the park.', o: ['shops', 'shop', 'a shop'], a: 0, why: 'three → shops (more than one).' },
+      { k: 'mc', q: 'The bus stop is ___ to the shop.', o: ['next', 'near', 'in'], a: 0, why: 'next to = right beside.' },
+      { k: 'tf', q: '"There are a big park."', a: false, fix: 'There is a big park.', why: 'a park = one → There is.' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'There is a pizza place near my home.', why: 'There is + a + what + where.' },
+      { k: 'spot', s: 'There *is* lots of trees in the park.', fix: 'are', why: 'lots of trees = many → There are.' },
+      { k: 'build', s: 'I like the park near my home.', why: 'I like + the place.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write about a place near your home that you like.', tip: 'A park, a shop or a beach. No need for its name.',
+      frame: 'There is a ___ near my home. I like it because ___.', fill: ['big park', 'I play there with my friends'],
+      model: 'There is a big park near my home. I like it because I play there with my friends.',
+      len: [3, 18], ideas: ['park', 'beach', 'playground', 'shop', 'it is fun'],
+      why: 'There is says what is there; because says why you like it.', he: 'כותבים מה יש ליד הבית ולמה אתם אוהבים את המקום.' }
   ]
 }
 ];

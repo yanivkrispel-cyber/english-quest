@@ -56,7 +56,7 @@ first. Tablets get the phone layout scaled (`tabletFit`); never add width breakp
    Use a fresh port for real-server tests so stored mock PINs aren't sent to the live API.
    Two-player features: `node test/dev-server.js` runs the real server code (mocked Google services, 1.2 s per
    call like Apps Script) on port 8787. Open `http://localhost:8787/test/dev.html` and `http://127.0.0.1:8787/test/dev.html`
-   in two tabs (separate storage); kids Aviv 2694, Ziv 4821, Ron 7356, admin 1234. The page is rebuilt from
+   in two tabs (separate storage); kids Aviv 2694, Ziv 4821, Ron 7356, admin 1234, the family's parents 246810. The page is rebuilt from
    `src/Index.html` on every load; server edits need a restart. Bad networks on purpose:
    `/dev/chaos?mode=hang|500|html|busy&n=2`. The dev page has the service worker too, so after an edit the first
    reload still shows the old page (with the update bar); reload once more.
@@ -136,6 +136,13 @@ first. Tablets get the phone layout scaled (`tabletFit`); never add width breakp
 }
 ` doubled the whole page.
 - Only the **bold** and **duotone** Phosphor weights are loaded: `icon(name, 'fill')` draws nothing.
+- **The icon fonts are cut to the icons the app names** (`tools/icon_subset.js`, 2026-11-01): a Phosphor icon used for the first
+  time draws nothing on the phones until `node tools/icon_subset.js` and `node build-pages.js` ran (`node test/ui-check.js`
+  fails until then). Write icon names out whole (never `'caret-' + dir`): the tool finds them as words in strings.
+- **Nothing leaves the kids' side without the grown-ups' gate** (store rule 2): a kid-side link to another site or app gets
+  `data-gate="1"`, code calls `grownUp(then)`. The parents' area needs none.
+- **A new part of the app is counted** (feature use, `src/Ops.js`, the Pilot card): add its id to `USE_IDS` in Index.html and
+  `USE_FEATURES` in Ops.js and call `useNote('<id>')` where it opens. The counts ride on the kid's next call; never add a call for them.
 - A Studio base (`docs/items/base-*.webp`) is a gray picture the app colors (`designSvg`): Gemini draws it white, without
   an outline, on a saturated background, and `tools/cut_items.py --white` levels its shading; the outline is drawn in code.
 - Gemini sometimes adds labels or draws grid cells behind a sheet: ask it to edit (remove the words / one flat gray
@@ -171,6 +178,11 @@ first. Tablets get the phone layout scaled (`tabletFit`); never add width breakp
   that left Nest kids on a spinner forever, 2026-10-28). Test with `/dev/slow` and `/dev/chaos`.
 - **Opens are not in the Audit tab right away**: `auditOpen` keeps them in the cache (`AQ`) and `auditFlush` writes them
   (the warmCache trigger every 10 minutes, and `apiAudit`). Tests read the tab after `auditFlush()`.
+- **Parents sign in with the family and its code** (`src/Auth.js`, night review 2026-11-01): a parents' call carries
+  `g:<family id>:<code>`, `n:<family name>:<code>`, a remembered session `pt.…` (30 days, no kid PINs; delete, export and the
+  Data card need the code typed: `parentAccess(pin, { typed: true })`) or the admin's passphrase (Script Property `ADMIN_PASS`,
+  `tools/admin-passphrase.js`; the 4-digit AdminPIN works only until it is set). Never compare a code with another family's.
+  Wrong PINs count per name and per address (`REQ_IP`, memory only); a name that does not exist must keep nothing.
 - Default PINs are random; the real PINs live only in the private sheet. The repo is public:
   never commit real PINs, emails or the sheet's contents (tests use fake PINs 4821/7356/2694/1234).
 
@@ -236,7 +248,7 @@ Ideas not built yet: per-group reminder times, rewards redemption from the app (
 The friends' pilot (built 2026-10-26, spec `specs/pilot.md`, server `Pilot.js`, SETUP v16): self-signup from `?join=<code>`
 (Settings.InviteCode / InviteOpen, closed by default), the in-app level test (forms A and B, tab Placements), Hebrew parent area
 (`PHE` / `T()`; the admin stays English), feedback (tab Feedback), teacher review (`?missions&t=<Settings.TeacherCode>`), the
-admin Pilot card. 183 missions. Writing days give a mission instead of a link. Shown name: English with Chacho. Mission
+admin Pilot card. 239 missions (A1 and A2 have 59 each since 2026-11-01, the other levels 31). Writing days give a mission instead of a link. Shown name: English with Chacho. Mission
 writers can check a staging file alone: `MISSIONS_ONLY=<file> MISSIONS_FILE=<path> node test/missions-check.js`.
 
 Talk with Chacho (built 2026-10-26 overnight, spec `specs/talk.md`, server `src/Chat.js`, SETUP v17): scripted spoken talks,
@@ -260,7 +272,9 @@ top-level name starts with nk/NK, and nest-check fails on a name shared with Ind
 **Chacho says in Hebrew how to play, never what a word means** (owner, 2026-10-31, package B; it replaces "no Hebrew" of 2026-10-27):
 `EQ_NEST.he` lines, recorded in Chacho's voice (Chatterbox Multilingual from niqqud text, `EnglishLessons-work/hebrew-voice`, files
 `docs/nest/he/`, keys `h-<key>`), the help ladder (`nkLadder`), the "together" round and the picture path; the parent's switch
-`Girls.NestHebrew`. Spec: `specs/nest.md`, "Hebrew guidance". The words, praise and songs stay English.
+`Girls.NestHebrew`. Spec: `specs/nest.md`, "Hebrew guidance". The words, praise and songs stay English (Chatterbox,
+`specs/voice.md`). Grown-ups only, screen time and no numbers for Nest kids (2026-11-01): `specs/nest.md`; parents' weekly
+sentence: `src/Learned.js`.
 
 The audit trail (built 2026-10-27, spec `specs/audit.md`, server `src/Audit.js`, tab Audit, SETUP v19): opens, wrong PINs,
 grown-ups' changes and hand edits in the sheet, with a coarse device label the app sends (`dev` in every call); the admin's

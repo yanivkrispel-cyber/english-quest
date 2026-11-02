@@ -28,12 +28,14 @@ let out = src.replace('<base target="_top">', head);
 if (out === src) throw new Error('head marker not found');
 // The icon fonts from our own site (docs/fonts/, kept on the phone by the service worker) instead of unpkg: no other
 // server to reach before the first screen. The Apps Script copy (src/Index.html as it is) keeps unpkg.
+// The cut icon fonts (tools/icon_subset.js: only the icons the app names, about 280 KB less), in the folder docs/fonts/phosphor.json names.
+const PH = 'fonts/' + JSON.parse(fs.readFileSync(path.join(__dirname, 'docs', 'fonts', 'phosphor.json'), 'utf8')).dir + '/';
 ['duotone', 'bold'].forEach(w => {
   const cdn = '<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/' + w + '/style.css">';
-  const font = 'fonts/phosphor-2.1.1/' + w + '/Phosphor-' + w[0].toUpperCase() + w.slice(1) + '.woff2';
+  const font = PH + w + '/Phosphor-' + w[0].toUpperCase() + w.slice(1) + '.woff2';
   if (!out.includes(cdn)) throw new Error('icon font link not found: ' + w);
   out = out.replace(cdn, '<link rel="preload" as="font" type="font/woff2" crossorigin href="' + font + '">\n' +
-    '<link rel="stylesheet" href="fonts/phosphor-2.1.1/' + w + '/style.css">');
+    '<link rel="stylesheet" href="' + PH + w + '/style.css">');
 });
 // The text font from our own site too (docs/fonts/plus-jakarta-sans/, tools/fonts_local.js): no Google server sees the kids.
 const gf = ['<link rel="preconnect" href="https://fonts.googleapis.com">', '<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">'];

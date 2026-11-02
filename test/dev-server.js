@@ -2,7 +2,7 @@
 // mocked Google services from test/sim.js, behind a small HTTP server that also serves the app.
 //   node test/dev-server.js        ->  http://localhost:8787/test/dev.html (and on 127.0.0.1)
 // Use localhost and 127.0.0.1 for the two players, so each keeps its own sign-in. Kids: Aviv 2694 (A2),
-// Ziv 4821 (B2), Ron 7356 (B1); admin 1234. Every API call waits LATENCY ms (default 1200), about
+// Ziv 4821 (B2), Ron 7356 (B1); admin 1234; the family's parents 246810 (Auth.js: the family and its code). Every API call waits LATENCY ms (default 1200), about
 // what the real Apps Script takes. Nothing here touches the real sheet.
 // Seeded history (13 days): Aviv and Ziv have a 6-day duo streak (both practicing today makes 7, a
 // milestone) and a Hear it team quest (Ziv struggled with it last week); Ron and Aviv a 2-day one, and
@@ -24,6 +24,7 @@ run('apiPublic()');
 const PINS = { Ziv: '4821', Ron: '7356', Aviv: '2694' };
 sheets.Girls.rows.slice(1).forEach(r => { r[2] = PINS[r[0]]; });
 sheets.Settings.rows.forEach(r => { if (r[0] === 'AdminPIN') r[1] = '1234'; });
+sheets.Groups.rows[1][sheets.Groups.rows[0].indexOf('ParentPIN')] = '246810';
 run('clearCache()');
 const KIDS = [['Aviv', '2694', 'a2', 'monster', 'Fizz'], ['Ziv', '4821', 'b2', 'cat', 'Mochi'], ['Ron', '7356', 'b1', 'lion', 'Leo']];
 KIDS.forEach(k => {
@@ -43,6 +44,22 @@ for (let k = 1; k <= 13; k++) {
 }
 // Chacho's Nest (specs/nest.md): Mia, 4, in the same family, with no pet yet (PIN 5151).
 run("appendRow('Girls', { Name: 'Mia', Age: 4, PIN: '5151', Level: 'nest', Redeemed: 0, Color: '#f472b6', Group: defaultGroupId() })");
+// Privacy and safety (src/Safety.js): the family's parents' code 246810 (the Hebrew parents' area) with the first, older notice,
+// so the re-consent card shows; a second family, Levi (code 2222), with Noa (6262). Both families play with other families,
+// so Noa is in Aviv's Play tab (first name and pet only); Ron blocked and reported Noa (his parents see it in their area).
+run("upsertRow('Groups', 'Id', defaultGroupId(), { Consent: addDays(today(), -6), FriendsOn: 'yes' })");
+run("apiAdminAddGroup('1234', 'Levi', '')");
+const LEVI = run("groups().filter(function (g) { return g.Name === 'Levi'; })[0].Id");
+run("upsertRow('Groups', 'Id', '" + LEVI + "', { ParentPIN: '2222', FriendsOn: 'yes', ConsentV: 2, ConsentAt: today() })");
+run("appendRow('Girls', { Name: 'Noa', Age: 10, PIN: '6262', Level: 'a2', Redeemed: 0, Color: '#38bdf8', Group: '" + LEVI + "' })");
+run("apiSubmit('Noa', '6262', apiDashboard('Noa', '6262').levelTest.date, '', '', 'a2')");
+run("apiSetPet('Noa', '6262', 'fawn', 'Fern')");
+run("apiKidBlock('Ron', '7356', 'Noa', 'invites')");
+// Noam, 2 (PIN 6161), played the first lesson today: the parents' Nest card with the sentence and the co-play prompt.
+run("appendRow('Girls', { Name: 'Noam', Age: 2, PIN: '6161', Level: 'nest', Redeemed: 0, Color: '#38bdf8', Group: defaultGroupId() })");
+run("apiNestResult('Noam', '6161', today(), 'n01', 5, 8, 300, 'hello:1,yes:0,no:1,baby:0')");
+// Ziv did today's vocabulary mission (8 new words, 64%): a full Hebrew sentence in the parents' view (src/Learned.js).
+run("appendRow('Log', { Timestamp: new Date(), Girl: 'Ziv', Date: today(), DoneOn: today(), Section: 'vocabulary', Level: 'b2', Title: 'Relationships', URL: 'https:' + '//test-english.com/vocabulary/b2/relationships-b2-english-vocabulary/', Correct: 9, Total: 14, Percent: 64, Points: 10, Mission: 'b2v01', Seconds: 420 })");
 // The Wordrobe opens on its date (Settings.ShopOpens); Aviv may shop before it, Ziv sees the teaser.
 run("setSetting('ShopEarly', 'Aviv')");
 // An open invite, so the families' sign-up can be tried: /test/dev.html?join=friends
@@ -140,8 +157,8 @@ http.createServer((req, res) => {
     req.on('end', () => {
       let out;
       try {
-        global.devCtx.__body = body;
-        out = global.devRun('doPost({postData:{contents:__body}}).getContent()');
+        global.devCtx.__body = body; global.devCtx.__ip = String(req.socket.remoteAddress || '').replace(/^::ffff:/, '');
+        out = global.devRun('doPost({postData:{contents:__body},ip:__ip}).getContent()');
       } catch (e) { out = JSON.stringify({ ok: false, error: String(e && e.message || e) }); }
       try { const fn = JSON.parse(body).fn; if (fn !== 'apiDuelPoll' && fn !== 'apiDuelHome') console.log(new Date().toISOString().slice(11, 19), fn, out.slice(0, 90)); } catch (e) {}
       setTimeout(() => { res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }); res.end(out); }, LATENCY);

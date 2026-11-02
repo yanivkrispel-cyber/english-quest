@@ -3,8 +3,9 @@
 window.EQ_MISSIONS = window.EQ_MISSIONS || {};
 window.EQ_MISSIONS.c1 = [
 {
-  id: 'c1g01', url: 'https://test-english.com/grammar-points/c1/advanced-present-simple-and-present-continuous/', type: 'grammar',
+  id: 'c1g01', type: 'grammar',
   title: 'The present, for experts', dinner: 'What is someone in our family always doing that drives you mad?',
+  kid: 'The present, for experts', he: 'הווה פשוט ומתמשך, רמה מתקדמת',
   hook: { q: 'Which tense do football commentators use most to describe the action?', o: ['The present simple', 'The past perfect', 'The future continuous'], a: 0,
     reveal: '*The present simple*: "Cohen takes the ball, he shoots, he scores!" It makes the action feel immediate.' },
   learn: { kind: 'rule', title: 'Simple and continuous, beyond the basics',
@@ -30,21 +31,22 @@ window.EQ_MISSIONS.c1 = [
     ] },
     { name: 'Build it', items: [
       { k: 'build', s: 'Why are you being so polite all of a sudden?', why: 'be being + adjective = unusual behaviour right now.' },
-      { k: 'spot', s: 'So I *walked* into the room, and everyone goes quiet.', fix: 'walk', why: 'In a story told in the present, keep the tense: I walk in, everyone goes quiet.' },
+      { k: 'spot', s: 'So I walk in, everyone *went* quiet, and the teacher looks at me.', fix: 'goes', why: 'In a story told in the present, keep the tense: I walk in, everyone goes quiet.' },
       { k: 'build', s: 'My English is getting better every week.', why: 'A change in progress → is getting.' }
     ] }
   ],
   use: [
     { k: 'teach', s: 'He is always *forget* his keys!', fix: 'forgetting', why: 'always + continuous: he is always forgetting.' },
-    { k: 'type', q: '"You ___ ridiculous!" she laughed when I put on my dad\'s hat.', hint: '(be, about behaviour right now)', a: ['are being', '\'re being'],
+    { k: 'type', q: '"You ___ ridiculous!" she laughed when I started talking like a robot.', hint: '(be, about behaviour right now)', a: ['are being', '\'re being'],
       why: 'be being + adjective = how someone is behaving right now.' },
     { k: 'mc', q: 'Which sentence sounds like live sports commentary?', o: ['Cohen passes to Levi, Levi shoots… and it\'s a goal!', 'Cohen passed to Levi, who had shot.', 'Cohen will pass to Levi.'], a: 0,
       why: 'Commentary uses the present simple for each quick action.' }
   ]
 },
 {
-  id: 'c1g02', url: 'https://test-english.com/grammar-points/c1/advanced-past-simple-past-continuous-past-perfect/', type: 'grammar',
+  id: 'c1g02', type: 'grammar',
   title: 'Telling stories in the past', dinner: 'What had you never done before this year?',
+  kid: 'Stories in the past', he: 'זמני עבר בסיפור, כולל past perfect',
   hook: { q: 'When Howard Carter opened Tutankhamun\'s tomb in 1922, about how long had it been closed?', o: ['About 300 years', 'About 3,300 years', 'About 33,000 years'], a: 1,
     reveal: 'About *3,300 years*! The tomb *had been* sealed since about 1323 BC, and Carter *had been searching* for it for years.' },
   learn: { kind: 'rule', title: 'Narrative tenses',
@@ -58,7 +60,7 @@ window.EQ_MISSIONS.c1 = [
     { name: 'Order of events', items: [
       { k: 'mc', q: 'When I got to the station, the train ___.', o: ['had already left', 'already left', 'was already leaving'], a: 0, why: 'It left before I arrived → past perfect.' },
       { k: 'mc', q: 'Her eyes were red. She ___ for hours.', o: ['had been crying', 'cried', 'was crying'], a: 0, why: 'A long action up to that moment → past perfect continuous.' },
-      { k: 'mc', q: 'It was a dark night. Snow ___ softly as we walked home.', o: ['was falling', 'had fallen', 'fell'], a: 0, why: 'The background of a story → past continuous.' },
+      { k: 'mc', q: 'It was a dark night. Snow ___ softly as we walked home.', o: ['was falling', 'had fallen', 'falls'], a: 0, why: 'The background of a story → past continuous.' },
       { k: 'mc', q: 'I ___ call you, but my battery died.', o: ['was going to', 'would', 'had gone to'], a: 0, why: 'A plan that didn\'t happen → was going to.' }
     ] },
     { name: 'Complete', items: [
@@ -82,8 +84,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1g03', url: 'https://test-english.com/grammar-points/c1/advanced-modal-verbs-will-would-and-should/', type: 'grammar',
+  id: 'c1g03', type: 'grammar',
   title: 'will, would, should', dinner: 'What would you do every summer when you were younger?',
+  kid: 'will, would, should', he: 'הפעלים will, would, should',
   hook: { q: 'In Old English, the word "will" meant…', o: ['to want', 'to go', 'to be able'], a: 0,
     reveal: '*To want*! Before it became a future word, will meant to want. You still hear it in "free will" and "against her will".' },
   learn: { kind: 'rule', title: 'More than the future',
@@ -120,8 +123,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1v01', url: 'https://test-english.com/vocabulary/c1/feelings-and-reactions-c1-english-vocabulary/', type: 'vocabulary',
+  id: 'c1v01', type: 'vocabulary',
   title: 'Feelings and reactions', dinner: 'When were you last completely taken aback?',
+  kid: 'Feelings and reactions', he: 'מילים: רגשות ותגובות',
   hook: { q: 'Which emotion makes your face go red?', o: ['Embarrassment', 'Fear', 'Boredom'], a: 0,
     reveal: '*Embarrassment*! Blushing happens when the blood vessels in your face widen. Charles Darwin called it the most human of all expressions.' },
   learn: { kind: 'words', title: 'Precise words for feelings', words: [
@@ -152,7 +156,7 @@ window.EQ_MISSIONS.c1 = [
     ] },
     { name: 'In a text', items: [
       { k: 'gaps', title: 'The surprise party',
-        t: 'I had been [1] all week because I thought everyone had forgotten my birthday. When I opened the door and thirty friends shouted "Surprise!", I was completely [2]: I couldn\'t say a word. I was really [3] that they had planned it for weeks, and by the end of the night I was over the [4].',
+        t: 'I had been [1] all week, because my friends kept whispering and went quiet whenever I came in. When I opened the door and thirty friends shouted "Surprise!", I was completely [2]: I couldn\'t say a word. I was really [3] that they had planned it for weeks, and by the end of the night I was over the [4].',
         gaps: [
           { o: ['on edge', 'livid', 'touched'], a: 0, why: 'nervous and tense all week → on edge.' },
           { o: ['dumbfounded', 'gutted', 'livid'], a: 0, why: 'she couldn\'t say a word → dumbfounded.' },
@@ -167,8 +171,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1v02', url: 'https://test-english.com/vocabulary/c1/ways-of-walking-c1-english-vocabulary/', type: 'vocabulary',
+  id: 'c1v02', type: 'vocabulary',
   title: 'Ways of walking', dinner: 'How do you walk into school on a Monday morning?',
+  kid: 'Ways of walking', he: 'מילים: פעלים לסוגי הליכה',
   hook: { q: 'About how many bones are there in one human foot?', o: ['About 6', 'About 26', 'About 56'], a: 1,
     reveal: '*26*! About a quarter of all the bones in your body are in your feet. English also has a word for almost every way of walking.' },
   learn: { kind: 'words', title: 'Verbs that say how you walk', words: [
@@ -213,8 +218,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1l01', url: 'https://test-english.com/listening/c1/when-i-completely-embarrassed-myself-c1-english-listening-test/', type: 'listening',
+  id: 'c1l01', type: 'listening',
   title: 'My most embarrassing moment', dinner: 'What is an embarrassing moment you can laugh about now?',
+  kid: 'My most awkward moment', he: 'האזנה: הרגע הכי מביך שלי',
   hook: { q: 'Psychologists say others notice our embarrassing moments much less than we think. What is this called?', o: ['The spotlight effect', 'The domino effect', 'The butterfly effect'], a: 0,
     reveal: '*The spotlight effect*! In one study, students wearing an embarrassing T-shirt thought half the room had noticed. In fact, only about a quarter had.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -266,8 +272,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1l02', url: 'https://test-english.com/listening/c1/why-is-walking-humans-superpower-c1-english-listening-test/', type: 'listening',
+  id: 'c1l02', type: 'listening',
   title: 'Walking, our superpower', dinner: 'Do you think better when you walk or when you sit? Why?',
+  kid: 'Walking, our superpower', he: 'האזנה: הליכה, כוח העל של האדם',
   hook: { q: 'In a yearly race in Wales, people run against horses over about 35 km. Has a human ever won?', o: ['Yes, a few times', 'Never', 'Only on bicycles'], a: 0,
     reveal: '*Yes*! On hot days a human runner has beaten all the horses. Humans are among the best long-distance runners on the planet.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -311,8 +318,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1l03', url: 'https://test-english.com/listening/c1/when-you-cant-trust-who-you-hear-c1-english-listening-test/', type: 'listening',
+  id: 'c1l03', type: 'listening',
   title: 'Can you trust that voice?', dinner: 'What secret word could our family use to stay safe?',
+  kid: 'Can you trust that voice?', he: 'האזנה: הונאות עם קולות מזויפים',
   hook: { q: 'In 2019, criminals used a fake voice of a boss to trick a company. About how much money did they get?', o: ['About $2,000', 'About $243,000', 'About $24 million'], a: 1,
     reveal: 'About *$243,000*! A manager in the UK sent the money because the voice on the phone sounded exactly like his boss.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -342,7 +350,7 @@ window.EQ_MISSIONS.c1 = [
         { k: 'tf', q: 'A cloned voice can know your family code word.', a: false, fix: 'A cloned voice won\'t know it.', why: '"A cloned voice won\'t know it."' }
       ] },
       { lines: [
-        ['A', 'It\'s a bit sad, though, isn\'t it? That we can\'t just trust a familiar voice anymore.'],
+        ['A', 'It\'s a bit sad, though, isn\'t it? That we can\'t just trust a familiar voice any more.'],
         ['B', 'It is. But a little healthy scepticism isn\'t paranoia. It\'s just the price of living with powerful technology.']
       ], items: [
         { k: 'mc', q: 'How does Adam see being careful?', o: ['as reasonable, not paranoid', 'as too much work', 'as unnecessary'], a: 0, why: '"a little healthy scepticism isn\'t paranoia"' }
@@ -362,8 +370,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1r01', url: 'https://test-english.com/reading/c1/what-makes-us-laugh-c1-english-reading-test/', type: 'reading',
+  id: 'c1r01', type: 'reading',
   title: 'What makes us laugh?', dinner: 'What made you laugh today?',
+  kid: 'What makes us laugh?', he: 'קריאה: מה מצחיק אותנו',
   hook: { q: 'Which animals make laughing sounds when researchers tickle them?', o: ['Rats', 'Fish', 'Snakes'], a: 0,
     reveal: '*Rats*! When scientists tickled them, they made high-pitched chirps, too high for us to hear, and came back for more.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A popular science article asks a simple question with a surprising answer: what makes us laugh?',
@@ -402,8 +411,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1g04', url: 'https://test-english.com/grammar-points/c1/advanced-modal-verbs-can-be-able-to-may-might/', type: 'grammar',
+  id: 'c1g04', type: 'grammar',
   title: 'can, be able to, may, might', dinner: 'What will you be able to do in five years that you can\'t do now?',
+  kid: 'can, may, might', he: 'יכולת ואפשרות: can, may, might',
   hook: { q: 'Which animal can survive being frozen almost solid in winter?', o: ['The wood frog', 'The goldfish', 'The rabbit'], a: 0,
     reveal: '*The wood frog*! In winter, about two-thirds of the water in its body *can* turn to ice and its heart stops. In spring it thaws and *is able to* hop away as if nothing had happened.' },
   learn: { kind: 'rule', title: 'Ability and possibility, beyond the basics',
@@ -445,8 +455,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1g05', url: 'https://test-english.com/grammar-points/c1/the-subjunctive-in-english-present-and-past/', type: 'grammar',
+  id: 'c1g05', type: 'grammar',
   title: 'The subjunctive', dinner: 'If you were the head teacher for a day, what would you change?',
+  kid: 'Wishes and demands', he: 'subjunctive: משאלות ודרישות',
   hook: { q: 'Which of these is correct in formal English, even though it looks strange?', o: ['The teacher insists that he be on time.', 'The teacher insist that he is on time.', 'The teacher insists that he been on time.'], a: 0,
     reveal: '*…that he be on time*! It\'s the subjunctive: after insist, demand or recommend, formal English uses the base form, for every person.' },
   learn: { kind: 'rule', title: 'Wishes, demands and unreal situations',
@@ -487,8 +498,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1g06', url: 'https://test-english.com/grammar-points/c1/the-perfect-tenses-forms-and-uses/', type: 'grammar',
+  id: 'c1g06', type: 'grammar',
   title: 'The perfect tenses', dinner: 'What will you have learnt by the end of this school year?',
+  kid: 'The perfect tenses', he: 'זמני ה-perfect',
   hook: { q: 'By the time you are 80, about how many years will you have spent asleep?', o: ['About 10', 'About 26', 'About 40'], a: 1,
     reveal: 'About *26 years*! By 80, you *will have slept* for about a third of your life. That\'s the future perfect.' },
   learn: { kind: 'rule', title: 'Looking back from a point in time',
@@ -529,8 +541,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1g07', url: 'https://test-english.com/grammar-points/c1/advanced-participle-clauses/', type: 'grammar',
+  id: 'c1g07', type: 'grammar',
   title: 'Participle clauses', dinner: 'What do you love doing most once your homework is finished?',
+  kid: 'Say more with fewer words', he: 'participle clauses: לקצר משפטים',
   hook: { q: 'Which is a shorter way to say "Because I didn\'t know the way, I asked a police officer"?', o: ['Not knowing the way, I asked a police officer.', 'Knowing not the way, I asked a police officer.', 'I not knowing the way asked a police officer.'], a: 0,
     reveal: '*Not knowing the way, …*: a participle clause! It packs the reason into one short phrase, and good writers love it.' },
   learn: { kind: 'rule', title: 'Saying more with fewer words',
@@ -571,8 +584,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1g08', url: 'https://test-english.com/grammar-points/c1/advanced-word-order/', type: 'grammar',
+  id: 'c1g08', type: 'grammar',
   title: 'Word order for effect', dinner: 'What is something you have never done but would love to try?',
+  kid: 'Word order for effect', he: 'סדר מילים להדגשה',
   hook: { q: 'Yoda in Star Wars says, "Powerful you have become." What is unusual about it?', o: ['The word order', 'The tense', 'The spelling'], a: 0,
     reveal: '*The word order*! Yoda moves *powerful* to the front. English usually doesn\'t, but at C1 you can move words for drama: *Never have I* seen such a thing!' },
   learn: { kind: 'rule', title: 'Inversion and adverb position',
@@ -612,8 +626,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1g09', url: 'https://test-english.com/grammar-points/c1/prepositions-position-and-advanced-patterns/', type: 'grammar',
+  id: 'c1g09', type: 'grammar',
   title: 'Prepositions in the right place', dinner: 'What are you most looking forward to this month?',
+  kid: 'Where prepositions go', he: 'מיקום מילות היחס במשפט',
   hook: { q: 'Is it wrong to end a sentence with a preposition, as in "Who are you talking to?"', o: ['No, it\'s natural English', 'Yes, always', 'Only in questions'], a: 0,
     reveal: '*No!* The "rule" was invented by writers who copied Latin grammar. A famous joke shows how silly it sounds: "That is the kind of nonsense up with which I will not put!"' },
   learn: { kind: 'rule', title: 'Where prepositions go, and what follows them',
@@ -651,8 +666,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1g10', url: 'https://test-english.com/grammar-points/c1/subject-verb-agreement-advanced-rules/', type: 'grammar',
+  id: 'c1g10', type: 'grammar',
   title: 'Singular or plural verb?', dinner: 'Which subject is the hardest for you this year, and why?',
+  kid: 'Singular or plural verb?', he: 'התאמה בין הנושא לפועל',
   hook: { q: 'In British English, which is correct about the football team: "England is winning" or "England are winning"?', o: ['Both', 'Only "is"', 'Only "are"'], a: 0,
     reveal: '*Both*! British commentators usually say "England *are* winning", thinking of the players. Americans prefer the singular.' },
   learn: { kind: 'rule', title: 'When the verb agrees, and with what',
@@ -690,8 +706,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1v03', url: 'https://test-english.com/vocabulary/c1/vague-language-imprecision-c1-english-vocabulary/', type: 'vocabulary',
+  id: 'c1v03', type: 'vocabulary',
   title: 'Being vague on purpose', dinner: 'Roughly how many hours did you spend outside this week, give or take?',
+  kid: 'Being vague on purpose', he: 'מילים: לדבר בכלליות בכוונה',
   hook: { q: 'Which of these is a real English word for "a lot, but I\'m not counting"?', o: ['umpteen', 'manyteen', 'lotsteen'], a: 0,
     reveal: '*Umpteen*! It probably began as soldiers\' slang more than a hundred years ago. "I\'ve told you umpteen times!" means very many times, and nobody knows exactly how many.' },
   learn: { kind: 'words', title: 'Words for when you can\'t (or won\'t) be exact', words: [
@@ -737,8 +754,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1v04', url: 'https://test-english.com/vocabulary/c1/idiomatic-infinitive-phrases-c1-english-vocabulary/', type: 'vocabulary',
+  id: 'c1v04', type: 'vocabulary',
   title: 'To cut a long story short', dinner: 'To be honest, what was the best part of your day?',
+  kid: 'To cut a long story short', he: 'ביטויים קבועים עם to',
   hook: { q: 'Which famous line from Shakespeare starts with "to" + a verb?', o: ['"To be, or not to be"', '"All the world\'s a stage"', '"Romeo, Romeo, wherefore art thou Romeo?"'], a: 0,
     reveal: '*"To be, or not to be"*: Hamlet\'s famous question. English loves phrases built on to + a verb, and many of them have become fixed expressions you hear every day.' },
   learn: { kind: 'words', title: 'Fixed phrases with to + verb', words: [
@@ -784,8 +802,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1v05', url: 'https://test-english.com/vocabulary/c1/adverb-adjective-collocations-c1-english-vocabulary/', type: 'vocabulary',
+  id: 'c1v05', type: 'vocabulary',
   title: 'Perfect pairs: adverb + adjective', dinner: 'What is wildly popular at your school right now?',
+  kid: 'Perfect pairs', he: 'מילים: צמדי adverb ו-adjective',
   hook: { q: 'People say "bitterly disappointed" but never "bitterly happy". Why?', o: ['Some words have favourite partners', 'It is a grammar rule about bitter', 'Bitter can only describe food'], a: 0,
     reveal: 'Words have *favourite partners*, called collocations. There is no rule behind them: we say "fast food" but "a quick shower". You simply learn the pairs, and they make your English sound natural.' },
   learn: { kind: 'words', title: 'Adverbs and their partners', words: [
@@ -832,8 +851,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1l04', url: 'https://test-english.com/listening/c1/social-medias-impact-on-teenage-brains-c1-english-listening-test/', type: 'listening',
+  id: 'c1l04', type: 'listening',
   title: 'Social media and the teenage brain', dinner: 'Which app could you take a break from for a week?',
+  kid: 'Social media and your brain', he: 'האזנה: רשתות חברתיות ומוח המתבגר',
   hook: { q: 'In a study, teenagers looked at photos inside a brain scanner. What made their brain\'s reward centre most active?', o: ['Photos with lots of likes', 'Photos of food', 'Black and white photos'], a: 0,
     reveal: '*Photos with lots of likes*! In a 2016 study in Los Angeles, the same reward area that reacts to sweets or winning a prize became more active, and the teens were more likely to like a photo that already had many likes.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -884,8 +904,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1l05', url: 'https://test-english.com/listening/c1/too-intelligent-to-be-happy-c1-english-listening/', type: 'listening',
+  id: 'c1l05', type: 'listening',
   title: 'Too clever to be happy?', dinner: 'What small thing made you happy this week?',
+  kid: 'Too clever to be happy?', he: 'האזנה: האם חכמים פחות מאושרים',
   hook: { q: 'Who first wrote "where ignorance is bliss, \'tis folly to be wise"?', o: ['The poet Thomas Gray, in 1742', 'Shakespeare, in Hamlet', 'Albert Einstein'], a: 0,
     reveal: '*The poet Thomas Gray*, in 1742, while watching boys play at his old school. People still say "ignorance is bliss" today. But are clever people really less happy?' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -936,8 +957,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1l06', url: 'https://test-english.com/listening/c1/are-we-eating-better-c1-english-listening/', type: 'listening',
+  id: 'c1l06', type: 'listening',
   title: 'Are we eating better?', dinner: 'What dish would you like us to cook together at home?',
+  kid: 'Are we eating better?', he: 'האזנה: האם אנחנו אוכלים טוב יותר',
   hook: { q: 'Roughly how long does it take your stomach to tell your brain that you are full?', o: ['About 20 seconds', 'About 20 minutes', 'About 2 hours'], a: 1,
     reveal: 'About *20 minutes*! That is one reason why eating slowly helps you notice when you have had enough.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -993,8 +1015,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1l07', url: 'https://test-english.com/listening/c1/sleep-tourism-rest-or-stress-c1-english-listening-test/', type: 'listening',
+  id: 'c1l07', type: 'listening',
   title: 'Sleep holidays: rest or stress?', dinner: 'What helps you fall asleep on a busy night?',
+  kid: 'Holidays just to sleep', he: 'האזנה: חופשות שינה',
   hook: { q: 'Which bird can sleep while it is flying?', o: ['The frigatebird', 'The chicken', 'The penguin'], a: 0,
     reveal: '*The frigatebird*! On flights over the ocean that can last for weeks, it takes tiny naps of about ten seconds while gliding, and sleeps less than an hour a day in total.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1043,8 +1066,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1l08', url: 'https://test-english.com/listening/c1/a-perfect-democracy-c1-english-listening-test/', type: 'listening',
+  id: 'c1l08', type: 'listening',
   title: 'A perfect class vote?', dinner: 'How should our family decide where to go on a day trip?',
+  kid: 'A perfect class vote?', he: 'האזנה: הצבעה כיתתית על טיול',
   hook: { q: 'When honeybees need a new home, how do they choose it?', o: ['Scout bees "vote" by dancing for the best place', 'The queen decides alone', 'They follow the wind'], a: 0,
     reveal: '*Scout bees dance* for the places they have found. The best site attracts more and more dancers until the bees agree. Scientists call it a kind of bee democracy.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1098,8 +1122,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1l09', url: 'https://test-english.com/listening/c1/operation-cat-drop-c1-english-listening-test/', type: 'listening',
+  id: 'c1l09', type: 'listening',
   title: 'Operation Cat Drop', dinner: 'Have you ever solved one problem and accidentally created another?',
+  kid: 'Operation Cat Drop', he: 'האזנה: מבצע הצנחת החתולים',
   hook: { q: 'What do we call it when a solution causes a new, unexpected problem?', o: ['An unintended consequence', 'A happy accident', 'A chain letter'], a: 0,
     reveal: '*An unintended consequence*. Today\'s story is one of the most famous examples, and it involves cats and parachutes.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1152,8 +1177,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1r02', url: 'https://test-english.com/reading/c1/a-walk-gone-wrong-c1-english-reading-test/', type: 'reading',
+  id: 'c1r02', type: 'reading',
   title: 'A walk gone wrong', dinner: 'What would you pack for a long walk, just to be on the safe side?',
+  kid: 'A walk gone wrong', he: 'קריאה: טיול שהשתבש',
   hook: { q: 'If you get lost in the countryside, what is usually the safest thing to do?', o: ['Stay where you are and call for help', 'Keep walking until it gets dark', 'Split up to search faster'], a: 0,
     reveal: '*Stay where you are*. Rescue teams say it is far easier to find someone who stays in one place, and that is exactly what helped the walkers in today\'s story.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A short story: three teenagers set off on an easy afternoon walk, and one shortcut changes everything.',
@@ -1193,8 +1219,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1r03', url: 'https://test-english.com/reading/c1/how-ai-voice-cloning-is-changing-scams-c1-english-reading-test/', type: 'reading',
+  id: 'c1r03', type: 'reading',
   title: 'When a voice can be copied', dinner: 'How would you check that a message really came from a friend?',
+  kid: 'When a voice can be copied', he: 'קריאה: שיבוט קולות בבינה מלאכותית',
   hook: { q: 'Which of these is a helpful use of voice cloning?', o: ['Letting people who lose their voice to illness speak in their own voice', 'Pretending to be someone\'s grandmother', 'Tricking a bank'], a: 0,
     reveal: '*Giving people their own voice back*. People who know an illness will take away their speech can record their voice in advance, and a computer can later speak with it. The same technology, sadly, also helps criminals.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A technology article explains how fake voices are made, why they fool us, and how to protect yourself.',
@@ -1234,8 +1261,9 @@ window.EQ_MISSIONS.c1 = [
   ]
 },
 {
-  id: 'c1r04', url: 'https://test-english.com/reading/c1/kidfluencers-growing-up-online-c1-english-reading/', type: 'reading',
+  id: 'c1r04', type: 'reading',
   title: 'Kidfluencers: growing up online', dinner: 'Should parents ask their children before posting photos of them?',
+  kid: 'Kids who are online stars', he: 'קריאה: ילדים כוכבי רשת',
   hook: { q: 'In 2020, which country passed a law to protect children who earn money as online stars?', o: ['France', 'Japan', 'Brazil'], a: 0,
     reveal: '*France*! Part of what young online stars earn must be saved for them until they are adults, and they can later ask for their videos to be removed.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A magazine article looks at children who grow up as online stars, often with their parents behind the camera.',
@@ -1272,6 +1300,141 @@ window.EQ_MISSIONS.c1 = [
   ],
   use: [
     { k: 'type', q: 'When a family\'s income depends on the videos, the line between playing and working becomes ___.', a: ['blurred'], why: 'blurred = not clear any more.' }
+  ]
+},
+// ---- The Writer's Desk (writing days) ----
+{
+  id: 'c1w01', type: 'writing',
+  title: 'Problem and solution', kid: 'Problem and solution', he: 'כתיבה: בעיה ופתרון', dinner: 'What is one small change that could make our town cleaner?',
+  hook: { q: 'How much plastic ends up in the oceans every year?', o: ['Millions of tonnes', 'A few kilos', 'About a hundred tonnes'], a: 0,
+    reveal: 'Scientists estimate that *millions of tonnes* of plastic reach the oceans every year.' },
+  learn: { kind: 'rule', title: 'Problems and solutions', form: ['One major problem is ...', 'This leads to ...', 'One effective solution would be ...'],
+    lines: ['State the problem: *One major problem is* that ...', 'Show the effect: *This leads to* ... / *As a result*, ...',
+      'Offer a solution: *One effective solution would be* to ...'],
+    ex: ['*One major problem is* that many people use plastic bags only once.', '*One effective solution would be* to charge for every bag.'],
+    he: 'חיבור בעיה ופתרון: מציגים בעיה (One major problem is), תוצאה (This leads to) ופתרון (One effective solution would be to...).' },
+  steps: [
+    { name: 'Problem language', items: [
+      { k: 'mc', q: 'One major problem ___ that cities are getting hotter.', o: ['is', 'are', 'being'], a: 0, why: 'one problem → is.' },
+      { k: 'mc', q: 'This ___ to more traffic jams.', o: ['leads', 'causes', 'results'], a: 0, why: 'lead to; cause has no to; result in.' },
+      { k: 'mc', q: 'One effective solution would be ___ more trees.', o: ['to plant', 'planting to', 'plant'], a: 0, why: 'would be + to + verb.' },
+      { k: 'tf', q: '"As a result, fewer people use public transport."', a: true, why: 'As a result introduces an effect.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'This could be solved by improving public transport.', why: 'could be solved by + -ing.' },
+      { k: 'spot', s: 'The government should *encouraging* people to recycle.', fix: 'encourage', why: 'should + verb.' },
+      { k: 'mc', q: 'Which sentence offers a solution?', o: ['Parks could offer free water stations.', 'Plastic is everywhere.', 'This is a big problem.'], a: 0,
+        why: 'could + an action = a solution.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Many families throw away a lot of food. Describe the problem and suggest a solution.', tip: 'The problem, its effect, a solution.',
+      n: [2, 3], len: [30, 85],
+      need: [{ t: 'State the problem', any: ['problem', 'issue'] },
+        { t: 'Suggest a solution', any: ['solution', 'could', 'should', 'would be to'] }],
+      model: 'One major problem is that many families buy more food than they need, so a lot of it is thrown away. This leads to wasted money and more rubbish. One effective solution would be to plan meals for the week and freeze leftovers.',
+      why: 'Problem, effect, solution: one sentence each.', he: 'בעיה, תוצאה, פתרון: משפט לכל אחד.' }
+  ]
+},
+{
+  id: 'c1w02', type: 'writing',
+  title: 'Describe the data', kid: 'Describe the data', he: 'כתיבה: תיאור נתונים', dinner: 'What do you think most kids do in their free time?',
+  hook: { q: 'Which word describes a number going up very fast?', o: ['Soared', 'Dipped', 'Levelled off'], a: 0,
+    reveal: 'Numbers that rise fast *soar*; a small fall is a *dip*; when they stop changing they *level off*.' },
+  learn: { kind: 'rule', title: 'Describing data', form: ['The survey shows ...', 'The majority of ...', 'twice as many ... as ...'],
+    lines: ['Introduce it: *The chart shows* how ... / *According to the survey*, ...', 'Big and small: *the majority of* / *only a small minority*.',
+      'Compare: sport (40%) was *far more popular than* reading (10%); *twice as many* chose music *as* art.'],
+    ex: ['*The chart shows* what students do after class.', '*Twice as many* students chose sport *as* music.'],
+    he: 'מתארים נתונים: מה הגרף מראה, הרוב והמיעוט (the majority, a minority), והשוואות (twice as many as, more popular than).' },
+  steps: [
+    { name: 'Data language', items: [
+      { k: 'mc', q: 'The chart ___ how teenagers spend their free time.', o: ['shows', 'says', 'tells'], a: 0, why: 'A chart shows.' },
+      { k: 'mc', q: 'The ___ of students chose sport.', o: ['majority', 'most', 'many'], a: 0, why: 'the majority of = most of.' },
+      { k: 'mc', q: 'Twice as many students chose music ___ art.', o: ['as', 'than', 'like'], a: 0, why: 'twice as many ... as ...' },
+      { k: 'tf', q: '"Only a small minority preferred reading."', a: true, why: 'a small minority = only a few.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'Sport was far more popular than reading.', why: 'far more + adjective + than.' },
+      { k: 'spot', s: 'The number of players *rised* sharply in summer.', fix: 'rose', why: 'rise → rose (irregular).' },
+      { k: 'mc', q: 'Sport 40%, music 20%. Which sentence is correct?', o: ['Sport is twice as popular as music.', 'They are about the same.', 'Music is more popular.'], a: 0,
+        why: '40 is twice 20.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'A survey of 100 kids: sport 40%, screens 30%, music 20%, reading 10%. Describe the results.', tip: 'Say what it shows, then compare.',
+      n: [2, 3], len: [30, 85],
+      need: [{ t: 'Introduce the data (The survey shows...)', any: ['the survey shows', 'the chart shows', 'the results show', 'according to', 'the survey found'] },
+        { t: 'Compare (more than, twice as, the most popular...)', any: ['more than', 'twice as', 'times as', 'the majority', 'most popular', 'less popular', 'fewer', 'compared'] }],
+      model: 'The survey shows how 100 kids spend their free time. Sport is the most popular activity at 40%, and it is four times as popular as reading, at only 10%. Screens come second with 30%, followed by music.',
+      why: 'What the data is about, the biggest result, and a comparison.', he: 'על מה הנתונים, התוצאה הגדולה, והשוואה.' }
+  ]
+},
+{
+  id: 'c1w03', type: 'writing',
+  title: 'A strong argument', kid: 'A strong argument', he: 'כתיבה: טיעון חזק', dinner: 'Should museums be free for everyone?',
+  hook: { q: 'What makes an essay convincing?', o: ['Clear arguments with examples', 'Very long sentences', 'Lots of rare words'], a: 0,
+    reveal: '*Clear arguments with examples* convince readers, not long words.' },
+  learn: { kind: 'rule', title: 'Building an argument', form: ['It is often argued that ...', 'Not only ... but also ...', 'Consequently, ...'],
+    lines: ['Introduce a view: *It is often argued that* ...', 'Add weight: *Not only* do museums teach, *but* they *also* ...',
+      'Show the result: *Consequently*, ... / *Therefore*, ...'],
+    ex: ['*It is often argued that* museums should be free.', '*Not only* do they teach history, *but* they *also* bring people together.'],
+    he: 'It is often argued that להצגת טענה, Not only... but also להוספה (בתחילת משפט: Not only do they), ו-Consequently לתוצאה.' },
+  steps: [
+    { name: 'Essay language', items: [
+      { k: 'mc', q: 'Not only ___ free museums educate people, but they also attract tourists.', o: ['do', 'are', 'does'], a: 0,
+        why: 'Not only at the start: do + subject + verb.' },
+      { k: 'mc', q: 'It is often ___ that technology makes us lonely.', o: ['argued', 'argue', 'arguing'], a: 0, why: 'It is often argued that...' },
+      { k: 'mc', q: 'Tickets are expensive. ___, many families never visit.', o: ['Consequently', 'Nevertheless', 'Meanwhile'], a: 0, why: 'Consequently = as a result.' },
+      { k: 'tf', q: '"Nevertheless, there are strong arguments against this view."', a: true, why: 'Nevertheless = even so.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'Therefore, entrance should be free for children.', why: 'Therefore, + the conclusion.' },
+      { k: 'spot', s: 'This would *benefits* families with less money.', fix: 'benefit', why: 'would + verb (no s).' },
+      { k: 'mc', q: 'Which is the most formal?', o: ['Consequently, fewer people visit.', 'So, like, fewer people go.', 'Fewer people go, you know.'], a: 0,
+        why: 'Consequently is formal essay language.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Should museums be free for everyone? Write a short argument.', tip: 'Use It is often argued that, Not only ... but also, or Consequently.',
+      n: [2, 3], len: [30, 85],
+      need: [{ t: 'Use essay language (Not only, Consequently...)', any: ['it is often argued', 'not only', 'consequently', 'therefore', 'moreover', 'nevertheless'] },
+        { t: 'Give your own view', any: ['i believe', 'i think', 'in my view', 'in my opinion', 'personally'] }],
+      model: 'It is often argued that museums should be free for everyone. Not only do free museums help children learn about history and art, but they also bring families together. Consequently, I believe that entrance should be free, at least for young people.',
+      why: 'A view, a stronger point with Not only, and your conclusion.', he: 'טענה, חיזוק עם Not only, ומסקנה שלכם.' }
+  ]
+},
+{
+  id: 'c1w04', type: 'writing',
+  title: 'A proposal', kid: 'A proposal', he: 'כתיבה: הצעה', dinner: 'If you could add one thing to our neighbourhood, what would it be?',
+  hook: { q: 'Who is a proposal written for?', o: ['People who decide', 'Only your friends', 'Nobody'], a: 0,
+    reveal: 'A proposal is written for *people who decide*, like a town council, to persuade them.' },
+  learn: { kind: 'rule', title: 'Writing a proposal', form: ['The aim of this proposal is to ...', 'I propose that ...', 'This would ...'],
+    lines: ['Start with the aim: *The aim of this proposal is to* suggest ...', 'Suggest: *I propose that* ... / *I recommend* + -ing',
+      'Show the benefit: *This would* give young people ...'],
+    ex: ['*The aim of this proposal is to* suggest a new reading corner.', '*This would* give everyone a quiet place to read.'],
+    he: 'הצעה: מטרה (The aim of this proposal is to), ההצעה עצמה (I propose that), והתועלת (This would...).' },
+  steps: [
+    { name: 'Proposal language', items: [
+      { k: 'mc', q: 'The aim of this proposal is ___ a new youth centre.', o: ['to suggest', 'suggesting', 'suggest'], a: 0, why: 'The aim is + to + verb.' },
+      { k: 'mc', q: 'I recommend ___ a water fountain in the park.', o: ['installing', 'to install', 'install'], a: 0, why: 'recommend + -ing.' },
+      { k: 'mc', q: 'This ___ encourage more young people to exercise.', o: ['would', 'would to', 'will to'], a: 0, why: 'would + verb.' },
+      { k: 'tf', q: '"I propose that we create a quiet study room."', a: true, why: 'I propose that + a sentence.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'This would benefit everyone in the community.', why: 'This would + the benefit.' },
+      { k: 'spot', s: 'The aim of this proposal is to *suggesting* a bike path.', fix: 'suggest', why: 'to + verb: to suggest.' },
+      { k: 'mc', q: 'Which is the best title for a proposal?', o: ['Proposal for a new skate park', 'My amazing idea!!!', 'Hello everyone'], a: 0,
+        why: 'A proposal has a clear, formal title.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write a short proposal to your town council: something new for young people in your area.', tip: 'Say the aim, what you propose, and why it would help.',
+      n: [2, 3], len: [30, 85],
+      need: [{ t: 'State the aim', any: ['the aim of this proposal', 'the purpose of this proposal', 'this proposal'] },
+        { t: 'Make the proposal (I propose, I recommend)', any: ['i propose', 'i recommend', 'i suggest'] },
+        { t: 'Show the benefit (This would...)', any: ['this would', 'it would', 'would help', 'would give', 'would allow'] }],
+      model: 'The aim of this proposal is to suggest a small skate park next to the community centre. I propose that it should have ramps for beginners and benches for parents. This would give young people a safe place to meet and stay active.',
+      why: 'The aim, the proposal and the benefit.', he: 'מטרה, ההצעה, והתועלת.' }
   ]
 }
 ];

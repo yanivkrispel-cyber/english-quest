@@ -3,8 +3,9 @@
 window.EQ_MISSIONS = window.EQ_MISSIONS || {};
 window.EQ_MISSIONS.b2 = [
 {
-  id: 'b2g01', url: 'https://test-english.com/grammar-points/b2/have-auxiliary-main-verb/', type: 'grammar',
+  id: 'b2g01', type: 'grammar',
   title: 'Two kinds of have', dinner: 'What do you usually have for breakfast?',
+  kid: 'Two kinds of have', he: 'have כפועל עיקרי וכפועל עזר',
   hook: { q: 'About how many cups of tea do people in the UK drink every day, all together?', o: ['About 1 million', 'About 100 million', 'About 1 billion'], a: 1,
     reveal: 'About *100 million*! The British *have* a lot of tea (have as a main verb), and they *have had* this habit for centuries (have as a helper).' },
   learn: { kind: 'rule', title: 'Have: main verb or helper?',
@@ -22,7 +23,7 @@ window.EQ_MISSIONS.b2 = [
       { k: 'mc', q: 'We ___ a great time at the concert last night.', o: ['had', 'have had', 'were having'], a: 0, why: 'last night → past simple: we had a great time.' }
     ] },
     { name: 'Questions and negatives', items: [
-      { k: 'tf', q: '"I haven\'t a car."', a: false, fix: 'I don\'t have a car. (or: I haven\'t got a car.)', why: 'With have = own, use don\'t have or haven\'t got.' },
+      { k: 'tf', q: '"I don\'t have got a car."', a: false, fix: 'I don\'t have a car. (or: I haven\'t got a car.)', why: 'With have = own, use don\'t have or haven\'t got.' },
       { k: 'type', q: '___ you got a minute? I need your help.', a: ['have'], why: 'have got → Have you got…?' },
       { k: 'mc', q: 'How often ___ you have a haircut?', o: ['do', 'have', 'are'], a: 0, why: 'have a haircut is an action → do in questions.' },
       { k: 'tf', q: '"Did you have fun at the party?"', a: true, why: 'have fun is an action → did in the past.' }
@@ -41,8 +42,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2g02', url: 'https://test-english.com/grammar-points/b2/clauses-contrast-purpose-reason-result/', type: 'grammar',
+  id: 'b2g02', type: 'grammar',
   title: 'Linking ideas', dinner: 'What do you do so that you don\'t forget your homework?',
+  kid: 'Linking ideas', he: 'משפטי ניגוד, מטרה, סיבה ותוצאה',
   hook: { q: 'Why do zebras have stripes? Most scientists today think it is…', o: ['to keep biting flies away', 'to look taller', 'to stay warm'], a: 0,
     reveal: 'Most scientists now think stripes help zebras *to keep* biting flies away: the flies find it hard to land on them. *Although* the debate is not over, the fly idea has the most evidence.' },
   learn: { kind: 'rule', title: 'Contrast, purpose, reason, result',
@@ -80,8 +82,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2g03', url: 'https://test-english.com/grammar-points/b2/generic-pronouns/', type: 'grammar',
+  id: 'b2g03', type: 'grammar',
   title: 'Someone left their phone', dinner: 'If someone in your class feels left out, what can you do to help them?',
+  kid: 'Someone left their phone', he: 'כינויים כלליים: someone, they',
   hook: { q: 'Which word did the Merriam-Webster dictionary choose as its Word of the Year in 2019?', o: ['they', 'selfie', 'emoji'], a: 0,
     reveal: '*They*! More and more people use *they* for one person, when we don\'t know, or don\'t say, if the person is a man or a woman.' },
   learn: { kind: 'rule', title: 'When we don\'t know (or say) who',
@@ -118,8 +121,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2v01', url: 'https://test-english.com/vocabulary/b2/relationships-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'b2v01', type: 'vocabulary',
   title: 'Close and not so close', dinner: 'Who in our family do you take after?',
+  kid: 'Close and not so close', he: 'מילים: מערכות יחסים וחברויות',
   hook: { q: 'Identical twins share almost all of their DNA. Do they have the same fingerprints?', o: ['Yes, exactly the same', 'No, they are different', 'Only on one hand'], a: 1,
     reveal: '*No*! Even identical twins have different fingerprints. You can *take after* your family, but you are still one of a kind.' },
   learn: { kind: 'words', title: 'Words about relationships', words: [
@@ -165,8 +169,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2v02', url: 'https://test-english.com/vocabulary/b2/feelings-and-emotions-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'b2v02', type: 'vocabulary',
   title: 'Strong feelings', dinner: 'What made you feel thrilled or relieved recently?',
+  kid: 'Strong feelings', he: 'מילים: רגשות חזקים',
   hook: { q: 'Scientists used to talk about 6 basic emotions. A 2017 study of people watching short videos found how many kinds?', o: ['6', '27', '100'], a: 1,
     reveal: '*27*! Researchers in California showed people about 2,000 short videos and found 27 kinds of emotion, from awe to awkwardness.' },
   learn: { kind: 'words', title: 'Words for strong feelings', words: [
@@ -213,8 +218,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l01', url: 'https://test-english.com/listening/b2/relationship-dilemmas-b2-english-listening-test/', type: 'listening',
+  id: 'b2l01', type: 'listening',
   title: 'Friendship dilemmas', dinner: 'What would you do if a friend kept copying your homework?',
+  kid: 'Friendship problems', he: 'האזנה: התלבטויות בחברות',
   hook: { q: 'A psychologist studied how friendships grow. About how many hours together turn a stranger into a close friend?', o: ['About 20', 'About 200', 'About 2,000'], a: 1,
     reveal: 'About *200 hours*! The psychologist Jeffrey Hall found that close friendships need around 200 hours of time together.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -270,8 +276,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l02', url: 'https://test-english.com/listening/b2/can-music-be-medicine-b2-english-listening-test/', type: 'listening',
+  id: 'b2l02', type: 'listening',
   title: 'Can music be medicine?', dinner: 'What music helps you when you study or do sport?',
+  kid: 'Can music be medicine?', he: 'האזנה: מוזיקה כתרופה',
   hook: { q: 'Which of these can music really do, according to research?', o: ['Help some people who lost their speech to sing words', 'Cure the flu', 'Make plants grow twice as fast'], a: 0,
     reveal: 'Some people who lost their speech after a stroke can *sing* words they can\'t say. Music therapists use this to help them talk again.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -320,8 +327,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l03', url: 'https://test-english.com/listening/b2/regrets-i-wish-id-b2-english-listening-test/', type: 'listening',
+  id: 'b2l03', type: 'listening',
   title: 'I wish I\'d…', dinner: 'Is there something you wish you had done differently this year?',
+  kid: 'I wish I\'d…', he: 'האזנה: שלושה אנשים מספרים על חרטה',
   hook: { q: 'In a famous study, what did people regret more in the long run?', o: ['The things they did', 'The things they didn\'t do', 'Both the same'], a: 1,
     reveal: '*The things they didn\'t do*. Psychologists found that in the short term we regret our actions, but in the long term we regret the chances we missed.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -367,8 +375,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2r01', url: 'https://test-english.com/reading/b2/is-overtourism-pricing-locals-out-b2-english-reading-test/', type: 'reading',
+  id: 'b2r01', type: 'reading',
   title: 'Too many tourists?', dinner: 'How could tourists help a city instead of hurting it?',
+  kid: 'Too many tourists?', he: 'קריאה: יותר מדי תיירים בעיר',
   hook: { q: 'In 2024 Venice began charging day visitors a fee on its busiest days. How much?', o: ['€5', '€50', '€500'], a: 0,
     reveal: '*€5*, in 2024. Venice became the first city in the world to charge day-trippers to enter, to fight overtourism.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A magazine article asks: are tourists making life too expensive for the people who live in famous cities?',
@@ -408,8 +417,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2u02', url: 'https://test-english.com/use-of-english/b2/b2-english-test-2-multiple-choice-questions/', type: 'use-of-english',
+  id: 'b2u02', type: 'use-of-english',
   title: 'No phones at dinner', dinner: 'Should we have a no-phones rule at our dinner table? Why?',
+  kid: 'No phones at dinner', he: 'כתבה: בלי טלפונים בארוחת הערב',
   hook: { q: 'In a study, people talked with a phone lying on the table. What happened?', o: ['They felt less connected', 'They talked more', 'Nothing changed'], a: 0,
     reveal: '*They felt less connected*. Just having a phone on the table, even switched off, made conversations feel less close.' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a news story (it is made up!) and choose the right word for each gap.',
@@ -441,8 +451,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2g04', url: 'https://test-english.com/grammar-points/b2/reflexive-reciprocal-pronouns/', type: 'grammar',
+  id: 'b2g04', type: 'grammar',
   title: 'Myself or each other?', dinner: 'What is something you taught yourself to do?',
+  kid: 'Myself or each other?', he: 'כינויים חוזרים והדדיים',
   hook: { q: 'Which of these animals can recognise itself in a mirror?', o: ['Dolphins', 'Dogs', 'Cats'], a: 0,
     reveal: '*Dolphins*! In experiments, dolphins with a mark on their body turned in front of a mirror to look at *themselves*. Dogs and cats usually think the dog or cat in the mirror is another animal.' },
   learn: { kind: 'rule', title: 'Reflexive and reciprocal pronouns',
@@ -480,8 +491,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2g05', url: 'https://test-english.com/grammar-points/b2/there-and-it/', type: 'grammar',
+  id: 'b2g05', type: 'grammar',
   title: 'There or it?', dinner: 'Is there anything new in your class this week?',
+  kid: 'There or it?', he: 'there או it בתחילת משפט',
   hook: { q: 'How much of all the water on Earth is fresh water (not salty)?', o: ['About 3%', 'About 30%', 'About 60%'], a: 0,
     reveal: 'Only *about 3%*! *There is* a lot of water on our planet, but most of it is salty sea water. *It\'s* important not to waste the fresh water we have.' },
   learn: { kind: 'rule', title: 'There and it as subjects',
@@ -519,8 +531,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2g06', url: 'https://test-english.com/grammar-points/b2/narrative-tenses-used-to-would/', type: 'grammar',
+  id: 'b2g06', type: 'grammar',
   title: 'Telling stories', dinner: 'What did you use to do when you were little that you don\'t do now?',
+  kid: 'Back then: used to, would', he: 'זמני עבר בסיפור, used to ו-would',
   hook: { q: 'Before alarm clocks were common, some people in Britain paid a "knocker-up". What was that person\'s job?', o: ['Waking people up by tapping on their windows', 'Delivering milk', 'Lighting the street lamps'], a: 0,
     reveal: '*Waking people up*! Knocker-ups *used to* walk the streets early in the morning, and they *would* tap on bedroom windows with a long stick until the workers woke up.' },
   learn: { kind: 'rule', title: 'Narrative tenses, used to and would',
@@ -558,8 +571,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2g07', url: 'https://test-english.com/grammar-points/b2/get/', type: 'grammar',
+  id: 'b2g07', type: 'grammar',
   title: 'So many gets', dinner: 'What gets you in a good mood on a bad day?',
+  kid: 'So many gets', he: 'המשמעויות של get',
   hook: { q: 'Your friend says, "I don\'t get it." What does she mean?', o: ['I don\'t understand', 'I didn\'t receive it', 'I can\'t reach it'], a: 0,
     reveal: '*I don\'t understand*. Get is one of the busiest verbs in English: it can mean understand, receive, buy, fetch, arrive and become, and it\'s part of many phrasal verbs.' },
   learn: { kind: 'rule', title: 'Get: different meanings',
@@ -597,8 +611,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2g08', url: 'https://test-english.com/grammar-points/b2/discourse-markers/', type: 'grammar',
+  id: 'b2g08', type: 'grammar',
   title: 'Anyway, by the way', dinner: 'What was the best part of your day? By the way, did anything funny happen?',
+  kid: 'Anyway, by the way', he: 'מילות קישור בדיבור ובכתיבה',
   hook: { q: 'How many hearts does an octopus have?', o: ['One', 'Three', 'Eight'], a: 1,
     reveal: '*Three*! *What\'s more*, its blood is blue. *However*, one of the hearts stops beating when it swims, *which is why* octopuses often prefer crawling.' },
   learn: { kind: 'rule', title: 'Linking words in speech and writing',
@@ -636,8 +651,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2g09', url: 'https://test-english.com/grammar-points/b2/speculation-deduction/', type: 'grammar',
+  id: 'b2g09', type: 'grammar',
   title: 'It must be…', dinner: 'Who do you think might be the tallest person in our family in ten years?',
+  kid: 'It must be…', he: 'ניחוש והסקה: must, might, could',
   hook: { q: 'Why do cats push their paws in and out on soft blankets? Scientists think it might be…', o: ['a habit from when they were kittens', 'to sharpen their claws', 'because they are cold'], a: 0,
     reveal: 'It *may* be a habit from kittenhood: kittens push against their mother to get milk. Nobody can be completely sure, so scientists say it *might* or *could* be the reason.' },
   learn: { kind: 'rule', title: 'How sure are you?',
@@ -675,8 +691,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2u01', url: 'https://test-english.com/use-of-english/b2/b2-english-test-1-text-multiple-choice-gaps/', type: 'use-of-english',
+  id: 'b2u01', type: 'use-of-english',
   title: 'The beach robot', dinner: 'What could we invent to make our neighbourhood cleaner?',
+  kid: 'The beach robot', he: 'כתבה: רובוט על החוף',
   hook: { q: 'How long can a plastic bottle take to break down in the sea?', o: ['About 4 years', 'About 45 years', 'About 450 years'], a: 2,
     reveal: 'Scientists often estimate *about 450 years*. That is why every bottle picked up from a beach really matters.' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a news story (it is made up!) and choose the right word for each gap.',
@@ -709,8 +726,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2u03', url: 'https://test-english.com/use-of-english/b2/b2-english-test-3-text-multiple-choice-gaps/', type: 'use-of-english',
+  id: 'b2u03', type: 'use-of-english',
   title: 'Reading to dogs', dinner: 'Which animal would you like to read a story to, and why?',
+  kid: 'Reading to dogs', he: 'כתבה: ילדים קוראים לכלבים',
   hook: { q: 'In some libraries around the world, children practise reading aloud to…', o: ['dogs', 'plants', 'robots'], a: 0,
     reveal: '*Dogs*! Many libraries and schools have reading-dog programmes. A calm dog listens without judging, so shy readers feel more confident.' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a news story (it is made up!) and choose the right word for each gap.',
@@ -743,8 +761,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2u04', url: 'https://test-english.com/use-of-english/b2/b2-english-test-4-multiple-choice-questions/', type: 'use-of-english',
+  id: 'b2u04', type: 'use-of-english',
   title: 'The school garden', dinner: 'If we had a garden, what would you like to grow?',
+  kid: 'The school garden', he: 'כתבה: הגינה של בית הספר',
   hook: { q: 'Scientifically speaking, which of these is a fruit?', o: ['A tomato', 'A carrot', 'A potato'], a: 0,
     reveal: '*A tomato*! It grows from a flower and has seeds inside, so for scientists it is a fruit, even if we put it in a salad.' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a news story (it is made up!) and choose the right word for each gap.',
@@ -777,8 +796,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2v03', url: 'https://test-english.com/vocabulary/b2/the-news-and-media-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'b2v03', type: 'vocabulary',
   title: 'In the news', dinner: 'What news story did you hear about this week, and where did it come from?',
+  kid: 'In the news', he: 'מילים: חדשות ותקשורת',
   hook: { q: 'A 2018 study looked at millions of posts on Twitter. How did false stories spread, compared with true ones?', o: ['More slowly', 'At the same speed', 'Faster'], a: 2,
     reveal: '*Faster*! Researchers at MIT found that true stories took about six times longer than false ones to reach 1,500 people. That is why you should always check the *source*.' },
   learn: { kind: 'words', title: 'Words about the news', words: [
@@ -825,8 +845,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2v04', url: 'https://test-english.com/vocabulary/b2/war-and-peace-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'b2v04', type: 'vocabulary',
   title: 'Making peace', dinner: 'What is the best way to make peace with someone after an argument?',
+  kid: 'Making peace', he: 'מילים: מחלוקת ועשיית שלום',
   hook: { q: 'Most Nobel Prizes are given in Stockholm. Where is the Nobel Peace Prize given?', o: ['In Stockholm too', 'In Oslo', 'In Geneva'], a: 1,
     reveal: '*Oslo*, in Norway! Alfred Nobel asked for the *peace* prize to be given by a Norwegian committee, so it has its own ceremony there.' },
   learn: { kind: 'words', title: 'Words about disagreeing and making peace', words: [
@@ -873,8 +894,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2v05', url: 'https://test-english.com/vocabulary/b2/tourism-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'b2v05', type: 'vocabulary',
   title: 'Holiday words', dinner: 'Would you rather go on a package holiday or plan your own adventure? Why?',
+  kid: 'Holiday words', he: 'מילים: תיירות וטיולים',
   hook: { q: 'Which country gets the most international tourists in the world?', o: ['The USA', 'Spain', 'France'], a: 2,
     reveal: '*France*! It gets about 100 million international visitors a year, more than the number of people who live there.' },
   learn: { kind: 'words', title: 'Words for travellers', words: [
@@ -921,8 +943,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l04', url: 'https://test-english.com/listening/b2/behind-the-scenes-with-an-actor-b2-english-listening-test/', type: 'listening',
+  id: 'b2l04', type: 'listening',
   title: 'Behind the scenes', dinner: 'Would you like to act on a stage one day? Why or why not?',
+  kid: 'Behind the scenes', he: 'האזנה: מאחורי הקלעים עם שחקנית',
   hook: { q: 'In the theatre, people don\'t say "good luck" before a show. What do they say instead?', o: ['"Break a leg!"', '"Fall down!"', '"Lose your voice!"'], a: 0,
     reveal: '*"Break a leg!"* Many actors believe that saying "good luck" brings bad luck, so they wish each other the opposite.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -977,8 +1000,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l05', url: 'https://test-english.com/listening/b2/socializing-and-parties-b2-english-listening-test/', type: 'listening',
+  id: 'b2l05', type: 'listening',
   title: 'Party survival tips', dinner: 'What is a good question to ask someone you have just met?',
+  kid: 'Party survival tips', he: 'האזנה: טיפים למסיבות לביישנים',
   hook: { q: 'Psychologists asked strangers to talk for a few minutes. What did they usually get wrong afterwards?', o: ['They thought the other person liked them less than they really did', 'They thought the other person was older', 'They forgot the other person\'s name'], a: 0,
     reveal: 'They *underestimated how much the other person liked them*. Scientists call it the "liking gap": people usually like us more than we think!' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1034,8 +1058,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l06', url: 'https://test-english.com/listening/b2/discussing-news-and-media-b2-english-listening-test/', type: 'listening',
+  id: 'b2l06', type: 'listening',
   title: 'Where do you get your news?', dinner: 'Where do you get most of your news, and do you trust it?',
+  kid: 'Where do you get your news?', he: 'האזנה: מאיפה אנחנו שומעים חדשות',
   hook: { q: 'Which famous fake photo appears online again after almost every big flood?', o: ['A shark swimming down a street', 'A cow on a roof', 'A boat in a tree'], a: 0,
     reveal: 'The *shark in the street*! The same edited photo has been shared after floods in many different countries.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1088,8 +1113,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l07', url: 'https://test-english.com/listening/b2/dark-tourism-b2-english-listening-test/', type: 'listening',
+  id: 'b2l07', type: 'listening',
   title: 'Trips into film worlds', dinner: 'Which place from a film or a TV show would you most like to visit, and why?',
+  kid: 'Trips into film worlds', he: 'האזנה: טיולים למקומות מסרטים',
   hook: { q: 'Hobbiton, the village from The Lord of the Rings films, was built in New Zealand. Where exactly?', o: ['On a sheep farm', 'On a beach', 'On top of a mountain'], a: 0,
     reveal: '*On a sheep farm*! The film makers spotted its green hills from the air. Today the little round doors of the hobbit holes are one of New Zealand\'s best-known sights.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1142,8 +1168,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l08', url: 'https://test-english.com/listening/b2/retirement-challenges-in-the-u-s-b2-english-listening-test/', type: 'listening',
+  id: 'b2l08', type: 'listening',
   title: 'Grandpa retires', dinner: 'What would you like to do every day if you never had to work?',
+  kid: 'Grandpa retires', he: 'האזנה: סבא יוצא לפנסיה',
   hook: { q: 'In the USA, at what age can people born in 1960 or later get their full state pension?', o: ['60', '67', '75'], a: 1,
     reveal: '*67*! But many Americans stop working earlier or later, and some of them find the change harder than they expected.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1198,8 +1225,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2l09', url: 'https://test-english.com/listening/b2/the-truth-about-expired-food-b2-english-listening-test/', type: 'listening',
+  id: 'b2l09', type: 'listening',
   title: 'Best before or use by?', dinner: 'What food do we throw away most often at home, and how could we waste less?',
+  kid: 'Best before or use by?', he: 'האזנה: תאריכי תפוגה על מזון',
   hook: { q: 'Honey was found in ancient Egyptian tombs, thousands of years old. Was it still safe to eat?', o: ['Yes', 'No, it was poisonous', 'It had turned into stone'], a: 0,
     reveal: '*Yes*! Honey has very little water and is very acidic, so bacteria can\'t grow in it. Not every food is that lucky.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1251,8 +1279,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2r02', url: 'https://test-english.com/reading/b2/coolcationing-a-new-travel-trend-b2-english-reading-test/', type: 'reading',
+  id: 'b2r02', type: 'reading',
   title: 'Holidays in the cool', dinner: 'For a summer holiday, would you choose somewhere hot or somewhere cool? Why?',
+  kid: 'Holidays in the cool', he: 'קריאה: חופשות במקומות קרירים',
   hook: { q: 'In the north of Norway, what is the "midnight sun"?', o: ['The sun doesn\'t set for weeks in summer.', 'A full moon that looks like the sun.', 'A sunset at exactly midnight.'], a: 0,
     reveal: 'In the far north of Norway, *the sun doesn\'t set* from late May to late July. You can play football at midnight in daylight!' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A travel magazine looks at a new trend: summer holidays in cooler countries.',
@@ -1292,8 +1321,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2r03', url: 'https://test-english.com/reading/b2/using-ai-to-talk-to-the-deceased-b2-english-reading-test/', type: 'reading',
+  id: 'b2r03', type: 'reading',
   title: 'Talking to whales', dinner: 'If you could ask one animal one question, which animal would you choose, and what would you ask?',
+  kid: 'Talking to whales', he: 'קריאה: מדברים עם לווייתנים',
   hook: { q: 'Which animal has the biggest brain on Earth?', o: ['The sperm whale', 'The African elephant', 'The blue whale'], a: 0,
     reveal: '*The sperm whale*! Its brain weighs about eight kilograms, around six times as much as a human brain. No wonder scientists want to know what these whales are saying.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A science magazine looks at a surprising use of artificial intelligence: helping us understand what whales are saying.',
@@ -1334,8 +1364,9 @@ window.EQ_MISSIONS.b2 = [
   ]
 },
 {
-  id: 'b2r04', url: 'https://test-english.com/reading/b2/regulating-deepfakes-b2-english-reading-test/', type: 'reading',
+  id: 'b2r04', type: 'reading',
   title: 'Is that really you?', dinner: 'How could you check whether a video of a famous person is real?',
+  kid: 'Is that really you?', he: 'קריאה: deepfake, סרטונים מזויפים',
   hook: { q: 'Where does the word "deepfake" come from?', o: ['"deep learning" + "fake"', 'a film called Deep Fake', 'a deep-sea fish that changes colour'], a: 0,
     reveal: '"*Deep learning*" (a kind of artificial intelligence) + "*fake*". The word first appeared online in 2017.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A news article explains what deepfakes are and how countries are trying to control them.',
@@ -1373,6 +1404,137 @@ window.EQ_MISSIONS.b2 = [
   use: [
     { k: 'type', q: 'Deepfakes must ___ clearly labelled as made by AI.', a: ['be'], why: 'Modal passive: must + be + past participle.',
       he: 'אחרי must בא הפועל בלי to: must be labelled, לא must to be.' }
+  ]
+},
+// ---- The Writer's Desk (writing days) ----
+{
+  id: 'b2w01', type: 'writing',
+  title: 'A formal email', kid: 'A formal email', he: 'כתיבה: מייל רשמי', dinner: 'If you could ask a museum one question, what would it be?',
+  hook: { q: 'Which is a formal way to end an email?', o: ['Kind regards,', 'See ya!', 'Love,'], a: 0,
+    reveal: '*Kind regards* or *Yours sincerely* end a formal email. *See ya!* is only for friends.' },
+  learn: { kind: 'rule', title: 'Formal and polite', form: ['I am writing to ...', 'Could you please ...?', 'I would be grateful if ...'],
+    lines: ['Say why you are writing: *I am writing to* ask about ...', 'Ask politely: *Could you please* tell me ...? *I would like to know* whether ...',
+      'No short forms in formal writing: *I am*, not I\'m.'],
+    ex: ['*I am writing to* ask about your summer science camp.', '*Could you please* tell me how much it costs?'],
+    he: 'במייל רשמי: I am writing to..., שאלות מנומסות (Could you please), ובלי קיצורים (I am ולא I\'m).' },
+  steps: [
+    { name: 'Polite and formal', items: [
+      { k: 'mc', q: 'I am writing ___ ask about the course.', o: ['to', 'for', 'about'], a: 0, why: 'I am writing to + verb.' },
+      { k: 'mc', q: 'Could you please tell me ___?', o: ['when it starts', 'when does it start', 'when starts it'], a: 0,
+        why: 'Inside a question: tell me when it starts (no does).', he: 'בשאלה עקיפה (tell me...) הסדר כמו במשפט רגיל: when it starts, בלי does.' },
+      { k: 'mc', q: 'I would be grateful ___ you could send me more information.', o: ['if', 'that', 'when'], a: 0, why: 'I would be grateful if you could...' },
+      { k: 'tf', q: '"I am writing to asking about the trip."', a: false, fix: 'I am writing to ask about the trip.', why: 'to + verb: to ask.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'I would like to know if there are discounts.', why: 'I would like to know if + a normal sentence.' },
+      { k: 'spot', s: 'Could you please *sending* me the timetable?', fix: 'send', why: 'Could you + verb: send.' },
+      { k: 'mc', q: 'Which ending is right for a formal email?', o: ['Yours sincerely,', 'Bye for now!', 'Hugs,'], a: 0, why: 'Yours sincerely is formal.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write a formal email to a science museum to ask about a workshop for kids.', tip: 'Say why you are writing, and ask two polite questions.',
+      n: [2, 3], len: [25, 70],
+      need: [{ t: 'Say why you are writing', any: ['i am writing to', 'i\'m writing to'] },
+        { t: 'Ask politely (Could you please, I would like to know)', any: ['could you please', 'could you tell me', 'i would like to know', 'i would be grateful', 'would it be possible'] }],
+      model: 'Dear Sir or Madam, I am writing to ask about your robotics workshop for kids. Could you please tell me when it starts and how much it costs? I would also like to know whether we need to bring anything.',
+      why: 'Why you write, then polite indirect questions, with no short forms.', he: 'אומרים למה כותבים, ושואלים בנימוס בשאלות עקיפות.' }
+  ]
+},
+{
+  id: 'b2w02', type: 'writing',
+  title: 'A polite complaint', kid: 'A polite complaint', he: 'כתיבה: תלונה מנומסת', dinner: 'What is the best way to complain without being rude?',
+  hook: { q: 'What makes a complaint work best?', o: ['Being polite and clear', 'Being angry and long', 'Being short and rude'], a: 0,
+    reveal: 'Stay *polite and clear*: say what went wrong and what you would like.' },
+  learn: { kind: 'rule', title: 'Complaining politely', form: ['I am writing to complain about ...', 'Unfortunately, ...', 'I would appreciate it if ...'],
+    lines: ['Say the problem: *I am writing to complain about* the headphones I bought.', 'Give details: *Unfortunately*, they stopped working after two days.',
+      'Ask for action: *I would appreciate it if* you could replace them.'],
+    ex: ['*Unfortunately*, the parcel arrived late.', '*I would appreciate it if* you could send a refund.'],
+    he: 'תלונה מנומסת: מה הבעיה, פרטים (Unfortunately), ומה אתם מבקשים (I would appreciate it if you could...).' },
+  steps: [
+    { name: 'Complaint phrases', items: [
+      { k: 'mc', q: 'I am writing to complain ___ the service.', o: ['about', 'for', 'on'], a: 0, why: 'complain about something.' },
+      { k: 'mc', q: '___, the screen was broken when it arrived.', o: ['Unfortunately', 'Luckily', 'Hopefully'], a: 0, why: 'Unfortunately → bad news.' },
+      { k: 'mc', q: 'I would appreciate it if you ___ replace it.', o: ['could', 'can to', 'will to'], a: 0, why: 'if you could + verb.' },
+      { k: 'tf', q: '"I am writing to complain about the late delivery."', a: true, why: 'A clear, polite first line.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'I would like a refund or a new one.', why: 'Say clearly what you want.' },
+      { k: 'spot', s: 'The game was *broke* when I opened the box.', fix: 'broken', why: 'was + broken (the past participle).' },
+      { k: 'mc', q: 'Which sentence is too rude for a complaint?', o: ['Your shop is terrible and you are lazy.', 'The order arrived two weeks late.', 'I would like a refund, please.'], a: 0,
+        why: 'Complain about the problem, not the people.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'You ordered a board game online, but some pieces were missing. Write a short complaint.', tip: 'Say the problem, give a detail, and ask for something.',
+      n: [2, 3], len: [25, 70],
+      need: [{ t: 'Say what the problem is', any: ['complain', 'unfortunately', 'problem'] },
+        { t: 'Ask politely for something', any: ['i would appreciate', 'could you', 'i would like', 'please'] }],
+      model: 'I am writing to complain about the board game I ordered last week. Unfortunately, four pieces were missing when I opened the box. I would appreciate it if you could send me the missing pieces.',
+      why: 'The problem, a detail, and a polite request.', he: 'הבעיה, פרט אחד (Unfortunately), ובקשה מנומסת.' }
+  ]
+},
+{
+  id: 'b2w03', type: 'writing',
+  title: 'Two views', kid: 'Two views', he: 'כתיבה: שתי דעות', dinner: 'Is it better to learn from books or from videos?',
+  hook: { q: 'In a discussion essay, when do you give your own opinion?', o: ['At the end', 'In the first word', 'Never'], a: 0,
+    reveal: 'First you discuss *both views*, then you give your opinion *at the end*.' },
+  learn: { kind: 'rule', title: 'Discussing two views', form: ['Some people believe ...', 'Others argue that ...', 'Personally, I think ...'],
+    lines: ['The first view: *Some people believe* that ...', 'The second view: *Others argue that* ...', 'Your view at the end: *Personally*, I think ... / *In conclusion*, ...'],
+    ex: ['*Some people believe* that online lessons are better.', '*Others argue that* kids learn more in a classroom.'],
+    he: 'חיבור דיון: דעה אחת (Some people believe), דעה שנייה (Others argue), ובסוף הדעה שלכם (Personally, I think).' },
+  steps: [
+    { name: 'Two sides', items: [
+      { k: 'mc', q: 'Some people ___ that homework is useless.', o: ['believe', 'believes', 'believing'], a: 0, why: 'people = they → believe.' },
+      { k: 'mc', q: 'Others argue ___ it helps students remember.', o: ['that', 'what', 'which'], a: 0, why: 'argue that + a sentence.' },
+      { k: 'mc', q: '___, I think both have advantages.', o: ['Personally', 'Firstly', 'Suddenly'], a: 0, why: 'Personally → your own view.' },
+      { k: 'tf', q: '"In conclusion, I believe that a mix of both is best."', a: true, why: 'In conclusion + your view: a good last sentence.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'Others argue that it is a waste of time.', why: 'Others argue that + the second view.' },
+      { k: 'spot', s: 'Some people *thinks* that tests are stressful.', fix: 'think', why: 'people = they → think.' },
+      { k: 'mc', q: 'Which word adds another point?', o: ['Moreover', 'However', 'Although'], a: 0, why: 'Moreover = and also. However shows the other side.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Some think kids learn better from videos, others from books. Discuss both and give your view.', tip: 'Use Some people believe, Others argue, Personally.',
+      n: [2, 3], len: [25, 70],
+      need: [{ t: 'Give the first view (Some people...)', any: ['some people', 'many people', 'some think'] },
+        { t: 'Give the other view (Others argue...)', any: ['others', 'other people', 'on the other hand', 'however'] },
+        { t: 'Give your own view', any: ['personally', 'in my opinion', 'i think', 'i believe', 'in conclusion'] }],
+      model: 'Some people believe that videos are the best way to learn because they are clear and fun. Others argue that books help kids think more deeply. Personally, I think a mix of both works best.',
+      why: 'One view, the other view, then yours.', he: 'דעה אחת, הדעה השנייה, ובסוף שלכם.' }
+  ]
+},
+{
+  id: 'b2w04', type: 'writing',
+  title: 'Agree or disagree?', kid: 'Agree or disagree?', he: 'כתיבה: מסכימים או לא', dinner: 'Do you agree that everyone should learn to cook?',
+  hook: { q: 'Which phrase shows the strongest agreement?', o: ['I completely agree', 'I partly agree', 'I am not sure'], a: 0,
+    reveal: '*I completely agree* is the strongest. *I partly agree* means only some of it.' },
+  learn: { kind: 'rule', title: 'Agreeing and disagreeing', form: ['I completely agree that ...', 'I strongly disagree ...', 'Firstly, ... Secondly, ...'],
+    lines: ['Be clear from the start: *I completely agree* / *I strongly disagree*.', 'Give your reasons in order: *Firstly*, ... *Secondly*, ...',
+      'Support them: *For instance*, ...'],
+    ex: ['*I strongly disagree* with this statement.', '*Firstly*, it is not fair to everyone.'],
+    he: 'בחיבור הסכמה: אומרים בבירור אם מסכימים (I completely agree / I strongly disagree), ואז סיבות לפי הסדר: Firstly, Secondly.' },
+  steps: [
+    { name: 'Agree or disagree', items: [
+      { k: 'mc', q: 'I completely ___ with this idea.', o: ['agree', 'agreed', 'am agree'], a: 0, why: 'I agree (never I am agree).' },
+      { k: 'mc', q: '___, it saves time. Secondly, it saves money.', o: ['Firstly', 'Lastly', 'Finally'], a: 0, why: 'Firstly comes before Secondly.' },
+      { k: 'mc', q: 'I ___ disagree that sport should be optional.', o: ['strongly', 'strong', 'strength'], a: 0, why: 'strongly (an adverb) + disagree.' },
+      { k: 'tf', q: '"I am agree that pets are good for kids."', a: false, fix: 'I agree that pets are good for kids.', why: 'agree is a verb: I agree.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'For instance, cooking teaches you to plan.', why: 'For instance, + an example.' },
+      { k: 'spot', s: 'Secondly, it *help* people stay healthy.', fix: 'helps', why: 'it → helps.' },
+      { k: 'mc', q: 'Which is the strongest disagreement?', o: ['I strongly disagree.', 'I am not sure.', 'I partly agree.'], a: 0, why: 'strongly makes it strong.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Do you agree? "Every young person should learn to cook." Give your view and two reasons.', tip: 'Say if you agree, then use Firstly and Secondly.',
+      n: [2, 3], len: [25, 70],
+      need: [{ t: 'Say if you agree or disagree', any: ['agree', 'disagree'] },
+        { t: 'Give reasons in order (Firstly, Secondly)', any: ['firstly', 'first of all', 'secondly'] }],
+      model: 'I completely agree that every young person should learn to cook. Firstly, it is healthier than eating fast food. Secondly, cooking with family is a great way to spend time together.',
+      why: 'A clear view, then reasons in order.', he: 'עמדה ברורה, ואז שתי סיבות לפי הסדר.' }
   ]
 }
 ];

@@ -5,9 +5,18 @@
 
 // Columns that hold a kid's name, and columns that hold a family (group) id.
 var KID_COLS = { Girls: ['Name'], Games: ['Girl'], Review: ['Girl'], Gates: ['Girl'], Assignments: ['Girl'], Log: ['Girl'], Push: ['Girl'],
-  Bonus: ['Girl'], Shop: ['Girl'], Wardrobe: ['Girl'], Words: ['Girl'], Flags: ['Girl'], Placements: ['Girl'], Chats: ['Girl'],
-  Duos: ['A', 'B'], Duels: ['Host', 'Guest'], Audit: ['Who'] };
-var GROUP_COLS = { Groups: ['Id'], Rewards: ['Group'], ParentPush: ['Who'], Feedback: ['Group'], Audit: ['Group'], Plans: ['Group'] };
+  Bonus: ['Girl'], Shop: ['Girl'], Wardrobe: ['Girl'], Words: ['Girl'], Flags: ['Girl'], Placements: ['Girl'], Chats: ['Girl'], Writing: ['Girl'],
+  Duos: ['A', 'B'], Duels: ['Host', 'Guest'], Audit: ['Who'], Blocks: ['Girl', 'Blocked'], Reports: ['Girl', 'About'], Usage: ['Girl'], Errors: ['Girl'] };
+// Feedback: Who is the family id ('admin' for the admin); its Group column is the family's name, for reading the tab.
+var GROUP_COLS = { Groups: ['Id'], Rewards: ['Group'], ParentPush: ['Who'], Feedback: ['Who'], Audit: ['Group'], Plans: ['Group'], Reports: ['Group'] };
+// Tabs with nothing about a kid or a family (test/sim.js checks that every other tab is in the lists above).
+var NO_PERSON_TABS = { Settings: 1 };
+
+// The audit trail's Detail names a kid now and then ("Noa: on"): a row whose Detail has a deleted kid's name as a word goes too.
+function namesIn(names) {
+  var list = Object.keys(names).map(function (n) { return n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); });
+  return list.length ? new RegExp('(^|[^A-Za-z])(' + list.join('|') + ')($|[^A-Za-z])') : null;
+}
 
 function privacyTarget(access, groupId, kidName) {
   var g = access.isAdmin ? groups().filter(function (x) { return String(x.Id) === String(groupId); })[0] : access.group;
@@ -54,10 +63,11 @@ function eraseRows(table, match) {
 function eraseFamily(t) {
   var names = {}, n = 0;
   t.kids.forEach(function (k) { names[k] = 1; });
-  var gid = String(t.group.Id);
+  var gid = String(t.group.Id), said = namesIn(names);
   Object.keys(KID_COLS).forEach(function (table) {
     n += eraseRows(table, function (o) {
       if (KID_COLS[table].some(function (c) { return names[String(o[c]).trim()]; })) return true;
+      if (table === 'Audit' && said && said.test(String(o.Detail || ''))) return true;
       return t.whole && GROUP_COLS[table] && GROUP_COLS[table].some(function (c) { return String(o[c]).trim() === gid; });
     });
   });
@@ -72,7 +82,7 @@ function eraseFamily(t) {
 function apiDeleteData(pin, groupId, kidName, confirm) {
   ensureSetup();
   if (['DELETE', 'מחיקה'].indexOf(String(confirm || '').trim()) < 0) throw new Error('Type the word to confirm');
-  var access = parentAccess(pin);
+  var access = parentAccess(pin, { typed: true });   // a remembered phone types the code again (finding 9)
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);
   var t, rows;
@@ -90,7 +100,7 @@ function apiDeleteData(pin, groupId, kidName, confirm) {
 // Everything kept about the family, as readable rows per tab (the parent's own copy).
 function apiExportData(pin, groupId) {
   ensureSetup();
-  var access = parentAccess(pin), t = privacyTarget(access, groupId, '');
+  var access = parentAccess(pin, { typed: true }), t = privacyTarget(access, groupId, '');
   var names = {}, gid = String(t.group.Id), out = {};
   t.kids.forEach(function (k) { names[k] = 1; });
   Object.keys(HEADERS).forEach(function (table) {
@@ -108,13 +118,16 @@ function apiExportData(pin, groupId) {
   return { app: 'English with Chacho', exported: new Date().toISOString(), family: String(t.group.Name), kids: t.kids, tables: out };
 }
 
-// Least data (specs/store-readiness.md): the audit trail keeps 180 days, the text of what a kid said to Chacho 90 days
-// (the counts stay). Runs at night on Cloudflare (platformTick). It removes the old audit rows only when there are a
+// Least data (specs/store-readiness.md): the audit trail keeps 180 days (opens only 30 days one by one, then as daily
+// totals), the text of what a kid said to Chacho 90 days (the counts stay), and a kid with no open and no practice for
+// 12 months is deleted (the admin hears about it a month before), and what she wrote at the Writer's Desk a year (WRITING.keepDays). Runs at night on Cloudflare (platformTick). It removes the old audit rows only when there are a
 // month's worth of them, so the table is rewritten about once a month, not every night.
 var KEEP = { auditDays: 180, saidDays: 90, batchDays: 30 };
 function retentionSweep() {
-  var now = Date.now(), day = 86400000, out = { audit: 0, said: 0 };
+  var now = Date.now(), day = 86400000, out = { audit: 0, said: 0, writing: 0 };
   var limit = fmt(new Date(now - KEEP.auditDays * day)), batch = fmt(new Date(now - (KEEP.auditDays + KEEP.batchDays) * day));
+  var wlimit = fmt(new Date(now - WRITING.keepDays * day)), writes = readTable('Writing');
+  if (writes.length && String(writes[0].Date) < wlimit) out.writing = eraseRows('Writing', function (o) { return String(o.Date instanceof Date ? fmt(o.Date) : o.Date) < wlimit; });
   var audits = readTable('Audit');
   if (audits.length && String(audits[0].Date) < batch) out.audit = eraseRows('Audit', function (o) { return String(o.Date instanceof Date ? fmt(o.Date) : o.Date) < limit; });
   var sh = sheet('Chats');
@@ -127,6 +140,9 @@ function retentionSweep() {
     }
     if (out.said) invalidate('Chats');
   }
+  // Opens older than 30 days become daily totals; kids inactive for 12 months are deleted after a notice (Safety.js).
+  try { out.opens = rollUpOpens(); } catch (e) { console.error(e); }
+  try { out.inactive = inactiveSweep(); } catch (e) { console.error(e); }
   return out;
 }
 

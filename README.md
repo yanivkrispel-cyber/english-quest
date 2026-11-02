@@ -34,6 +34,11 @@ notifications, and reward points.
   (home, game XP); "Something wrong here?" goes to the Flags tab; parents get the mission's dinner question in the 21:00
   summary. Content: `docs/missions/<a1|a2|b1|bp|b2|c1>.js` (59 missions: the first week of each level, and Newsroom
   for A1 to B2). Assignments prefer the next topic of her level that has a mission; without one left, the link as before.
+  **Writer's Desk** (writing days, 2026-11-01): she writes one to three sentences of her own (a frame with boxes at A1),
+  checked on the phone by a kind checklist of simple rules (no AI), one rewrite, then Chacho's version; the text is kept
+  in the Writing tab for her parents (kid card) and the teacher (`?missions&t=`), who gives a mark and a preset note the kid
+  sees on her Me tab. **Say it again**: before the finish she reads a model sentence aloud twice and sees her words a
+  minute (only with the parent's microphone switch on). Spec: `specs/missions.md`.
 - **Talk with Chacho** (spec: `specs/talk.md`): short spoken talks with Chacho the parrot, scripted (no AI at run time).
   One after Use it in every mission, about what it taught, and one home scene a day (15 per level). Chacho speaks
   (recorded with Chatterbox, `specs/voice.md`), the kid answers aloud (the phone's speech recognition, matched to the script's branches by
@@ -43,7 +48,8 @@ notifications, and reward points.
 - **Mini-games in the app** (about 2 minutes, 5 items a round, at the kid's level; the score saves by
   itself): *Match it* (word ↔ picture at A1, word ↔ definition above), *Hear it* (the phone reads a
   word or sentence aloud), *Build it* (tap the words into a sentence), *Spot it* (tap the wrong word).
-  The day's warm-up game follows the day's section. Missed items come back after 1, 3, 7 and 21 days;
+  The day's warm-up game follows the day's section. Missed items come back after 1, 3, 7 and 21 days, and items answered
+  right come back after 7, 21 and 60 days (the slow track: at most 20 new and 10 due a day, after the missed ones);
   two strong rounds in a row bring one item from the next level. Content: `docs/games.js`.
 - **Pets**: each kid adopts one of 10 pets and names it. Right answers give XP (2 each, +5 for a
   perfect round, at most 60 a day from games) and task points count too; the pet grows through five
@@ -52,18 +58,24 @@ notifications, and reward points.
   How the art is made: `tools/PETS.md`.
 - **Journey map**: a world per level (A1 Sunny Meadow, A2 Whisper Woods, B1 Crystal Caves, B1+ Misty Peaks,
   B2 Sky Islands, C1 Star Summit), drawn in code. Every daily task is a station on a winding road, and the pet
-  stands at the kid's station. After 30 stations (or 20 with an average of 85%+) the gate to the next level opens.
-- **Gate challenge**: 15 questions from the next level (4 Match it, 4 Hear it, 4 Spot it, 3 Build it), scored in
+  stands at the kid's station. After 30 stations (or 20 with an average of 85%+) **and** mastery of the level (80% right on
+  the first try over her last 80 game and task questions in the world, at least 40; `Settings.GateMastery` = a number or
+  `off`) the gate to the next level opens. A kid who met the stations rule before 2026-11-02 (`Settings.GateMasteryFrom`)
+  or already tried the gate keeps it open. The map says what is missing ("Get 80% right in games and missions...").
+- **Gate challenge**: 15 questions from the next level (4 Match it, 4 Hear it, 3 Spot it, 3 Build it and one Type it, where
+  she types the right word), all from the held-out bank (`gate` in `docs/games.js`, 42 items a level) that the games
+  never show, the ones she has not had first (night review, finding 12). Scored in
   the app. 12 right raises the kid's level (daily tasks and games move up), gives the pet 100 XP and plays the
   level-up ceremony with a certificate picture to share; parents get a notification. After a miss the gate opens
-  again 3 days later and the missed questions come back in the games. The last world (C1) ends at a summit.
+  again 3 days later with new questions (held-out items never enter the review). The last world (C1) ends at a summit.
+  The admin's Pilot card lists the hardest items (first-try right rate, from `Games.Missed/Right` and `Gates.Missed/Right`).
 - **Play together** (spec: `specs/play-together.md`): a kid invites any other kid in the app (her group first,
   then the other groups) and they get a notification. *Word Duel*: 7 questions each from all four games, each at
   her own level, raced live on two phones (runners on a track, preset reactions, 3 minutes). *Challenge*: one plays
   now, the other within 24 hours against her "ghost"; an invite nobody answered can be sent as a challenge. A 4-letter
   code (or a WhatsApp link) invites anyone. The result screen ("Learn together") lists the missed questions with the
   answers; the stronger player gets a Helper star for explaining one. XP: 2 per right answer, +5 for the winner, +10
-  for the first duel of the day, inside the daily 60 XP cap. A group can opt out of playing with other groups.
+  for the first duel of the day, inside the daily 60 XP cap. Kids of other families meet only when both families' parents turned it on (parents' area), and see only first names and pets.
 - **Duo Streak and Team Quest** (spec: `specs/duo-streak.md`): two kids (any groups) agree on a duo streak that grows on
   every day both practiced (a task, a game or a game together); the first missed day of a week is saved, badges at 7/30/100 days
   (+20/+60/+150 XP each), a Nudge button, and reminders that mention a partner who already practiced. Every duo gets a
@@ -98,8 +110,12 @@ notifications, and reward points.
   collects before buying; it shines while she remembers them (spaced review) and a 20-second polish brings it back.
   Upgrades: **Second Chance** (a hint and one more try after a mistake, half XP) and **Word Saver** (her own deck,
   "My words", with practice rounds).
-- Installable app (PWA) on Android / iOS; **phone reminders** at 17:00 and a last call at 20:00
-  on days she hasn't practiced.
+- Installable app (PWA) on Android / iOS; **phone reminders**: one gentle notification a day at the hour her parents chose
+  (or none; Settings.ReminderHour when they did not choose), on days she hasn't practiced. No evening last call (2026-11-01).
+- **Privacy and safety** (src/Safety.js, specs/store-readiness.md): the privacy notice keeps its version and time (re-consent card
+  in the parents' area), the microphone (speech recognition) is off per kid until a parent turns it on, playing with other
+  families is off until both families' parents turn it on, kids can block and report (preset reasons), invites are limited per
+  hour, and retention deletes old opens and kids inactive for 12 months. Public pages: docs/privacy.html, docs/terms.html.
 
 **The friends' pilot** (spec: `specs/pilot.md`): families join on their own from the owner's invite link (`?join=<code>`, Hebrew screens
 and a privacy consent), new kids take an adaptive level test inside the app (and a progress check after four weeks), parents see their
@@ -160,11 +176,11 @@ Phone / browser                     GitHub Pages (docs/)            Google
 
 | Tab | Columns | Notes |
 |---|---|---|
-| Girls | Name, Age, PIN, Level, Email, Redeemed, Color, Group, Pet, PetName, PetSince, Missions | One row per kid (name kept for history). Names must be unique. `Redeemed` = points spent on rewards. Pet = pet id; task points count toward its growth from PetSince on. `Missions` = no keeps her daily task on test-english.com (empty = Today's Mission). |
-| Games | Timestamp, Girl, Date, Game, Level, Correct, Total, XP, Missed | One row per finished mini-game round. |
-| Review | Girl, Items | Spaced review: `itemId\|box\|due` entries for items a kid missed. |
-| Gates | Timestamp, Girl, Date, From, To, Correct, Total, Passed, Tasks, XP | One row per gate challenge. `Tasks` = tasks the kid had logged by then; the stations of her current world are the tasks after the last passed gate. |
-| Groups | Id, Name, ParentPIN, Goal, GoalReward, Email, Friends | First row is the default group (link without `?g=`). Empty ParentPIN = admin only. `Friends` = `no` keeps the group's kids out of play with other groups. |
+| Girls | Name, Age, PIN, Level, Email, Redeemed, Color, Group, Pet, PetName, PetSince, Missions, NestPerDay, NestArcadeMin, Mic, RemindAt, Seen, Inactive | One row per kid (name kept for history). Names must be unique. `Redeemed` = points spent on rewards. Pet = pet id; task points count toward its growth from PetSince on. `Missions` = no keeps her daily task on test-english.com (empty = Today's Mission). `Mic` = yes: a parent allowed speech recognition; `RemindAt` = her reminder hour (`off`, empty = default); `Seen` / `Inactive` = last open / the day the admin was told of a deletion for inactivity. |
+| Games | Timestamp, Girl, Date, Game, Level, Correct, Total, XP, Missed, Right | One row per finished mini-game round (Right since SETUP v24). |
+| Review | Girl, Items | Spaced review: `itemId\|box\|due` entries: boxes 1 to 4 for items she missed, 11 to 13 the slow track for items answered right. |
+| Gates | Timestamp, Girl, Date, From, To, Correct, Total, Passed, Tasks, XP, Missed, Right | One row per gate challenge (Missed/Right: item ids, since SETUP v24). `Tasks` = tasks the kid had logged by then; the stations of her current world are the tasks after the last passed gate. |
+| Groups | Id, Name, ParentPIN, Goal, GoalReward, Email, Friends, Parent, Joined, Consent, ConsentV, ConsentAt, FriendsOn | First row is the default group (link without `?g=`). Empty ParentPIN = admin only. `Friends` = the admin's override (`no` keeps the family out, `yes` = on); `FriendsOn` = the parents' switch (off when empty). `ConsentV`/`ConsentAt` = the privacy notice version agreed to and when. |
 | Duos | Id, Created, A, B, State, Since, Ended, Nudges, Milestones, QuestDone | One row per duo streak (`invited` / `active` / `declined` / `ended`). The streak and the quest are computed from Log and Games; only nudges, reached badges and rewarded weeks are stored. |
 | Shop | Timestamp, Girl, Date, Item, Color, Price, Paid, Manners, Sentence, Words | One row per purchase. Coins = points + XP minus `Paid`. `Manners` = politeness chips lit (0-4), `Sentence` = what she asked. `Words` = the words an item made of words was bought with. A Studio design's `Item` is its token (`~cape..big.sparkly.purple.velvet.tiny..gold.stars.p`), `Sentence` = the design. |
 | Wardrobe | Girl, Wear, Move, Updated | What the pet wears (`item`, `item:color` or a design token, one per place) and its victory move. |
@@ -175,11 +191,14 @@ Phone / browser                     GitHub Pages (docs/)            Google
 | Log | Timestamp, Girl, Date, DoneOn, Section, Level, Title, URL, Correct, Total, Percent, Points, Mission, Seconds | One row per completed task. `Mission` and `Seconds`: a task played as a mission (empty for the link). |
 | Chats | Timestamp, Girl, Date, Talk, Where, Level, Turns, Voice, Tiles, Mic, XP, Seconds, Said | One row per Talk with Chacho (`src/Chat.js`). Voice / Tiles = answers said aloud / tapped; Said = what the phone heard (text only). |
 | Flags | Timestamp, Girl, Date, Mission, Item, Note | "Something wrong here?" under a mission question (at most 20 a kid a day). |
+| Writing | Timestamp, Id, Girl, Date, Mission, Item, Level, Prompt, Text, First, Checks, Words, Mark, Comment, MarkedOn | The Writer's Desk (Missions.js): what a kid wrote in a mission (one line, at most 400 characters, a leading = + - @ kept as text), her first try when she rewrote it, the checklist score (`3 of 5`), and the teacher's mark and preset note. Deleted with the kid and after a year. |
 | Rewards | Points, Reward, Group | Empty Group = applies to groups without rewards of their own. |
 | Push | Girl, Endpoint, Created, Agent | Kids' devices for reminders. |
 | ParentPush | Who, Endpoint, Created, Agent, Instant | Who = `admin` or a group id; Instant = yes/no. |
 | Audit | Timestamp, Date, Role, Who, Group, Action, Detail, Ok, Device | The audit trail (`specs/audit.md`): opens (once per half hour), wrong PINs, grown-ups' changes, hand edits in the sheet. Device = a coarse label sent by the app. |
-| Settings | Key, Value | AdminPIN, ReminderHour (17), LastCallHour (20), ParentSummaryHour (21), PublicUrl, AppUrl, FamilyGoal/FamilyReward (legacy). |
+| Blocks | Timestamp, Girl, Blocked, Date | A kid blocked another kid (src/Safety.js). |
+| Reports | Timestamp, Girl, About, Date, Reason, Group | A block with a preset reason, for the admin (Pilot card) and the kid's parents. |
+| Settings | Key, Value | AdminPIN, ReminderHour (17, the default kid reminder), LastCallHour (unused since 2026-11-01), ParentSummaryHour (21), PublicUrl, AppUrl, FamilyGoal/FamilyReward (legacy). |
 
 Manual edits in the sheet clear the server cache automatically (`onEdit`).
 
@@ -192,7 +211,7 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | `src/Duels.js` | Play together: invites, live duels synced by polling, challenges, Boss Battle, Talk & Tap, Tug of War saves, results, Helper stars |
 | `src/Duos.js` | Duo Streak and Team Quest: requests, streak counting, quests, rewards after practice |
 | `src/Shop.js` | The Wordrobe: catalog, coins, Chacho's grading of a request (`cocoGrade`, also in Index.html), buying, the wardrobe; phase 2: items made of words (`SHOP_RECIPES`, memory and shine), the Word Saver, the Studio (`studioWords` + `studioGrade`, copied as they are into Index.html; designs as tokens) |
-| `src/Missions.js` | Today's Mission: who gets it (`Girls.Missions`), `apiMissionResult` (checks the result against the day's mission), `apiFlag` |
+| `src/Missions.js` | Today's Mission: who gets it (`Girls.Missions`), `apiMissionResult` (checks the result against the day's mission), `apiFlag`; the Writer's Desk (`saveWriting`, `writingInfo`, the teacher's `apiTeacherWriting` / `apiTeacherMark`, the preset notes `WRITING`) |
 | `src/Nest.js` | Chacho's Nest, ages 2 to 7 (`specs/nest.md`): `isNest`, the day (`nestNext`: four days a unit, a review is one), `nestInfo` (the home and each word's first tries), `apiNestResult`. `src/NestIndex.js` is written by `tools/nest-index.js`; the session engine and its games are `docs/nest/play.js` |
 | `src/Audit.js` | The audit trail: `audit`, `auditOpen`, `auditPin`, `auditSheetEdit`, `apiAudit` (the admin's Audit card, merged with the practice tabs) |
 | `src/Chat.js` | Talk with Chacho: `apiChatResult` (summary and bonus), `chatInfo` (dashboard, parents), `chatBoard` (the admin's stage 0 board) |
@@ -237,17 +256,21 @@ Manual edits in the sheet clear the server cache automatically (`onEdit`).
 | apiDuelHome / Invite / Join / Reply / Cancel / Solo / Poll / Finish / Helped | kid | Play together (see `specs/play-together.md`; Boss Battle: `specs/boss-tug.md`; Talk & Tap: `specs/talk-tap.md`); `apiDuelPoll` is the hot path, every ~2 s during a duel |
 | apiShop / apiShopBuy(item, color, words) / apiWear(wear, move) | kid | The Wordrobe (see `specs/wordrobe.md`): the shop and coins; buy with a request (graded again on the server, which decides the price); what the pet wears |
 | apiDesign(base, text, fresh) / apiWords(item, right, missed) / apiSaveWord(id, on) | kid | The Studio, phase 2 (`specs/wordrobe-studio.md`): make a design (graded again on the server); collect or polish an item's words; save a word to her deck |
-| apiMissionResult(name, pin, date, mission, correct, total, missed, right, seconds) / apiFlag(name, pin, mission, item, note) | kid | Today's Mission (`specs/missions.md`): save a played mission as the day's task (the server checks that missions are on for her, the day's mission, the number of questions and the time); report a question |
+| apiMissionResult(name, pin, date, mission, correct, total, missed, right, seconds, writing) / apiFlag(name, pin, mission, item, note) | kid | Today's Mission (`specs/missions.md`): save a played mission as the day's task (the server checks that missions are on for her, the day's mission, the number of questions and the time; `writing` = what she wrote at the Writer's Desk, kept for the mission's own write questions only); report a question |
+| apiTeacherWriting(code) / apiTeacherMark(code, id, mark, note) | teacher | The Writer's Desk: the newest writing of every level without names; a mark and a preset note the kid sees |
 | apiChatResult(name, pin, talk, turns, voice, tiles, mic, said, seconds) | kid | Talk with Chacho (`specs/talk.md`): save a talk's summary and give the bonus (3 XP aloud, 1 a tile, +3 all aloud; 30 a day) |
 | apiTugCheck / apiTugSave | kid | Tug of War on one phone: checks the second kid's PIN once (returns a 2-day token the phone keeps instead of her PIN), then saves both results (a save id makes a save sent twice count once) |
 | apiPushSubscribe / apiPushMessage | kid / service worker | Register a device / text of the pending notification |
-| apiParent(pin) | parent / admin | Overview of the groups this PIN may see |
+| apiParent(cred) | parent / admin | Overview of the groups this credential may see (`src/Auth.js`: `g:<family id>:<code>`, `n:<family name>:<code>`, a session `pt.…`, or the admin's passphrase); a typed code also returns a 30-day session `token`; a session sees no kid PINs (`locked`) |
 | apiParentPushSubscribe / Prefs / Test | parent / admin | Parent notifications on this phone |
 | apiAdminAddGroup / AddKid / Settings / TestPush | admin | Management |
 | apiNestResult(name, pin, date, day, correct, total, seconds, detail) | kid | A Chacho's Nest session; the day's own session logs the day (15 points) and each word's first try (`detail`, "cat:1,dog:0"), anything else is free play |
 | apiAudit(pin, days) | admin | The audit timeline (1 to 30 days) with a summary per family and the device split |
 
-Wrong PINs: 8 attempts per name (or for parent PINs) lock it for 15 minutes.
+Wrong PINs (`src/Auth.js`): 8 attempts per kid, family or the teacher lock it for 15 minutes; the admin's passphrase 20 in 6 hours
+(and 5 an hour per address); 50 wrong tries an hour from one address (`Settings.IpFailLimit`) block that address, whatever
+names it tries (calls relayed by Apps Script share one bucket of 500). Names that do not exist keep nothing (no lockout key, no
+audit line). Deleting, downloading, the kids' codes and the admin's Data card need the code typed, not a remembered session.
 
 ## Deploy
 

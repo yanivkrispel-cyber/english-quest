@@ -11,14 +11,28 @@ const SECTION_OF = { g: 'grammar', v: 'vocabulary', l: 'listening', r: 'reading'
 // Words in a reading text and in an episode (all its lines), at most, per level.
 const READ_MAX = { a1: 170, a2: 230, b1: 300, bp: 350, b2: 400, c1: 460 };
 const LISTEN_MAX = { a1: 170, a2: 210, b1: 270, bp: 310, b2: 350, c1: 420 };
-const KINDS = ['mc', 'tf', 'type', 'build', 'spot', 'teach', 'sort', 'spell', 'hear', 'find', 'gaps'];
+const KINDS = ['mc', 'tf', 'type', 'build', 'spot', 'teach', 'sort', 'spell', 'hear', 'find', 'gaps', 'write'];
+// The Writer's Desk: the widest word range a piece may ask for, per level (frames, the boxes, only at A1 and A2).
+const WRITE_LEN = { a1: [2, 30], a2: [6, 45], b1: [12, 60], bp: [15, 70], b2: [20, 80], c1: [25, 90] };
 const VOICES = /^(af|am|bf|bm)_[a-z]+$/;
 
-// The app's own msQuestions / msCount, taken from Index.html so the count is always the one the app uses.
+// The app's own msQuestions / msCount (and the Writer's Desk checklist), taken from Index.html so the count is always
+// the one the app uses.
 function appCount() {
   const html = fs.readFileSync(path.join(ROOT, 'src/Index.html'), 'utf8').split('\r\n').join('\n');
   const grab = name => { const i = html.indexOf('function ' + name + '('); if (i < 0) throw new Error(name + ' not found in Index.html'); return html.slice(i, html.indexOf('\n}\n', i) + 2); };
-  return new vm.Script(grab('msQuestions') + grab('msCount') + '; ({ msQuestions, msCount })').runInNewContext({});
+  return new vm.Script(grab('msQuestions') + grab('msCount') + grab('msWriteCheck') + grab('msWriteText') + grab('msSayText') +
+    '; ({ msQuestions, msCount, msWriteCheck, msWriteText, msSayText })').runInNewContext({});
+}
+
+// The catalog topic of a mission id (<level><section><nn>, nn = the topic's place in CATALOG): { t, u } or undefined.
+// The server keys missions by the topic's address (src/MissionIndex.js); the mission files the phones get carry no address
+// (night review 2026-11-01, finding 21: tools/missions-index.js strips url: from them).
+function topicOf(id) {
+  const mm = /^(a1|a2|b1|bp|b2|c1)([gvlruw])(\d\d)$/.exec(id || '');
+  if (!mm) return undefined;
+  const CATALOG = new Function(fs.readFileSync(path.join(ROOT, 'src/Catalog.js'), 'utf8') + ';return CATALOG;')();
+  return ((CATALOG[SECTION_OF[mm[2]]] || {})[LEVEL_OF[mm[1]]] || [])[Number(mm[3]) - 1];
 }
 
 function load() {
@@ -29,6 +43,36 @@ function load() {
     if (fs.existsSync(p)) new vm.Script(fs.readFileSync(p, 'utf8'), { filename: p }).runInNewContext({ window });
   });
   return { missions: window.EQ_MISSIONS || {}, count: appCount() };
+}
+
+// A Writer's Desk item: a task, the word and sentence range, its own checks (at most 3), and a model answer that passes
+// every check of the app's own msWriteCheck. A frame (A1, A2) has 1 to 3 boxes and an example fill, which is the model.
+function checkWrite(it, file, e, count) {
+  if (!it.task || it.task.length > 120) e('needs a task (at most 120 characters)');
+  if (!it.why) e('needs why');
+  if (!it.model) return e('needs a model answer');
+  const len = it.len || [], n = it.n || [1, 3], lim = WRITE_LEN[file];
+  if (!(len.length === 2 && len[0] >= 1 && len[0] < len[1])) e('len needs [lowest, highest] words');
+  else if (lim && (len[0] < lim[0] || len[1] > lim[1])) e('len ' + len.join('-') + ' is outside ' + lim.join('-') + ' for this level');
+  if (!(n.length === 2 && n[0] >= 1 && n[0] <= n[1] && n[1] <= 3)) e('n needs [lowest, highest] sentences, 1 to 3');
+  (it.need || []).forEach((x, j) => {
+    if (!x.t || !(x.any || x.re)) e('need ' + (j + 1) + ' needs t, and any or re');
+    if (x.re) { try { new RegExp(x.re, 'i'); } catch (er) { e('need ' + (j + 1) + ': bad re'); } }
+    if (x.any && !(Array.isArray(x.any) && x.any.length)) e('need ' + (j + 1) + ': any is a list');
+  });
+  if ((it.need || []).length > 3) e('at most 3 needs (the checklist must fit the screen)');
+  if (it.ideas && !(Array.isArray(it.ideas) && it.ideas.length <= 6 && it.ideas.every(w => typeof w === 'string' && w.length <= 20))) e('ideas: up to 6 short words or phrases');
+  if (it.frame) {
+    const boxes = (it.frame.match(/_{3,}/g) || []).length;
+    if (!(boxes >= 1 && boxes <= 3)) e('a frame needs 1 to 3 boxes (___)');
+    if (['a1', 'a2'].indexOf(file) < 0) e('frames are for A1 and A2');
+    if (!(Array.isArray(it.fill) && it.fill.length === boxes)) return e('a frame needs fill, one example per box');
+    const text = count.msWriteText(it, { gaps: it.fill });
+    if (text !== it.model) e('the model must be the frame with its fill: "' + text + '"');
+    count.msWriteCheck(it, text, it.fill).filter(c => !c.ok).forEach(c => e('the model fails "' + c.t + '"'));
+  } else count.msWriteCheck(it, it.model, null).filter(c => !c.ok).forEach(c => e('the model fails "' + c.t + '"'));
+  // Store rule 9 and least data: a task never asks for personal details.
+  if (/\b(address|street|school|surname|last name|full name|phone number|photo of you|password|email address)\b/i.test(it.task + ' ' + (it.tip || ''))) e('the task must not ask for personal details');
 }
 
 function check() {
@@ -50,9 +94,14 @@ function check() {
       if (seen.has(m.id)) err('duplicate id'); seen.add(m.id);
       const level = LEVEL_OF[mm[1]], section = SECTION_OF[mm[2]], entry = ((CATALOG[section] || {})[level] || [])[Number(mm[3]) - 1];
       if (!entry) err('no catalog topic ' + section + ' ' + level + ' #' + mm[3]);
-      else if (entry.u !== m.url) err('url is not catalog topic #' + mm[3] + ' (' + entry.u + ')');
+      else if (m.url !== undefined && entry.u !== m.url) err('url is not catalog topic #' + mm[3] + ' (' + entry.u + ')');
+      if (m.url !== undefined) warn('url: in a mission file (node tools/missions-index.js removes it; the phones do not need it)');
       if (m.type !== section) err('type should be ' + section);
       if (!m.title || m.title.length > 40) err('title missing or too long');
+      // kid: the title kids see instead of the catalog topic (night review, finding 10); he: the topic in Hebrew for parents.
+      if (!m.kid || m.kid.length > 28 || /\.$/.test(m.kid)) err('kid title missing, too long (28) or ends with a period');
+      if (!m.he || !/[\u05d0-\u05ea]/.test(m.he) || m.he.length > 48) err('he (the topic in Hebrew) missing or too long (48)');
+      if (m.kid) { const k = file + ':' + m.kid.toLowerCase(); if (seen.has(k)) err('kid title used twice in ' + file); seen.add(k); }
       if (!m.dinner || !/\?$/.test(m.dinner)) err('dinner question missing (ends with ?)');
       const h = m.hook;
       if (!h || !h.q || !Array.isArray(h.o) || h.o.length < 2 || h.o.length > 4 || !(h.a >= 0 && h.a < h.o.length) || !h.reveal) err('hook needs q, 2-4 options, a and reveal');
@@ -66,6 +115,8 @@ function check() {
       if (section === 'vocabulary' && L.kind !== 'words') err('vocabulary learns with word cards');
       if (section === 'listening' && !m.show) err('listening needs show');
       if (section === 'reading' && !m.story) err('reading needs story');
+      if (section === 'writing' && !(m.use || []).some(it => it.k === 'write')) err('a writing mission needs a write item in use');
+      if (section === 'writing' && L.kind !== 'rule') err('writing learns with a rule card (the tip and an example)');
       if (m.show) {
         const S = m.show;
         if (!(Array.isArray(S.parts) && S.parts.length >= 2 && S.parts.length <= 4)) err('show needs 2-4 parts');
@@ -126,6 +177,7 @@ function check() {
           if (!(Array.isArray(it.gaps) && it.gaps.length >= 2 && marks.length === it.gaps.length && marks.every((x, j) => x === j + 1))) e('t needs [1]..[n] for its gaps');
           (it.gaps || []).forEach((g, j) => { if (!(Array.isArray(g.o) && g.o.length >= 2 && g.a >= 0 && g.a < g.o.length && g.why)) e('gap ' + (j + 1) + ' needs o, a and why'); });
         }
+        if (it.k === 'write') checkWrite(it, file, e, count);
         if (it.clip != null && !(m.show && m.show.parts[it.clip])) e('clip points to no part');
         if (it.k === 'mc' && it.q && !/_{3,}/.test(it.q) && !/[?…:]["”]?$/.test(it.q.trim())) warn('item ' + (i + 1) + ': q has no ___, and ends without ?, … or :');
       });
@@ -147,4 +199,4 @@ if (require.main === module) {
     (ests.length ? ', about ' + (Math.round(ests.reduce((a, b) => a + b, 0) / ests.length / 6) / 10) + ' minutes on average (max ' + Math.round(Math.max(...ests) / 6) / 10 + ')' : ''));
   process.exit(r.errors.length ? 1 : 0);
 }
-module.exports = { load, check };
+module.exports = { load, check, topicOf };

@@ -3,8 +3,9 @@
 window.EQ_MISSIONS = window.EQ_MISSIONS || {};
 window.EQ_MISSIONS.bp = [
 {
-  id: 'bpg01', url: 'https://test-english.com/grammar-points/b1-b2/questions-different-types/', type: 'grammar',
+  id: 'bpg01', type: 'grammar',
   title: 'Questions of all kinds', dinner: 'What question would you like to ask a famous person?',
+  kid: 'Questions of all kinds', he: 'סוגים שונים של שאלות',
   hook: { q: 'Which question word does NOT start with "wh"?', o: ['How', 'Which', 'Whose'], a: 0,
     reveal: '*How*! All the other question words start with wh: who, what, where, when, why, which and whose.' },
   learn: { kind: 'rule', title: 'Different kinds of questions',
@@ -41,8 +42,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpg02', url: 'https://test-english.com/grammar-points/b1-b2/indirect-questions/', type: 'grammar',
+  id: 'bpg02', type: 'grammar',
   title: 'Polite questions', dinner: 'Do you know what we are having for dinner tomorrow?',
+  kid: 'Asking politely', he: 'שאלות עקיפות ומנומסות',
   hook: { q: 'Which is the most visited museum in the world?', o: ['The Louvre in Paris', 'The British Museum', 'The Met in New York'], a: 0,
     reveal: '*The Louvre*, with about 9 million visitors a year. If you go there, you might ask: *Could you tell me where the Mona Lisa is?*' },
   learn: { kind: 'rule', title: 'Indirect questions',
@@ -67,7 +69,7 @@ window.EQ_MISSIONS.bp = [
     ] },
     { name: 'Build it', items: [
       { k: 'build', s: 'Could you tell me where the station is?', why: 'where + the station + is.' },
-      { k: 'spot', s: 'Do you know *that* the shop is open today?', fix: 'if', why: 'A yes/no question inside → if, not that.' },
+      { k: 'spot', s: 'Do you know *that* the shop is open today or not?', fix: 'if', why: 'A yes/no question inside → if, not that.' },
       { k: 'build', s: 'Do you know what time it is?', why: 'what time + it + is.' }
     ] }
   ],
@@ -79,8 +81,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpg03', url: 'https://test-english.com/grammar-points/b1-b2/auxiliary-verbs-different-uses/', type: 'grammar',
+  id: 'bpg03', type: 'grammar',
   title: 'Small words, big jobs', dinner: 'You like pizza, don\'t you?',
+  kid: 'Small words, big jobs', he: 'פעלי עזר: do, be, have',
   hook: { q: 'Which is the most common verb in English?', o: ['be', 'have', 'do'], a: 0,
     reveal: '*Be*! The next ones are have and do, the helper verbs of this mission. They do a lot of work in English.' },
   learn: { kind: 'rule', title: 'Helper verbs at work',
@@ -101,11 +104,11 @@ window.EQ_MISSIONS.bp = [
       { k: 'type', q: '"I went to the beach yesterday." "So ___ I!"', a: ['did'], why: 'went (past) → So did I.' },
       { k: 'tf', q: '"She doesn\'t eat meat, does she?"', a: true, why: 'A negative sentence → a positive tag: does she?' },
       { k: 'mc', q: '"I\'m not tired." "___ am I."', o: ['Neither', 'So', 'Either'], a: 0, why: 'To agree with a negative → Neither am I.' },
-      { k: 'type', q: 'It was a great film, ___ it?', a: ['wasn\'t', 'was not'], why: 'It was → wasn\'t it?' }
+      { k: 'type', q: 'It was a great film, ___ it?', a: ['wasn\'t'], why: 'It was → wasn\'t it?' }
     ] },
     { name: 'Build it', items: [
       { k: 'build', s: 'I didn\'t like the film, but my sister did.', why: 'did = liked the film. We don\'t repeat the whole idea.' },
-      { k: 'spot', s: 'You have a dog, *haven\'t* you?', fix: 'don\'t', why: 'In modern English, have (= own) takes do in the tag: You have a dog, don\'t you?' },
+      { k: 'spot', s: 'You have a dog, *haven\'t* you?', fix: 'don\'t', why: 'Have (= own) takes do in the tag today: You have a dog, don\'t you? (haven\'t you? sounds old-fashioned)' },
       { k: 'build', s: 'I do like your new haircut!', why: 'do + verb = emphasis: I really like it.' }
     ] }
   ],
@@ -117,8 +120,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpv01', url: 'https://test-english.com/vocabulary/b1-b2/the-weather-and-natural-disasters-b1-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'bpv01', type: 'vocabulary',
   title: 'Extreme weather', dinner: 'What is the most extreme weather you have ever seen?',
+  kid: 'Wild weather', he: 'מילים: מזג אוויר קיצוני ואסונות טבע',
   hook: { q: 'What is the hottest temperature ever officially measured on Earth?', o: ['About 47 °C', 'About 57 °C', 'About 67 °C'], a: 1,
     reveal: 'About *57 °C*, in Death Valley, USA, in 1913. Today\'s words are about extreme weather and natural disasters.' },
   learn: { kind: 'words', title: 'When nature is dangerous', words: [
@@ -164,8 +168,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpv02', url: 'https://test-english.com/vocabulary/b1-b2/health-problems-and-injuries-b1-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'bpv02', type: 'vocabulary',
   title: 'When something hurts', dinner: 'Have you ever had an injury? What happened?',
+  kid: 'When something hurts', he: 'מילים: פציעות ובעיות בריאות',
   hook: { q: 'How many bones are there in an adult\'s body?', o: ['106', '206', '306'], a: 1,
     reveal: '*206*! Babies have even more, about 300, and some of them grow together. Today: words for when something hurts.' },
   learn: { kind: 'words', title: 'Injuries and health problems', words: [
@@ -211,8 +216,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl01', url: 'https://test-english.com/listening/b1-b2/ravi-the-uncatchable-smuggler-b1-listening-test/', type: 'listening',
+  id: 'bpl01', type: 'listening',
   title: 'The Uncatchable', dinner: 'Would you rather be a famous detective or a famous inventor? Why?',
+  kid: 'The thief nobody could catch', he: 'האזנה: הגנב שאף אחד לא הצליח לתפוס',
   hook: { q: 'The Mona Lisa was once stolen from the Louvre. When?', o: ['In 1911', 'In 1961', 'In 2001'], a: 0,
     reveal: 'In *1911*! A worker hid in the museum and walked out with the painting under his coat. It came back two years later.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -264,8 +270,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl02', url: 'https://test-english.com/listening/b1-b2/will-humans-become-supermachines-b1-english-listening-test/', type: 'listening',
+  id: 'bpl02', type: 'listening',
   title: 'Humans or machines?', dinner: 'Would you put a chip in your hand to open doors? Why or why not?',
+  kid: 'Humans or machines?', he: 'האזנה: הכנה לוויכוח על אדם ומכונה',
   hook: { q: 'In Sweden, thousands of people have a tiny chip under the skin of their hand. What is it for?', o: ['Opening doors and paying', 'Speaking other languages', 'Seeing in the dark'], a: 0,
     reveal: '*Opening doors and paying*! The chip works like a key card under the skin. Is that the future, or a scary idea?' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -320,8 +327,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl03', url: 'https://test-english.com/listening/b1-b2/i-should-have-b2-english-listening-test/', type: 'listening',
+  id: 'bpl03', type: 'listening',
   title: 'I should have…', dinner: 'What is something you should have done this week?',
+  kid: 'I should have…', he: 'האזנה: דברים שהתחרטנו עליהם',
   hook: { q: 'A nurse who cared for old people wrote about their biggest regret. What was it?', o: ['Not living the life they really wanted', 'Not making more money', 'Not travelling more'], a: 0,
     reveal: '*Not living the life they really wanted*. The nurse, Bronnie Ware, wrote that many people said: I wish I had been braver.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -344,7 +352,7 @@ window.EQ_MISSIONS.bp = [
       ], items: [
         { k: 'mc', q: 'Why did Josh and his friend fight?', o: ['because of a joke', 'because of money', 'because of a game'], a: 0, why: '"because of a stupid joke"' },
         { k: 'mc', q: 'What should Josh have done?', o: ['He should have said sorry.', 'He should have moved too.', 'He should have told a joke.'], a: 0, why: '"I should have said sorry when I had the chance."' },
-        { k: 'tf', q: 'Josh and his friend don\'t talk anymore.', a: false, fix: 'They talk now, but it\'s not the same.', why: '"We talk now, but it\'s not the same."' }
+        { k: 'tf', q: 'Josh and his friend don\'t talk any more.', a: false, fix: 'They talk now, but it\'s not the same.', why: '"We talk now, but it\'s not the same."' }
       ] },
       { lines: [
         ['H', 'Thank you both. So, what\'s the lesson?'],
@@ -368,8 +376,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpr01', url: 'https://test-english.com/reading/b1-b2/why-we-sleep-b1-english-reading-test/', type: 'reading',
+  id: 'bpr01', type: 'reading',
   title: 'Why we sleep', dinner: 'What time do you usually go to sleep, and what helps you fall asleep?',
+  kid: 'Why we sleep', he: 'קריאה: למה אנחנו ישנים',
   hook: { q: 'Which animal sleeps with only half of its brain at a time?', o: ['Dolphins', 'Cats', 'Horses'], a: 0,
     reveal: '*Dolphins*! One half of the brain rests while the other half stays awake, so they can keep swimming and breathing.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A science magazine for teenagers explains why we sleep, and why teens find it hard to go to bed early.',
@@ -409,8 +418,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpu02', url: 'https://test-english.com/use-of-english/b1-b2/b1-test-2-multiple-choice-questions/', type: 'use-of-english',
+  id: 'bpu02', type: 'use-of-english',
   title: 'The wallet that came home', dinner: 'What would you do if you found a wallet in the street?',
+  kid: 'The wallet that came home', he: 'כתבה: ארנק אבוד שחזר לבעליו',
   hook: { q: 'In a famous honesty experiment, researchers "lost" wallets in 40 countries. About how many?', o: ['About 170', 'About 1,700', 'About 17,000'], a: 2,
     reveal: 'About *17,000*! And the surprise: wallets with more money in them were returned *more* often, not less.' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a news story (it is made up!) and choose the right word for each gap.',
@@ -442,8 +452,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpg04', url: 'https://test-english.com/grammar-points/b1-b2/the-the-comparatives/', type: 'grammar',
+  id: 'bpg04', type: 'grammar',
   title: 'The more, the better', dinner: 'What is something that gets better the more you do it?',
+  kid: 'The more, the better', he: 'המבנה the more, the better',
   hook: { q: 'A famous book said you need a lot of practice to become an expert. How many hours?', o: ['100 hours', '1,000 hours', '10,000 hours'], a: 2,
     reveal: '*10,000 hours*! Scientists say it is not a magic number, but one thing is true: the more you practise, the better you get.' },
   learn: { kind: 'rule', title: 'The more…, the better…',
@@ -481,8 +492,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpg05', url: 'https://test-english.com/grammar-points/b1-b2/present-perfect-simple-continuous/', type: 'grammar',
+  id: 'bpg05', type: 'grammar',
   title: 'Have done or have been doing?', dinner: 'What have you been doing a lot lately?',
+  kid: 'Have done or been doing?', he: 'present perfect פשוט או מתמשך',
   hook: { q: 'A light bulb in a fire station in California has been shining almost non-stop since…', o: ['1901', '1951', '1991'], a: 0,
     reveal: '*1901*! It has been shining for more than 120 years, and it has become a famous tourist attraction.' },
   learn: { kind: 'rule', title: 'Present perfect: simple or continuous',
@@ -521,8 +533,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpg06', url: 'https://test-english.com/grammar-points/b1-b2/adjectives-without-noun/', type: 'grammar',
+  id: 'bpg06', type: 'grammar',
   title: 'The young and the old', dinner: 'What could our town do to help the elderly?',
+  kid: 'The young and the old', he: 'the ושם תואר לקבוצת אנשים',
   hook: { q: 'In which country are there more bikes than people?', o: ['The Netherlands', 'Denmark', 'Germany'], a: 0,
     reveal: '*The Netherlands*! There are about 23 million bikes for about 18 million people. The Dutch (no -s!) ride everywhere.' },
   learn: { kind: 'rule', title: 'the + adjective = a group of people',
@@ -561,8 +574,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpg07', url: 'https://test-english.com/grammar-points/b1-b2/adjective-order/', type: 'grammar',
+  id: 'bpg07', type: 'grammar',
   title: 'Adjectives in order', dinner: 'Can you describe your favourite thing at home with three adjectives?',
+  kid: 'A big red ball', he: 'סדר שמות התואר',
   hook: { q: '"A big red ball" sounds right, "a red big ball" sounds wrong. Why do English speakers know that?', o: ['They feel it, nobody teaches them', 'They learn it in first grade', 'There is no reason'], a: 0,
     reveal: '*They just feel it*! Most English speakers have never learned the rule, but they almost never get it wrong. You can learn it in two minutes.' },
   learn: { kind: 'rule', title: 'The order of adjectives',
@@ -603,8 +617,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpg08', url: 'https://test-english.com/grammar-points/b1-b2/so-such-a-so-much-so-many/', type: 'grammar',
+  id: 'bpg08', type: 'grammar',
   title: 'So, such, so much, so many', dinner: 'What made you so happy this week?',
+  kid: 'So, such, so much, so many', he: 'מתי so ומתי such',
   hook: { q: 'How many hours a day can a koala sleep?', o: ['About 8', 'About 14', 'About 20'], a: 2,
     reveal: 'Up to *20 hours*! Koalas sleep so much because their leaves give them so little energy. Such a relaxed life!' },
   learn: { kind: 'rule', title: 'so, such, so much, so many',
@@ -642,8 +657,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpg09', url: 'https://test-english.com/grammar-points/b1-b2/narrative-tenses/', type: 'grammar',
+  id: 'bpg09', type: 'grammar',
   title: 'Telling a story', dinner: 'What was happening when you got home today?',
+  kid: 'Telling a story', he: 'זמני עבר בסיפור',
   hook: { q: 'In 1928 a scientist came back from holiday and found mould on a dish in his lab. What did it lead to?', o: ['The first antibiotic', 'The first vaccine', 'The microwave'], a: 0,
     reveal: '*The first antibiotic*, penicillin! Alexander Fleming *was cleaning* his lab when he *noticed* that the mould *had killed* the bacteria. Three past tenses in one story!' },
   learn: { kind: 'rule', title: 'The past tenses in a story',
@@ -682,8 +698,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpu01', url: 'https://test-english.com/use-of-english/b1-b2/b1-english-test-1-text-multiple-choice-gaps/', type: 'use-of-english',
+  id: 'bpu01', type: 'use-of-english',
   title: 'The night before the final', dinner: 'When did you feel like giving up, and what helped you keep going?',
+  kid: 'The night before the final', he: 'כתבה: רובוט מתקלקל לפני הגמר',
   hook: { q: 'Which word comes from a play written in Czech in 1920?', o: ['robot', 'computer', 'rocket'], a: 0,
     reveal: '*Robot*! The writer Karel Čapek used it in his play (his brother Josef had the idea), from the Czech word "robota", which means hard work.' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a news story (it is made up!) and choose the right word for each gap.',
@@ -715,8 +732,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpu03', url: 'https://test-english.com/use-of-english/b1-b2/b1-english-test-3-text-with-multiple-choice-gaps/', type: 'use-of-english',
+  id: 'bpu03', type: 'use-of-english',
   title: 'Grandpa\'s cooking channel', dinner: 'Which family recipe would you film for the whole world?',
+  kid: 'Grandpa\'s cooking channel', he: 'כתבה: סבא עם ערוץ בישול',
   hook: { q: 'Where does shakshuka come from?', o: ['North Africa', 'Italy', 'India'], a: 0,
     reveal: '*North Africa*, most food historians say. Families from Tunisia and Libya brought it to Israel, and now it is a favourite breakfast here.' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a news story (it is made up!) and choose the right word for each gap.',
@@ -748,8 +766,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpu04', url: 'https://test-english.com/use-of-english/b1-b2/b1-english-test-4-multiple-choice-questions/', type: 'use-of-english',
+  id: 'bpu04', type: 'use-of-english',
   title: 'The stone on the beach', dinner: 'If you found something very old, would you keep it or give it to a museum?',
+  kid: 'The stone on the beach', he: 'כתבה: האבן שנמצאה על החוף',
   hook: { q: 'Which came first on Earth: dinosaurs or flowers?', o: ['Dinosaurs', 'Flowers', 'They came at the same time'], a: 0,
     reveal: '*Dinosaurs*! They appeared about 230 million years ago, and the oldest flower fossils are only about 130 million years old.' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a news story (it is made up!) and choose the right word for each gap.',
@@ -782,8 +801,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpv03', url: 'https://test-english.com/vocabulary/b1-b2/air-travel-b1-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'bpv03', type: 'vocabulary',
   title: 'At the airport', dinner: 'If you could fly anywhere tomorrow, where would you go?',
+  kid: 'At the airport', he: 'מילים: טיסות ושדה תעופה',
   hook: { q: 'Which airport has the most passengers in the world?', o: ['Atlanta, USA', 'London Heathrow', 'Dubai'], a: 0,
     reveal: '*Atlanta*, in the USA, with more than 100 million passengers a year. Today: the words you need when you fly.' },
   learn: { kind: 'words', title: 'Words for flying', words: [
@@ -830,8 +850,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpv04', url: 'https://test-english.com/vocabulary/b1-b2/crime-and-punishment-b1-b2-english-vocabulary/', type: 'vocabulary',
+  id: 'bpv04', type: 'vocabulary',
   title: 'Crime and the courts', dinner: 'What is a fair punishment for someone who writes on the school walls?',
+  kid: 'From crime to court', he: 'מילים: פשע, משטרה ובית משפט',
   hook: { q: 'Sherlock Holmes "lived" at a famous address in London. Which one?', o: ['221B Baker Street', '10 Downing Street', '1 Oxford Street'], a: 0,
     reveal: '*221B Baker Street*. Holmes was invented, but today there is a real Sherlock Holmes museum there. Today: words for crime, the police and the courts.' },
   learn: { kind: 'words', title: 'From the crime to the court', words: [
@@ -879,8 +900,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpv05', url: 'https://test-english.com/vocabulary/b1-b2/types-of-crime-and-offenders-b1-english-vocabulary/', type: 'vocabulary',
+  id: 'bpv05', type: 'vocabulary',
   title: 'Who did it?', dinner: 'What would you do if you saw someone shoplifting?',
+  kid: 'People who break the law', he: 'מילים: סוגי עבירות ועבריינים',
   hook: { q: 'Where does the word "vandal" come from?', o: ['A people who took Rome in 455', 'A Dutch painter', 'A kind of spray paint'], a: 0,
     reveal: '*The Vandals*, a people who took Rome in the year 455 and carried away its treasures. Today a vandal is someone who damages things on purpose.' },
   learn: { kind: 'words', title: 'People who break the law', words: [
@@ -928,8 +950,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl04', url: 'https://test-english.com/listening/b1-b2/crime-scene-investigation-b1-english-listening-test/', type: 'listening',
+  id: 'bpl04', type: 'listening',
   title: 'The case of the missing cake', dinner: 'If you were a detective, what case would you like to solve?',
+  kid: 'The case of the missing cake', he: 'האזנה: חוקרים מי לקח את העוגה',
   hook: { q: 'Which part of your body leaves marks that are different for every person, even for twins?', o: ['Your fingertips', 'Your elbows', 'Your knees'], a: 0,
     reveal: 'Your *fingertips*! Even identical twins have different fingerprints. And koalas have fingerprints that look a lot like ours.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -982,8 +1005,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl05', url: 'https://test-english.com/listening/b1-b2/culture-shock-living-abroad-b1-english-listening-test/', type: 'listening',
+  id: 'bpl05', type: 'listening',
   title: 'Far from home', dinner: 'If our family moved to another country, what would you miss most?',
+  kid: 'Far from home', he: 'האזנה: לעבור לגור בארץ אחרת',
   hook: { q: 'In Japan, what can confuse people or even seem rude in a restaurant?', o: ['Leaving a tip', 'Saying thank you', 'Eating with chopsticks'], a: 0,
     reveal: '*Leaving a tip*! In Japan, good service is normal, and a tip can confuse people. Every country has its own unwritten rules.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1034,8 +1058,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl06', url: 'https://test-english.com/listening/b1-b2/fears-and-phobias-b1-english-listening-test/', type: 'listening',
+  id: 'bpl06', type: 'listening',
   title: 'Small steps, big fears', dinner: 'What were you afraid of when you were little, and how did you stop being afraid?',
+  kid: 'Small steps, big fears', he: 'האזנה: פחדים ואיך מתגברים עליהם',
   hook: { q: 'What is arachnophobia a fear of?', o: ['Spiders', 'Heights', 'Small spaces'], a: 0,
     reveal: '*Spiders*! It is one of the most common phobias in the world. A fear of heights is acrophobia, and a fear of small spaces is claustrophobia.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1088,8 +1113,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl07', url: 'https://test-english.com/listening/b1-b2/journey-through-our-solar-system-b2-english-listening-test/', type: 'listening',
+  id: 'bpl07', type: 'listening',
   title: 'A trip through space', dinner: 'If you could visit one planet, which would you choose, and why?',
+  kid: 'A trip through space', he: 'האזנה: מסע במערכת השמש',
   hook: { q: 'How long does light from the Sun take to reach the Earth?', o: ['About 8 seconds', 'About 8 minutes', 'About 8 hours'], a: 1,
     reveal: 'About *8 minutes*! So the Sun you see is the Sun as it was 8 minutes ago. (But never look straight at it!)' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1141,8 +1167,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl08', url: 'https://test-english.com/listening/b1-b2/air-travel-experiences-b1-english-listening-test/', type: 'listening',
+  id: 'bpl08', type: 'listening',
   title: 'Flight stories', dinner: 'What is the best or the worst trip you have ever had?',
+  kid: 'Flight stories', he: 'האזנה: סיפורים מטיסות',
   hook: { q: 'Why does food on a plane often taste less good?', o: ['Our sense of taste gets weaker in a plane.', 'The food is old.', 'The cooks don\'t use salt.'], a: 0,
     reveal: 'In the dry air and low air pressure of a plane, our sense of salt and sweet gets weaker, by about a third. That is why airline food often has extra salt!' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1193,8 +1220,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpl09', url: 'https://test-english.com/listening/b1-b2/health-problems-b1-b2-english-listening-test/', type: 'listening',
+  id: 'bpl09', type: 'listening',
   title: 'At the doctor\'s', dinner: 'How many glasses of water did you drink today?',
+  kid: 'At the doctor\'s', he: 'האזנה: ביקור אצל רופא המשפחה',
   hook: { q: 'About how much of your body is water?', o: ['About 30%', 'About 60%', 'About 90%'], a: 1,
     reveal: 'About *60%*! Your brain has even more, about three quarters. So when you don\'t drink enough, your head can really feel it.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1248,8 +1276,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpr02', url: 'https://test-english.com/reading/b1-b2/the-business-of-running-b1-english-reading-test/', type: 'reading',
+  id: 'bpr02', type: 'reading',
   title: 'The business of running', dinner: 'If you started a new sport tomorrow, which one would it be, and what would you need to buy?',
+  kid: 'Running shoes and big money', he: 'קריאה: איך ריצה הפכה לעסק גדול',
   hook: { q: 'Who won the first modern Olympic marathon, in 1896?', o: ['A Greek water carrier', 'An American student', 'A British teacher'], a: 0,
     reveal: '*Spyridon Louis*, a Greek man who carried water for a living. Today, running is a business worth billions. How did that happen?' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A magazine article about how running, the simplest sport in the world, became a big business.',
@@ -1288,8 +1317,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpr03', url: 'https://test-english.com/reading/b1-b2/why-we-cant-stop-lying-b1-english-reading-test/', type: 'reading',
+  id: 'bpr03', type: 'reading',
   title: 'Why we can\'t stop lying', dinner: 'Is it ever OK to tell a white lie? When?',
+  kid: 'Why we can\'t stop lying', he: 'קריאה: למה אנחנו משקרים',
   hook: { q: 'Pinocchio\'s nose grew when he lied. In a study in Spain, what happened to people\'s noses when they lied?', o: ['They got warmer.', 'They got longer.', 'They turned blue.'], a: 0,
     reveal: 'They got *warmer*! Scientists in Granada used heat cameras and found that the skin around the nose can warm up when people lie. A real Pinocchio effect!' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A science article about lying: why we do it, when we start, and why it matters.',
@@ -1328,8 +1358,9 @@ window.EQ_MISSIONS.bp = [
   ]
 },
 {
-  id: 'bpr04', url: 'https://test-english.com/reading/b1-b2/incredible-hoaxes-b1-english-reading-test/', type: 'reading',
+  id: 'bpr04', type: 'reading',
   title: 'Incredible hoaxes', dinner: 'Have you ever been fooled by a joke or a fake photo? What happened?',
+  kid: 'Amazing tricks and jokes', he: 'קריאה: מתיחות מפורסמות',
   hook: { q: 'In which country do children stick paper fish on people\'s backs on 1 April?', o: ['France', 'Japan', 'Brazil'], a: 0,
     reveal: '*France*! There the day is called "poisson d\'avril", April fish. Today: some of the biggest tricks in history.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A magazine article about hoaxes: clever tricks that fooled thousands of people.',
@@ -1364,6 +1395,136 @@ window.EQ_MISSIONS.bp = [
   ],
   use: [
     { k: 'build', s: 'Check who posted it before you share it.', why: 'Check + who posted it (normal order), then before + a sentence.' }
+  ]
+},
+// ---- The Writer's Desk (writing days) ----
+{
+  id: 'bpw01', type: 'writing',
+  title: 'Describe a picture', kid: 'Describe a picture', he: 'כתיבה: תיאור תמונה', dinner: 'If you could take one photo of today, what would be in it?',
+  hook: { q: 'In a photo, what do we call the part closest to you?', o: ['The foreground', 'The background', 'The frame'], a: 0,
+    reveal: 'The *foreground* is the front of the picture; the *background* is the part far away.' },
+  learn: { kind: 'rule', title: 'Describing a picture', form: ['In the foreground,', 'In the background,', 'It looks like ...'],
+    lines: ['Say where things are: *In the foreground*, ... *In the background*, ... *On the left / right*, ...',
+      'Say what people are doing now: the present continuous, two kids *are playing*.', 'Guess: *It looks like* a hot day. They *might be* on holiday.'],
+    ex: ['*In the foreground*, two kids *are building* a sandcastle.', '*It looks like* a hot summer day.'],
+    he: 'בתיאור תמונה: איפה הדברים (foreground = קדימה, background = ברקע), מה אנשים עושים עכשיו (are playing), וניחוש (It looks like).' },
+  steps: [
+    { name: 'Where and what', items: [
+      { k: 'mc', q: 'In the ___, there are mountains far away.', o: ['background', 'foreground', 'corner'], a: 0, why: 'far away → in the background.' },
+      { k: 'mc', q: 'A boy ___ a kite on the beach.', o: ['is flying', 'flies', 'fly'], a: 0, why: 'In a picture, what is happening now → is + -ing.' },
+      { k: 'mc', q: 'It ___ like a cold, rainy day.', o: ['looks', 'sees', 'watches'], a: 0, why: 'It looks like... = it seems to be.' },
+      { k: 'tf', q: '"They might be on holiday."', a: true, why: 'might = maybe: a good way to guess.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'On the left, a man is selling ice cream.', why: 'Where, then what someone is doing.' },
+      { k: 'spot', s: 'Two girls *is* playing volleyball.', fix: 'are', why: 'two girls = they → are playing.' },
+      { k: 'mc', q: 'Which sentence is a guess?', o: ['They might be brother and sister.', 'There is a red umbrella.', 'A dog is running.'], a: 0,
+        why: 'might = maybe, so it is a guess.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Imagine a photo of a busy beach in summer. Describe what is in it.', tip: 'Where are things? What are people doing?',
+      n: [2, 3], len: [20, 60],
+      need: [{ t: 'Say where (in the foreground, on the left...)', any: ['in the foreground', 'in the background', 'on the left', 'on the right', 'in the middle', 'in the front', 'at the back'] },
+        { t: 'Say what people are doing (is / are + -ing)', re: '(is|are|\'re|\'s) [a-z]+ing\\b' }],
+      model: 'In the foreground, two kids are building a big sandcastle. In the background, people are swimming and a boat is sailing. It looks like a very hot day.',
+      why: 'Where things are, what people are doing, and a guess.', he: 'כותבים איפה הדברים בתמונה, מה אנשים עושים (are + ing), וניחוש.' }
+  ]
+},
+{
+  id: 'bpw02', type: 'writing',
+  title: 'Give advice', kid: 'Give advice', he: 'כתיבה: עצה', dinner: 'What is the best advice anyone ever gave you?',
+  hook: { q: 'Which sentence gives advice?', o: ['You should talk to her.', 'I went home.', 'The sky is blue.'], a: 0,
+    reveal: 'We give advice with *should*: You *should* talk to her.' },
+  learn: { kind: 'rule', title: 'Giving advice', form: ['You should ...', 'Why don\'t you ...?', 'If I were you, I would ...'],
+    lines: ['*You should* + verb: You *should* ask your teacher.', 'A friendly question: *Why don\'t you* try again?', '*If I were you, I would* tell her the truth.'],
+    ex: ['*If I were you, I would* practise every day.', '*Why don\'t you* join the club?'],
+    he: 'נותנים עצה: You should, Why don\'t you...?, If I were you, I would. אחרי should ו-would בא פועל בלי to.' },
+  steps: [
+    { name: 'Advice words', items: [
+      { k: 'mc', q: 'You should ___ to her today.', o: ['talk', 'to talk', 'talking'], a: 0, why: 'should + verb (no to).' },
+      { k: 'mc', q: 'Why ___ you ask your coach?', o: ['don\'t', 'not', 'doesn\'t'], a: 0, why: 'Why don\'t you...? = a friendly idea.' },
+      { k: 'mc', q: 'If I ___ you, I would say sorry.', o: ['were', 'am', 'be'], a: 0, why: 'If I were you: a fixed phrase for advice.' },
+      { k: 'tf', q: '"You should to practise more."', a: false, fix: 'You should practise more.', why: 'should + verb, with no to.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'Why don\'t you try something new?', why: 'Why don\'t you + verb...?' },
+      { k: 'spot', s: 'If I were you, I *will* call him.', fix: 'would', why: 'If I were you, I would...' },
+      { k: 'mc', q: 'Your friend is nervous about a test. Which advice is best?', o: ['You should start studying early.', 'Tests are boring.', 'I had a test too.'], a: 0,
+        why: 'Advice tells your friend what to do.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'A friend is new in your class and feels lonely. Write them some advice.', tip: 'Use should, Why don\'t you or If I were you.',
+      n: [2, 3], len: [20, 60],
+      need: [{ t: 'Give advice (should, Why don\'t you, If I were you)', any: ['should', 'why don\'t you', 'if i were you', 'you could'] }],
+      model: 'Don\'t worry, it gets easier! You should join a club after class, because it\'s a great way to meet people. If I were you, I would also say hi to one new person every day.',
+      why: 'Be kind first, then give one or two ideas.', he: 'מעודדים, ואז נותנים עצה אחת או שתיים עם should או If I were you.' }
+  ]
+},
+{
+  id: 'bpw03', type: 'writing',
+  title: 'For and against', kid: 'For and against', he: 'כתיבה: בעד ונגד', dinner: 'Is it better to live in a city or in the countryside?',
+  hook: { q: 'What does a balanced essay show?', o: ['Both sides', 'Only your side', 'Only facts about you'], a: 0,
+    reveal: 'A balanced essay shows *both sides*: the good points and the bad points.' },
+  learn: { kind: 'rule', title: 'Both sides', form: ['On the one hand,', 'On the other hand,', 'However,'],
+    lines: ['One side: *On the one hand*, phones help us learn.', 'The other side: *On the other hand*, they can be distracting.',
+      'Link ideas: *However*, ... / *Although* ..., ...'],
+    ex: ['*On the one hand*, school uniforms are easy.', '*On the other hand*, kids cannot choose their clothes.'],
+    he: 'מציגים שני צדדים: On the one hand / On the other hand. However = אבל, בתחילת משפט ואחריו פסיק.' },
+  steps: [
+    { name: 'Linking words', items: [
+      { k: 'mc', q: '___ the one hand, video games are fun.', o: ['On', 'In', 'At'], a: 0, why: 'On the one hand... On the other hand...' },
+      { k: 'mc', q: 'Smartphones are useful. ___, they can be addictive.', o: ['However', 'Because', 'So'], a: 0, why: 'However = but (the other side).' },
+      { k: 'mc', q: '___ it was raining, we went to the beach.', o: ['Although', 'However', 'Because'], a: 0, why: 'Although + a sentence, then a surprising result.' },
+      { k: 'tf', q: '"On the other hand, it is expensive."', a: true, why: 'On the other hand, + the other side.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'On the other hand, it can be noisy.', why: 'On the other hand, + a point against.' },
+      { k: 'spot', s: 'Living in a city is *excited* because there is a lot to do.', fix: 'exciting', why: 'The city makes you excited: it is exciting.' },
+      { k: 'mc', q: 'Which sentence is a point against cities?', o: ['Cities can be very crowded.', 'Cities have lots of shops.', 'There are many museums in cities.'], a: 0,
+        why: 'Crowded is a bad point, so it is against.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Should every kid have a smartphone? Give one point for and one point against.', tip: 'Use On the one hand and On the other hand.',
+      n: [2, 3], len: [20, 60],
+      need: [{ t: 'Give one side (On the one hand)', any: ['on the one hand', 'one advantage', 'firstly'] },
+        { t: 'Give the other side (On the other hand, However)', any: ['on the other hand', 'however', 'although', 'but'] }],
+      model: 'On the one hand, a smartphone helps kids call their parents and find information. On the other hand, it can be hard to stop playing games on it. I think kids should get one when they are older.',
+      why: 'One point for, one against, and what you think.', he: 'נקודה בעד, נקודה נגד, ומה אתם חושבים.' }
+  ]
+},
+{
+  id: 'bpw04', type: 'writing',
+  title: 'Tell a story', kid: 'Tell a story', he: 'כתיבה: סיפור', dinner: 'What would you do if you found a treasure map?',
+  hook: { q: 'Which word makes a story more exciting?', o: ['Suddenly', 'Usually', 'Sometimes'], a: 0,
+    reveal: '*Suddenly* tells the reader that something surprising is coming!' },
+  learn: { kind: 'rule', title: 'Setting the scene', form: ['was / were + -ing', 'when', 'the past simple'],
+    lines: ['Set the scene: I *was walking* home *when* ...', 'Then the action: ... *when* I *found* a strange map.',
+      'Add feelings: I felt *nervous*, *excited*, *relieved*.'],
+    ex: ['I *was reading* in the garden *when* I *heard* a shout.', 'I felt *excited* and a bit *nervous*.'],
+    he: 'בסיפור: was/were + ing לרקע (מה קרה באותו זמן), ואחרי when הפעולה הקצרה בעבר פשוט.' },
+  steps: [
+    { name: 'Past continuous', items: [
+      { k: 'mc', q: 'I ___ home when it started to rain.', o: ['was walking', 'walk', 'am walking'], a: 0, why: 'The longer action in the background → was walking.' },
+      { k: 'mc', q: 'We were eating dinner when the phone ___.', o: ['rang', 'was ringing', 'rings'], a: 0, why: 'The short action that interrupts → rang.' },
+      { k: 'mc', q: 'In the end, I felt ___ because everything was OK.', o: ['relieved', 'relieving', 'relief'], a: 0, why: 'How you feel → relieved.' },
+      { k: 'type', q: 'They ___ football when the ball hit a window.', hint: '(play)', a: ['were playing'], why: 'they → were playing (the background action).' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'While I was swimming, I saw a turtle.', why: 'While + was + -ing, then the past simple.' },
+      { k: 'spot', s: 'She *find* an old key in the sand yesterday.', fix: 'found', why: 'yesterday → the past: found.' },
+      { k: 'tf', q: '"I was sleeping when the alarm rang."', a: true, why: 'was sleeping (background) + rang (the short action).' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Start a story: you were walking on the beach when you found a bottle with a note inside.', tip: 'Use was / were + -ing, when, and a feeling.',
+      n: [2, 3], len: [20, 60],
+      need: [{ t: 'Use was / were + -ing', re: '\\b(was|were) [a-z]+ing\\b' },
+        { t: 'Use when, while or suddenly', any: ['when', 'while', 'suddenly'] }],
+      model: 'I was walking on the beach in Tel Aviv when I saw a small green bottle. Inside, there was an old note with a map. I felt excited and a little nervous.',
+      why: 'The scene (was walking), the action (saw), and a feeling.', he: 'מתחילים ברקע (was walking), ממשיכים בפעולה (when I saw), ומוסיפים רגש.' }
   ]
 }
 ];

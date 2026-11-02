@@ -3,8 +3,9 @@
 window.EQ_MISSIONS = window.EQ_MISSIONS || {};
 window.EQ_MISSIONS.b1 = [
 {
-  id: 'b1g01', url: 'https://test-english.com/grammar-points/b1/present-simple-present-continuous/', type: 'grammar',
+  id: 'b1g01', type: 'grammar',
   title: 'Permanent or temporary?', dinner: 'What are you learning at school these days?',
+  kid: 'Always or just now?', he: 'הווה פשוט או מתמשך: קבוע או זמני',
   hook: { q: 'About how many languages do people speak in the world today?', o: ['About 700', 'About 7,000', 'About 70,000'], a: 1,
     reveal: 'About *7,000*! A fact uses the present simple: people *speak* about 7,000 languages. A change happening now uses the continuous: many small languages *are disappearing*.' },
   learn: { kind: 'rule', title: 'Present simple or continuous?',
@@ -44,8 +45,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1g02', url: 'https://test-english.com/grammar-points/b1/future-forms/', type: 'grammar',
+  id: 'b1g02', type: 'grammar',
   title: 'Talking about the future', dinner: 'What are you going to do this weekend?',
+  kid: 'Talking about the future', he: 'דרכים לדבר על העתיד',
   hook: { q: 'By 2050, about how many people will live on Earth, says the United Nations?', o: ['About 8 billion', 'About 9.7 billion', 'About 15 billion'], a: 1,
     reveal: 'About *9.7 billion*. A prediction from facts and numbers often uses *will* or *be going to*: the population *will grow*.' },
   learn: { kind: 'rule', title: 'Three ways to talk about the future',
@@ -81,10 +83,11 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1g03', url: 'https://test-english.com/grammar-points/b1/past-simple-present-perfect/', type: 'grammar',
+  id: 'b1g03', type: 'grammar',
   title: 'Finished time or up to now?', dinner: 'What is the most interesting thing you have ever done?',
+  kid: 'Done or up to now?', he: 'עבר פשוט או present perfect',
   hook: { q: 'When did a person walk on the Moon for the first time?', o: ['1959', '1969', '1979'], a: 1,
-    reveal: 'In *1969*. Neil Armstrong *walked* on the Moon in 1969 (a finished time: past simple). Since then only twelve people *have walked* on the Moon (up to now: present perfect).' },
+    reveal: 'In *1969*. Neil Armstrong *walked* on the Moon in 1969 (a finished time: past simple). In all, twelve people *have walked* on the Moon (up to now: present perfect).' },
   learn: { kind: 'rule', title: 'Past simple or present perfect?',
     lines: ['*Past simple* for a finished time (yesterday, last year, in 2019, when I was six): I *visited* Rome last summer.',
       '*Present perfect* (have / has + past participle) for experiences and for up to now, with no finished time: I*\'ve been* to Rome. *Have you ever* eaten sushi?',
@@ -118,8 +121,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1v01', url: 'https://test-english.com/vocabulary/b1/more-daily-routines-b1-english-vocabulary/', type: 'vocabulary',
+  id: 'b1v01', type: 'vocabulary',
   title: 'More daily routines', dinner: 'How do you unwind after a busy day?',
+  kid: 'More words for my day', he: 'מילים: עוד על שגרת היום',
   hook: { q: 'Doctors say teenagers need about how many hours of sleep a night?', o: ['6 to 7', '8 to 10', '11 to 12'], a: 1,
     reveal: '*8 to 10 hours*! But many teens stay up late and then *oversleep*. Today\'s words are about your daily routine.' },
   learn: { kind: 'words', title: 'Words for your day', words: [
@@ -165,8 +169,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1v02', url: 'https://test-english.com/vocabulary/b1/relationships-b1-english-vocabulary/', type: 'vocabulary',
+  id: 'b1v02', type: 'vocabulary',
   title: 'Friends and family', dinner: 'What do you and your best friend have in common?',
+  kid: 'Friends and family', he: 'מילים: חברים, משפחה ויחסים',
   hook: { q: 'A famous scientist says most people have about how many close friends at one time?', o: ['About 5', 'About 50', 'About 500'], a: 0,
     reveal: 'About *5*! The scientist Robin Dunbar says we have about 5 close friends, 15 good friends and 150 people we know well.' },
   learn: { kind: 'words', title: 'Words about people we love', words: [
@@ -177,7 +182,7 @@ window.EQ_MISSIONS.b1 = [
     { w: 'trust', d: 'believe that someone is honest and good', ex: 'I *trust* my sister with my secrets.' },
     { w: 'rely on', d: 'need someone and know they will help', ex: 'You can always *rely on* Grandpa.' },
     { w: 'get to know', d: 'learn more about a person', ex: 'I want to *get to know* the new girl.' },
-    { w: 'close friend', d: 'a very good friend', ex: 'Maya is my *close friend*.' }
+    { w: 'close friend', d: 'a very good friend', ex: 'Maya is a *close friend* of mine.' }
   ] },
   steps: [
     { name: 'Match', items: [
@@ -212,8 +217,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1l01', url: 'https://test-english.com/listening/b1/working-while-travelling-the-world-b1-english-listening-test/', type: 'listening',
+  id: 'b1l01', type: 'listening',
   title: 'Working around the world', dinner: 'Where would you like to work and travel one day?',
+  kid: 'Work and travel the world', he: 'האזנה: לעבוד ולטייל בעולם',
   hook: { q: 'With a "working holiday visa", young people can work while they travel. Up to what age, usually?', o: ['18', '30 or 35', '50'], a: 1,
     reveal: 'Usually up to *30 or 35*. With a working holiday visa, young people can travel and work in another country for about a year.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -268,8 +274,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1l02', url: 'https://test-english.com/listening/b1/where-did-you-stay-b1-english-listening-test/', type: 'listening',
+  id: 'b1l02', type: 'listening',
   title: 'Where did you stay?', dinner: 'What was the best place you ever stayed on holiday?',
+  kid: 'Where did you stay?', he: 'האזנה: איפה ישנו בחופשה',
   hook: { q: 'Which of these is a real hotel?', o: ['A hotel made of ice in Sweden', 'A hotel on the Moon', 'A hotel inside a volcano'], a: 0,
     reveal: 'The *ice hotel* in Sweden is real! It is built again every winter, and even the beds are made of ice.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -321,8 +328,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1l03', url: 'https://test-english.com/listening/b1/stories-of-school-and-education-b1-english-listening-test/', type: 'listening',
+  id: 'b1l03', type: 'listening',
   title: 'School stories', dinner: 'Who is a teacher who really helped you, and how?',
+  kid: 'School stories', he: 'האזנה: זיכרונות מבית הספר',
   hook: { q: 'In which country do children start school later than most, at age 7?', o: ['Finland', 'The UK', 'The USA'], a: 0,
     reveal: '*Finland*! Children there start school at 7, and Finland is famous for its great schools.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -359,7 +367,7 @@ window.EQ_MISSIONS.b1 = [
   steps: [
     { name: 'Listen again', items: [
       { k: 'type', clip: 1, q: 'Sam ___ his first big exam when he was fifteen.', a: ['failed'], why: 'fail an exam = not pass it.' },
-      { k: 'mc', clip: 0, q: 'At first, Ruth was ___ Mr Clark.', o: ['afraid of', 'in love with', 'angry with'], a: 0, why: '"I was afraid of him."' },
+      { k: 'mc', clip: 0, q: 'At first, Ruth was ___ Mr Clark.', o: ['afraid of', 'bored by', 'angry with'], a: 0, why: '"I was afraid of him."' },
       { k: 'hear', say: 'He was strict, but he really cared.', q: 'What does she say about him?', o: ['He cared about his students.', 'He never smiled.', 'He was a new teacher.'], a: 0,
         why: 'He was strict, but he really cared.' },
       { k: 'sort', q: 'How can a teacher be?', g: ['good for students', 'not so good'],
@@ -372,8 +380,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1r01', url: 'https://test-english.com/reading/b1/travel-around-europe-in-5-stops-b1-english-reading-test/', type: 'reading',
+  id: 'b1r01', type: 'reading',
   title: 'Five stops by train', dinner: 'If you could visit five cities in Europe, which would you choose?',
+  kid: 'Five stops by train', he: 'קריאה: מסע ברכבת בחמש ערים באירופה',
   hook: { q: 'Which European city has more bridges than Venice?', o: ['Amsterdam', 'Paris', 'London'], a: 0,
     reveal: '*Amsterdam* has more than 1,200 bridges, about three times as many as Venice!' },
   learn: { kind: 'intro', title: 'Before you read', line: 'Noa, 15, travelled around Europe by train with her family. She wrote about it on her blog.',
@@ -408,8 +417,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1u02', url: 'https://test-english.com/use-of-english/b1/b1-english-test-2-multiple-choice-questions/', type: 'use-of-english',
+  id: 'b1u02', type: 'use-of-english',
   title: 'The parrot who runs the shop', dinner: 'If our pet could talk, what do you think it would say?',
+  kid: 'The parrot who runs a shop', he: 'כתבה: תוכי שמנהל חנות',
   hook: { q: 'How many words can a clever parrot learn?', o: ['About 10', 'Hundreds, sometimes more', 'None, they only copy sounds'], a: 1,
     reveal: '*Hundreds*! A famous parrot called Puck knew about 1,700 words, a world record.' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a funny news story (it is made up!) and choose the right word for each gap.',
@@ -441,8 +451,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1g04', url: 'https://test-english.com/grammar-points/b1/present-perfect-simple-present-perfect-continuous/', type: 'grammar',
+  id: 'b1g04', type: 'grammar',
   title: 'How long or how many?', dinner: 'What have you been practising a lot recently?',
+  kid: 'How long or how many?', he: 'present perfect פשוט או מתמשך',
   hook: { q: 'How many hearts does an octopus have?', o: ['One', 'Two', 'Three'], a: 2,
     reveal: '*Three*! Scientists *have been studying* octopuses for many years (an activity up to now), and they *have found* some amazing things (a result).' },
   learn: { kind: 'rule', title: 'Present perfect simple or continuous?',
@@ -483,8 +494,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1g05', url: 'https://test-english.com/grammar-points/b1/during-for-while/', type: 'grammar',
+  id: 'b1g05', type: 'grammar',
   title: 'During, for or while?', dinner: 'What do you usually do during the summer holidays?',
+  kid: 'During, for or while?', he: 'during, for או while',
   hook: { q: 'Koalas are famous sleepers. Up to how many hours a day can they sleep?', o: ['About 8 hours', 'About 20 hours', 'About 2 hours'], a: 1,
     reveal: 'Up to about *20 hours*! Koalas sleep *for* most of the day, they eat leaves *during* the night, and they hardly move *while* they are awake.' },
   learn: { kind: 'rule', title: 'During, for and while',
@@ -521,8 +533,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1g06', url: 'https://test-english.com/grammar-points/b1/comparative-superlative-adjectives-adverbs/', type: 'grammar',
+  id: 'b1g06', type: 'grammar',
   title: 'Faster, better, the best', dinner: 'Who is the funniest person in our family, and why?',
+  kid: 'Faster, better, the best', he: 'השוואה: ערך יתרון וערך עליון',
   hook: { q: 'Which planet is the hottest in our solar system?', o: ['Mercury', 'Venus', 'Mars'], a: 1,
     reveal: '*Venus*! Mercury is *closer* to the Sun, but Venus is *hotter*, because its thick clouds keep the heat in. It is *the hottest* planet of all.' },
   learn: { kind: 'rule', title: 'Comparing things and actions',
@@ -559,8 +572,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1g07', url: 'https://test-english.com/grammar-points/b1/an-the-no-article/', type: 'grammar',
+  id: 'b1g07', type: 'grammar',
   title: 'A, an, the or nothing?', dinner: 'If you could visit any country in the world, which one would you choose?',
+  kid: 'A, an, the or nothing?', he: 'מילות היידוע: a, an, the',
   hook: { q: 'Which is the biggest ocean in the world?', o: ['The Atlantic', 'The Pacific', 'The Indian Ocean'], a: 1,
     reveal: '*The Pacific*! Oceans, seas and rivers take *the*: the Pacific, the Dead Sea, the Jordan. Most countries and continents take no article: Israel, Asia.' },
   learn: { kind: 'rule', title: 'A / an, the, or no article',
@@ -597,8 +611,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1g08', url: 'https://test-english.com/grammar-points/b1/another-other-others-the-other-the-others/', type: 'grammar',
+  id: 'b1g08', type: 'grammar',
   title: 'Another, other or the others?', dinner: 'If you could learn another language, which one would you choose?',
+  kid: 'Another, other, the others', he: 'another, other ו-the others',
   hook: { q: 'Apart from Earth, how many other planets are there in our solar system?', o: ['Five', 'Seven', 'Nine'], a: 1,
     reveal: '*Seven*! We live on one planet, and *the other* seven are Mercury, Venus, Mars, Jupiter, Saturn, Uranus and Neptune. Are there planets around *other* stars? Yes, thousands!' },
   learn: { kind: 'rule', title: 'Another, other, the other',
@@ -636,8 +651,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1g09', url: 'https://test-english.com/grammar-points/b1/can-could-be-able-to/', type: 'grammar',
+  id: 'b1g09', type: 'grammar',
   title: 'Can, could or be able to?', dinner: 'What can you do now that you couldn\'t do last year?',
+  kid: 'Can, could or able to?', he: 'יכולת: can, could, be able to',
   hook: { q: 'At about what age can most babies walk?', o: ['About 4 months', 'About 12 months', 'About 3 years'], a: 1,
     reveal: 'At about *12 months*. At four months a baby *can\'t* walk, but she *can* smile and laugh. Soon she *will be able to* run!' },
   learn: { kind: 'rule', title: 'Ability: can, could, be able to',
@@ -677,8 +693,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1u01', url: 'https://test-english.com/use-of-english/b1/b1-test-1/', type: 'use-of-english',
+  id: 'b1u01', type: 'use-of-english',
   title: 'The school that grows its lunch', dinner: 'If you had a garden, what would you like to grow in it?',
+  kid: 'The school that grows lunch', he: 'כתבה: בית ספר שמגדל את האוכל שלו',
   hook: { q: 'About how long does a sunflower take to grow from a seed into a big flower?', o: ['About 2 weeks', 'About 3 months', 'About 2 years'], a: 1,
     reveal: 'About *3 months*! And some sunflowers grow taller than a basketball hoop.' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a news story about a school garden (it is made up!) and choose the right word for each gap.',
@@ -711,8 +728,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1u03', url: 'https://test-english.com/use-of-english/b1/b1-english-test-3-text-multiple-choice-gaps/', type: 'use-of-english',
+  id: 'b1u03', type: 'use-of-english',
   title: 'The dog who takes the bus', dinner: 'If we had a dog, where would you take it every day?',
+  kid: 'A dog alone on the bus', he: 'כתבה: כלבה שנוסעת לבד באוטובוס',
   hook: { q: 'About how many words can an ordinary dog understand?', o: ['About 5', 'About 100', 'About 10,000'], a: 1,
     reveal: 'About *100*! One study found that an ordinary dog understands about 90 words, and a very clever dog called Chaser learned the names of more than 1,000 toys.' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a funny news story (it is made up!) and choose the right word for each gap.',
@@ -745,8 +763,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1u04', url: 'https://test-english.com/use-of-english/b1/b1-english-test-4-multiple-choice-questions/', type: 'use-of-english',
+  id: 'b1u04', type: 'use-of-english',
   title: 'The robot gardener', dinner: 'If you could build a robot, what job would it do for our family?',
+  kid: 'The robot gardener', he: 'כתבה: רובוט גנן',
   hook: { q: 'The word "robot" first came from a play. In which language?', o: ['Czech', 'Japanese', 'English'], a: 0,
     reveal: '*Czech*! In 1920 a play by the Czech writer Karel Čapek used the word "robot". In Czech, "robota" means hard work.' },
   learn: { kind: 'intro', title: 'Newsroom', line: 'Read a news story about a young inventor (it is made up!) and choose the right word for each gap.',
@@ -780,8 +799,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1v03', url: 'https://test-english.com/vocabulary/b1/education-b1-english-vocabulary/', type: 'vocabulary',
+  id: 'b1v03', type: 'vocabulary',
   title: 'School and studying', dinner: 'Which subject do you find the most interesting, and why?',
+  kid: 'School and studying', he: 'מילים: בית ספר ולימודים',
   hook: { q: 'In which country do many students have a summer holiday of about three months?', o: ['Italy', 'The UK', 'Japan'], a: 0,
     reveal: '*Italy*! Many Italian students have about three months off in the summer. In the UK it is about six weeks. Today\'s words are about school and studying.' },
   learn: { kind: 'words', title: 'Words for school', words: [
@@ -829,8 +849,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1v04', url: 'https://test-english.com/vocabulary/b1/money-b1-english-vocabulary/', type: 'vocabulary',
+  id: 'b1v04', type: 'vocabulary',
   title: 'Money matters', dinner: 'If you had 100 shekels, would you spend it or save it?',
+  kid: 'Money matters', he: 'מילים: כסף',
   hook: { q: 'What did people in some places use as money long ago?', o: ['Shells', 'Paper clips', 'Glass bottles'], a: 0,
     reveal: '*Shells*! Small shells were money in parts of Africa and Asia for hundreds of years. Today\'s words are about how we spend, save and borrow money.' },
   learn: { kind: 'words', title: 'Words about money', words: [
@@ -879,8 +900,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1v05', url: 'https://test-english.com/vocabulary/b1/work-b1-english-vocabulary/', type: 'vocabulary',
+  id: 'b1v05', type: 'vocabulary',
   title: 'The world of work', dinner: 'What job would you like to try for one day?',
+  kid: 'The world of work', he: 'מילים: עבודה ומקצועות',
   hook: { q: 'What is the most common kind of work in the world?', o: ['Farming', 'Teaching', 'Working in a shop'], a: 0,
     reveal: '*Farming*! About a quarter of all the workers in the world work on farms. Today\'s words are about jobs and work.' },
   learn: { kind: 'words', title: 'Words about work', words: [
@@ -928,8 +950,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1l04', url: 'https://test-english.com/listening/b1/personal-work-stories-b1-english-listening-test/', type: 'listening',
+  id: 'b1l04', type: 'listening',
   title: 'Work stories', dinner: 'What job do you think you would be good at, and why?',
+  kid: 'Job Week on school radio', he: 'האזנה: סיפורים על עבודה',
   hook: { q: 'Ben and Jerry, the famous ice cream makers, learned to make ice cream how?', o: ['From a cheap course by post', 'At a famous cooking school', 'From their grandmother'], a: 0,
     reveal: 'From a *five-dollar course by post*! Then they opened a tiny ice cream shop in 1978. Everyone\'s work story starts somewhere.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -982,8 +1005,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1l05', url: 'https://test-english.com/listening/b1/talking-about-money-b1-english-listening-test/', type: 'listening',
+  id: 'b1l05', type: 'listening',
   title: 'Pocket money talk', dinner: 'Should kids get pocket money for helping at home?',
+  kid: 'Pocket money talk', he: 'האזנה: פודקאסט על דמי כיס',
   hook: { q: 'Which country was the first to use paper money?', o: ['China', 'Italy', 'Egypt'], a: 0,
     reveal: '*China*, about a thousand years ago! Before that, people carried heavy coins.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1038,8 +1062,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1l06', url: 'https://test-english.com/listening/b1/famous-sports-cheating-scandals-b1-english-listening-test/', type: 'listening',
+  id: 'b1l06', type: 'listening',
   title: 'Famous sports cheats', dinner: 'Why do you think some people cheat in sport?',
+  kid: 'Famous sports cheats', he: 'האזנה: רמאויות מפורסמות בספורט',
   hook: { q: 'In which year were the first modern Olympic Games?', o: ['1896', '1920', '1948'], a: 0,
     reveal: 'In *1896*, in Athens. Since then there have been thousands of great races, and, sadly, a few famous cheats.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1093,8 +1118,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1l07', url: 'https://test-english.com/listening/b1/weird-driving-rules-modal-verbs-b1-english-listening-test/', type: 'listening',
+  id: 'b1l07', type: 'listening',
   title: 'Strange rules of the road', dinner: 'If you could make one new rule for our home, what would it be?',
+  kid: 'Strange rules of the road', he: 'האזנה: חוקי נהיגה מוזרים בעולם',
   hook: { q: 'In which of these countries do people drive on the left?', o: ['The UK', 'France', 'Israel'], a: 0,
     reveal: '*The UK*! In the UK, Japan, India and Australia you have to drive on the left. In Israel and France you drive on the right.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1153,8 +1179,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1l08', url: 'https://test-english.com/listening/b1/borough-market-b1-english-listening-test/', type: 'listening',
+  id: 'b1l08', type: 'listening',
   title: 'A day at Borough Market', dinner: 'What food from another country would you like to try?',
+  kid: 'A day at a London market', he: 'האזנה: יום בשוק בלונדון',
   hook: { q: 'People have sold food at Borough Market in London for about how long?', o: ['About 1,000 years', 'About 100 years', 'About 50 years'], a: 0,
     reveal: 'About *1,000 years*! There was a market near London Bridge long ago, and today it is one of the most famous food markets in the world.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1209,8 +1236,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1l09', url: 'https://test-english.com/listening/b1/york-england-a-medieval-town-b1-english-listening-test/', type: 'listening',
+  id: 'b1l09', type: 'listening',
   title: 'York, a medieval city', dinner: 'If you could visit any time in history, which would you choose?',
+  kid: 'A school trip to York', he: 'האזנה: טיול לעיר העתיקה יורק',
   hook: { q: 'Who lived in York about 1,100 years ago and called it Jorvik?', o: ['The Vikings', 'The Romans', 'The Greeks'], a: 0,
     reveal: 'The *Vikings*! Before them, the Romans built a town there and called it Eboracum.' },
   learn: { kind: 'keys', title: 'Key words before you listen', words: [
@@ -1266,8 +1294,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1r02', url: 'https://test-english.com/reading/b1/why-your-coworkers-hate-you-b1-english-reading-test/', type: 'reading',
+  id: 'b1r02', type: 'reading',
   title: 'Why your team gets annoyed', dinner: 'What makes someone a good person to work with?',
+  kid: 'Group project trouble', he: 'קריאה: מה מעצבן בעבודה בקבוצה',
   hook: { q: 'How fast do people decide what they think of a new face?', o: ['In less than a second', 'In about an hour', 'After a week'], a: 0,
     reveal: '*In less than a second*! One study found it takes about a tenth of a second. But in a team, what you *do* matters much more.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A school magazine asked students: what annoys you most in a group project? Here is what they said.',
@@ -1308,8 +1337,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1r03', url: 'https://test-english.com/reading/b1/unusual-and-wonderful-jobs-b1-english-reading-test/', type: 'reading',
+  id: 'b1r03', type: 'reading',
   title: 'Unusual and wonderful jobs', dinner: 'Which unusual job would you love to do, and why?',
+  kid: 'Unusual and wonderful jobs', he: 'קריאה: עבודות מיוחדות ומפתיעות',
   hook: { q: 'Some people are paid to have fun at work. Which of these is a real job?', o: ['Water slide tester', 'Cloud counter', 'Rainbow painter'], a: 0,
     reveal: 'A *water slide tester* is a real job! Read about it, and about two more wonderful jobs.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'A website for teens asked three people with unusual jobs to describe their work.',
@@ -1348,8 +1378,9 @@ window.EQ_MISSIONS.b1 = [
   ]
 },
 {
-  id: 'b1r04', url: 'https://test-english.com/reading/b1/how-led-lights-can-save-sea-turtles-lives-b1-english-reading-test/', type: 'reading',
+  id: 'b1r04', type: 'reading',
   title: 'Green lights for sea turtles', dinner: 'What can our family do to help animals in the sea?',
+  kid: 'Lights that help sea turtles', he: 'קריאה: אורות שמצילים צבי ים',
   hook: { q: 'Sea turtles have lived on Earth for about how long?', o: ['More than 100 million years', 'About 10,000 years', 'About 1,000 years'], a: 0,
     reveal: '*More than 100 million years*! They swam in the sea at the time of the dinosaurs. Today, many kinds of sea turtle are in danger.' },
   learn: { kind: 'intro', title: 'Before you read', line: 'Read about a simple idea that helps sea turtles, and about the turtles on Israel\'s beaches.',
@@ -1386,6 +1417,134 @@ window.EQ_MISSIONS.b1 = [
   use: [
     { k: 'type', q: 'Nets with lights caught ___ turtles than nets without lights.', hint: '(few)', a: ['fewer'], why: 'few → fewer, for things you can count (turtles).',
       he: 'fewer לדברים שאפשר לספור (fewer turtles). less לדברים שלא סופרים (less water).' }
+  ]
+},
+// ---- The Writer's Desk (writing days) ----
+{
+  id: 'b1w01', type: 'writing',
+  title: 'What do you think?', kid: 'What do you think?', he: 'כתיבה: מה אני חושב', dinner: 'Should kids have homework at the weekend? Why?',
+  hook: { q: 'Which country is famous for giving kids very little homework?', o: ['Finland', 'Japan', 'Brazil'], a: 0,
+    reveal: '*Finland*. Kids there get little homework and lots of time to play, and their schools are still among the best.' },
+  learn: { kind: 'rule', title: 'Giving your opinion', form: ['In my opinion,', 'because', 'For example,'],
+    lines: ['Say what you think: *In my opinion*, ... / *I think* ...', 'Give a reason: ... *because* ...', 'Add an example: *For example*, ...'],
+    ex: ['*In my opinion*, kids need free time *because* they get tired.', '*For example*, they can play outside.'],
+    he: 'בחיבור דעה: אומרים מה חושבים (In my opinion), נותנים סיבה (because) ודוגמה (For example).' },
+  steps: [
+    { name: 'Opinion words', items: [
+      { k: 'mc', q: '___ my opinion, phones at dinner are a bad idea.', o: ['In', 'On', 'At'], a: 0, why: 'In my opinion = what I think.' },
+      { k: 'mc', q: 'I think sport is important ___ it keeps you healthy.', o: ['because', 'so', 'but'], a: 0, why: 'because + the reason.' },
+      { k: 'mc', q: 'Kids need free time. ___, they can read or play outside.', o: ['For example', 'However', 'Because'], a: 0, why: 'For example → one example of the idea.' },
+      { k: 'tf', q: '"I am agree with you."', a: false, fix: 'I agree with you.', why: 'agree is a verb: I agree (no am).', he: 'בעברית "אני מסכים", ולכן קל לכתוב I am agree. נכון: I agree.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'In my opinion, we need more trees.', why: 'In my opinion, + what you think.' },
+      { k: 'spot', s: 'Some people *says* that video games are bad.', fix: 'say', why: 'people = they → say.' },
+      { k: 'mc', q: 'Which one gives a reason?', o: ['Because it helps us learn.', 'In my opinion.', 'For example, me.'], a: 0, why: 'because + a full reason.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Should kids have homework at the weekend? Give your opinion.', tip: 'Say what you think, give a reason and an example.',
+      n: [2, 3], len: [15, 50],
+      need: [{ t: 'Give your opinion (I think, In my opinion)', any: ['i think', 'in my opinion', 'i don\'t think', 'i believe'] },
+        { t: 'Give a reason with "because"', any: ['because'] }],
+      model: 'In my opinion, kids should not have homework at the weekend because they need rest. For example, they can play sports or visit their family.',
+      why: 'Opinion, reason, example: three small steps make a strong answer.', he: 'אומרים מה חושבים, למה (because), ודוגמה אחת.' }
+  ]
+},
+{
+  id: 'b1w02', type: 'writing',
+  title: 'Big news!', kid: 'Big news!', he: 'כתיבה: חדשות', dinner: 'What good news did you have this week?',
+  hook: { q: 'How do you start an email to a good friend?', o: ['Hi Maya!', 'Dear Sir or Madam,', 'To whom it may concern,'], a: 0,
+    reveal: 'To a friend we write *Hi* or *Hey*. *Dear Sir or Madam* is for people we don\'t know.' },
+  learn: { kind: 'rule', title: 'News in an email', form: ['Guess what?', 'I\'ve just ...', 'Write back soon!'],
+    lines: ['Start friendly: *Hi* Maya! *How are you?*', 'Give the news: *Guess what?* I*\'ve just* got a puppy! (have + just + a past form)',
+      'Add one detail, then end: *Write back soon!*'],
+    ex: ['*Guess what?* I*\'ve just* joined a basketball team.', '*Write back soon!*'],
+    he: 'במייל לחבר: פתיחה, החדשות (I\'ve just = הרגע, לא מזמן), פרט אחד, וסיום.' },
+  steps: [
+    { name: 'Friendly news', items: [
+      { k: 'mc', q: 'I\'ve just ___ a new bike!', o: ['got', 'get', 'getting'], a: 0, why: 'have + just + got.' },
+      { k: 'mc', q: '___ what? We won the game!', o: ['Guess', 'Think', 'Say'], a: 0, why: 'Guess what? = I have news for you!' },
+      { k: 'mc', q: 'How ___ you? I hope you are well.', o: ['are', 'is', 'do'], a: 0, why: 'How are you?' },
+      { k: 'tf', q: '"I have just finish my project."', a: false, fix: 'I have just finished my project.', why: 'have + finished.' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'Guess what? I have just got a puppy!', why: 'Guess what? + the news.' },
+      { k: 'spot', s: 'We\'ve just *start* a new art club.', fix: 'started', why: 'have + started.' },
+      { k: 'build', s: 'Write back soon and tell me your news!', why: 'A friendly ending.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write to a friend and tell them some good news.', tip: 'A new pet, a game you won, a trip... Start with Hi!',
+      n: [2, 3], len: [15, 50],
+      need: [{ t: 'Start with Hi, Hey or Dear', re: '^(hi|hey|hello|dear)\\b' },
+        { t: 'Use "have just" (I\'ve just...)', re: '(have|\'ve|has|\'s) just' }],
+      ideas: ['Guess what?', 'I\'ve just'],
+      model: 'Hi Maya! Guess what? I\'ve just got a puppy, and she is small, brown and very funny.',
+      why: 'Hi, the news with I\'ve just, and one detail.', he: 'פותחים ב-Hi, מספרים את החדשות עם I\'ve just ומוסיפים פרט אחד.' }
+  ]
+},
+{
+  id: 'b1w03', type: 'writing',
+  title: 'Story time', kid: 'Story time', he: 'כתיבה: סיפור קצר', dinner: 'What is the funniest thing that happened to you this year?',
+  hook: { q: 'Which tense do most stories use?', o: ['The past simple', 'The future', 'The present continuous'], a: 0,
+    reveal: 'Most stories happen in the *past*: a girl *opened* the door and *saw*...' },
+  learn: { kind: 'rule', title: 'A short story', form: ['First,', 'Suddenly,', 'In the end,'],
+    lines: ['Tell it in the past: I *opened*, I *saw*, it *was*.', 'Make it exciting: *Suddenly*, ...', 'Finish it: *In the end*, ... / *Finally*, ...'],
+    ex: ['*Suddenly*, I heard a strange noise.', '*In the end*, it was only my cat!'],
+    he: 'סיפור קצר כותבים בעבר. Suddenly מוסיף הפתעה, In the end סוגר את הסיפור.' },
+  steps: [
+    { name: 'Story words', items: [
+      { k: 'mc', q: 'When I opened the box, I ___ a tiny kitten.', o: ['saw', 'see', 'seen'], a: 0, why: 'see → saw (the past).' },
+      { k: 'mc', q: '___, the lights went out!', o: ['Suddenly', 'Usually', 'Every day'], a: 0, why: 'Suddenly = a surprise, very fast.' },
+      { k: 'mc', q: '___, we all laughed and went home.', o: ['In the end', 'Suddenly', 'Usually'], a: 0, why: 'In the end → how the story finishes.' },
+      { k: 'type', q: 'We ___ to the window to look.', hint: '(run)', a: ['ran'], why: 'run → ran.' }
+    ] },
+    { name: 'Build it', items: [
+      { k: 'build', s: 'Suddenly, my dog started to bark.', why: 'Suddenly, + what happened.' },
+      { k: 'spot', s: 'I *hear* a noise in the kitchen last night.', fix: 'heard', why: 'last night → the past: heard.' },
+      { k: 'tf', q: '"In the end, everyone was happy."', a: true, why: 'In the end + the past: a good way to finish.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Finish the story: "When I opened the door, I couldn\'t believe my eyes."', tip: 'What did you see? How did it end? Use the past.',
+      n: [2, 3], len: [15, 50],
+      need: [{ t: 'Use the past (saw, was, ran...)', re: '\\b(saw|was|were|went|ran|had|came|found|took|said|got|[a-z]+ed)\\b' },
+        { t: 'Use Suddenly, Then or In the end', any: ['suddenly', 'then', 'in the end', 'finally'] }],
+      model: 'There was a huge cake on the table, and my friends shouted Surprise! Suddenly, my dog jumped on the cake. In the end, we all laughed and ate the rest.',
+      why: 'The past, a surprise with Suddenly, and an ending.', he: 'כותבים בעבר מה ראיתם, מה קרה פתאום (Suddenly) ואיך זה נגמר.' }
+  ]
+},
+{
+  id: 'b1w04', type: 'writing',
+  title: 'Write a review', kid: 'Write a review', he: 'כתיבה: ביקורת', dinner: 'What is the best place we ever stayed at?',
+  hook: { q: 'Before people book a hotel, what do many of them read?', o: ['Reviews', 'Recipes', 'Poems'], a: 0,
+    reveal: 'Most people read *reviews* first. A good review helps others choose.' },
+  learn: { kind: 'rule', title: 'A review', form: ['The best thing was ...', 'The only problem was ...', 'I would recommend it'],
+    lines: ['Say what was great: *The best thing was* the pool.', 'Be fair: *The only problem was* the noise.', 'Finish: *I would recommend it* to families.'],
+    ex: ['*The best thing was* the breakfast.', '*I would recommend it* to my friends.'],
+    he: 'ביקורת טובה: מה היה הכי טוב, בעיה אחת אם הייתה, והמלצה בסוף (I would recommend it).' },
+  steps: [
+    { name: 'Review words', items: [
+      { k: 'mc', q: 'The rooms were clean and ___.', o: ['comfortable', 'comfort', 'comfortably'], a: 0, why: 'An adjective describes the rooms: comfortable.' },
+      { k: 'mc', q: 'The best thing ___ the swimming pool.', o: ['was', 'were', 'be'], a: 0, why: 'the best thing = it → was.' },
+      { k: 'mc', q: 'I would ___ this place to everyone.', o: ['recommend', 'recommended', 'recommending'], a: 0, why: 'would + verb: would recommend.' },
+      { k: 'tf', q: '"The food were delicious."', a: false, fix: 'The food was delicious.', why: 'food is one thing (you can\'t count it) → was.' }
+    ] },
+    { name: 'Write it right', items: [
+      { k: 'build', s: 'The only problem was the long queue.', why: 'The only problem was + the problem.' },
+      { k: 'spot', s: 'The view from our room was *amazed*.', fix: 'amazing', why: 'The view makes you amazed: it is amazing.' },
+      { k: 'mc', q: 'Which sentence is a fair review?', o: ['The room was small, but it was very clean.', 'Worst place ever!!!', 'I was there.'], a: 0,
+        why: 'A fair review gives the good and the bad, with details.' }
+    ] }
+  ],
+  use: [
+    { k: 'write', task: 'Write a short review of a place you stayed at or visited, like a hotel, a campsite or a museum.',
+      tip: 'Say the best thing, one problem, and if you recommend it.', n: [2, 3], len: [15, 55],
+      need: [{ t: 'Say the best thing', any: ['the best thing', 'the best part', 'i loved', 'i liked', 'i really liked'] },
+        { t: 'Say if you recommend it', any: ['recommend'] }],
+      model: 'We stayed at a campsite near the Kinneret. The best thing was the lake, but the only problem was the mosquitoes. I would recommend it to families.',
+      why: 'The best thing, one problem, and a recommendation: a fair review.', he: 'כותבים מה היה הכי טוב, בעיה אחת, והאם ממליצים.' }
   ]
 }
 ];

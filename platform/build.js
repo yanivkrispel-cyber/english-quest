@@ -3,8 +3,8 @@
 // Run after any change in src/ or platform/: node platform/build.js
 const fs = require('fs'), path = require('path');
 const root = path.join(__dirname, '..');
-const FILES = ['Catalog.js', 'Code.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js',
-  'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Relay.js', 'Admin.js', 'Privacy.js'];
+const FILES = ['Catalog.js', 'Code.js', 'Auth.js', 'Push.js', 'Duels.js', 'Duos.js', 'Shop.js', 'MissionIndex.js', 'Missions.js',
+  'Pilot.js', 'Chat.js', 'Audit.js', 'Nest.js', 'NestIndex.js', 'Learned.js', 'Relay.js', 'Admin.js', 'Privacy.js', 'Safety.js', 'Ops.js'];
 const read = f => fs.readFileSync(path.join(root, f), 'utf8').replace(/\r\n/g, '\n');
 const SERVICES = ['SpreadsheetApp', 'CacheService', 'LockService', 'PropertiesService', 'Utilities', 'UrlFetchApp', 'MailApp',
   'ScriptApp', 'Session', 'ContentService', 'HtmlService'];
@@ -23,7 +23,7 @@ const out = [
   '// ---- platform/overrides.js ----',
   read('platform/overrides.js'),
   '  return {',
-  '    doPost: doPost, tick: platformTick, removeSubscriptions: removeSubscriptions, ensureSetup: ensureSetup, notifyAdmin: notifyAdmin,',
+  '    doPost: doPost, tick: platformTick, adminPassSet: adminPassSet, removeSubscriptions: removeSubscriptions, ensureSetup: ensureSetup, notifyAdmin: notifyAdmin,',
   '    pushTtl: platformPushTtl, startRequest: function () { TABLES = {}; },',
   '    eval: PLATFORM.allowEval ? function (s) { return eval(s); } : null',
   '  };',

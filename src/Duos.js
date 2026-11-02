@@ -17,8 +17,9 @@ function apiDuoInvite(name, pin, partnerName) {
   var kid = duelKid(name, pin), mate = findGirl(partnerName), note = null;
   if (!mate) throw new Error('Unknown player');
   if (mate.Name === kid.Name) throw new Error('Choose someone else');
-  if (!duelCanMeet(kid, mate)) throw new Error('Playing with other groups is switched off for this group');
+  if (!duelCanMeet(kid, mate)) throw new Error(DUEL_CLOSED);
   if (pendingLevelTest(mate)) throw new Error(mate.Name + ' takes the level test first');
+  contactLimit(kid);
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
@@ -75,9 +76,12 @@ function apiDuoNudge(name, pin, id) {
     d = duoFresh(id);
     if (!duoHas(d, kid.Name) || d.State !== 'active') throw new Error('This duo streak is not active');
     other = duoOther(d, kid.Name);
+    var mate = findGirl(other);
+    if (!mate || !duelCanMeet(kid, mate)) throw new Error(DUEL_CLOSED);
     if (practiceDays(other)[t]) throw new Error(other + ' already practiced today');
     var nudges = duoNudges(d);
     if (nudges[kid.Name] === t) throw new Error('You already nudged ' + other + ' today');
+    contactLimit(kid);
     nudges[kid.Name] = t;
     d.Nudges = Object.keys(nudges).map(function (k) { return k + ':' + nudges[k]; }).join(' ');
     duoSave(d);
@@ -85,10 +89,10 @@ function apiDuoNudge(name, pin, id) {
   } finally {
     lock.releaseLock();
   }
-  var did = !!practiceDays(kid.Name)[t];
+  // A wave, not a guilt trip (store rule 8): no streak to lose, no "waiting for you".
   try {
-    pushToKid(other, { title: kid.Name + ' is waiting for you', url: './', tag: 'eq-duo',
-      body: (did ? kid.Name + ' practiced today. ' : '') + (s.days ? 'Keep your ' + s.days + '-day duo streak going!' : 'Practice today, both of you, and start your duo streak!') });
+    pushToKid(other, { title: kid.Name + ' sent you a wave', url: './', tag: 'eq-duo',
+      body: 'Want to practice together today? Chacho is ready whenever you are.' });
   } catch (e) { console.error(e); }
   return duoHome(kid);
 }
@@ -236,7 +240,13 @@ function duoQuest(d, t) {
 
 function duoHome(kid) {
   var t = today(), name = kid.Name;
-  var rows = readTable('Duos').filter(function (r) { return duoHas(r, name); });
+  // A duo with a kid she may no longer meet (blocked, or a family switched playing with others off) is hidden, not ended:
+  // it comes back if the parents turn it on again.
+  var rows = readTable('Duos').filter(function (r) {
+    if (!duoHas(r, name)) return false;
+    var mate = findGirl(duoOther(r, name));
+    return !!mate && duelCanMeet(kid, mate);
+  });
   var urgent = function (v) { return v.todayMe && v.todayThem ? 2 : v.todayMe || v.todayThem ? 0 : 1; };
   return {
     incoming: rows.filter(function (r) { return r.State === 'invited' && r.B === name; }).map(function (r) { return { id: r.Id, partner: duoPlayer(r.A) }; }),
@@ -265,15 +275,15 @@ function duoPlayer(name) {
   return { name: name, color: k ? k.Color : '', level: k ? (LEVEL_LABEL[k.Level] || k.Level) : '', pet: petBrief(pet) };
 }
 
-// The 17:00 / 20:00 reminder of a kid who hasn't practiced: a partner who already did today.
+// The daily reminder of a kid who hasn't practiced: a partner who already did today (the reminder never says her name).
 function duoReminder(kid) {
   var t = today();
   if (practiceDays(kid.Name)[t]) return null;
   var best = null;
   readTable('Duos').forEach(function (d) {
     if (d.State !== 'active' || !duoHas(d, kid.Name)) return;
-    var other = duoOther(d, kid.Name);
-    if (!practiceDays(other)[t]) return;
+    var other = duoOther(d, kid.Name), mate = findGirl(other);
+    if (!practiceDays(other)[t] || !mate || !duelCanMeet(kid, mate)) return;
     var days = duoStreak(d, t).days;
     if (!best || days > best.days) best = { partner: other, days: days };
   });
@@ -302,7 +312,7 @@ function duoNewId(rows) {
   var used = {};
   rows.forEach(function (r) { used[r.Id] = true; });
   for (;;) {
-    var id = 'U' + Math.random().toString(36).slice(2, 8);
+    var id = 'U' + randomId();
     if (!used[id]) return id;
   }
 }

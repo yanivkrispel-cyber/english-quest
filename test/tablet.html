@@ -9,7 +9,7 @@ iframe{border:0;transform-origin:0 0}
 b{display:block;margin:4px 0}
 pre{white-space:pre-wrap;margin:12px 0 0}
 </style>
-<!-- The app on tablets (served by test/dev-server.js: http://localhost:8787/test/tablet.html?screen=today|journey|play|game|mission|parent|picker|signin|nest|nest-meet|nest-phrase|nest-find|nest-move|nest-say|nest-done|nest-all|nest-living|nest-living-night|nest-living-many|nest-living-pet[&phones]).
+<!-- The app on tablets (served by test/dev-server.js: http://localhost:8787/test/tablet.html?screen=today|journey|play|game|mission|parent|parent-signin|parent-name|parent-family|parent-locked|parent-again|admin-signin|picker|signin|parent-he|nest-switch|nest-gate|nest-sleepy|nest|nest-meet|nest-phrase|nest-find|nest-move|nest-say|nest-done|nest-all|nest-living|nest-living-night|nest-living-many|nest-living-pet|gate|gate-type|talk-recast[&phones]).
      Each frame is the page size the tablet script picks, scaled to the real screen and drawn at 0.42. -->
 <div class="row" id="row"></div>
 <pre id="out">Loading…</pre>
@@ -17,7 +17,7 @@ pre{white-space:pre-wrap;margin:12px 0 0}
 const PHONES = [[360, 640, 'Small phone'], [390, 844, 'iPhone'], [430, 932, 'Big phone']];
 const TABLETS = [[768, 1024, 'iPad portrait'], [1024, 768, 'iPad landscape'], [820, 1180, 'iPad Air portrait'], [1180, 820, 'iPad Air landscape'], [800, 1280, 'Android tablet']];
 const SIZES = new URLSearchParams(location.search).has('phones') ? PHONES : TABLETS;
-const S = 0.42, screen = new URLSearchParams(location.search).get('screen') || 'today', out = document.getElementById('out');
+const S = Number(new URLSearchParams(location.search).get('scale') || new URLSearchParams(location.search).get('s')) || 0.42, screen = new URLSearchParams(location.search).get('screen') || 'today', out = document.getElementById('out');
 const row = document.getElementById('row');
 // The layout size the tablet script in Index.html picks (tabletFit): 520 px wide in portrait, 640 px tall in landscape.
 const fitK = (w, h) => Math.max(1, Math.min(2, w > h ? h / 640 : w / 520));
@@ -38,6 +38,20 @@ async function show(f){
   // nest-cheer freezes the right-answer moment half way instead of turning animations off.
   d.head.insertAdjacentHTML('beforeend', screen === 'nest-cheer' ? '<style>*,*::before,*::after{animation-play-state:paused!important;animation-delay:-.4s!important;transition:none!important}</style>' : '<style>*,*::before,*::after{animation:none!important;transition:none!important}</style>');
   if (screen === 'parent') await ev("parent('1234', false, false)");
+  // The parents' sign-in (src/Auth.js): parent-signin = from the kids' page (the family known), parent-name = a phone that
+  // knows no family, parent-family = the family's view (code 246810), parent-locked = the same from a remembered session,
+  // parent-again = the code asked again on it, admin-signin = the passphrase.
+  else if (screen === 'parent-signin') await ev("(async () => { pub = await call('apiPublic', ''); home(); parentSignIn(); })()");
+  else if (screen === 'parent-name') ev("pub = null; parentSignIn(null)");
+  else if (screen === 'admin-signin') ev("adminSignIn(() => {})");
+  else if (screen === 'parent-family') await ev("parent('g::246810', false, false)");
+  else if (screen.startsWith('parent-') && screen !== 'parent-family' && screen !== 'parent-he') await ev("(async () => { const p = await call('apiParent', 'g::246810'); renderParent(await call('apiParent', p.token), p.token); if (" + (screen === 'parent-again') + ") askCode(p.token); })()");
+  // Privacy and safety (specs/store-readiness.md): join = the sign-up notice (details open); family = the Hebrew parents' area
+  // (dev family code 246810: the re-consent card, then &to=<element id> scrolls to frcard, pvcard or a kid's card).
+  else if (screen === 'join') { ev("renderJoin('friends')"); await new Promise(r => setTimeout(r, 2500)); ev("document.querySelectorAll('details').forEach(x => x.open = true)"); }
+  else if (screen === 'family') { await ev("parent('g::246810', false, false)"); const to = new URLSearchParams(location.search).get('to'); await new Promise(r => setTimeout(r, 1500)); if (to) ev("(document.getElementById('" + to + "') || document.querySelector('" + to + "')).scrollIntoView()"); }
+  // parent-he: the family's parents' area in Hebrew (the family code set to 4455 by the admin first).
+  else if (screen === 'parent-he') await ev("parent('g::246810', false, false)");
   // picker: the kids of the family with "Not your family? Switch"; signin: the screen that button opens.
   else if (screen === 'picker') await ev("(async () => { pub = await call('apiPublic', ''); home(); })()");
   else if (screen === 'signin') await ev("(async () => { pub = await call('apiPublic', ''); home(); document.getElementById('swfam').click(); })()");
@@ -63,18 +77,65 @@ async function show(f){
       if (q.has('arcade')) ev('dash.nest.arcade = true');
       ev('dash.nest.home = true; renderNest(dash)');
     }
+    // Grown-ups only and screen time (finding 15): nest-switch = who is playing, nest-gate = the grown-ups' sum on the living home,
+    // nest-sleepy = the day's minutes used up (Chacho asleep).
+    if (screen === 'nest-switch') ev('nestSwitch()');
+    if (screen === 'nest-gate') { ev('dash.nest.home = true; renderNest(dash)'); ev('nkGateAsk(function(){})'); }
+    if (screen === 'nest-sleepy') { ev('nestPlay = function(k, cb){}; dash.nest.used = dash.nest.cap * 60; renderNest(dash)'); }
     if (screen === 'nest-all') ev('dash.nest.all = true; renderNest(dash);' + (location.search.includes('home') ? '' : ' nestDays(EQ_NEST.units[1])'));
-    const step = ['nest-all', 'nest-arcade', 'nest-ground', 'nest-home2', 'nest-cheer'].includes(screen) || screen.startsWith('nest-living') ? '' : screen.slice(5);
+    const step = ['nest-switch', 'nest-gate', 'nest-sleepy', 'nest-all', 'nest-arcade', 'nest-ground', 'nest-home2', 'nest-cheer'].includes(screen) || screen.startsWith('nest-living') ? '' : screen.slice(5);
     if (step) { ev('nestPlay = function(k, cb){}'); ev('nestStart(dash.nest.today)'); ev("NE.si = Math.max(0, NE.steps.findIndex(x => x.t === '" + step + "')); nestRender(false)"); }
   }
   else {
     await ev("(async () => { await login('Aviv', '2694', false, false); clearInterval(homeTimer); clearInterval(petLifeT); })()");
     if (screen === 'journey') ev("dashTab = 'journey'; renderDash()");
     if (screen === 'play') ev("dashTab = 'play'; renderDash()");
+    // talk: Talk with Chacho with the microphone off (the default); friend / block: the sheets for a kid of another family.
+    if (screen === 'talk') { await ev('startChat()'); await new Promise(r => setTimeout(r, 2500)); ev('chatStop(); CT.phase = "ask"; chatRender()'); }
+    if (screen === 'friend' || screen === 'block') { ev("dashTab = 'play'; renderDash()"); await new Promise(r => setTimeout(r, 2500)); ev(screen === 'friend' ? "inviteSheet('Noa')" : "blockSheet('Noa')"); }
     if (screen === 'game') await ev("startGame('match')");
+    // The gate from the held-out bank (gate: the first question, gate-type: the last one, Type it), and a Talk recast.
+    if (screen === 'gate' || screen === 'gate-type') {
+      await ev("dash.journey.gate.state = 'open'; startGate()");
+      if (screen === 'gate-type') ev('G.i = G.items.length - 1; renderItem()');
+    }
+    if (screen === 'talk-recast') {
+      await ev("loadChat('a2')");
+      ev("chatPlay = function(t, c, cb){ if (cb) setTimeout(cb, 0); }; chatOpen(EQ_TALK.a2.find(s => s.id === 'sa201'), { where: 'home', level: 'a2', practice: true })");
+      await new Promise(r => setTimeout(r, 200));
+      ev("chatAnswer('banana yes', 'voice')");
+    }
     if (screen === 'mission') { await ev("loadMissions(MS_FILES['a2'])"); await ev("previewMission('a2g01', '')"); ev("MS.si = Math.min(4, MS.S.length - 1); MS.sub = {}; MS.guess = null; MS.drawn = -1; msRender()"); }
+    // The Writer's Desk (specs/missions.md): write = the task (&id=a1w01, a frame; b1w02, a text box), write-check = the
+    // checklist after a first try that misses some, write-done = Chacho's version, write-kbd = typing with the keyboard
+    // open (the frame shrinks to 55%), say = Say it again after two readings, me-writing / parent-writing = the pieces
+    // with the teacher's note, teacher-writing = the teacher's list.
+    if (screen.startsWith('write') || screen === 'say') {
+      const id = new URLSearchParams(location.search).get('id') || 'b1w02';
+      await ev("loadMissions(msFile('" + id + "'))"); await ev("previewMission('" + id + "', '')");
+      ev("MS.si = MS.S.findIndex(s => " + (screen === 'say' ? "s.t === 'say'" : "s.t === 'q' && s.it.k === 'write'") + "); MS.sub = {}; MS.drawn = -1; msRender()");
+      const it = ev('MS.S[MS.si] && MS.S[MS.si].it'), frame = it && it.frame;
+      const draft = frame ? JSON.stringify(it.fill.map((x, i) => i ? '' : x)) : JSON.stringify('hi maya guess what i have a new puppy');
+      if (screen === 'write-check' || screen === 'write-done') { ev(frame ? 'MS.sub.gaps = ' + draft : 'MS.sub.text = ' + draft); ev('msRender(); msWriteGo(false)'); }
+      if (screen === 'write-done') { ev(frame ? 'MS.sub.gaps = ' + JSON.stringify(it.fill) : 'MS.sub.text = MS.S[MS.si].it.model'); ev('msRender(); msWriteGo(false)'); }
+      if (screen === 'write-kbd') {
+        ev('kbdFit()');
+        const fld = d.querySelector('.mwrite textarea, .mwrite input');
+        fld.focus(); fld.value = frame ? it.fill[0] : 'Hi Maya! Guess what? I have just got a puppy, and she is small, brown and very funny. She sleeps on my bed every night and she loves the beach.';
+        fld.dispatchEvent(new w.Event('input'));
+        f.height = Math.round(Number(f.height) * .55); await new Promise(r => setTimeout(r, 300)); ev('kbdFit()');
+      }
+      if (screen === 'say') ev('MS.sub.rounds = [{ wpm: 84, heard: 8 }, { wpm: 97, heard: 9 }]; msRender()');
+    }
+    const WR = "[{ id: 'w1', date: dash.today, mission: 'a2w02', level: 'A2', prompt: 'Write about a holiday or a fun trip you had.', text: 'Last summer we went to Eilat. We swam in the sea and saw lots of fish. It was great!', first: 'last summer we go to eilat and swim in the sea', checks: '6 of 6', mark: 'star', markLabel: 'Excellent', comment: 'Great job! Your sentences are clear and easy to read.', marked: dash.today }, { id: 'w2', date: dash.today, mission: 'a2w01', level: 'A2', prompt: 'Invite a friend to a picnic in the park. Say when it is.', text: 'Hi Noa! Would you like to come to a picnic in the park? It is on Friday.', first: '', checks: '6 of 7', mark: '', markLabel: '', comment: '', marked: '' }]";
+    if (screen === 'me-writing') ev("dash.writing = " + WR + "; dashTab = 'me'; renderDash(); setTimeout(() => document.querySelector('.mwmodel, .panel h2') && [...document.querySelectorAll('.panel h2')].find(h => h.textContent === 'My writing').scrollIntoView(), 50)");
+    if (screen === 'teacher-writing') await ev("(async () => { TEACHER = 'dev'; const items = " + WR + "; const oc = call; call = (fn, ...a) => fn === 'apiTeacherWriting' ? Promise.resolve({ items, marks: [{ k: 'star', label: 'Excellent' }, { k: 'good', label: 'Good work' }, { k: 'more', label: 'Keep practising' }], comments: ['Great job! Your sentences are clear and easy to read.', 'Lovely ideas! Next time, check the capital letters.'] }) : oc(fn, ...a); await teacherWriting(); })()");
+    if (screen === 'parent-writing') await ev("(async () => { const items = " + WR + "; const oc = call; call = async (fn, ...a) => { const r = await oc(fn, ...a); if (fn === 'apiParent') r.groups.forEach(g => g.girls.forEach(k => { if (k.girl.name === 'Aviv') k.writing = items; })); r.isAdmin = false; return r; }; await parent('1234', false, false); const det = [...document.querySelectorAll('details summary')].find(s => /כתיבה|Writing/.test(s.textContent)); if (det) { det.parentElement.open = true; det.scrollIntoView(); } })()");
   }
   await new Promise(r => setTimeout(r, 1500));
+  // &kid=<name>: the parents' view scrolled to that kid's card.
+  const kid = new URLSearchParams(location.search).get('kid'), kh = kid && [...d.querySelectorAll('#parentview h2')].find(h => h.textContent === kid);
+  if (kh) kh.scrollIntoView();
   const app = d.getElementById('app');
   return f.id + ': app width ' + Math.round(app.getBoundingClientRect().width) + ' of ' + w.innerWidth + ', page scroll ' + (d.scrollingElement.scrollHeight - w.innerHeight);
 }

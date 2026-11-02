@@ -28,9 +28,12 @@ kid, "open on this phone", install steps for iPhone or Android, and the way into
 
 New kids with missions (`dash.girl.inApp`) take the level test in the app instead of test-english.com. Adaptive blocks
 of five game items from `docs/games.js` (Match it, Hear it, Spot it, Build it and one more), starting at the grade's
-level: 4 or 5 right moves up, 2 or fewer down, 3 stops; at most five blocks. The level is the highest block with 3 of 5
-(`placeLevel`; a strong B1 with 2 of 5 at B2, or 3 of 5 at B2, is B1+). Form A uses half of the items (by id hash)
-and the retest, form B, the other half.
+level: 4 or 5 right moves up, 2 or fewer down, 3 stops, but never before two blocks (a second block at the same level);
+at most five blocks. The level is the highest level with 3 of 5 (two blocks at one level count together; `placeLevel`;
+a strong B1 with 2 of 5 at B2, or 3 of 5 at B2, is B1+). Form A uses half of the game items (by id hash); the retest,
+form B, uses the held-out bank (`gate` in games.js) that the games never show, items she has not had in a gate first
+(night review, finding 12). The grade's level (`GRADE_LEVEL`) is one level below the Israeli curriculum's band for
+the grade: grades 3 to 6 A1, 7 and 8 A2, 9 and 10 B1, 11 and 12 B1+.
 
 - `apiPlacement(name, pin, form, level, correct, total, detail)`: form A logs the level like the old link did
   (through `apiSubmit`); form B only records. Tab `Placements`.
@@ -51,6 +54,37 @@ Pilot card shows the teacher link and the number of notes.
 
 `apiPilotStats`: families that joined from the link, per kid: level test done, missions done, days active in weeks 1 to
 4 since joining, active days in the last 7; totals, latest feedback, teacher notes, the invite link (open/close).
+
+## Measuring the pilot (night review 2026-11-01, finding 16)
+
+The pilot answers one question: do kids come back to practise on their own? Comparing the level test before and after four
+weeks is not proof of learning, so the decision rests on habit and the parents' word.
+
+- **North star: practice days a week per kid, target at least 4 of 7.** A practice day is a day with a task or mission (Log),
+  a game round (Games) or a talk with Chacho (Chats). The Pilot card shows the average over the last 7 days, how many kids
+  reached 4, and the last six weeks (Sunday to Saturday).
+- **Retention by sign-up week.** A kid's first day is her family's `Joined` day (families from before the link: `Settings.PilotFrom`).
+  D1 = practised the next day, D7 = on one of days 7 to 13, D30 = on one of days 30 to 36. A kid counts once her days are over.
+- **Feature use.** The phone counts which parts a kid opened (missions, games, talks, the tabs, duels, the shop, the Nest...,
+  `USE_IDS` in Index.html, `USE_FEATURES` in `src/Ops.js`) and sends the counts with her next call that checks her PIN: no
+  call of its own and nothing third party. The server keeps one row per kid, day and part (tab Usage: Date, Girl, Feature,
+  Opens), written in batches by `auditFlush` (a few hundred rows a day for 100 kids, inside the free plan). The card lists
+  every part with the kids who opened it and how often, for 7 and 28 days, so unused parts stand out.
+
+## The pilot gate (written 2026-11-01)
+
+Checked in the window **23.11.2026 to 27.11.2026** (four weeks after the families joined; `PILOT_GATE` in `src/Ops.js`). The pilot
+passes when both hold:
+
+1. **At least 60% of the kids are still practising in week 4**: practice on 2 or more days in their fourth week (days 22 to 28, the first day being day 1)
+   (kids who have had four full weeks).
+2. **The parents' NPS is at least 30.** From the stars in "ספרו לנו" (Feedback), each family's latest: 5 stars = promoter,
+   4 = passive, 1 to 3 = detractor; NPS = % promoters minus % detractors. Before the window, ask every family for their stars once.
+
+The Pilot card shows both numbers all along and "passed / not passed" from 23.11. Passed: go on to the store plan
+(`specs/store-readiness.md`). Not passed: no new features; find out with the families why kids stopped (the feature table and the
+retention weeks show where), fix that, and run the gate again four weeks later. The north star (4 of 7 days) is the aim, not a
+condition of the gate.
 
 ## Content for four weeks
 

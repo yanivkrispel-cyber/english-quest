@@ -571,7 +571,7 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
         c: "I've noticed something: the more crackers I eat, the happier I get! What makes you happier, the more you do it?",
         he: "ככל שעושים יותר, כך שמחים יותר. למשל: The more I dance, the happier I feel.",
         a: [
-          { k: ['more_better more_good more_happy more_happier more_fun'], r: "The more you do it, the better you feel! Lovely answer." },
+          { k: ['more_better more_good more_happy more_happier more_fun'], r: "The more you do it, the better you feel! That is so true." },
           { k: ['happier happy fun funnier'], r: "That's wonderful. I can hear the smile in your voice." },
           { k: ['better faster stronger more'], r: "Yes! The more you practise, the better it gets." }
         ],
@@ -1676,6 +1676,247 @@ window.EQ_TALK.bp = (window.EQ_TALK.bp || []).concat([
       }
     ],
     end: "No fooling: you were brilliant today! See you soon, fact checker."
+  },
+  {
+    id: "tbpw01", title: "Chacho's photo album",
+    he: "מתארים תמונה, עם In the foreground, In the background ו-It looks like",
+    turns: [
+      {
+        c: "I'm looking at a photo of my shop window. When you look at a picture, what do you notice first, the people or the place?",
+        he: "מה אתם רואים קודם בתמונה, את האנשים או את המקום? למשל: I usually notice the people first.",
+        a: [
+          { k: ["people person faces kids"], r: "Me too! I always look at what the people are doing first." },
+          { k: ["place background colours colors view sky sea"], r: "Interesting! The place tells you where and when the photo was taken." }
+        ],
+        o: "Interesting! Everyone looks at pictures in a different way.",
+        t: ["I usually notice the people first.", "I look at the place and the colours first."],
+        m: "I usually notice the people first.",
+        x: [["the people", 0], ["i see the persons first", 0], ["the place", 1], ["colors", 1], ["both", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Imagine a busy beach in summer. What's happening in the foreground, right at the front of the picture?",
+        he: "מה קורה בחזית התמונה? עם present continuous. למשל: In the foreground, two kids are building a sandcastle.",
+        a: [],
+        o: "Ooh, I can almost see it! Keep going.",
+        t: ["In the foreground, two kids are building a sandcastle.", "A dog is running after a ball.", "A family is having a picnic on the sand."],
+        m: "In the foreground, two kids are building a big sandcastle.",
+        x: [["two kids build sandcastle", -1], ["a man is sleep on a towel", -1]]
+      },
+      {
+        c: "And in the background, far away? What can you see there?",
+        he: "מה רואים ברקע, רחוק? למשל: In the background, a boat is sailing.",
+        a: [
+          { k: ["boat boats ship sail sailing"], r: "A boat is sailing in the background. Lovely!" },
+          { k: ["swim swimming swimmer swimmers waves surf surfing surfer"], r: "People are swimming in the sea. It sounds so refreshing." },
+          { k: ["sun sky cloud clouds bird birds plane"], r: "The sky! Maybe a few birds are flying there, like me." }
+        ],
+        o: "Thanks! The background makes the picture feel bigger.",
+        t: ["In the background, a boat is sailing.", "People are swimming in the sea.", "There are some birds in the sky."],
+        m: "In the background, a boat is sailing on the sea.",
+        x: [["a boat sail", 0], ["people swim far away", 1], ["birds in the sky", 2], ["mountains", -1], ["a hotel", -1]]
+      },
+      {
+        c: "We can guess from a picture too. What does the weather look like, and how do the people seem to feel?",
+        he: "נחשו מהתמונה, עם It looks like או might be. למשל: It looks like a very hot day.",
+        a: [],
+        o: "Thanks! A picture can tell a whole story.",
+        t: ["It looks like a very hot day.", "They might be on holiday, because they look relaxed.", "It looks hot, and everyone seems happy."],
+        m: "It looks like a hot day, and they seem happy.",
+        x: [["it is look hot", -1], ["they are happy because holiday", -1]]
+      },
+      {
+        c: "If you could take one photo of today, what would be in it, and what would be happening?",
+        he: "אילו הייתם מצלמים תמונה אחת של היום, מה היה בה? למשל: My friends and I would be laughing in the park.",
+        a: [],
+        o: "What a lovely picture. I'd hang it on my shop wall.",
+        t: ["My friends and I would be laughing in the park.", "There'd be my dog sleeping on the sofa.", "It would show the sunset from my window."],
+        m: "My friends and I would be laughing in the park.",
+        x: [["my cat on my bed", -1], ["the sea and the sun", -1]]
+      }
+    ],
+    end: "In the foreground, there's a happy parrot. It looks like a great chat! Bye for now!"
+  },
+  {
+    id: "tbpw02", title: "Chacho needs advice",
+    he: "נותנים עצות, עם You should, Why don't you ו-If I were you",
+    turns: [
+      {
+        c: "I need your help! My new shop assistant, a young pigeon, feels lonely. What should she do to make friends?",
+        he: "מה היונה החדשה צריכה לעשות כדי להכיר חברים? למשל: She should join a club.",
+        a: [
+          { k: ["join club team activity activities"], r: "Joining a club! That's a great way to meet people." },
+          { k: ["talk say hi hello ask introduce"], r: "Saying hi first! It's scary, but it really works." },
+          { k: ["play game games invite"], r: "Inviting someone to play! Games make friends fast." }
+        ],
+        o: "Thanks, that's kind advice. I'll tell her tomorrow.",
+        t: ["She should join a club.", "Why doesn't she say hi to someone new?", "If I were her, I would invite someone to play."],
+        m: "She should join a club after work.",
+        x: [["she should join a club", 0], ["she need to talk to people", 1], ["say hello", 1], ["invite them to play", 2], ["be nice", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Now let's practise. A friend is nervous about a test tomorrow. What advice would you give, starting with You should?",
+        he: "חבר לחוץ ממבחן. איזו עצה תתנו? למשל: You should go to bed early.",
+        a: [],
+        o: "Thanks! I'm sure that would help your friend.",
+        t: ["You should go to bed early.", "You should review your notes tonight.", "You should take a deep breath and relax."],
+        m: "You should go to bed early and relax.",
+        x: [["you need to sleep good", -1], ["study more", -1]]
+      },
+      {
+        c: "Here's another way. Your friend always forgets their water bottle. Can you give advice starting with Why don't you?",
+        he: "חבר תמיד שוכח בקבוק מים. תנו עצה עם Why don't you. למשל: Why don't you put it in your bag at night?",
+        a: [
+          { k: ["bag"], r: "Why don't you put it in your bag at night? Great idea!" },
+          { k: ["note remember remind alarm phone write list"], r: "A reminder! Why don't you set an alarm? That's clever." }
+        ],
+        o: "Thanks! I'm sure your friend will remember next time.",
+        t: ["Why don't you put it in your bag at night?", "Why don't you write a note on the door?"],
+        m: "Why don't you put it in your bag at night?",
+        x: [["why you don't put it in the bag", 0], ["put in your bag", 0], ["write a note", 1], ["set alarm on phone", 1], ["buy a new one", -1], ["drink from the tap", -1]]
+      },
+      {
+        c: "If you were me, what would you sell in my shop to make it even more popular?",
+        he: "מה הייתם מוכרים בחנות של צ׳אצ׳ו? עם If I were you. למשל: If I were you, I would sell funny hats.",
+        a: [],
+        o: "Ooh, I'll think about that. Thanks for the idea!",
+        t: ["If I were you, I would sell funny hats.", "If I were you, I would sell football shirts.", "I would sell glasses with colourful frames."],
+        m: "If I were you, I would sell funny hats.",
+        x: [["if i was you i sell sunglasses", -1], ["shoes for parrots", -1]]
+      },
+      {
+        c: "Last one! What's the best advice anyone ever gave you, and did you follow it?",
+        he: "מה העצה הכי טובה שקיבלתם? למשל: Someone told me to never give up, and I didn't.",
+        a: [],
+        o: "Thank you for sharing that. Good advice stays with us.",
+        t: ["Someone told me to never give up, and I didn't.", "My coach said I should practise every day, and I did.", "I was told to be kind, and I try every day."],
+        m: "Someone told me to never give up, and I didn't.",
+        x: [["my teacher say read more books", -1], ["be yourself", -1]]
+      }
+    ],
+    end: "If I were you, I would come back tomorrow for another chat. Bye for now!"
+  },
+  {
+    id: "tbpw03", title: "Both sides of the story",
+    he: "מדברים על שני הצדדים, עם On the one hand, On the other hand ו-However",
+    turns: [
+      {
+        c: "I'm thinking about getting a smartphone for my shop. On the one hand, it's useful. What's one good thing about smartphones?",
+        he: "מה טוב בסמארטפון? למשל: On the one hand, you can find information quickly.",
+        a: [],
+        o: "Thanks! I'll write that on the good side of my list.",
+        t: ["On the one hand, you can call people anytime.", "You can find information very quickly.", "They have great maps for when you get lost."],
+        m: "On the one hand, you can find information quickly.",
+        x: [["you can call your parents", -1], ["play games and learn", -1]]
+      },
+      {
+        c: "On the other hand, what's one problem with smartphones?",
+        he: "מה הבעיה בסמארטפון? למשל: On the other hand, it's hard to stop playing games.",
+        a: [
+          { k: ["games game addict addictive stop"], r: "Yes, it can be hard to stop playing. I know that feeling!" },
+          { k: ["eye eyes sleep tired"], r: "True. Screens late at night can make it hard to sleep." },
+          { k: ["distract distracting distracted focus concentrate attention"], r: "True. They can be very distracting when you need to focus." }
+        ],
+        o: "Thanks! That goes on the other side of my list.",
+        t: ["On the other hand, it's hard to stop playing games.", "They can be distracting in class.", "Screens at night are bad for sleep."],
+        m: "On the other hand, it's hard to stop playing games.",
+        x: [["you play too much games", 0], ["is bad for the eyes", 1], ["you can't sleep", 1], ["it distract you", 2], ["they are expensive", -1], ["people talk less", -1]]
+      },
+      {
+        c: "Is it better to live in a city or in the countryside? Can you give one point for each?",
+        he: "עיר או כפר? נקודה אחת לכל צד. למשל: Cities are exciting. However, the countryside is quieter.",
+        a: [],
+        o: "Thanks! There's a lot to say on both sides.",
+        t: ["On the one hand, cities are exciting. On the other hand, they're noisy.", "The countryside is quiet. However, it's far from everything."],
+        m: "Cities are exciting. However, the countryside is much quieter.",
+        x: [["city is fun but noisy", -1], ["countryside quiet and green", -1]]
+      },
+      {
+        c: "And which one would you choose for yourself, and why?",
+        he: "ואתם, מה הייתם בוחרים ולמה? למשל: I would choose the city, because there's more to do.",
+        a: [
+          { k: ["country countryside village farm nature quiet"], r: "The countryside! Fresh air, quiet nights and lots of birds. I approve." },
+          { k: ["city town"], r: "The city! Shops, lights and lots to do. I'd be happy there too." },
+          { k: ["both mix depend"], r: "A bit of both! Maybe a quiet place near a big city." }
+        ],
+        o: "Thanks! There's no wrong answer to that one.",
+        t: ["I would choose the city, because there's more to do.", "I'd choose the countryside, because it's peaceful.", "It depends, I like both."],
+        m: "I would choose the city, because there's more to do.",
+        x: [["country because it is quiet", 0], ["the city", 1], ["i like the city more", 1], ["both", 2], ["in the sea", -1], ["i don't know", -1]]
+      },
+      {
+        c: "Last one! Although school uniforms are easy, some kids don't like them. What do you think about uniforms?",
+        he: "מה דעתכם על תלבושת אחידה? למשל: Although they're easy, I prefer my own clothes.",
+        a: [
+          { k: ["own prefer boring hate uncomfortable dislike not_like"], r: "Fair enough! Choosing your own clothes is fun. I'm a fashion parrot, I agree!" },
+          { k: ["like love good easy great fine okay ok fair"], r: "Interesting! They're easy, and nobody has to decide what to wear." }
+        ],
+        o: "Thanks! People really have different opinions about this.",
+        t: ["Although they're easy, I prefer my own clothes.", "I like them, because I don't have to choose.", "On the one hand they're easy, but they're boring."],
+        m: "Although they're easy, I prefer my own clothes.",
+        x: [["i don't like uniforms", 0], ["i prefer my clothes", 0], ["i like it is easy", 1], ["good because everyone is same", 1], ["what is uniform", -1]]
+      }
+    ],
+    end: "On the one hand, I'm sad our chat is over. On the other hand, see you tomorrow! Bye!"
+  },
+  {
+    id: "tbpw04", title: "A bottle on the beach",
+    he: "מספרים סיפור, עם I was walking... when ותחושות כמו nervous ו-excited",
+    turns: [
+      {
+        c: "Yesterday I was flying over the beach when I saw a green bottle in the sand! What do you think was inside?",
+        he: "מה היה בתוך הבקבוק? למשל: Maybe there was a treasure map inside.",
+        a: [
+          { k: ["note letter message paper"], r: "A note! Yes, an old note with a little map on it." },
+          { k: ["map treasure"], r: "A map! Yes, an old map with a big red X on it." },
+          { k: ["sand water nothing"], r: "Ha! Not just sand. There was an old note with a map!" }
+        ],
+        o: "Ooh! Actually, there was an old note with a map inside.",
+        t: ["I think there was an old letter.", "Maybe there was a treasure map inside."],
+        m: "Maybe there was a treasure map inside.",
+        x: [["a letter", 0], ["a message from a pirate", 0], ["treasure map", 1], ["water", 2], ["a fish", -1], ["gold", -1]]
+      },
+      {
+        c: "Now it's your turn to start a story. What were you doing when something strange happened?",
+        he: "מה עשיתם כשקרה משהו מוזר? עם was ו-ing ואז when. למשל: I was walking home when I heard a noise.",
+        a: [],
+        o: "Ooh, I'm already curious! What a start.",
+        t: ["I was walking home when I heard a strange noise.", "I was reading in the garden when the lights went out.", "We were swimming when a dolphin appeared."],
+        m: "I was walking on the beach when I found a bottle.",
+        x: [["i walk in the park and i see a cat", -1], ["we was playing when it start to rain", -1]]
+      },
+      {
+        c: "How did you feel at that moment, and why?",
+        he: "איך הרגשתם ולמה? למשל: I felt excited and a bit nervous.",
+        a: [
+          { k: ["nervous scared scary afraid frightened worried"], r: "Nervous! Your heart beats fast, and you don't know what's coming next." },
+          { k: ["excite curious happy"], r: "Excited! That's the best feeling at the start of an adventure." },
+          { k: ["surprise shocked confused"], r: "Surprised! Nobody expects that on an ordinary day." }
+        ],
+        o: "That makes sense. Feelings make a story come alive.",
+        t: ["I felt excited, because I love adventures.", "I was really scared, because it was dark.", "I was surprised, because it was so strange."],
+        m: "I felt excited and a little nervous.",
+        x: [["i was nervous", 0], ["scary because dark", 0], ["i feel excited", 1], ["surprised", 2], ["bored", -1], ["angry", -1]]
+      },
+      {
+        c: "So what happened next in your story, and how did it end?",
+        he: "מה קרה אחר כך ואיך זה נגמר? בעבר. למשל: I opened the bottle and found an old map.",
+        a: [],
+        o: "Wow, thank you! I didn't see that ending coming.",
+        t: ["I opened the bottle and found an old map.", "In the end, it was only my cat in the dark!", "We followed the map and found a box of shells."],
+        m: "I opened the bottle and found an old map.",
+        x: [["i open the box and find gold", -1], ["it was a dream", -1]]
+      },
+      {
+        c: "If you found a treasure map tomorrow, what would you do first?",
+        he: "מה הייתם עושים אילו מצאתם מפת אוצר? למשל: I would follow it with my friends.",
+        a: [],
+        o: "Ooh, that sounds like an adventure. Take me with you!",
+        t: ["I would follow it with my friends.", "I'd show it to my family first.", "I would go to the place on the map."],
+        m: "I would follow it with my best friend.",
+        x: [["i will go dig", -1], ["show my mom", -1]]
+      }
+    ],
+    end: "I was flying home when I realised: this was a great story. Bye for now!"
   }
 ]);
 

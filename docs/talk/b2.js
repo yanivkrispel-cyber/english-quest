@@ -1646,6 +1646,240 @@ window.EQ_TALK.b2 = (window.EQ_TALK.b2 || []).concat([
       }
     ],
     end: "Thanks, detective! Remember to stop, check, and ask if it could be fake. See you soon!"
+  },
+  {
+    id: "tb2w01", title: "Dear Sir or Madam",
+    he: "מתרגלים כתיבה רשמית, עם I am writing to... ו-Could you please...?",
+    turns: [
+      {
+        c: "I'm writing a formal letter to a science museum today. Have you ever written something formal, maybe for a class or a club?",
+        he: "כתבתם פעם מכתב רשמי? למשל: Yes, I once wrote one to a club. או No, I haven't written one yet.",
+        a: [
+          { k: ["no not never"], n: "know", r: "That's fine. Most people start writing them later, and it's easy to learn." },
+          { k: ["yes once wrote written write"], r: "Great! Then you know it needs a different style from a message to a friend." }
+        ],
+        o: "Thanks! Formal writing is useful, and today we'll practise it together.",
+        t: ["Yes, I once wrote one to a club.", "No, I haven't written one yet."],
+        m: "No, I haven't written a formal letter yet.",
+        x: [["yes for school", 1], ["i wrote to a shop one time", 1], ["no never", 0], ["i haven't", 0], ["what is formal", -1]]
+      },
+      {
+        c: "In a formal message, you say why you're writing right at the start. Why do you think that's important?",
+        he: "למה חשוב לכתוב כבר בהתחלה למה פונים? למשל: Because the reader wants to know quickly.",
+        a: [],
+        o: "That makes sense. The reader knows straight away what you need.",
+        t: ["Because the reader is busy and wants to know quickly.", "So the person understands what the message is about.", "It's polite, and it saves everyone time."],
+        m: "Because the reader wants to know what the message is about.",
+        x: [["because they are busy people", -1], ["so they know what you want", -1]]
+      },
+      {
+        c: "Imagine you're writing to a museum about a robotics workshop. Could you ask me a polite question about it, starting with Could you please?",
+        he: "שאלו את המוזיאון שאלה מנומסת. למשל: Could you please tell me when the workshop starts?",
+        a: [
+          { k: ["cost price how_much pay"], r: "Certainly! It costs fifty shekels, and that includes all the materials." },
+          { k: ["when time start begin day date"], r: "Certainly! The workshop starts on Sunday at ten in the morning." },
+          { k: ["bring need take"], r: "Certainly! You don't need to bring anything. We provide everything." }
+        ],
+        o: "Certainly! I'll be happy to help you with that.",
+        t: ["Could you please tell me when the workshop starts?", "Could you please tell me how much it costs?", "Could you please tell me what we need to bring?"],
+        m: "Could you please tell me when the workshop starts?",
+        x: [["how much is it", 0], ["could you tell me the price", 0], ["when it start", 1], ["what time does it begin", 1], ["what should i bring", 2], ["is there parking", -1]]
+      },
+      {
+        c: "In formal writing we avoid short forms, so we write I am, not I'm. Why do you think formal writing sounds different from messages to friends?",
+        he: "למה כתיבה רשמית נשמעת אחרת? למשל: Because we want to sound polite to someone we don't know.",
+        a: [],
+        o: "Thanks! The right style shows the reader some respect.",
+        t: ["Because we want to sound polite and serious.", "Because we don't know the person, so we're more careful.", "A formal letter is like wearing smart clothes to an event."],
+        m: "Because we want to sound polite to someone we don't know.",
+        x: [["because it is more polite", -1], ["they are older people", -1]]
+      },
+      {
+        c: "Last one! If you could ask any museum one question, what would you ask, and why?",
+        he: "איזו שאלה הייתם שואלים מוזיאון, ולמה? למשל: I would ask how they keep old objects safe.",
+        a: [],
+        o: "Ooh, what a question! I'd love to know the answer too.",
+        t: ["I would ask how they keep old things safe.", "I'd ask if I could see the rooms that visitors never see.", "I would ask which object is the most popular, because I'm curious."],
+        m: "I would ask how they keep very old objects safe.",
+        x: [["how old is the oldest thing", -1], ["can i touch the dinosaur", -1]]
+      }
+    ],
+    end: "I am writing to thank you for a lovely chat. Kind regards, Chacho. Bye for now!"
+  },
+  {
+    id: "tb2w02", title: "Chacho's polite complaint",
+    he: "מתלוננים בנימוס, עם Unfortunately ו-I would appreciate it if...",
+    turns: [
+      {
+        c: "I ordered a box of crackers online, and half of them arrived broken! Has anything you ordered or bought ever been a disappointment?",
+        he: "קרה לכם שמשהו שהזמנתם או קניתם אכזב? למשל: Yes, my headphones stopped working after a week.",
+        a: [
+          { k: ["no not never"], n: "know", r: "Lucky you! Then you've never needed to complain." },
+          { k: ["yes broke broken wrong late missing small break stopped"], r: "Oh no, that's so annoying. Let's learn how to complain politely." }
+        ],
+        o: "Thanks for telling me. Most of us have had a disappointing parcel.",
+        t: ["Yes, my headphones stopped working after a week.", "Once, a parcel arrived really late.", "No, I've been lucky so far."],
+        m: "Yes, my headphones stopped working after a week.",
+        x: [["yes a shirt was too small", 1], ["my game came broken", 1], ["no", 0], ["never happened", 0], ["i buy a lot", -1]]
+      },
+      {
+        c: "A polite complaint is calm and clear. Why do you think being polite works better than being angry?",
+        he: "למה תלונה מנומסת עובדת יותר טוב? למשל: Because people want to help you more if you're polite.",
+        a: [],
+        o: "That makes sense. People help more when they feel respected.",
+        t: ["Because people want to help you if you're nice.", "If you shout, they might not listen to you.", "Being polite shows that you're serious and fair."],
+        m: "Because people want to help you more if you're polite.",
+        x: [["because angry people is scary", -1], ["they help you faster", -1]]
+      },
+      {
+        c: "Let's practise. Your new board game arrived with four pieces missing. How would you describe the problem, starting with Unfortunately?",
+        he: "תארו את הבעיה, עם Unfortunately. למשל: Unfortunately, four pieces were missing when I opened the box.",
+        a: [
+          { k: ["miss missing lost gone without no not"], r: "Unfortunately, four pieces were missing when you opened the box. How annoying!" }
+        ],
+        o: "Thanks! A clear detail helps the shop fix the problem quickly.",
+        t: ["Unfortunately, four pieces were missing when I opened the box.", "Unfortunately, the game arrived without all its pieces."],
+        m: "Unfortunately, four pieces were missing from the box.",
+        x: [["unfortunately four pieces is missing", 0], ["the pieces were not in the box", 0], ["i lost them", 0], ["the box was open", -1]]
+      },
+      {
+        c: "What would you ask the shop to do? Could you start with I would appreciate it if you could?",
+        he: "מה תבקשו מהחנות? עם I would appreciate it if you could. למשל: ...send me the missing pieces.",
+        a: [
+          { k: ["send replace new pieces"], r: "Very reasonable. The shop can send the missing pieces quickly." },
+          { k: ["money refund back return"], r: "A refund is fair too, if the shop can't send the pieces." }
+        ],
+        o: "Thanks! Asking for something clear helps the shop help you.",
+        t: ["I would appreciate it if you could send me the missing pieces.", "I would appreciate it if you could give me a refund."],
+        m: "I would appreciate it if you could send me the missing pieces.",
+        x: [["send me the pieces please", 0], ["i want a new game", 0], ["give me my money back", 1], ["i want refund", 1], ["say sorry", -1], ["nothing", -1]]
+      },
+      {
+        c: "Complaining is hard for many people. What's the best way to complain without sounding rude, do you think?",
+        he: "איך מתלוננים בלי להישמע גסים? למשל: Stay calm, explain the problem and say what you would like.",
+        a: [],
+        o: "Thanks! That's useful advice for anyone, including parrots.",
+        t: ["Stay calm, explain the problem clearly and say what you'd like.", "Be polite, and don't use capital letters to shout.", "I think you should say thank you at the end."],
+        m: "Stay calm, explain the problem and say what you would like.",
+        x: [["be calm and nice", -1], ["don't shout at them", -1]]
+      }
+    ],
+    end: "I would appreciate it if you came back tomorrow for another chat. Kind regards, and bye!"
+  },
+  {
+    id: "tb2w03", title: "Books or videos?",
+    he: "מדברים על שתי דעות, עם Some people believe, Others argue ו-Personally",
+    turns: [
+      {
+        c: "Let's discuss a big question. Some people believe that videos are the best way to learn. Why might they think that?",
+        he: "למה יש מי שחושבים שסרטונים הם הדרך הכי טובה ללמוד? למשל: Because videos are clear and fun.",
+        a: [],
+        o: "Thanks! That's one side of the argument.",
+        t: ["Because videos are clear, and you can see how things work.", "Videos are fun, so you don't get bored.", "You can watch them again and again."],
+        m: "Because videos are clear, and you can see how things work.",
+        x: [["because is more fun", -1], ["you see pictures and hear", -1]]
+      },
+      {
+        c: "Others argue that books help you think more deeply. Do you agree with them?",
+        he: "אתם מסכימים שספרים עוזרים לחשוב לעומק? למשל: Yes, I agree. או I partly agree, it depends on the book.",
+        a: [
+          { k: ["no not disagree"], n: "know", r: "Fair enough. Not everyone finds books easier to focus on." },
+          { k: ["partly depend sometimes both"], r: "Partly, yes. It depends on the book and on the reader." },
+          { k: ["yes agree true right"], r: "I agree too. A book makes you imagine everything yourself." }
+        ],
+        o: "Thanks! It's an interesting question with no easy answer.",
+        t: ["Yes, I agree, because you have to imagine things.", "I partly agree, it depends on the book.", "No, I don't agree. Videos explain things better."],
+        m: "Yes, I agree, because books make you imagine things.",
+        x: [["yes i am agree", 2], ["i agree with them", 2], ["i don't agree", 0], ["it depends", 1], ["sometimes yes", 1], ["books are boring", -1]]
+      },
+      {
+        c: "Here's a phrase that sounds great in a discussion: Personally, I think. Personally, what's the best way for you to learn something new?",
+        he: "איך אתם הכי אוהבים ללמוד דבר חדש? למשל: Personally, I think a mix of books and videos works best.",
+        a: [],
+        o: "Interesting! Everyone learns in a slightly different way.",
+        t: ["Personally, I think a mix of books and videos works best.", "Personally, I learn best when I try things myself.", "I prefer videos, because I remember what I see."],
+        m: "Personally, I think a mix of both works best.",
+        x: [["i like learn with videos", -1], ["by doing it myself", -1]]
+      },
+      {
+        c: "Let's try another topic. Some people believe that kids should have a phone from a young age. What do others argue?",
+        he: "מה אומרים בצד השני? עם Others argue that. למשל: Others argue that young kids spend too much time on screens.",
+        a: [],
+        o: "Thanks! That's the other side, and it's an important one.",
+        t: ["Others argue that young kids spend too much time on screens.", "Others argue that kids should play outside instead.", "Others argue that phones make it hard to focus."],
+        m: "Others argue that young kids spend too much time on screens.",
+        x: [["it is not good for the eyes", -1], ["kids play games all day", -1]]
+      },
+      {
+        c: "Personally, what do you think? When should kids get their first phone, and why?",
+        he: "ומה דעתכם? מתי ילדים צריכים לקבל טלפון ראשון, ולמה? למשל: Personally, I think it depends on the kid.",
+        a: [],
+        o: "Thanks! People really disagree about this one.",
+        t: ["Personally, I think twelve is a good age, because kids are more responsible.", "I think around ten, so they can call their parents.", "Personally, I think it depends on the kid."],
+        m: "Personally, I think twelve is a good age for a first phone.",
+        x: [["at 12 because they go alone to school", -1], ["when they are older", -1]]
+      }
+    ],
+    end: "Some people believe that parrots can't discuss ideas. Personally, I think we just did! Bye for now!"
+  },
+  {
+    id: "tb2w04", title: "Agree or disagree?",
+    he: "אומרים אם אתם מסכימים, עם I completely agree, I strongly disagree ו-Firstly, Secondly",
+    turns: [
+      {
+        c: "Here's a statement: every young person should learn to cook. Do you agree or disagree?",
+        he: "כל צעיר צריך ללמוד לבשל. מסכימים? למשל: I completely agree. או I strongly disagree.",
+        a: [
+          { k: ["disagree not no"], n: "know", r: "Interesting! So you disagree. Let's hear your reasons in a moment." },
+          { k: ["partly some_of bit depend sometimes"], r: "So you partly agree. That's a fair place to stand." },
+          { k: ["agree yes true right"], r: "So you agree! I completely agree too. Even parrots should cook." }
+        ],
+        o: "Thanks! It's a good statement to argue about.",
+        t: ["I completely agree with it.", "I partly agree, it depends on the person.", "I strongly disagree with this statement."],
+        m: "I completely agree that everyone should learn to cook.",
+        x: [["i am agree", 2], ["yes totally", 2], ["i don't agree", 0], ["i disagree", 0], ["a little bit", 1], ["it depends", 1], ["i like pizza", -1]]
+      },
+      {
+        c: "What's your first reason? Could you start with Firstly?",
+        he: "מה הסיבה הראשונה? מתחילים ב-Firstly. למשל: Firstly, home cooking is healthier than fast food.",
+        a: [],
+        o: "Thanks! That's reason number one on my list.",
+        t: ["Firstly, home cooking is healthier than fast food.", "Firstly, you can make the food you really like.", "Firstly, not everyone enjoys cooking."],
+        m: "Firstly, home cooking is healthier than fast food.",
+        x: [["first it is healthy", -1], ["because you need to eat", -1]]
+      },
+      {
+        c: "And what's your second reason? Can you add an example, starting with For instance?",
+        he: "סיבה שנייה ודוגמה. למשל: Secondly, it's fun. For instance, you can bake with friends.",
+        a: [],
+        o: "Thanks! An example makes a reason much easier to believe.",
+        t: ["Secondly, it's fun. For instance, you can bake with friends.", "Secondly, you'll need it later. For instance, when you live alone.", "Secondly, it's a skill for life, like swimming."],
+        m: "Secondly, it's fun. For instance, you can bake with friends.",
+        x: [["second you can cook for your friends", -1], ["for example pasta is easy", -1]]
+      },
+      {
+        c: "Here's another one: school should start an hour later. Do you strongly agree, or strongly disagree?",
+        he: "בית הספר צריך להתחיל שעה מאוחר יותר. מה דעתכם? למשל: I strongly agree, because kids need more sleep.",
+        a: [
+          { k: ["disagree not no"], n: "know", r: "Interesting! Then you'd finish later in the afternoon too." },
+          { k: ["agree yes true right"], r: "I strongly agree too! One more hour of sleep sounds fabulous." }
+        ],
+        o: "Thanks! Lots of students and teachers argue about this one.",
+        t: ["I strongly agree, because kids need more sleep.", "I strongly disagree, because we'd finish too late."],
+        m: "I strongly agree, because kids need more sleep.",
+        x: [["i agree because i am tired", 1], ["yes please", 1], ["i disagree", 0], ["no it is not good", 0], ["maybe", -1]]
+      },
+      {
+        c: "Last question! What's a statement you completely agree with, about anything at all?",
+        he: "עם איזה משפט אתם מסכימים לגמרי? למשל: I completely agree that everyone should learn to swim.",
+        a: [],
+        o: "Interesting! I'll think about that one while I tidy the shop.",
+        t: ["I completely agree that everyone should learn to swim.", "I completely agree that summer holidays are too short.", "I believe animals should be treated kindly."],
+        m: "I completely agree that everyone should learn to swim.",
+        x: [["pizza is the best food", -1], ["kids need more free time", -1]]
+      }
+    ],
+    end: "Firstly, thanks for a great chat. Secondly, come back soon! Bye for now!"
   }
 ]);
 

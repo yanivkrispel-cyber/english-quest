@@ -43,16 +43,20 @@ function auditOpen(role, who, group) {
   audit(role, who, group, 'open', row.Detail);
 }
 
-// Writes the opens waiting in the cache to the Audit tab, in one write.
+// Writes the opens and the wrong PINs waiting in the cache to the Audit tab, in one write.
 function auditFlush() {
+  opsFlush();   // the feature counts and the phones' error reports (Ops.js) wait the same way
   var lock = LockService.getScriptLock(), q;
   try {
     if (!lock.tryLock(5000)) return;
     try {
       var c = CacheService.getScriptCache();
       q = JSON.parse(c.get('AQ') || '[]');
+      var w = JSON.parse(c.get('AW') || '{}');
+      Object.keys(w).forEach(function (k) { q.push(auditWrongRow(w[k])); });
+      q.sort(function (x, y) { return x.Timestamp < y.Timestamp ? -1 : x.Timestamp > y.Timestamp ? 1 : 0; });
       if (!q.length) return;
-      c.remove('AQ');
+      c.remove('AQ'); c.remove('AW');
     } finally { lock.releaseLock(); }
     var sh = sheet('Audit'), head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
     sh.getRange(sh.getLastRow() + 1, 1, q.length, head.length).setValues(q.map(function (r) {
@@ -92,14 +96,37 @@ function perfSummary() {
 }
 var PERF_PARTS = null;
 
-// A wrong PIN or code (checkPin keys: 'girl:<name>', 'parent', 'teacher').
-function auditPin(key, fails) {
-  var detail = fails >= 8 ? 'locked for 15 minutes' : 'attempt ' + fails;
+// A wrong PIN or code for a name that exists (checkPin keys: 'girl:<name>', 'parent:<family id>', 'admin', 'teacher'; made-up
+// names keep nothing). Not written during the call (finding 6: a write per wrong try): the tries of one name wait in the
+// cache under AW, memory only on Cloudflare, and auditFlush writes one line per name: how many tries, and the lock.
+function auditPin(key, fails, rule) {
+  var role = key, who = '', group = '', action = 'wrong PIN';
   if (key.indexOf('girl:') === 0) {
     var kid = findGirl(key.slice(5));
-    return audit('kid', kid ? kid.Name : key.slice(5), kid ? groupOf(kid) : '', kid ? 'wrong PIN' : 'unknown name', detail, false);
-  }
-  audit(key, '', '', key === 'teacher' ? 'wrong code' : 'wrong PIN', detail, false);
+    if (!kid) return;
+    role = 'kid'; who = kid.Name; group = groupOf(kid);
+  } else if (key.indexOf('parent:') === 0) {
+    var g = findGroup(key.slice(7));
+    if (!g) return;
+    role = 'parent'; who = g.Name; group = String(g.Id); action = 'wrong code';
+  } else if (key === 'admin') action = 'wrong passphrase';
+  else if (key === 'teacher') action = 'wrong code';
+  var lock = LockService.getScriptLock();
+  try {
+    if (lock.tryLock(1500)) {
+      try {
+        var c = CacheService.getScriptCache(), w = JSON.parse(c.get('AW') || '{}');
+        var e = w[key] || (w[key] = { at: new Date().toISOString(), date: today(), role: role, who: who, group: group, action: action, n: 0, device: REQ_DEV });
+        e.n++;
+        if (fails >= rule.max) e.locked = Math.round(rule.sec / 60);
+        if (Object.keys(w).length <= 200) { c.put('AW', JSON.stringify(w), 21600); return; }
+      } finally { lock.releaseLock(); }
+    }
+  } catch (err) {}
+}
+function auditWrongRow(e) {
+  var detail = (e.n === 1 ? '1 try' : e.n + ' tries') + (e.locked ? ', then locked for ' + (e.locked >= 120 ? e.locked / 60 + ' hours' : e.locked + ' minutes') : '');
+  return { Timestamp: e.at, Date: e.date, Role: e.role, Who: e.who, Group: e.group, Action: e.action, Detail: detail, Ok: 'no', Device: e.device || '' };
 }
 
 // A join screen opened from a closed or wrong invite link (once an hour per code, so a reload adds nothing).
@@ -193,7 +220,7 @@ function apiAudit(pin, days) {
   var split = {};
   Object.keys(devices).forEach(function (k) { split[devices[k]] = (split[devices[k]] || 0) + 1; });
   return {
-    days: days, from: from, today: t, perf: perfSummary(),
+    days: days, from: from, today: t, perf: perfSummary(), health: healthInfo(), errors: errSummary(days),
     events: ev.slice(0, AUDIT.max).map(function (e) { e.family = gname[e.group] || ''; return e; }),
     more: Math.max(0, ev.length - AUDIT.max),
     families: Object.keys(fams).map(function (id) {

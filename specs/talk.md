@@ -19,7 +19,14 @@ summary; when the phone cannot hear, sentence tiles; a writer and a strict revie
   reads it. The mic is enabled when she has finished.
 - An answer: the phone's speech recognition (`en-US`, up to 4 guesses; the first guess that fits a branch wins) or a tile
   (tapping it is the answer; saying it aloud counts as voice). Chacho's reply is the branch's `r`, or `o` when nothing
-  fits, then the next question. Nothing heard: "Sorry, I didn't catch that..." (and after the second time the tiles
+  fits, then the next question. **When nothing fits** (night review, finding 5; Lyster and Ranta's recasts): Chacho never
+  praises the form. On a turn with branches, or when the answer is too short (`chatEnough`: the level's minimum, one word
+  more at A1 and A2 when every model is a sentence), `o` is followed by a recast: "You can say it like this: <the model
+  closest to what she said>. Now you say it!" (the bank lines and the model's clip), one try by voice (close enough =
+  60% of the model's words) or by tapping the model, then "Yes! Just like that." or "Thank you! Let's go on.". On an open
+  question answered with enough words, `o` and the closest model as a quiet "Another way to say it" line. Voice XP only
+  for a branch, enough words, or the model said back (one per turn, so `voice + tiles <= turns` still holds on the
+  server). `Settings.TalkRecast = off` (`dash.chat.recast`) turns the recast step off; the quiet line stays. Nothing heard: "Sorry, I didn't catch that..." (and after the second time the tiles
   open). Too few words and nothing fits: "Ooh, tell me a little more!" once. No mic (no API, permission denied): the
   tiles are always on and a note says to tap and say it aloud. A recognizer that never answers is stopped after 12 s.
 - The end: a summary (out loud / with a tile / questions), the save status with the XP, Continue (mission) or Finish.

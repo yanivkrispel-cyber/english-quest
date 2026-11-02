@@ -214,7 +214,7 @@ function check(opts) {
       const ctx = {};
       try {
         new vm.Script(fs.readFileSync(p, 'utf8') + '\n;this.NEST_UNITS = NEST_UNITS;').runInNewContext(ctx);
-        const want = JSON.stringify([].concat(...units.map(u => (u.review ? [''] : ['', '.b', '.c', '.d']).map(d => [u.id + d, u.title, u.review ? 1 : 0]))));
+        const want = JSON.stringify([].concat(...units.map(u => (u.review ? [''] : ['', '.b', '.c', '.d']).map(d => [u.id + d, u.title, u.review ? 1 : 0, u.he || u.title]))));
         if (JSON.stringify(ctx.NEST_UNITS) !== want) err('src/NestIndex.js', 'out of date (node tools/nest-index.js)');
         else ok.push('src/NestIndex.js matches');
       } catch (e) { err('src/NestIndex.js', e.message); }

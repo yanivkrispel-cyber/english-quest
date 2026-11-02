@@ -34,7 +34,7 @@ Five parts, always in this order: Hook (a curious question, answered at the end;
 eight words, key words before listening, or a story's title and a guess), Practice, Use it, Finish. Types:
 
 - **Grammar Lab** (`grammar`): rule card (form, lines, examples with sound, a Hebrew tip on demand), then steps of
-  questions, then Use it (Teach your pet and a sentence of her own).
+  questions, then Use it (Teach your pet and a sentence to finish). Sentences of her own are the Writer's Desk below.
 - **Word Pack** (`vocabulary`): eight word cards, then games on the same words (choose, hear, spell, sort), then a short
   text with gaps.
 - **Radio Show** (`listening`): key words, then an episode in parts; each part plays (a recording, or the phone's voice
@@ -42,20 +42,81 @@ eight words, key words before listening, or a story's title and a guess), Practi
 - **Story Cards** (`reading`): a text in cards with questions after each card, Read to me, word detective, the big
   question.
 - **Newsroom** (`use-of-english`): a short text with gaps, then review questions.
+- **Writer's Desk** (`writing`, the writing days; night review 2026-11-01, finding 13): a tip card with a model, seven quick
+  questions on the language of the task, then Use it is one `write` question (below).
 
 Question kinds: `mc` (choose; `___` marks the gap), `tf` (right or wrong), `type` (type a word or two; tolerant),
 `build` (tap the words in order), `spot` (tap the wrong word; `*word*`, `fix`), `teach` (spot, said by the pet),
 `sort` (put words into two or three groups; one question), `spell` (letter tiles; one question), `hear` (the phone says
-it, choose), `find` (tap a word in the story), `gaps` (a text with several gaps; one question per gap). Every question
-has `why`, shown after the answer; `he` (optional) is the Hebrew tip.
+it, choose), `find` (tap a word in the story), `gaps` (a text with several gaps; one question per gap), `write` (the
+Writer's Desk: one to three sentences of her own; one question). Every question has `why`, shown after the answer; `he`
+(optional) is the Hebrew tip.
+
+## The Writer's Desk (`write`)
+
+The kid writes one to three sentences to a task, at her level: at A1 (and where an A2 task wants it) a frame with one to
+three boxes (`frame: 'My hobby is ___. I like it because ___.'`, `fill` = the example, which is the model), from A2 up a
+text box (400 characters at most). Fields: `task` (at most 120 characters, never asking for personal details: no full
+name, address, school, phone, photo; missions-check refuses the words), `tip`, `n` (sentences, [lowest, highest], 1 to 3),
+`len` (words, within the level's range in missions-check), `need` (up to three checks of the task's language: `t` the
+line shown, `any` words or phrases, one of which must be there, and/or `re` a pattern), `ideas` (up to six word chips that
+go where she types), `model` (Chacho's version), `why`, `he`.
+
+The checklist (`msWriteCheck`, simple rules on the phone; no AI, nothing is sent to check it): written in English, each
+sentence starts with a capital letter (and a lone "i" is not), it ends with a full stop, the number of sentences, the
+number of words, and the task's own checks. A frame checks that every box is filled instead of capitals and full stops.
+Every line says what to fix, kindly ("You have 9. Add a little more."). Not all green on the first Check: she can fix it
+once (Check again) or keep it as it is; then Chacho's version and the tip are shown. The question counts as right when
+every check is green in the end; it never goes to the Mission review (there is no single right answer). missions-check
+runs the same function on every model, so a model that fails its own checklist cannot ship.
+
+Typing never redraws the screen (the word count and the Check button follow the text). On a phone the keyboard must not
+break the play frame: while she types, `kbdFit` (visualViewport) makes the frame the part of the screen above the
+keyboard and hides the pet, the parts bar and the explanation; Enter in the last box closes the keyboard so Check is in
+sight. Check it in `test/fit.html` ("keyboard open" line) and on a real phone.
+
+Saving: what she wrote goes with the result, `apiMissionResult(..., seconds, writing)` with `writing = [{ n, text, first,
+checks }]` (older apps send nothing, and the mission saves as before). The server keeps only the mission's own `write`
+questions (`MISSION_INDEX[url].w`: question number -> task, written by `tools/missions-index.js`), once each, in the
+`Writing` tab: one line, no markup, at most 400 characters, and a leading `= + - @` gets an apostrophe so the sheet never
+reads it as a formula (`writingClean` / `sheetText`). Her last five pieces are in her dashboard (`writing`): the Me tab
+shows three under "My writing" with the teacher's mark and note (a dot on the Me tab for a new note), and her parents see
+five in the kid's card ("כתיבה באנגלית"), with her first try and the checklist score. No other kid sees them.
+
+The teacher (`?missions&t=<code>`, "Writer's Desk: the kids' writing to mark"): the newest 60 pieces of every level,
+without names (level, day, mission, task, the text and the first try), a mark (Excellent, Good work, Keep practising) and
+one preset note (`WRITING.comments` in Missions.js; free text never reaches a kid), `apiTeacherWriting` / `apiTeacherMark`,
+in the audit trail. Writing rows are deleted with the kid and after a year (`retentionSweep`).
+
+Content: four Writer's Desk missions per level (`<level>w01` to `w04`, the first four writing topics of the catalog, 24
+in all), which cover the writing days of the first two months (writing is every other Friday). When a level's run out, a
+writing day gives a Use of English or a grammar mission as before (`nextExercise`).
+
+## Say it again (night review 2026-11-01, finding 13)
+
+Repeated reading for fluency, before the finish of every mission: she reads one model sentence aloud twice (the mission's
+`say`, or the first example of its card, its first word's example, the first line of the show or the story, or the
+Writer's Desk model; 4 to 16 words). The phone's speech recognition times each reading (from the start of speech to its
+end) and the screen shows the words a minute and how many words it heard, kindly ("Smoother the second time!"). Not
+scored, nothing kept or sent. Only when the parent's microphone switch for the kid is on (`micAllowed(kid)`; until the
+switch is merged it returns false, so kids do not see the step) and the phone can listen; the mission preview shows it on
+any device that can listen. A microphone that says no: a toast, and Continue.
 
 The count of questions is fixed per mission (`msCount` in Index.html; `tools/missions-index.js` uses the same function
-and writes `src/MissionIndex.js`: catalog url -> id, questions, dinner question). After two mistakes in a row the next
-question shows a reminder card.
+and writes `src/MissionIndex.js`: catalog url -> id, questions, dinner question, `k` and `h`). After two mistakes in a
+row the next question shows a reminder card.
+
+Every mission has two more fields (night review 2026-11-01, findings 10 and 14), checked by `test/missions-check.js`:
+`kid`, the short title kids see instead of the catalog topic (at most 28 characters, simple English at the level, no
+adult framing, no period, unique in its level; "Who helps at home?" instead of "Do your kids help with household
+chores?"), and `he`, the topic in Hebrew for parents (at most 48 characters; "האזנה: מי עוזר בעבודות הבית"). The server
+hands both with the day (`missionView`: `mission.kid`, `mission.he`) and parents' code reads `missionHe(url)`. The
+mission screen's header shows `kid` too. For A1 and A2 the mission screens hide the running clock (the time is still
+measured and saved), and the Radio Show has "Show the words" after the first listen of a part.
 
 ## Saving
 
-`apiMissionResult(name, pin, date, mission, correct, total, missed, right, seconds)`: only for a kid with missions on, only
+`apiMissionResult(name, pin, date, mission, correct, total, missed, right, seconds, writing)`: only for a kid with missions on, only
 the mission of that day's assignment, `total` must be the mission's count, at least 30 seconds, once per day. It writes
 the `Log` row (new columns `Mission` and `Seconds`), puts the missed questions into the review, notifies the parents and
 returns the dashboard. A result that cannot be sent waits on the phone like a game round. A mission left halfway is
@@ -69,8 +130,17 @@ and the daily cap). "Something wrong here?" under an explanation sends `apiFlag`
 
 The first week: for every level the first three grammar and listening topics, the first two vocabulary topics and the first
 reading topic (54 missions); that covers what any kid gets in the coming week, since the app started on 2026-10-08.
-Writing (Friday) keeps its link until phase 2. Listening episodes are recorded with Kokoro (`tools/missions_audio.py`,
+Writing days have the Writer's Desk since 2026-11-01 (above). Listening episodes are recorded with Kokoro (`tools/missions_audio.py`,
 kokoro-onnx, Apache 2.0) into `docs/missions/audio/<mission>-<part>.mp3`.
 
-Checks: `node test/missions-check.js` (shapes, answers, lengths per level, ids, catalog urls, audio files) and
+Month 2 (2026-11-01, review finding 13): 28 more missions each for A1 and A2 (239 in all), the next catalog topics of
+every section (g10-g17, v06-v09, l10-l17, r05-r08, u05-u08), so the youngest kids have about eight weeks before the link
+fallback. A week of the rotation uses 2 grammar, 1 vocabulary, 2 listening, 1 reading and a Friday. Each new mission has
+`kid` (a title a 7-year-old understands, max 30) and `he` (the Hebrew topic name), at least one `build` and one `type`,
+and at least two items that practise a month-1 point (`why` starts with "Review"). Their talks give every turn a `model`
+answer. Topics unfit for kids keep their language point in a new setting (a2l17 "the murder" is a missing class cake).
+The other levels still have 31 missions each.
+
+Checks: `node test/missions-check.js` (shapes, answers, lengths per level, ids, catalog urls, audio files, the Writer's
+Desk items and their models against the app's own checklist) and
 `node tools/missions-index.js` (writes the index the server reads).

@@ -261,6 +261,19 @@ function parentSummary() {
     var kids = who === 'admin' ? readTable('Girls') : kidsIn(who);
     if (!kids.length) return;
     var n = kids.filter(function (k) { return done[k.Name]; }).length;
+    // A family reads it in Hebrew: each kid's sentence of the day, the same words as the parents' view (src/Learned.js).
+    if (who !== 'admin') {
+      var lines = kids.map(function (k) {
+        var g = gated[k.Name], gate = g ? (g.Passed === 'yes' ? ' מסלול חדש: ' + LEVEL_LABEL[g.To] + '.' : ' שער: ' + g.Correct + ' מתוך ' + g.Total + '.') : '';
+        return k.Name + ': ' + learnedDay(k, t) + gate;
+      });
+      kids.forEach(function (k) {
+        var l = done[k.Name], m = l && l.Mission && l.Section !== 'nest' ? missionOf(l.URL) : null;
+        if (m && m.q && lines.length < kids.length + 3) lines.push('שאלה לארוחת הערב עם ' + k.Name + ': ' + m.q);
+      });
+      try { deliver(byWho[who], { title: 'היום: ' + n + ' מתוך ' + kids.length + ' תרגלו', body: lines.join('\n') }, 'ParentPush'); } catch (e) { console.error(e); }
+      return;
+    }
     var body = kids.map(function (k) {
       var l = done[k.Name], n = played[k.Name], du = duels[k.Name], g = gated[k.Name];
       var games = (n ? ' +' + n + (n === 1 ? ' game' : ' games') : '') + (du ? ' +' + du + (du === 1 ? ' game together' : ' games together') : '');
@@ -350,40 +363,23 @@ function apiParentPushTest(pin, endpoint) {
   return deliver([endpoint], { title: 'Test notification', body: 'Parent notifications are working.' }, 'ParentPush');
 }
 
-function reminderMessage(kid, lastCall) {
-  var t = today();
+// A kid's reminder (store rule 8, night review 2026-11-01): one a day at the hour her parents chose, gentle words, no
+// countdown, no streak to lose and never another child's name. A duo buddy who already practiced is mentioned without a name.
+function reminderMessage(kid) {
   var a = todayTask(kid);
-  var logs = kidRows('Log', kid.Name);
   var label = SECTIONS[a.section].label;
-  // A duo partner who already practiced today is the best reason to come (Duos.js).
   var duo = null;
   try { duo = duoReminder(kid); } catch (e) { console.error(e); }
-  if (duo && lastCall) return { title: 'Last call, ' + kid.Name, body: duo.partner + ' practiced today. ' + (duo.days ? 'Save your ' + duo.days + '-day duo streak: ' : '') + label + ' — ' + a.title };
-  if (duo) return { title: duo.partner + ' is waiting for you', body: duo.partner + ' practiced today. ' + (duo.days ? 'Keep your ' + duo.days + '-day duo streak going! ' : '') + 'Today: ' + label };
-  if (lastCall) {
-    return { title: 'Last call, ' + kid.Name, body: '10 minutes before the day ends — ' + label + ': ' + a.title };
-  }
-  var s = streak(logs, t, hasShield(kid.Name));
   return {
-    title: kid.Name + ', time for English',
-    body: 'Today: ' + label + ' — ' + a.title + (s >= 2 ? ' · keep your ' + s + '-day streak going' : '')
+    title: 'Hi ' + kid.Name + '!',
+    body: (duo ? 'Your duo buddy practiced today. ' : '') + 'Today: ' + label + '. Chacho is ready whenever you are.'
   };
 }
 
-// Time-driven: push to kids who haven't practiced today.
-function pushReminders(lastCall) {
-  var t = today();
-  var logs = readTable('Log');
-  var withDevices = {};
-  readTable('Push').forEach(function (s) { withDevices[s.Girl] = true; });
-  readTable('Girls').forEach(function (k) {
-    if (!withDevices[k.Name]) return;
-    if (logs.some(function (l) { return l.Girl === k.Name && l.Date === t; })) return;
-    try { pushToKid(k.Name, reminderMessage(k, lastCall)); } catch (e) { console.error(e); }
-  });
-}
-
-function lastCallReminder() { pushReminders(true); }
+// Sent by triggers made before 2026-11-01 (the 20:00 "last call"): nothing any more. The hourly dailyReminder sends
+// each kid's one reminder (Safety.js kidReminders).
+function pushReminders() {}
+function lastCallReminder() {}
 
 // ---------- API ----------
 
@@ -414,7 +410,7 @@ function apiPushSubscribe(name, pin, endpoint, agent, welcome) {
   if (welcome) {
     res.sent = pushToKid(kid.Name, {
       title: 'Reminders are on',
-      body: 'We\'ll remind you at ' + (Number(getSetting('ReminderHour')) || 17) + ':00 on days you haven\'t practiced yet.'
+      body: kidRemindHour(kid) ? 'Chacho will say hi at ' + kidRemindHour(kid) + ':00 on days you haven\'t practiced yet.' : 'Your parents turned the daily reminder off. You can still play any time.'
     }).sent;
   }
   return res;

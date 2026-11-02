@@ -26,9 +26,17 @@ about three minutes, the copy identical tab by tab, parity 143 of 143 answers): 
 - The front end calls `/api` on its own site (`API_URL` in `src/Index.html` and `docs/sw.js`); `worker/range.js` passes it to
   the Durable Object (a Durable Object binding: one Worker request a call). The old GitHub Pages address still calls Apps
   Script, which relays.
-- `src/Relay.js` (Apps Script): `CF_MODE` empty (now), `freeze` (every call refused for a few minutes) or `relay` (every
+- `src/Relay.js` (Apps Script): `CF_MODE` empty, `freeze` (every call refused for a few minutes) or `relay` (now: every
   call passed to the new server; this script's reminders off; `cfMirror` copies the new server's data into the sheet
-  every night at 03:00). `apiCfExport` (admin PIN) exports every sheet and every Script Property.
+  every night at 03:00). Since the night review (2026-11-01) the mode and the export are not web calls: run `cfModeRelay`,
+  `cfModeNormal`, `cfModeFreeze` or `cfSetMode(mode, url, token)` / `cfExport()` from the Apps Script editor. The relay and
+  the nightly copy only talk to coco.coachkrispel.com (or a host in the Script Property `CF_HOSTS`), and `CF_TOKEN` is
+  dropped when the address changes. Script Properties: `CF_TOKEN` = the Worker's `EXPORT_TOKEN` (reads /admin/export only),
+  `CF_RELAY_KEY` = the Worker's `RELAY_KEY` (relayed calls share one per-address bucket).
+- Sign-in (`src/Auth.js`, `worker/api/http.js`): the Workers pass Cloudflare's `CF-Connecting-IP` as `X-Coco-IP` for the
+  per-address limits (memory only, no rows written), answer CORS only for the app's own origins, and compare tokens in
+  constant time. The admin's passphrase: `node tools/admin-passphrase.js new <file>`, then
+  `COCO_ADMIN_TOKEN=… node tools/admin-passphrase.js set <file> https://coco-api.<account>.workers.dev` (only the hash travels).
 - New with the move, on both servers: the admin's Data card (`src/Admin.js`, replaces hand edits in the sheet), the family's
   data download and deletion (`src/Privacy.js`), retention, the `Plans` tab with `entitlement()`, `Settings.MinApp`
   (an app older than that `APP_V` is asked to update), the fonts from `docs/fonts/`.
@@ -43,11 +51,50 @@ into a Cloudflare server (load tests run locally or with small sets), and keep a
 Measured speed on staging (from Israel): 0.14 to 0.17 s a call with the real data (Apps Script: 2.3 to 2.5 s); 100 kids
 at once with a year of history: median 0.13 s, 95% under 0.37 s, no errors.
 
+## Backups and restore (night review 2026-11-01, finding 20)
+
+Three copies, each for a different accident:
+
+1. **The nightly backup ring** (`worker/api/backup.js`): the first cron tick after 02:00 Israel time writes the whole export
+   (sheets, script properties; the same JSON as `/admin/export`), gzipped, into the object's own table `backups`, one row per
+   megabyte, and keeps the newest **14 days**. It protects against bad data: the sheet copy is overwritten every night, a
+   backup is not. Cost: a few rows written a night (the free plan's 100,000 a day are far away), storage a few hundred KB a
+   day. No R2 or paid service. `GET /admin/backups` lists them, `GET /admin/backup?day=YYYY-MM-DD` downloads one
+   (`.json.gz`), `POST /admin/backup` takes one now.
+2. **Cloudflare's point-in-time recovery** (SQLite Durable Objects keep 30 days of history of the whole database):
+   `GET /admin/pitr?at=<ISO>` gives the bookmark of a moment, `POST /admin/pitr?at=<ISO>` with `X-Confirm: RESTORE` puts the
+   whole database (the backup ring too) back to it; the answer carries an `undo` bookmark of the moment before. Use it for
+   "the server broke at 14:05", the ring for "a family's data went wrong last week".
+3. **The sheet copy** (`cfMirror` in `src/Relay.js`, 03:00): the data readable in Google Sheets, and the way back to Apps
+   Script. Text that looks like a formula (starts with = + - @, a tab or a return) is written with a leading `'`
+   (`sheetSafe` in `src/Ops.js`), so a family name or a parent's note can never run as a formula in the owner's sheet.
+
+**Restore one day's backup** (on production only after the owner says so): `POST /admin/restore?day=YYYY-MM-DD` with
+`X-Confirm: RESTORE`. What is there now is first saved as `<today>-before-restore` in the ring.
+
+**The restore drill** (once a month, and after any change to the export): `ADMIN_TOKEN=... node tools/cf-restore-drill.js
+https://coco.coachkrispel.com` downloads the newest backup, opens it and lists its rows per tab next to today's; with
+`--into <staging server>` (and `STAGING_TOKEN`) it imports the backup into staging and checks staging has the same rows tab by
+tab. Then open the staging front end and sign in as a test kid. Note the date of the last drill here: not done yet.
+
+**Health** (`src/Ops.js`): the Worker keeps today's calls, rows written, pushes and failed calls in the script property
+`use:<UTC day>` (it survives a restart), `backup:last` after each backup and `export:last` when the mirror (or anyone with the
+token) reads `/admin/export`. The admin's Audit card shows the backup's and the copy's age and today's use (orange from 60%
+of a free limit), and a line under the collapsed card when something is late or phones sent errors today (`apiHealth`). At
+10:00 a push tells the admin when the backup or the copy is older than 30 hours (`healthCheck`); the free-plan pushes at
+70% and 90% now cover rows written too (`env.FREE_ROWS`).
+
+**Errors on phones** (`src/Ops.js`, tab Errors): the app catches its own uncaught errors (`errNote` in Index.html: at most 5
+waiting and 10 a day per phone, sent with the next call, never a call of its own) and the server keeps the message, where it
+happened, the device label and the app version, 30 days (`opsSweep`), at most 300 a day. A link's query and #part and anything
+like an email are cut before it is kept. Shown on the admin's Audit card, the same message counted once.
+
 ## Tests
 
 - `node test/sim.js` (Apps Script mocks) and `SIM_PLATFORM=1 node test/sim.js` (the same scenarios on the platform layer,
   strict mode, frozen rows, then a reload from SQLite must give the same sheets).
-- `node test/cf-units.mjs`: Utilities, flush, kept cache keys, the WebCrypto JWT against a key from `Push.js`, the outbox.
+- `node test/cf-units.mjs`: Utilities, flush, kept cache keys, the WebCrypto JWT against a key from `Push.js`, the outbox, and the
+  backup ring (gzip round trip, parts of a megabyte, 14 days kept).
 - `node test/cf-parity.js <export.json>`: the real data on both servers, frozen clock, every read and some writes: answers
   and sheets must be the same (`sheetCopy` is the one field meant to differ).
 - `node tools/cf-load.js <staging url> [kids] [rounds] [think ms]` with made-up kids (`tools/cf-synth.js`), never live.

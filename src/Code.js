@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v24';
+var SETUP_VERSION = 'v30';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 // The kids' front end (Cloudflare, docs/). Until 2026-10 it was https://yanivkrispel-cyber.github.io/english-quest/.
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
@@ -38,28 +38,51 @@ var PETS = ['turtle', 'monster', 'cat', 'cow', 'fawn', 'donkey', 'sheep', 'giraf
 var PET_STAGES = [0, 150, 500, 1100, 2000];
 // Spaced review: a missed item comes back after 1 day, then 3, 7 and 21 days while it is answered right.
 var REVIEW_DAYS = [1, 3, 7, 21];
+// The slow track (night review, finding 13): an item answered right comes back after 7, 21 and 60 days (boxes 11 to 13),
+// and so does an item that finished the fast track (60 days). At most `slowNew` new ones a day and `slowDue` due ones a day,
+// after the missed ones. Held-out gate items (g*:) never enter the review.
+var REVIEW_SLOW = [7, 21, 60], REVIEW_CAP = { slowNew: 20, slowDue: 10 };
+var HELD_ID = /^g[mlbst]:/;
 // Journey map: a world per level. Every daily task done is a station. After `stations` of them
 // (or `early` with an average of `earlyAvg`% or more) the gate to the next level opens: an in-app
 // challenge of `items` questions from that level. `pass`% raises the kid's level and gives the pet
 // `xp`; after a miss the gate opens again `waitDays` later.
-var JOURNEY = { stations: 30, early: 20, earlyAvg: 85, items: 15, pass: 80, waitDays: 3, xp: 100 };
+var JOURNEY = { stations: 30, early: 20, earlyAvg: 85, items: 15, pass: 80, waitDays: 3, xp: 100,
+  // Mastery (night review, finding 12): the stations alone do not open the gate any more. She also needs `mastery`% right
+  // on the first try over her last `masteryItems` game and mission questions in this world (at least `masteryMin`).
+  // Settings.GateMastery: a percentage, or off. A kid who met the stations rule before `masteryFrom`
+  // (Settings.GateMasteryFrom) or already tried this gate keeps her open gate.
+  mastery: 80, masteryItems: 80, masteryMin: 40, masteryFrom: '2026-11-02' };
+// Item stats (first-try right rate per item) count rounds from this day on: the Right column starts with SETUP v24.
+var ITEM_STATS_FROM = '2026-11-01';
 var WORLDS = { a1: 'Sunny Meadow', a2: 'Whisper Woods', b1: 'Crystal Caves', 'b1-b2': 'Misty Peaks', b2: 'Sky Islands', c1: 'Star Summit' };
 
 // The sheet tab for kids is still called "Girls" (it predates groups).
 var HEADERS = {
   // Missions: "no" keeps her daily task on test-english.com (the old link); empty = Today's Mission in the app.
-  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince', 'Missions', 'NestPerDay', 'NestArcadeMin', 'NestHebrew'],
-  Games: ['Timestamp', 'Girl', 'Date', 'Game', 'Level', 'Correct', 'Total', 'XP', 'Missed'],
+  Girls: ['Name', 'Age', 'PIN', 'Level', 'Email', 'Redeemed', 'Color', 'Group', 'Pet', 'PetName', 'PetSince', 'Missions', 'NestPerDay', 'NestArcadeMin',
+    // Safety.js: Mic = yes when a parent turned the microphone on; RemindAt = the reminder hour ('off'; empty = the default);
+    // Seen = the last day she opened the app; Inactive = the day the admin was told she would be deleted for inactivity.
+    'Mic', 'RemindAt', 'Seen', 'Inactive',
+    // Nest.js (finding 15): NestMin = the parent's screen-time cap a day; NestTime = today's seconds, from the phones.
+    'NestMin', 'NestTime',
+    // Hebrew = the kid's Hebrew help (yes, no; empty = on for A1 and A2).
+    'Hebrew',
+    // Nest.js (package B, coco-voice SETUP v24): NestHebrew = the parent's switch for Chacho's Hebrew guidance (empty = auto, on, off).
+    'NestHebrew'],
+  Games: ['Timestamp', 'Girl', 'Date', 'Game', 'Level', 'Correct', 'Total', 'XP', 'Missed', 'Right'],
   Review: ['Girl', 'Items'],
-  Gates: ['Timestamp', 'Girl', 'Date', 'From', 'To', 'Correct', 'Total', 'Passed', 'Tasks', 'XP'],
+  Gates: ['Timestamp', 'Girl', 'Date', 'From', 'To', 'Correct', 'Total', 'Passed', 'Tasks', 'XP', 'Missed', 'Right'],
   Assignments: ['Girl', 'Date', 'Section', 'Level', 'Title', 'URL'],
   // Mission and Seconds: a task played as a mission in the app (Missions.js); empty for the old link.
   // Detail: a Nest day's first try per word ("cat:1,dog:0", Nest.js), for the review days and the parents' view.
   Log: ['Timestamp', 'Girl', 'Date', 'DoneOn', 'Section', 'Level', 'Title', 'URL', 'Correct', 'Total', 'Percent', 'Points', 'Mission', 'Seconds', 'Detail'],
   Rewards: ['Points', 'Reward', 'Group'],
   Settings: ['Key', 'Value'],
-  // Parent, Joined, Consent: a family that joined on its own from the invite link (Pilot.js).
-  Groups: ['Id', 'Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email', 'Friends', 'Parent', 'Joined', 'Consent'],
+  // Parent, Joined, Consent: a family that joined on its own from the invite link (Pilot.js). ConsentV / ConsentAt: the version
+  // of the privacy notice the family agreed to and when (Safety.js). Friends = the admin's override (no / yes); FriendsOn = the
+  // parents' switch for playing with other families (off when empty).
+  Groups: ['Id', 'Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email', 'Friends', 'Parent', 'Joined', 'Consent', 'ConsentV', 'ConsentAt', 'FriendsOn'],
   Push: ['Girl', 'Endpoint', 'Created', 'Agent'],
   ParentPush: ['Who', 'Endpoint', 'Created', 'Agent', 'Instant'],
   // Play together (Duels.js): one row per duel or challenge.
@@ -83,7 +106,17 @@ var HEADERS = {
   // The audit trail (Audit.js): opens, wrong PINs, and what parents, the admin, the teacher and the owner changed.
   Audit: ['Timestamp', 'Date', 'Role', 'Who', 'Group', 'Action', 'Detail', 'Ok', 'Device'],
   // A family's plan (src/Privacy.js, entitlement): empty = the pilot, full access. Source: apple, google or manual.
-  Plans: ['Group', 'Plan', 'Source', 'Until', 'Ref', 'Updated']
+  Plans: ['Group', 'Plan', 'Source', 'Until', 'Ref', 'Updated'],
+  // Safety.js: a kid blocked another kid; a report (a block with a preset reason) for the admin and the kid's parents.
+  Blocks: ['Timestamp', 'Girl', 'Blocked', 'Date'],
+  Reports: ['Timestamp', 'Girl', 'About', 'Date', 'Reason', 'Group'],
+  // Feature use (Ops.js): one row per kid, day and part of the app she opened, with how many times (written in batches).
+  Usage: ['Date', 'Girl', 'Feature', 'Opens'],
+  // The phones' error reports (Ops.js), kept 30 days. Girl: only when the call that carried the report was hers.
+  Errors: ['Timestamp', 'Date', 'Girl', 'Where', 'Message', 'Device', 'App'],
+  // The Writer's Desk (Missions.js): what a kid wrote in a mission (First = her first try when she rewrote it, Checks = the
+  // checklist, '3 of 5'), and the teacher's mark and preset note, which the kid and her parents see.
+  Writing: ['Timestamp', 'Id', 'Girl', 'Date', 'Mission', 'Item', 'Level', 'Prompt', 'Text', 'First', 'Checks', 'Words', 'Mark', 'Comment', 'MarkedOn']
 };
 
 var WORDS = [
@@ -135,18 +168,20 @@ function api() {
   apiAdminAddGroup: apiAdminAddGroup, apiAdminAddKid: apiAdminAddKid, apiAdminSettings: apiAdminSettings, apiAdminNestAll: apiAdminNestAll, apiAdminParentPin: apiAdminParentPin,
   apiPushSubscribe: apiPushSubscribe, apiPushMessage: apiPushMessage, apiAdminTestPush: apiAdminTestPush,
   apiParentPushSubscribe: apiParentPushSubscribe, apiParentPushPrefs: apiParentPushPrefs, apiParentPushTest: apiParentPushTest,
-  apiGameResult: apiGameResult, apiSetPet: apiSetPet, apiGateResult: apiGateResult,
+  apiGameResult: apiGameResult, apiSetPet: apiSetPet, apiKidHebrew: apiKidHebrew, apiParentKidHebrew: apiParentKidHebrew, apiGateResult: apiGateResult,
   apiDuelHome: apiDuelHome, apiDuelInvite: apiDuelInvite, apiDuelJoin: apiDuelJoin, apiDuelReply: apiDuelReply,
   apiDuelCancel: apiDuelCancel, apiDuelSolo: apiDuelSolo, apiDuelPoll: apiDuelPoll, apiDuelFinish: apiDuelFinish, apiDuelHelped: apiDuelHelped,
   apiDuoInvite: apiDuoInvite, apiDuoAnswer: apiDuoAnswer, apiDuoNudge: apiDuoNudge, apiDuoEnd: apiDuoEnd,
   apiTugCheck: apiTugCheck, apiTugSave: apiTugSave,
   apiShop: apiShop, apiShopBuy: apiShopBuy, apiWear: apiWear, apiWords: apiWords, apiSaveWord: apiSaveWord, apiDesign: apiDesign,
-  apiMissionResult: apiMissionResult, apiFlag: apiFlag,
+  apiMissionResult: apiMissionResult, apiFlag: apiFlag, apiTeacherWriting: apiTeacherWriting, apiTeacherMark: apiTeacherMark,
   apiJoinCheck: apiJoinCheck, apiJoin: apiJoin, apiPlacement: apiPlacement, apiFeedback: apiFeedback,
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
-  apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade, apiParentNestHebrew: apiParentNestHebrew,
-  apiCfExport: apiCfExport, apiCfMode: apiCfMode, apiAdminData: apiAdminData, apiAdminEdit: apiAdminEdit,
-  apiDeleteData: apiDeleteData, apiExportData: apiExportData
+  apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade, apiParentNestMin: apiParentNestMin, apiParentNestHebrew: apiParentNestHebrew, apiNestTime: apiNestTime,
+  apiAdminData: apiAdminData, apiAdminEdit: apiAdminEdit,
+  apiDeleteData: apiDeleteData, apiExportData: apiExportData,
+  apiParentConsent: apiParentConsent, apiParentFriends: apiParentFriends, apiParentMic: apiParentMic, apiParentRemind: apiParentRemind,
+  apiKidBlock: apiKidBlock, apiParentUnblock: apiParentUnblock, apiHealth: apiHealth
   };
 }
 
@@ -164,33 +199,25 @@ function doPost(e) {
       return ContentService.createTextOutput(JSON.stringify({ ok: false, update: true, error: 'Please update the app' })).setMimeType(ContentService.MimeType.JSON);
     }
     REQ_DEV = cleanDev(req.dev);
+    REQ_IP = cleanIp(e.ip);
+    REQ_APP = String(req.v || '');
     REQ_OPEN = cleanOpen(req.open);
     PERF_PARTS = null;
     var t0 = Date.now();
     out = { ok: true, data: API[req.fn].apply(null, req.args || []) };
     perfNote(req.fn, Date.now() - t0, PERF_PARTS);
   } catch (err) {
-    out = { ok: false, error: String((err && err.message) || err) };
+    // update: an old copy of the app is asked to load the new one (Auth.js LEGACY_PARENT).
+    out = { ok: false, error: String((err && err.message) || err), update: err && err.update ? true : undefined };
   }
+  // The feature counts and error reports the phone sent along (Ops.js); never breaks the answer.
+  try { opsNote(req, out.ok); } catch (err) { console.error(err); }
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }
 
 // Link sent to the kids (WhatsApp, reminder emails): the public front end when set.
 function publicUrl() {
   return getSetting('PublicUrl') || getSetting('AppUrl');
-}
-
-// Brute-force guard: 8 wrong PINs for the same key lock it for 15 minutes.
-function checkPin(key, ok) {
-  var c = CacheService.getScriptCache(), k = 'F:' + key;
-  var fails = Number(c.get(k)) || 0;
-  if (fails >= 8) throw new Error('Too many attempts — try again in 15 minutes');
-  if (!ok) {
-    c.put(k, String(fails + 1), 900);
-    auditPin(key, fails + 1);
-    throw new Error('Wrong PIN');
-  }
-  if (fails) c.remove(k);
 }
 
 // ---------- Groups ----------
@@ -335,7 +362,7 @@ function apiGameResult(name, pin, game, level, correct, total, missed, right, se
     xp = correct * GAME_XP.right + second * GAME_XP.right / 2 + (correct === total && total >= 5 ? GAME_XP.perfect : 0);
     xp = Math.max(0, Math.min(xp, GAME_XP.dayCap - used));
     appendRow('Games', { Timestamp: new Date(), Girl: kid.Name, Date: t, Game: game, Level: level,
-      Correct: correct, Total: total, XP: xp, Missed: missed.join(' ') });
+      Correct: correct, Total: total, XP: xp, Missed: missed.join(' '), Right: right.join(' ') });
     updateReview(kid.Name, missed, right, t);
   } finally {
     lock.releaseLock();
@@ -354,6 +381,21 @@ function apiSetPet(name, pin, petId, petName) {
   var fields = { Pet: petId, PetName: petName };
   if (!kid.PetSince) fields.PetSince = today();
   setGirlFields(kid.Name, fields);
+  return buildDashboard(findGirl(kid.Name));
+}
+
+// Hebrew help for young kids (night review, finding 10): a small Hebrew line under titles, instructions and messages.
+// Girls.Hebrew: 'yes' or 'no' once a parent (or the kid, in Me) chose; empty = on for A1 and A2. The Nest has its own way.
+function kidHebrew(kid) {
+  var v = String(kid.Hebrew || '').toLowerCase();
+  if (isNest(kid)) return false;
+  if (v === 'yes' || v === 'no') return v === 'yes';
+  return kid.Level === 'a1' || kid.Level === 'a2';
+}
+
+function apiKidHebrew(name, pin, on) {
+  var kid = auth(name, pin);
+  setGirlFields(kid.Name, { Hebrew: on ? 'yes' : 'no' });
   return buildDashboard(findGirl(kid.Name));
 }
 
@@ -422,12 +464,27 @@ function readReview(name) {
 
 function updateReview(name, missed, right, t) {
   var map = readReview(name), changed = false;
-  missed.forEach(function (id) { map[id] = { box: 1, due: addDays(t, REVIEW_DAYS[0]) }; changed = true; });
-  right.forEach(function (id) {
+  var mine = function (id) { return !HELD_ID.test(id); };
+  var slowToday = Object.keys(map).filter(function (id) { return map[id].box === 11 && map[id].due === addDays(t, REVIEW_SLOW[0]); }).length;
+  missed.filter(mine).forEach(function (id) { map[id] = { box: 1, due: addDays(t, REVIEW_DAYS[0]) }; changed = true; });
+  right.filter(mine).forEach(function (id) {
     var e = map[id];
-    if (!e) return;
+    if (!e) {
+      // Right the first time: the slow track (a few a day).
+      if (slowToday >= REVIEW_CAP.slowNew) return;
+      slowToday++; changed = true;
+      map[id] = { box: 11, due: addDays(t, REVIEW_SLOW[0]) };
+      return;
+    }
+    if (e.box >= 10) {
+      if (e.due > t) return;
+      changed = true;
+      if (e.box - 10 >= REVIEW_SLOW.length) { delete map[id]; return; }
+      map[id] = { box: e.box + 1, due: addDays(t, REVIEW_SLOW[e.box - 10]) };
+      return;
+    }
     changed = true;
-    if (e.box >= REVIEW_DAYS.length) { delete map[id]; return; }
+    if (e.box >= REVIEW_DAYS.length) { map[id] = { box: 10 + REVIEW_SLOW.length, due: addDays(t, REVIEW_SLOW[REVIEW_SLOW.length - 1]) }; return; }
     map[id] = { box: e.box + 1, due: addDays(t, REVIEW_DAYS[e.box]) };
   });
   if (changed) writeReview(name, map);
@@ -446,10 +503,13 @@ function reviewAdd(name, id, t) {
   writeReview(name, map);
 }
 
+// Due items: the missed ones (fast track) first, then a few from the slow track.
 function dueReview(name, t) {
   var map = readReview(name);
-  return Object.keys(map).filter(function (id) { return map[id].due <= t; })
-    .sort(function (a, b) { return map[a].due < map[b].due ? -1 : 1; }).slice(0, 30);
+  var due = Object.keys(map).filter(function (id) { return map[id].due <= t; })
+    .sort(function (a, b) { return map[a].due < map[b].due ? -1 : 1; });
+  var fast = due.filter(function (id) { return map[id].box < 10; }), slow = due.filter(function (id) { return map[id].box >= 10; });
+  return fast.concat(slow.slice(0, REVIEW_CAP.slowDue)).slice(0, 30);
 }
 
 // ---------- Journey ----------
@@ -466,7 +526,13 @@ function journeyInfo(kid, t) {
   var mine = tasks.slice(lastPass >= 0 ? Number(gates[lastPass].Tasks) || 0 : 0);
   var tries = gates.slice(lastPass + 1), last = tries[tries.length - 1];
   var n = mine.length, avg = avgPercent(mine);
-  var ready = n >= JOURNEY.stations || (n >= JOURNEY.early && avg !== null && avg >= JOURNEY.earlyAvg);
+  var stationsOk = n >= JOURNEY.stations || (n >= JOURNEY.early && avg !== null && avg >= JOURNEY.earlyAvg);
+  var mastery = masteryInfo(kid, mine, lastPass >= 0 ? String(gates[lastPass].Date) : '');
+  // An open gate stays open: she already tried it, or the stations opened it before mastery counted.
+  if (stationsOk && !mastery.ok && (tries.length || stationsDay(mine) < (String(getSetting('GateMasteryFrom') || '').trim() || JOURNEY.masteryFrom))) mastery.kept = true;
+  var ready = stationsOk && (mastery.ok || !!mastery.kept);
+  var seen = [];
+  gates.forEach(function (g) { (String(g.Missed || '') + ' ' + String(g.Right || '')).split(' ').forEach(function (id) { if (HELD_ID.test(id)) seen.push(id); }); });
   var until = last ? addDays(last.Date, JOURNEY.waitDays) : null;
   var state = !next ? 'top' : !ready ? 'locked' : until && until > t ? 'wait' : 'open';
   return {
@@ -477,15 +543,58 @@ function journeyInfo(kid, t) {
     }),
     gate: {
       state: state, next: next, nextLabel: next ? LEVEL_LABEL[next] : null, nextName: next ? WORLDS[next] : null,
-      items: JOURNEY.items, need: gateNeed(), until: state === 'wait' ? until : null, tries: tries.length,
+      items: JOURNEY.items, need: gateNeed(), until: state === 'wait' ? until : null, tries: tries.length, seen: seen.slice(-120),
       last: last ? { correct: Number(last.Correct), total: Number(last.Total), date: last.Date } : null
     },
+    stationsOk: stationsOk, mastery: mastery,
     worlds: LEVELS.map(function (l) { return { level: l, label: LEVEL_LABEL[l], name: WORLDS[l] }; }),
     passed: gates.filter(function (g) { return g.Passed === 'yes'; }).map(function (g) { return { from: g.From, to: g.To, date: g.Date }; })
   };
 }
 
 function gateNeed() { return Math.ceil(JOURNEY.items * JOURNEY.pass / 100); }
+
+// How well she knows her level: the share right on the first try of her last game and mission questions in this world
+// (games of her level since `since`, the world's tasks: missions, or the scores logged from the link). { need, pct, n, min, ok }; need 0 = the rule is off.
+function masteryInfo(kid, mine, since) {
+  var set = String(getSetting('GateMastery') || '').trim().toLowerCase();
+  var need = set === 'off' ? 0 : Number(set) > 0 && Number(set) <= 100 ? Number(set) : JOURNEY.mastery;
+  var rows = [];
+  kidRows('Games', kid.Name).forEach(function (g) {
+    if (String(g.Date) >= since && GAMES.indexOf(g.Game) >= 0 && g.Level === kid.Level) rows.push({ d: String(g.Date), c: Number(g.Correct) || 0, n: Number(g.Total) || 0 });
+  });
+  mine.forEach(function (l) { if (Number(l.Total) > 0) rows.push({ d: String(l.DoneOn || l.Date), c: Number(l.Correct) || 0, n: Number(l.Total) }); });
+  rows.sort(function (a, b) { return a.d < b.d ? 1 : a.d > b.d ? -1 : 0; });
+  var c = 0, n = 0;
+  for (var i = 0; i < rows.length && n < JOURNEY.masteryItems; i++) { c += rows[i].c; n += rows[i].n; }
+  var pct = n ? Math.round(c / n * 100) : null;
+  return { need: need, pct: pct, n: n, min: JOURNEY.masteryMin, ok: !need || (n >= JOURNEY.masteryMin && pct >= need) };
+}
+
+// The day the stations rule was first met in this world ('' if never): the 30th task, or the 20th or later with an 85% average.
+function stationsDay(mine) {
+  for (var k = JOURNEY.early; k <= mine.length; k++) {
+    var avg = avgPercent(mine.slice(0, k));
+    if (k >= JOURNEY.stations || (avg !== null && avg >= JOURNEY.earlyAvg)) return String(mine[k - 1].DoneOn || mine[k - 1].Date);
+  }
+  return '9999';
+}
+
+// First-try right rate per item, from the Missed and Right columns of Games and Gates since ITEM_STATS_FROM: the items
+// with at least `min` answers, the hardest first (the teacher's look at the bank).
+function itemStats(limit, min) {
+  var c = {};
+  var add = function (list, ok) {
+    String(list || '').split(' ').forEach(function (id) { if (!id) return; var e = c[id] = c[id] || { id: id, right: 0, n: 0 }; e.n++; if (ok) e.right++; });
+  };
+  readTable('Games').concat(readTable('Gates')).forEach(function (r) {
+    if (String(r.Date) < ITEM_STATS_FROM) return;
+    add(r.Missed, false); add(r.Right, true);
+  });
+  var all = Object.keys(c).map(function (k) { return c[k]; }).filter(function (e) { return e.n >= (min || 5); });
+  all.sort(function (a, b) { return a.right / a.n - b.right / b.n || b.n - a.n; });
+  return { items: all.slice(0, limit || 12), counted: Object.keys(c).length };
+}
 
 // One gate challenge, scored in the app like the games. Passing raises the kid's level: her next
 // daily tasks and games come from the new level, and the map starts the next world.
@@ -507,7 +616,7 @@ function apiGateResult(name, pin, correct, total, missed, right) {
     if (j.gate.state !== 'open') throw new Error('The gate is not open yet.');
     var passed = correct >= j.gate.need;
     row = { Timestamp: new Date(), Girl: kid.Name, Date: t, From: j.level, To: j.gate.next, Correct: correct, Total: total,
-      Passed: passed ? 'yes' : 'no', Tasks: j.tasks, XP: passed ? JOURNEY.xp : correct * GAME_XP.right };
+      Passed: passed ? 'yes' : 'no', Tasks: j.tasks, XP: passed ? JOURNEY.xp : correct * GAME_XP.right, Missed: missed.join(' '), Right: right.join(' ') };
     appendRow('Gates', row);
     if (passed) setGirlField(kid.Name, 'Level', j.gate.next);
     updateReview(kid.Name, missed, right, t);
@@ -520,23 +629,19 @@ function apiGateResult(name, pin, correct, total, missed, right) {
   return dash;
 }
 
-// The admin PIN (Settings) sees every group; a group's ParentPIN sees only that group.
+// The admin (passphrase) sees every group; a family's code, with the family, sees only that family (Auth.js parentAccess).
+// Signing in with a code also gives the phone a session to remember instead of the code (token).
 function apiParent(pin) {
   ensureSetup();
   var access = parentAccess(pin);
   if (access.isAdmin) auditOpen('admin', 'admin', ''); else auditOpen('parent', access.group.Name, String(access.group.Id));
-  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
+  var data = parentView(access);
+  if (!access.token) data.token = sessionToken(access);
+  return data;
 }
 
-function parentAccess(pin) {
-  pin = String(pin).trim();
-  var isAdmin = pin === String(getSetting('AdminPIN')).trim();
-  var group = isAdmin ? null : groups().filter(function (g) { return String(g.ParentPIN || '').trim() && String(g.ParentPIN).trim() === pin; })[0];
-  checkPin('parent', isAdmin || !!group);
-  return { isAdmin: isAdmin, group: group };
-}
-
-function parentData(list, isAdmin, who) {
+// hide: a remembered phone's session (Auth.js): no kid's PIN, no family code; the parent types the code to see them.
+function parentData(list, isAdmin, who, hide) {
   var t = today();
   var logs = readTable('Log');
   var out = list.map(function (g) {
@@ -554,30 +659,39 @@ function parentData(list, isAdmin, who) {
       }
       d.history = history;
       d.recent = logs.filter(function (l) { return l.Girl === k.Name; }).slice(-8).reverse().map(function (l) {
+        var m = l.Mission && l.Section !== 'nest' ? missionOf(l.URL) : null;
         return { date: l.Date, doneOn: l.DoneOn, section: l.Section, title: l.Title, url: l.URL, correct: l.Correct, total: l.Total, percent: l.Percent, points: l.Points,
-          mission: l.Mission || '', seconds: Number(l.Seconds) || null };
+          mission: l.Mission || '', seconds: Number(l.Seconds) || null,
+          he: l.Section === 'nest' ? nestTitleHe(l.Mission) : (m && m.he) || SECTION_HE[l.Section] || '' };
       });
+      // What she learned this week in one Hebrew sentence, and her level as a track (src/Learned.js).
+      d.learned = learnedWeek(k, t);
+      d.track = isNest(k) ? null : levelTrack(k.Level);
+      // The Nest's monthly report (src/Learned.js): this month and last month, for the parents only.
+      if (isNest(k)) d.nestMonths = nestMonths(k, t);
       d.email = k.Email;
       d.bought = shopBought(kidRows('Shop', k.Name), 3);
-      d.pin = String(k.PIN);
+      d.pin = hide ? undefined : String(k.PIN);
       return d;
     });
     return {
       id: id,
       name: g.Name,
       link: groupLink(id),
-      parentPin: isAdmin ? String(g.ParentPIN || '') : undefined,
+      parentPin: isAdmin && !hide ? String(g.ParentPIN || '') : undefined,
       email: g.Email,
       goal: {
         goal: Number(g.Goal) || 1500,
         total: kids.reduce(function (a, d) { return a + d.stats.earned; }, 0),
         reward: g.GoalReward || ''
       },
-      girls: kids
+      girls: kids,
+      safety: familySafety(g)
     };
   });
   return {
     isAdmin: !!isAdmin,
+    locked: !!hide,
     groups: out,
     sheetUrl: isAdmin ? SpreadsheetApp.getActive().getUrl() : null,
     sheetCopy: typeof PLATFORM !== 'undefined',   // on Cloudflare the sheet is a nightly copy (specs/cloudflare.md)
@@ -607,8 +721,8 @@ function apiAdminAddGroup(pin, name, email) {
   var id, parentPin;
   try {
     var ids = groups().map(function (g) { return String(g.Id); });
-    do { id = Math.random().toString(36).slice(2, 8); } while (ids.indexOf(id) >= 0);
-    parentPin = uniqueParentPin();
+    do { id = randomId(); } while (ids.indexOf(id) >= 0);
+    parentPin = newParentCode();
     appendRow('Groups', { Id: id, Name: name, ParentPIN: parentPin, Goal: 1500, GoalReward: 'Pizza party for the group', Email: String(email || '').trim() });
   } finally {
     lock.releaseLock();
@@ -644,43 +758,34 @@ function apiAdminAddKid(pin, name, age, groupId, level, missions) {
   return data;
 }
 
-// Reminder times (hours, Asia/Jerusalem). An empty last call turns it off.
-function apiAdminSettings(pin, reminderHour, lastCallHour) {
+// The default reminder hour (Asia/Jerusalem), for kids whose parents did not pick one (Safety.js). The evening last call is
+// gone (2026-11-01, no pressure on kids): lastCallHour is ignored, old copies of the app still send it.
+function apiAdminSettings(pin, reminderHour) {
   ensureSetup();
   if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can change settings');
-  var r = Number(reminderHour), l = lastCallHour === '' || lastCallHour === null ? '' : Number(lastCallHour);
+  var r = Number(reminderHour);
   if (!(r >= 0 && r <= 23)) throw new Error('Choose a reminder hour');
-  if (l !== '' && !(l >= 0 && l <= 23)) throw new Error('Choose a last-call hour');
-  if (l !== '' && l <= r) throw new Error('Last call must be later than the daily reminder');
   setSetting('ReminderHour', String(r));
-  setSetting('LastCallHour', String(l));
-  installTriggers();
-  audit('admin', 'admin', '', 'reminder hours', r + ':00' + (l === '' ? ', no last call' : ', last call ' + l + ':00'));
+  setSetting('LastCallHour', '');
+  audit('admin', 'admin', '', 'reminder hours', 'default ' + r + ':00');
   return apiParent(pin);
 }
 
-// The admin sets a family's parents' code (4 digits, unused by another family or the admin).
+// The admin sets a family's parents' code (6 digits). A code opens its own family only, so it need not be unique and is
+// never compared with another family's or the admin's (no "taken" answer to learn codes from). Old sessions end with it.
 function apiAdminParentPin(pin, groupId, newPin) {
   ensureSetup();
-  if (!parentAccess(pin).isAdmin) throw new Error('Only the admin can change settings');
+  if (!parentAccess(pin, { typed: true }).isAdmin) throw new Error('Only the admin can change settings');
   newPin = String(newPin || '').trim();
-  if (!/^\d{4}$/.test(newPin)) throw new Error('A parents code is 4 digits');
+  if (!/^\d{6}$/.test(newPin)) throw new Error('A parents code is 6 digits');
   var gs = groups(), g = gs.filter(function (x) { return String(x.Id) === String(groupId); })[0];
   if (!g) throw new Error('Unknown family');
-  if (newPin === String(getSetting('AdminPIN')) || gs.some(function (x) { return x !== g && String(x.ParentPIN) === newPin; })) throw new Error('This code is taken');
   invalidate('Groups');
   var sh = sheet('Groups'), values = sh.getDataRange().getValues(), col = values[0].indexOf('ParentPIN');
   for (var i = 1; i < values.length; i++) if (String(values[i][0]) === String(g.Id)) sh.getRange(i + 1, col + 1).setValue(newPin);
   invalidate('Groups');
   audit('admin', 'admin', String(g.Id), 'parents code', g.Name);
   return { ok: true };
-}
-
-function uniqueParentPin() {
-  var taken = groups().map(function (g) { return String(g.ParentPIN); }).concat([String(getSetting('AdminPIN'))]);
-  var p;
-  do { p = randomPin(); } while (taken.indexOf(p) >= 0);
-  return p;
 }
 
 // ---------- Dashboard ----------
@@ -754,7 +859,8 @@ function buildDashboard(kid) {
 
   return {
     // inApp: the level test is played in the app (Pilot.js); kids on the old link keep test-english.com's test.
-    girl: { name: kid.Name, level: kid.Level, levelLabel: LEVEL_LABEL[kid.Level] || kid.Level, color: kid.Color, inApp: missionsOn(kid), age: Number(kid.Age) || null },
+    girl: { name: kid.Name, level: kid.Level, levelLabel: LEVEL_LABEL[kid.Level] || kid.Level, color: kid.Color, inApp: missionsOn(kid), age: Number(kid.Age) || null,
+      he: kidHebrew(kid), heSet: String(kid.Hebrew || '') },
     today: t,
     week: week,
     stats: {
@@ -774,6 +880,9 @@ function buildDashboard(kid) {
     placement: placementInfo(kid),
     games: gameStats(kid, t, owned['word-saver']),
     chat: pending || nest ? null : chatInfo(kid, t),
+    // The parents' switches (Safety.js): speech recognition allowed, and the hour of her reminder (0 = none).
+    mic: kidMicOn(kid), remind: kidRemindHour(kid),
+    writing: pending || nest ? null : writingInfo(kid),
     coins: coinsOf(kid).balance,
     upgrades: upgradesOf(owned),
     polish: polishInfo(kid),
@@ -884,8 +993,8 @@ function nextExercise(section, level, used, missions) {
   var byLevel = CATALOG[section];
   var start = Math.max(0, LEVELS.indexOf(level));
   if (missions) {
-    // Writing has no missions yet, and C1 has no Use of English: a kid with missions gets a Use of English (or a
-    // grammar) mission that day instead of a link out of the app.
+    // A writing day gives the next Writer's Desk mission of her level; when they run out (and for C1, which has no Use of
+    // English), a Use of English (or a grammar) mission that day instead of a link out of the app.
     var tries = section === 'writing' || section === 'use-of-english' ? [section, 'use-of-english', 'grammar'] : [section];
     for (var s = 0; s < tries.length; s++) {
       var own = (CATALOG[tries[s]] || {})[LEVELS[start]] || [];
@@ -908,20 +1017,22 @@ function nextExercise(section, level, used, missions) {
 
 // ---------- Reminders (time-driven triggers) ----------
 
-function dailyReminder() {
-  try { pushReminders(false); } catch (e) { console.error(e); }
+// Runs every hour (Apps Script) or once in each hour (Cloudflare, platformTick): the kids whose reminder hour it is.
+function dailyReminder(hour) {
+  var h = typeof hour === 'number' ? hour : Number(Utilities.formatDate(new Date(), TZ, 'H'));
+  try { kidReminders(h); } catch (e) { console.error(e); }
   var t = today();
   var logs = readTable('Log');
   readTable('Girls').forEach(function (k) {
-    if (!k.Email) return;
+    if (!k.Email || kidRemindHour(k) !== h) return;
     var done = logs.some(function (l) { return l.Girl === k.Name && l.Date === t; });
     if (done) return;
     var a = todayTask(k);
     MailApp.sendEmail({
       to: k.Email,
-      subject: k.Name + ', your 10 minutes of English are waiting!',
+      subject: k.Name + ', Chacho saved today\'s English for you',
       htmlBody: '<p>Hi ' + k.Name + ',</p><p>Today: <b>' + SECTIONS[a.section].label + '</b> — ' + a.title + '</p>' +
-        '<p><a href="' + groupLink(groupOf(k)) + '">Open English with Chacho</a> and keep your streak going.</p>'
+        '<p><a href="' + groupLink(groupOf(k)) + '">Open English with Chacho</a> whenever you are ready.</p>'
     });
   });
 }
@@ -933,8 +1044,9 @@ function weeklySummary() {
   if (owner) {
     MailApp.sendEmail({ to: owner, subject: 'English with Chacho — weekly summary ' + data.today, htmlBody: data.groups.map(summaryHtml).join('<hr>') });
   }
+  // A family gets its email in Hebrew: each kid's sentence of the week (the one in the parents' view) and track.
   data.groups.forEach(function (g) {
-    if (g.email) MailApp.sendEmail({ to: g.email, subject: 'English with Chacho — ' + g.name + ' weekly summary', htmlBody: summaryHtml(g) });
+    if (g.email) MailApp.sendEmail({ to: g.email, subject: 'מה למדנו השבוע: ' + g.name, htmlBody: learnedEmailHtml(g) });
   });
 }
 
@@ -943,7 +1055,8 @@ function summaryHtml(g) {
     return '<tr><td><b>' + d.girl.name + '</b></td><td>' + d.stats.weekDone + '/' + d.stats.weekTotal + '</td><td>' +
       (d.stats.avg === null ? '–' : d.stats.avg + '%') + '</td><td>' + d.stats.streak + '</td><td>' + d.stats.balance + '</td><td>' + d.girl.levelLabel +
       (d.journey ? ' · ' + Math.min(d.journey.stations, d.journey.goal) + '/' + d.journey.goal + (d.journey.gate.state === 'open' ? ' (gate open)' : '') : '') + '</td><td>' +
-      d.games.weekRounds + (d.games.weekAvg === null ? '' : ' (' + d.games.weekAvg + '%)') + '</td></tr>';
+      d.games.weekRounds + (d.games.weekAvg === null ? '' : ' (' + d.games.weekAvg + '%)') + '</td></tr>' +
+      '<tr><td colspan="7" dir="rtl" style="text-align:right">' + String(d.learned || '').replace(/[<>&]/g, '') + '</td></tr>';
   }).join('');
   return '<h3>' + g.name + '</h3><table cellpadding="6" border="1" style="border-collapse:collapse"><tr><th>Name</th><th>Week</th><th>Avg</th><th>Streak</th><th>Points</th><th>Level</th><th>Games</th></tr>' +
     rows + '</table><p>Group goal: ' + g.goal.total + ' / ' + g.goal.goal + '</p><p><a href="' + g.link + '">Open English with Chacho</a></p>';
@@ -954,10 +1067,8 @@ function installTriggers() {
     var f = tr.getHandlerFunction();
     if (f === 'dailyReminder' || f === 'lastCallReminder' || f === 'parentSummary' || f === 'weeklySummary' || f === 'warmCache') ScriptApp.deleteTrigger(tr);
   });
-  var hour = Number(getSetting('ReminderHour')) || 17;
-  ScriptApp.newTrigger('dailyReminder').timeBased().everyDays(1).atHour(hour).inTimezone(TZ).create();
-  var last = Number(getSetting('LastCallHour'));
-  if (last) ScriptApp.newTrigger('lastCallReminder').timeBased().everyDays(1).atHour(last).inTimezone(TZ).create();
+  // Every hour: each kid's reminder comes at the hour her parents chose (Safety.js kidReminders); no evening last call.
+  ScriptApp.newTrigger('dailyReminder').timeBased().everyHours(1).create();
   var summary = Number(getSetting('ParentSummaryHour'));
   if (summary) ScriptApp.newTrigger('parentSummary').timeBased().everyDays(1).atHour(summary).inTimezone(TZ).create();
   ScriptApp.newTrigger('weeklySummary').timeBased().onWeekDay(ScriptApp.WeekDay.FRIDAY).atHour(12).inTimezone(TZ).create();
@@ -1011,12 +1122,17 @@ function ensureSetup() {
     if (stray && ss.getSheets().length > 1) ss.deleteSheet(stray);
     clearCache();
 
-    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '20', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: PUBLIC_URL, PilotFrom: today(), ShopOpens: SHOP.opens, ShopEarly: '',
-      InviteCode: Math.random().toString(36).slice(2, 8), InviteOpen: 'no', TeacherCode: String(100000 + Math.floor(Math.random() * 900000)) };
+    var defaults = { AdminPIN: randomPin(), ReminderHour: '17', LastCallHour: '', ParentSummaryHour: '21', FamilyGoal: '1500', FamilyReward: 'Family pizza & movie night out', AppUrl: '', PublicUrl: PUBLIC_URL, PilotFrom: today(), ShopOpens: SHOP.opens, ShopEarly: '',
+      InviteCode: randomId(), InviteOpen: 'no', TeacherCode: newTeacherCode() };
     Object.keys(defaults).forEach(function (k) { if (getSetting(k) === null) setSetting(k, defaults[k]); });
     if (getSetting('AppUrl') !== APP_URL) setSetting('AppUrl', APP_URL);
     // v18: the front end moved from GitHub Pages to its own address (the old one shows a "new home" screen).
     if (/github\.io/.test(String(getSetting('PublicUrl') || ''))) setSetting('PublicUrl', PUBLIC_URL);
+    // v30: the merge of the night review (v25 to v29) and the Nest's Hebrew guidance (coco-voice's own v24, Girls.NestHebrew):
+    // both changed Girls, so a sheet on either side runs the setup once more; the columns above and the steps below are idempotent.
+    // v24: feedback is deleted and exported by the family id (Safety.js); the evening "last call" is gone (no pressure on kids).
+    migrateFeedbackWho();
+    setSetting('LastCallHour', '');
     // v15: Today's Mission is every kid's daily task (Girls.Missions = no keeps the old link), so the pilot setting goes.
     var st = sheet('Settings'), sv = st.getDataRange().getValues();
     for (var si = sv.length - 1; si >= 1; si--) if (sv[si][0] === 'MissionPilot') st.deleteRow(si + 1);
@@ -1243,15 +1359,15 @@ function setSetting(key, value) {
   invalidate('Settings');
 }
 
+// A name nobody has is checked against the caller's address only (Auth.js checkPin): nothing is written for it.
 function auth(name, pin) {
   ensureSetup();
   var g = findGirl(name);
-  checkPin('girl:' + String(name).toLowerCase(), !!g && String(g.PIN).trim() === String(pin).trim());
+  checkPin('girl:' + String(name).toLowerCase(), !!g && sameSecret(g.PIN, pin), LOCK.name, !g);
   duelSeen(g.Name);
   return g;
 }
 
-function randomPin() { return String(1000 + Math.floor(Math.random() * 9000)); }
 
 // ---------- Date helpers (yyyy-MM-dd strings, Asia/Jerusalem) ----------
 

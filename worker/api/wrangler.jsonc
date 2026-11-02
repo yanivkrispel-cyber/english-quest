@@ -2,7 +2,8 @@
 // Build first: node platform/build.js. Staging (a copy of the data, pushes off, no cron):
 //   npx wrangler deploy -c worker/api/wrangler.jsonc --env staging
 // Production (only on the cutover night): npx wrangler deploy -c worker/api/wrangler.jsonc
-// Secrets (both): npx wrangler secret put ADMIN_TOKEN -c worker/api/wrangler.jsonc [--env staging]
+// Secrets (both): npx wrangler secret put ADMIN_TOKEN -c worker/api/wrangler.jsonc [--env staging], and the same for
+// EXPORT_TOKEN (Apps Script's nightly copy, its CF_TOKEN) and RELAY_KEY (Apps Script's CF_RELAY_KEY).
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "coco-api",
