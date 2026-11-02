@@ -111,6 +111,13 @@ ages 2 and 3 the card adds "משחקים ביחד": sit next to the kid, point a
 (AAP and WHO: young kids learn best from a screen with a grown-up). The parent sets the screen time (below), lessons a day
 and the arcade's share in the kid card.
 
+**The word map** (games plan phase 6, `nestWordMap` in Index.html): the button "מפת המילים" on the Nest card opens a sheet
+with every unit the kid has played, in program order, and its words with their pictures (a tap plays Chacho's word). Each
+word is known (a teal ring: found on the first try in two lessons or more, more often than missed), still practicing (an
+orange ring: missed more often than found) or met; the units still ahead are listed by name. `nestWordState` is the one
+definition of these states (the monthly report uses it too). It is drawn on the parents' phone from the parents' view
+(`nest.known`, `nest.played`) and the Nest content: nothing new is asked, sent or kept.
+
 ## The teacher's preview
 
 `?nest` (the teacher's link `?nest&t=<Settings.TeacherCode>`, copied from the admin's Pilot card) lists every unit. A unit

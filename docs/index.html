@@ -251,6 +251,13 @@ body.nestkid .icon-btn .cicon{width:40px;height:40px}
 .nk-lw{flex:none;width:74px;border:0;background:rgba(255,255,255,.75);border-radius:14px;padding:6px 4px;display:grid;justify-items:center;gap:2px;font-weight:700;font-size:12px;color:var(--ink);cursor:pointer}
 .nk-lw img{width:46px;height:46px;object-fit:contain}
 .nk-lw .nk-blob,.nk-lw .nk-dots{width:40px}
+.nkmap{max-height:82vh;overflow:auto;overscroll-behavior:contain}
+.nkmap-unit{margin-top:14px}
+.nkmap-row{display:flex;flex-wrap:wrap;gap:8px;padding-top:6px}
+.nk-lw.known{box-shadow:0 0 0 3px var(--teal)}
+.nk-lw.practice{box-shadow:0 0 0 3px var(--orange)}
+.nk-lw .nkmap-mark{font-size:13px;line-height:1;color:var(--teal-2)}
+.nkmap-key{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .nk-word.long{font-size:26px;line-height:1.25;max-width:92%;margin-inline:auto}
 .nk-phr{display:flex;align-items:center;gap:8px;width:100%;border:0;background:rgba(255,255,255,.75);border-radius:14px;padding:8px 12px;margin-top:6px;font:inherit;font-size:14px;color:var(--ink);cursor:pointer;text-align:start}
 .nk-phr bdi{font-weight:800}
@@ -9385,12 +9392,53 @@ function nestFillParent(p){
       <div style="font-size:13px;line-height:1.5"><b>משחקים ביחד.</b> בגיל הזה לומדים הכי טוב עם מבוגר: שבו ליד <bdi>${esc(kid.girl.name)}</bdi>, הצביעו יחד על התמונות ואמרו את המילים בקול אחרי צ׳אצ׳ו. אחרי השיעור, מילה אחת מהיום בארוחת הערב.</div></div>` : '';
     el.innerHTML = `<div class="he sub" dir="rtl" lang="he" style="font-size:13px;margin:0">${icon('bird')} היום בקן של צ׳אצ׳ו: <b>${esc(u.he)}</b></div>${coplay}
       <div class="nk-learnrow">${nestWordsOf(u).map(w => `<button class="nk-lw" data-nkw="${esc(w.id)}" title="${esc(w.he)}">${nestPic(w)}<span dir="ltr">${esc(w.en)}</span></button>`).join('')}</div>
-      ${nestCardMore(u)}`;
+      ${nestCardMore(u)}
+      ${kid && kid.nest ? `<button class="btn btn-glass btn-sm mt-s" data-nkmap="${esc(kid.girl.name)}">${icon('map-trifold')} מפת המילים</button>` : ''}`;
     el.querySelectorAll('[data-nkw]').forEach(b => b.onclick = () => nestPlay(['w-' + b.dataset.nkw]));
+    el.querySelectorAll('[data-nkmap]').forEach(b => b.onclick = () => nestWordMap(kid));
     el.querySelectorAll('[data-nkp]').forEach(b => b.onclick = () => nestPlay(['p-' + b.dataset.nkp]));
     // The week's postcard (docs/nest/stickers.js), for the kid this card belongs to.
     if (typeof nkPostcard === 'function') nkPostcard(el, el.dataset.nkkid, p ? [].concat(...p.groups.map(x => x.girls)).find(x => x.girl.name === el.dataset.nkkid) : null);
   })).catch(() => {});
+}
+
+// A word's state for the parents, from the kid's stats [lessons found on the first try, lessons missed, the last day met]:
+// known = found on the first try in two lessons or more, more often than missed; practice = missed more often than found.
+function nestWordState(st){
+  if (!st) return null;
+  const ok = Number(st[0]) || 0, miss = Number(st[1]) || 0;
+  return ok >= 2 && ok > miss ? 'known' : miss > ok ? 'practice' : 'met';
+}
+// The word map (games plan phase 6): every unit the kid has played, in program order, its words with their pictures (a tap
+// plays Chacho's word), each marked known / met / still practicing; the units still ahead by name. Nothing new is kept:
+// it is drawn from the parents' view data and the Nest content.
+function nestWordMap(g){
+  if (!g || !g.nest || !window.EQ_NEST) return;
+  const known = g.nest.known || {}, played = new Set((g.nest.played || []).map(id => String(id).split('.')[0]));
+  const units = EQ_NEST.units.filter(u => !u.review), met = units.filter(u => played.has(u.id) || u.words.some(w => known[w.id]));
+  const ahead = units.filter(u => !met.includes(u));
+  const all = [].concat(...met.map(u => u.words)), states = all.map(w => nestWordState(known[w.id]));
+  const nMet = states.filter(Boolean).length, nKnown = states.filter(s => s === 'known').length;
+  const mark = { known: [0, 'מכירים'], practice: [0, 'עוד מתאמנים'], met: [0, 'פגשנו'] };
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="sheet glass he nkmap" dir="rtl" lang="he">
+    <div class="row-flex between"><span class="row-flex" style="gap:10px"><span class="tile sm t-vocab">${icon('map-trifold', 'duotone')}</span>
+      <h2 style="margin:0;font-size:18px">המילים של <bdi>${esc(g.girl.name)}</bdi></h2></span>
+      <button class="btn btn-glass icon-btn" style="width:38px;height:38px;font-size:15px" id="x" aria-label="Close">${icon('x')}</button></div>
+    <p class="sub" style="font-size:14px;margin:8px 0 0">${nMet ? `פגשנו ${nMet === 1 ? 'מילה אחת' : nMet + ' מילים'} באנגלית${nKnown ? `, ו-${nKnown === 1 ? 'אחת' : nKnown} כבר מוכרות היטב` : ''}. נוגעים בתמונה ושומעים את צ׳אצ׳ו.` : 'עוד לא פגשנו מילים. אחרי השיעור הראשון הן יופיעו כאן.'}</p>
+    <div class="nkmap-key"><span class="chip teal">${icon('check')} מכירים: מצאו בניסיון הראשון בשני שיעורים</span><span class="chip orange">עוד מתאמנים</span><span class="chip">פגשנו</span></div>
+    ${met.map(u => `<div class="nkmap-unit"><div class="label" style="text-transform:none">${esc(u.he)} · <bdi dir="ltr">${esc(u.title)}</bdi></div>
+      <div class="nkmap-row">${u.words.map(w => { const s = nestWordState(known[w.id]);
+        return `<button class="nk-lw ${s || ''}" data-nkmw="${esc(w.id)}" title="${esc(w.he)}${s ? ' · ' + mark[s][1] : ''}" aria-label="${esc(w.en)}: ${esc(w.he)}${s ? ', ' + mark[s][1] : ''}"${s ? '' : ' style="opacity:.55"'}>${nestPic(w)}<span dir="ltr">${esc(w.en)}</span>${s === 'known' ? `<span class="nkmap-mark">${icon('check', 'bold')}</span>` : ''}</button>`; }).join('')}</div></div>`).join('')}
+    ${ahead.length ? `<div class="nkmap-unit"><div class="label" style="text-transform:none">בהמשך השנה</div><p class="sub" style="font-size:14px;margin:4px 0 0">${ahead.map(u => esc(u.he)).join(' · ')}</p></div>` : ''}
+  </div>`;
+  document.body.appendChild(ov);
+  dialogOpen(ov);
+  const close = () => { nestStopAudio(); ov.remove(); if (ov._back) try { ov._back.focus(); } catch (e) {} };
+  ov.querySelector('#x').onclick = close;
+  ov.onclick = e => { if (e.target === ov) close(); };
+  ov.querySelectorAll('[data-nkmw]').forEach(b => b.onclick = () => nestPlay(['w-' + b.dataset.nkmw]));
 }
 
 // ---- The preview for the early-years teacher and the owner: every unit, its parts, and a session at each age ----
