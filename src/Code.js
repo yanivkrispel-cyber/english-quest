@@ -3,7 +3,7 @@
 
 var TZ = 'Asia/Jerusalem';
 var START_DATE = '2026-10-08';
-var SETUP_VERSION = 'v29';
+var SETUP_VERSION = 'v30';
 // The production web app (Apps Script deployment) that the Pages front end calls.
 // The kids' front end (Cloudflare, docs/). Until 2026-10 it was https://yanivkrispel-cyber.github.io/english-quest/.
 var PUBLIC_URL = 'https://coco.coachkrispel.com/';
@@ -67,7 +67,9 @@ var HEADERS = {
     // Nest.js (finding 15): NestMin = the parent's screen-time cap a day; NestTime = today's seconds, from the phones.
     'NestMin', 'NestTime',
     // Hebrew = the kid's Hebrew help (yes, no; empty = on for A1 and A2).
-    'Hebrew'],
+    'Hebrew',
+    // Nest.js (package B, coco-voice SETUP v24): NestHebrew = the parent's switch for Chacho's Hebrew guidance (empty = auto, on, off).
+    'NestHebrew'],
   Games: ['Timestamp', 'Girl', 'Date', 'Game', 'Level', 'Correct', 'Total', 'XP', 'Missed', 'Right'],
   Review: ['Girl', 'Items'],
   Gates: ['Timestamp', 'Girl', 'Date', 'From', 'To', 'Correct', 'Total', 'Passed', 'Tasks', 'XP', 'Missed', 'Right'],
@@ -175,7 +177,7 @@ function api() {
   apiMissionResult: apiMissionResult, apiFlag: apiFlag, apiTeacherWriting: apiTeacherWriting, apiTeacherMark: apiTeacherMark,
   apiJoinCheck: apiJoinCheck, apiJoin: apiJoin, apiPlacement: apiPlacement, apiFeedback: apiFeedback,
   apiTeacherCheck: apiTeacherCheck, apiTeacherFlag: apiTeacherFlag, apiPilotStats: apiPilotStats, apiPilotInvite: apiPilotInvite,
-  apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade, apiParentNestMin: apiParentNestMin, apiNestTime: apiNestTime,
+  apiChatResult: apiChatResult, apiAudit: apiAudit, apiNestResult: apiNestResult, apiParentSetAge: apiParentSetAge, apiParentNestPerDay: apiParentNestPerDay, apiParentNestArcade: apiParentNestArcade, apiParentNestMin: apiParentNestMin, apiParentNestHebrew: apiParentNestHebrew, apiNestTime: apiNestTime,
   apiAdminData: apiAdminData, apiAdminEdit: apiAdminEdit,
   apiDeleteData: apiDeleteData, apiExportData: apiExportData,
   apiParentConsent: apiParentConsent, apiParentFriends: apiParentFriends, apiParentMic: apiParentMic, apiParentRemind: apiParentRemind,
@@ -1124,6 +1126,8 @@ function ensureSetup() {
     if (getSetting('AppUrl') !== APP_URL) setSetting('AppUrl', APP_URL);
     // v18: the front end moved from GitHub Pages to its own address (the old one shows a "new home" screen).
     if (/github\.io/.test(String(getSetting('PublicUrl') || ''))) setSetting('PublicUrl', PUBLIC_URL);
+    // v30: the merge of the night review (v25 to v29) and the Nest's Hebrew guidance (coco-voice's own v24, Girls.NestHebrew):
+    // both changed Girls, so a sheet on either side runs the setup once more; the columns above and the steps below are idempotent.
     // v24: feedback is deleted and exported by the family id (Safety.js); the evening "last call" is gone (no pressure on kids).
     migrateFeedbackWho();
     setSetting('LastCallHour', '');

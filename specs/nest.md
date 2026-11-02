@@ -4,12 +4,12 @@ The owner's go on 2026-10-27 (proposal: https://claude.ai/artifact/UoyjFPsekjTaX
 kids join from the same invite link. Owner's choices: ages 2 to 7; a parent sits with the youngest, older kids play
 alone; the only reward is the pet (no shop, no coins on screen).
 
-**Hebrew voice: decided, coming (owner, 2026-10-31).** Until then the kid hears only Chacho's English (Chatterbox,
-`specs/voice.md`): Chacho shows each game himself, a hand shows where to tap or drag, and the instructions are short English
-lines that come back every day; Hebrew is text for grown-ups (the parents' card, the microphone sheet, the note behind a long
-press on Chacho). The owner's decision of 2026-10-31 replaces the earlier "no Hebrew" (2026-10-27: "בלי עברית וכרגע בלי
-הקלטות"): Chacho will say short Hebrew *instructions* only (what to do in a game), never translations of the English words,
-off from age 6, package B, with voice samples first. It is built on its own branch and is not in this code yet. The games plan: https://claude.ai/artifact/GfzVYFfXfE4HRa2nMKy13T (phases 1 to 4
+**Changed 2026-10-31: Chacho now says in Hebrew how to play** (package B, see "Hebrew guidance" at the end): short Hebrew
+*instructions* only (what to do in a game), never translations of the English words; the parent's switch `Girls.NestHebrew`.
+What follows was the rule until then. **No Hebrew voice (owner, 2026-10-27: "בלי עברית וכרגע בלי הקלטות").** The kid hears
+Chacho's English (Chatterbox since 2026-10-29, `specs/voice.md`; Kokoro before): Chacho shows each game himself, a hand shows
+where to tap or drag, and the instructions are short English lines that come back every day. Hebrew is text for grown-ups
+(the parents' card, the microphone sheet, the note behind a long press on Chacho). The games plan: https://claude.ai/artifact/GfzVYFfXfE4HRa2nMKy13T (phases 1 to 4
 built 2026-10-27).
 
 ## Who is a Nest kid
@@ -361,3 +361,30 @@ audio still asleep (no tap yet) the beat goes on by the clock. With twelve Chach
   the grown-up (done) or a small arrow (skip). "Lights on! Great job!". Its cover is Chacho asleep.
 
 Not built yet from the plan's stage E: the audio episode for the car for every unit.
+
+## Hebrew guidance (package B, owner 2026-10-31)
+
+The complaint: the youngest did not know how to go on or where to tap. Plan, research and the owner's picks:
+https://claude.ai/artifact/HxuLLJMqaNSorPJryBpmya (Hebrew only for instructions, never translating a word; Chacho himself
+speaks it; package B; off by default from age 6). The voice: Chacho's own (Chatterbox Multilingual, `language_id='he'`, from
+niqqud text, the calm setting; the owner chose it over a native Hebrew voice and a human recording,
+https://claude.ai/artifact/QhT8dKgqiNPqZh57HHuTyE). "Hebrew says how, English says what."
+
+- **Lines**: `EQ_NEST.he` (41: navigation, the ladder's `stuck-*`, one a game; `peek2` is Peekaboo from age 4), recorded by
+  `EnglishLessons-work/hebrew-voice` (`guide_lines.py` holds the niqqud text: כּוֹל for כל, few words with ר; `kernel3/guide.py`
+  on Kaggle, six takes a line, Whisper large-v3 picks), in `docs/nest/he/<key>.mp3`, said as `h-<key>` (`nestClip`; the phone's
+  own voice never reads them). nest-check: every key the code says has a line and a recording, every game has a line.
+- **When** (`nkHeMode`, play.js): the parent's switch `Girls.NestHebrew` (the kid card: auto, always, off; `apiParentNestHebrew`,
+  audited). Auto = on up to age 5. A game's Hebrew intro (`nkHeIntro`, before the English intro) the first two times the kid
+  plays it, with "watch the hand" the first time Chacho shows it; "one more game" before a lesson's last part and "well done,
+  we finished" at its end the first six lessons; always when the parent chose always.
+- **I do, we do, you do**: the round after Chacho's own (`s.together`) starts with the hand at once and "now together".
+- **The help ladder** (`nkLadder`, every game through `nkIdle`, the home's egg, the arcade shelf, Lights out's thumb): 5 s the
+  right thing wiggles and glows (`nk-nudge`), 12 s the English instruction again and the hand, 20 s one Hebrew line
+  (`stuck-tap`, `stuck-drag`, `stuck-btn`, `egg`, `games`; the English when Hebrew is off) and a slow hand with a gold ring
+  (`nk-lead`), 30 s Chacho naps until the next touch. Any touch starts it again. Dance Freeze has nothing to tap: only its
+  Hebrew intro.
+- **Home**: before the lesson the egg is called (the first three days in Hebrew right after hello, then the ladder); the tent
+  is called only after the lesson (in Hebrew the first three times).
+- **The picture path** (`nkPath`): one station a game of the lesson (its cue icon), done ones gold, the one on now big with a
+  ring of how far into it; instead of a dot a step. Hidden in one-game sessions.

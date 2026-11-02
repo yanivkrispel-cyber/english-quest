@@ -4,7 +4,7 @@
 // goes to the audit trail (PINs masked).
 
 var EDIT = {
-  Girls: { key: 'Name', fields: ['PIN', 'Level', 'Age', 'Group', 'Email', 'Redeemed', 'Missions', 'PetName', 'NestPerDay', 'NestArcadeMin', 'NestMin'] },
+  Girls: { key: 'Name', fields: ['PIN', 'Level', 'Age', 'Group', 'Email', 'Redeemed', 'Missions', 'PetName', 'NestPerDay', 'NestArcadeMin', 'NestMin', 'NestHebrew'] },
   Groups: { key: 'Id', fields: ['Name', 'ParentPIN', 'Goal', 'GoalReward', 'Email', 'Friends'] },
   Settings: { key: 'Key', fields: ['Value'] }
 };

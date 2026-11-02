@@ -144,6 +144,21 @@
 @keyframes nkrise{from{transform:translateY(0)}to{transform:translateY(calc(-100cqh - 70cqmin))}}
 @keyframes nkburst{0%{transform:var(--at) scale(1);opacity:1}100%{transform:var(--at) scale(1.6);opacity:0}}
 @media (prefers-reduced-motion: reduce){.nk-bush.wiggle .bk,.nk-bush.wiggle .pk{animation:none}.nk-bub{animation-duration:30s!important}}
+.nk-top .nk-prog.nk-path{gap:0;flex-wrap:nowrap;align-items:center}
+.nk-st{position:relative;isolation:isolate;flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:17px;color:rgba(99,102,241,.6);
+  background:rgba(255,255,255,.75);box-shadow:inset 0 -3px 6px rgba(99,102,241,.14),0 3px 8px rgba(60,60,120,.1);transition:width .3s,height .3s}
+.nk-st img{width:70%;height:70%;object-fit:contain}
+.nk-st.ok{color:#fff;background:radial-gradient(circle at 35% 30%,#fde68a,#f59e0b);box-shadow:0 0 8px rgba(245,158,11,.5)}
+.nk-st.on{width:42px;height:42px;font-size:24px;color:#fff;background:linear-gradient(145deg,#a5b4fc,#6366f1);box-shadow:0 6px 14px rgba(99,102,241,.35)}
+.nk-st.on::before{content:'';position:absolute;inset:-5px;border-radius:50%;z-index:-1;background:conic-gradient(#f59e0b var(--p),rgba(99,102,241,.16) 0)}
+.nk-st.got{animation:nkpop .4s ease}
+.nk-path b{flex:0 1 14px;min-width:4px;height:4px;border-radius:2px;margin:0 2px;background:rgba(99,102,241,.2)}
+.nk-path b.ok{background:#f59e0b}
+.nk-nudge{animation:nknudge 1.6s ease}
+.nk-lead{box-shadow:0 0 0 6px #fbbf24,0 0 30px rgba(251,191,36,.6)!important;z-index:3}
+@keyframes nknudge{0%,100%{scale:1;rotate:0deg;filter:none}15%{scale:1.1;rotate:-5deg;filter:drop-shadow(0 0 14px rgba(251,191,36,.95))}35%{scale:1.08;rotate:5deg}
+  55%{scale:1.06;rotate:-3deg;filter:drop-shadow(0 0 14px rgba(251,191,36,.95))}75%{scale:1.03;rotate:1deg}}
+@media (prefers-reduced-motion: reduce){.nk-nudge{animation:none}}
 `;
   document.head.appendChild(st);
 })();
@@ -293,25 +308,90 @@ function nkHandDrag(from, to, done){
     { duration: dur, easing: 'ease-in-out' }).onfinish = () => g.remove();
   setTimeout(() => { from.classList.remove('lift'); if (done && document.body.contains(from) && document.body.contains(to)) done(); }, dur * .86);
 }
-// A hint when nothing happens for a while: the hand shows the way (a tap, or a drag for drag games). Any touch on the
-// stage starts the wait again.
-function nkIdle(s, target, to){
-  clearTimeout(NE.idleT);
-  const st = nkStage();
-  if (!st) return;
-  if (!st.dataset.idle) { st.dataset.idle = 1; st.addEventListener('pointerdown', () => { clearTimeout(NE && NE.idleT); nkHandStop(); if (NE && NE.idleArm) NE.idleT = setTimeout(NE.idleArm, 9000); }, true); }
-  NE.idleArm = () => {
-    if (!nkLive(s)) return;
-    const a = typeof target === 'function' ? target() : target, b = typeof to === 'function' ? to() : to;
-    if (!a || !document.body.contains(a)) return;
-    if (b) { const r = a.getBoundingClientRect(), [x1, y1] = nkCenter(b), [x0, y0] = nkCenter(a), h = nkHandEl();
-      h.animate([{ opacity: 0, transform: `translate(${x0}px,${y0}px)` }, { opacity: 1, transform: `translate(${x0}px,${y0}px)`, offset: .2 },
-        { opacity: 1, transform: `translate(${x1}px,${y1}px)`, offset: .8 }, { opacity: 0, transform: `translate(${x1}px,${y1}px)` }], { duration: 1600, easing: 'ease-in-out' });
-      void r;
-    } else nkHandTap(a, null, 2);
-    NE.idleT = setTimeout(NE.idleArm, 9000);
+// The hand shows a drag without moving anything: from one element to another.
+function nkHandGlide(a, b, dur){
+  const h = nkHandEl();
+  if (!h.animate) return;
+  nkHandStop();
+  const [x1, y1] = nkCenter(b), [x0, y0] = nkCenter(a);
+  h.animate([{ opacity: 0, transform: `translate(${x0}px,${y0}px)` }, { opacity: 1, transform: `translate(${x0}px,${y0}px)`, offset: .2 },
+    { opacity: 1, transform: `translate(${x1}px,${y1}px)`, offset: .8 }, { opacity: 0, transform: `translate(${x1}px,${y1}px)` }], { duration: dur || 1600, easing: 'ease-in-out' });
+}
+
+// ---------- The Hebrew guidance (package B, owner 2026-10-31) ----------
+// Chacho says in Hebrew how to play (what to do, where to tap, what now), never what a word means: the words, the praise and
+// the songs stay English. h-<key> clips are docs/nest/he/<key>.mp3 (EQ_NEST.he has the lines). The parent's switch
+// (dash.nest.hebrew): '' = auto (on up to age 5), 'on' = always, 'off'. On auto a game's Hebrew intro comes the first two
+// times the kid plays it, then only when the kid is stuck (the help ladder); the lesson's own Hebrew (one more game, done)
+// the first six lessons.
+function nkHeMode(){
+  const n = (dash && dash.nest) || {}, v = n.hebrew;
+  if (v === 'on' || v === 'off') return v;
+  return ((NE && NE.age) || n.age || 4) <= 5 ? 'auto' : 'off';
+}
+const nkHeOn = () => nkHeMode() !== 'off';
+const nkHeFull = t => { const m = nkHeMode(); return m === 'on' || (m === 'auto' && nkSeen(t) <= 2); };
+const nkHeNav = () => { const m = nkHeMode(); return m === 'on' || (m === 'auto' && nkSeen('_lesson') <= 6); };
+const nkHeKey = t => t === 'peek' && NE && NE.age >= 4 ? 'peek2' : ((window.EQ_NEST || {}).he || {})[t] ? t : null;
+// What Chacho says in Hebrew before a game's English intro: "one more game" before the lesson's last one, the game's
+// instruction, and the first time ever with Chacho's own round "watch the hand".
+function nkHeIntro(s){
+  if (!s.first || !nkHeOn()) return [];
+  const out = [], k = nkHeKey(s.t), parts = nkParts(), last = NE && !NE.play && !NE.arcade && parts.length >= 3 && nkPartOf(NE.si) === parts.length - 1;
+  if (last && nkHeNav()) out.push('h-last');
+  if (k && nkHeFull(s.t)) { out.push('h-' + k); if (s.demo && nkSeen(s.t) === 1) out.push('h-watch'); }
+  return out;
+}
+
+// ---------- The help ladder ----------
+// The same steps everywhere (a game, the home's egg, the arcade shelf); any touch starts it again from the top:
+// 5 s the right thing wiggles and glows, 12 s Chacho says the instruction again and the hand taps it (or drags), 20 s one
+// short Hebrew line when the guidance is on (the English again when it is off) and the hand slowly, 30 s Chacho naps
+// until the next touch: no nagging a kid who went to play with the dog.
+// o: { live(), target, to, en, he, soon, nudge(el), nap(), wake() }; target, to and en may be functions. soon: Chacho's
+// "now together" keys, right after the prompt (the round after his own).
+const NKL = { t: [], run: null, arm: null, asleep: false };
+function nkLadderStop(){ NKL.t.forEach(clearTimeout); NKL.t = []; NKL.run = NKL.arm = null; }
+function nkLadder(o){
+  nkLadderStop();
+  const run = NKL.run = {};
+  const val = x => typeof x === 'function' ? x() : x;
+  const el = x => { const a = val(x); return a && document.body.contains(a) ? a : null; };
+  const at = (ms, f) => NKL.t.push(setTimeout(() => { if (NKL.run === run && o.live()) f(); }, Math.max(0, ms)));
+  const say = keys => { keys = val(keys); if (!nestQueue && keys && keys.length) nestPlay(keys); };
+  const show = slow => { const a = el(o.target), b = el(o.to); if (!a) return; if (b) nkHandGlide(a, b, slow ? 2600 : 1600); else nkHandTap(a, null, slow ? 3 : 2); };
+  const lead = on => { const a = el(o.target); if (a) a.classList.toggle('nk-lead', on); };
+  const go = soon => {
+    NKL.t.forEach(clearTimeout); NKL.t = [];
+    const d = soon ? -10500 : 0;
+    if (!soon) at(5000, () => { const a = el(o.target); if (a) o.nudge ? o.nudge(a) : nkAgain(a, 'nk-nudge'); });
+    at(12000 + d, () => { say(soon ? o.soon : o.en); show(false); });
+    at(20000 + d, () => { say(nkHeOn() && o.he ? ['h-' + o.he] : o.en); lead(true); show(true); });
+    at(30000 + d, () => { lead(false); NKL.asleep = true; if (o.nap) o.nap(); });
   };
-  NE.idleT = setTimeout(NE.idleArm, 7000);
+  NKL.arm = () => {
+    if (NKL.run !== run || !o.live()) return;
+    lead(false);
+    if (NKL.asleep) { NKL.asleep = false; if (o.wake) o.wake(); }
+    go(false);
+  };
+  NKL.asleep = false;
+  go(!!o.soon);
+}
+document.addEventListener('pointerdown', () => { if (NKL.arm) { nkHandStop(); NKL.arm(); } }, true);
+// The ladder in a game: the target to tap (or drag onto `to`). A button (next, I did it, the thumb) gets no English again.
+function nkIdle(s, target, to){
+  const first = typeof target === 'function' ? target() : target;
+  const btn = !!first && (first.id === 'nkbtn' || first.classList.contains('nklo-ok'));
+  const soon = s.together && !s.togetherDone;
+  s.togetherDone = true;
+  const coco = () => document.getElementById('nkcoco');
+  nkLadder({ live: () => nkLive(s), target, to,
+    en: btn ? null : () => { const k = NK[s.t].say ? NK[s.t].say(s) : []; return k.length ? k : NK[s.t].intro || []; },
+    he: to ? 'stuck-drag' : btn ? 'stuck-btn' : 'stuck-tap',
+    soon: soon ? (nkHeOn() ? ['h-together'] : []) : null,
+    nap: () => { const c = coco(); if (c && typeof nkPoseSrc === 'function') c.src = nkPoseSrc('sleep'); },
+    wake: () => { const c = coco(); if (c) c.src = cocoSrc('happy'); } });
 }
 
 // ---------- Dragging with a finger (phones, tablets, a mouse) ----------
@@ -540,6 +620,8 @@ function nkCompose(u, day, only){
   // Chacho shows the first round of a game while it is new for this kid (always for ages 2 and 3).
   const shown = new Set();
   steps.forEach(s => { if (s.first && !shown.has(s.t) && NK[s.t] && NK[s.t].demo && nkShouldDemo(s.t)) { s.demo = true; shown.add(s.t); } });
+  // I do, we do, you do: the round after Chacho's own is done together (the hand shows it again at once, "now together").
+  steps.forEach((s, i) => { const p = steps[i - 1]; if (p && p.demo && p.t === s.t) s.together = true; });
   steps.push({ t: 'done' });
   return steps;
 }
@@ -695,7 +777,9 @@ function nestStart(id, preview, only){
   NE = { u, dayId: id, day: d.day, si: 0, correct: 0, total: 0, res: {}, t0: Date.now(), review: !!u.review, tries: 0, heard: false,
     preview: !!preview, age: n.age, k: n.choices, words: n.words, tok: 0 };
   NE.steps = nkCompose(u, d.day, only);
-  if (!preview && !only) nkResume(id);
+  // A lesson picked up from the phone's storage is not a new start for the Hebrew guidance's count.
+  const resumed = !preview && !only && nkResume(id);
+  if (!only && !resumed) nkSeenAdd('_lesson');
   window.scrollTo(0, 0);
   nestRender(true);
 }
@@ -748,7 +832,26 @@ function nkPlayStart(game){
 // What Chacho says when a step opens: hello at the start, an activity's short instruction the first time, then the step.
 function nestPrompt(s, opening){
   const hello = opening ? ['en-hi'] : [], first = s.first ? (NK[s.t] && NK[s.t].intro) || [] : [];
-  return hello.concat(first, NK[s.t] && NK[s.t].say ? NK[s.t].say(s) : []);
+  return hello.concat(nkHeIntro(s), first, NK[s.t] && NK[s.t].say ? NK[s.t].say(s) : []);
+}
+// The lesson's parts: one station a game (rounds of the same game in a row; Meet and its phrase are one), for the picture
+// path in the header instead of a dot a step (a kid of four cannot read 15 dots; three or four pictures he can).
+function nkParts(){
+  if (!NE) return [];
+  if (NE.parts && NE.parts.n === NE.steps.length) return NE.parts.list;
+  const list = [];
+  NE.steps.forEach((x, i) => { if (x.t === 'done') return; const t = x.t === 'phrase' ? 'meet' : x.t, p = list[list.length - 1];
+    if (p && p.t === t) p.to = i; else list.push({ t, from: i, to: i }); });
+  NE.parts = { n: NE.steps.length, list };
+  return list;
+}
+const nkPartOf = i => nkParts().findIndex(p => i >= p.from && i <= p.to);
+// Done parts are gold, the part on now is big with a ring of how far into it, the rest wait in a row (empty for one game).
+function nkPath(){
+  const parts = nkParts(), on = NE.steps[NE.si].t === 'done' ? parts.length : nkPartOf(NE.si);
+  if (parts.length < 2) return '';
+  return parts.map((p, i) => { const pc = i === on ? Math.round(100 * (NE.si - p.from) / (p.to - p.from + 1)) : 0;
+    return (i ? `<b class="${i <= on ? 'ok' : ''}"></b>` : '') + `<span class="nk-st ${i < on ? 'ok' : i === on ? 'on' : ''}" style="--p:${pc}%">${icon((NK_CUE[p.t] || NK_CUE.find)[0], 'duotone')}</span>`; }).join('');
 }
 function nestRender(opening){
   if (!NE) return;
@@ -760,16 +863,15 @@ function nestRender(opening){
   NE.tok = ++NK_RUN.tok;
   NE.locked = false;
   const mic = document.getElementById('nkmic'); if (mic) mic.remove();
-  clearTimeout(NE.idleT); NE.idleArm = null;
+  nkLadderStop();
   nkHandStop();
   nestMicStop();
   if (NE.chant) { NE.chant.stop(); NE.chant = null; }
-  const dots = NE.steps.filter(x => x.t !== 'done').map((x, i) => `<i class="${i < NE.si ? 'ok' : i === NE.si ? 'on' : ''}"></i>`).join('');
   const cue = NK_CUE[s.t] || NK_CUE.find;
   app.innerHTML = `<div class="gscreen gplay nk nkg-${s.t}">
     <div class="row-flex between nk-top">
       <button class="btn btn-glass icon-btn" id="nkx" aria-label="Back to the nest">${icon(NE.preview || NE.play || NE.arcade ? 'x' : 'house')}</button>
-      <div class="nk-prog">${dots}</div>
+      <div class="nk-prog nk-path">${nkPath()}</div>
       <button class="btn btn-glass icon-btn" id="nkagain" aria-label="Listen again">${icon('speaker-high')}</button>
     </div>
     <div class="gstage nk-stage" id="nkst"></div>
@@ -868,7 +970,7 @@ function nkBurst(x, y){
 }
 // A gold star from the card into the progress row (the dot of this step turns gold when the next step draws).
 function nkStarFly(x, y){
-  const dot = document.querySelector('.nk-prog i.on'), s = document.createElement('div');
+  const dot = document.querySelector('.nk-path .on'), s = document.createElement('div');
   if (!dot || !s.animate) return;
   const t = dot.getBoundingClientRect();
   s.className = 'nk-flystar'; s.innerHTML = NK_STAR;
@@ -877,7 +979,7 @@ function nkStarFly(x, y){
   const dx = t.left + t.width / 2 - x, dy = t.top + t.height / 2 - y;
   s.animate([{ transform: 'translate(-50%,-50%) scale(.4) rotate(0)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.5) rotate(40deg)', opacity: 1, offset: .25 },
     { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(.35) rotate(220deg)`, opacity: 1 }], { duration: 900, easing: 'cubic-bezier(.5,0,.3,1)' })
-    .onfinish = () => { s.remove(); dot.classList.add('ok', 'got'); };
+    .onfinish = () => { s.remove(); nkAgain(dot, 'got'); };
 }
 // Every third in a row: the pet (or Chacho) jumps up from the bottom under a rainbow, with confetti.
 function nkParty(){
@@ -1499,7 +1601,8 @@ NK.done = {
       <div class="nk-stars big">${[0, 1, 2].map(i => `<span class="${i < stars ? 'on' : ''}">${icon('star', 'duotone')}</span>`).join('')}</div></div>`);
     const h = nkBtn('home', 'Home', nestExit);
     confetti(); buzz(true);
-    nestPlay(['en-done', 'en-bye'], () => h.classList.add('ready'));
+    // The lesson's end in Hebrew too ("well done, we finished for today"), the first lessons.
+    nestPlay((!NE.play && !NE.arcade && nkHeNav() && nkHeOn() ? ['h-done'] : []).concat(['en-done', 'en-bye']), () => h.classList.add('ready'));
     if (!NE.preview && !NE.play) nkResumeDrop();
     nestFinish();
   }

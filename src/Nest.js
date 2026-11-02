@@ -63,6 +63,8 @@ function nestInfo(kid, t, assigned, logs) {
     // Screen time (finding 15): a hard cap a day across lessons, replays, the playground and the arcade. capMax by age, the
     // parent may set less (Girls.NestMin); used = the seconds the phones reported today (apiNestTime, the most of them).
     cap: nestCap(kid), capMax: nestCapMax(age), used: nestUsed(kid, t),
+    // Chacho's Hebrew guidance (the parent's switch): '' = auto (on up to age 5), 'on' = always, 'off'.
+    hebrew: nestHebrew(kid),
     // One more lesson: once the day's own is done, the next day of the program while the parent's daily number allows.
     next: done && today < perDay ? String(nestNext(kid, logs).url).slice(5) : null
   };
@@ -146,6 +148,25 @@ function apiParentNestArcade(pin, name, n) {
   setGirlFields(kid.Name, { NestArcadeMin: n });
   audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest arcade minutes', kid.Name + ': ' + n);
   return parentView(access);
+}
+
+// Chacho's Hebrew guidance in the Nest (Girls.NestHebrew, set by the parent; package B, owner 2026-10-31): empty = auto (on up
+// to age 5, the first plays of a game and when the kid is stuck), 'on' = always, 'off'. Only instructions, never translations.
+function nestHebrew(kid) {
+  var v = String(kid.NestHebrew == null ? '' : kid.NestHebrew).trim().toLowerCase();
+  return v === 'on' || v === 'off' ? v : '';
+}
+
+function apiParentNestHebrew(pin, name, v) {
+  ensureSetup();
+  var access = parentAccess(pin);
+  var kid = findGirl(name);
+  if (!kid || !isNest(kid) || (!access.isAdmin && groupOf(kid) !== String(access.group.Id))) throw new Error('Unknown kid');
+  v = String(v == null ? '' : v).trim().toLowerCase();
+  if (['', 'on', 'off'].indexOf(v) < 0) throw new Error('בחרו מתי צ׳אצ׳ו מסביר בעברית');
+  setGirlFields(kid.Name, { NestHebrew: v });
+  audit(access.isAdmin ? 'admin' : 'parent', access.isAdmin ? 'admin' : access.group.Name, groupOf(kid), 'nest hebrew guidance', kid.Name + ': ' + (v || 'auto'));
+  return parentData(access.isAdmin ? groups() : [access.group], access.isAdmin, access.isAdmin ? 'admin' : String(access.group.Id));
 }
 
 // Settings.NestAll: the names (comma separated, or 'all') whose Nest home shows every unit and day now, as free play.

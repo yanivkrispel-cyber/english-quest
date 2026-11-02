@@ -201,6 +201,7 @@ function nkHome(d){
   nkhMusicStart();
   nkhArrive(c);
   nkhTentCall();
+  nkhEggCall();
 }
 
 // The nest, drawn in code: the dark inside behind Chacho, the woven bowl in front of his feet.
@@ -472,23 +473,41 @@ function nkhAdopt(){
 }
 
 // ---------- Arrival, and back from a lesson ----------
-// The tent calls the kid: the first days it has been there, and after the day's lesson, it glows, Chacho says "Let's play my
-// games!" and the hand taps it twice. Once a kid has opened it, only after a finished lesson.
+// The egg first, the tent after (package B, owner 2026-10-31). Before the day's lesson the egg is the one thing to do: the first
+// days with the Hebrew guidance Chacho says in Hebrew to tap it, and the help ladder (play.js) calls it when nothing is touched.
+// After the lesson the tent calls: it glows, Chacho says to play there (in Hebrew the first three times) and the hand taps it.
+function nkhCall(el){
+  el.classList.add('call');
+  nkhLater(() => el.classList.remove('call'), 2600);
+  nkhBoing(el); nkhBlip(880);
+}
+function nkhEggCall(){
+  const egg = NKH.root && NKH.root.querySelector('.nkh-egg');
+  if (!egg || NKH.d.nest.done || typeof nkLadder !== 'function') return;
+  const quiet = () => NKH.root && NKH.root.isConnected && !NKH.busy && !NKH.echo;
+  if (nkHeOn() && (Number(NKH.d.nest.days) || 0) < 3 && NKH.eggCalled !== nkhKid()) {
+    NKH.eggCalled = nkhKid();
+    nkhLater(() => {
+      if (!quiet() || nestQueue) return;
+      nkhCall(egg);
+      nestPlay(['h-egg']);
+      if (!nkhCalm()) nkhLater(() => nkHandTap(egg, null, 2), 1400);
+    }, 3800);
+  }
+  nkLadder({ live: () => quiet() && NKH.root.contains(egg), target: egg, en: ['en-hi'], he: 'egg', nudge: nkhCall });
+}
 const nkhTentKey = () => 'eq_nkh_tent_' + nkhKid();
 function nkhTentCall(){
   const tent = NKH.root && NKH.root.querySelector('.nkh-tent');
-  if (!tent) return;
-  const seen = Number(store.get(nkhTentKey())) || 0, done = NKH.d.nest.done;
-  if (seen >= 3 && !done) return;
-  if (NKH.tentCalled === nkhKid() + (done ? 'd' : '')) return;
-  NKH.tentCalled = nkhKid() + (done ? 'd' : '');
-  if (seen < 3) store.set(nkhTentKey(), seen + 1);
+  if (!tent || !NKH.d.nest.done) return;
+  if (NKH.tentCalled === nkhKid()) return;
+  NKH.tentCalled = nkhKid();
+  const seen = Number(store.get(nkhTentKey())) || 0;
+  store.set(nkhTentKey(), seen + 1);
   nkhLater(() => {
     if (NKH.busy || NKH.echo) return;
-    tent.classList.add('call');
-    nkhLater(() => tent.classList.remove('call'), 2600);
-    nkhBoing(tent); nkhBlip(880);
-    nestPlay(['en-arcade']);
+    nkhCall(tent);
+    nestPlay(seen < 3 && typeof nkHeOn === 'function' && nkHeOn() ? ['h-tent'] : ['en-arcade']);
     if (!nkhCalm() && typeof nkHandTap === 'function') nkhLater(() => nkHandTap(tent, null, 2), 900);
   }, 3600);
 }
@@ -548,6 +567,7 @@ function nkhPause(){
 }
 // Leaving the home: music, timers, the echo and every listener stop (also called by nestLeave in src/Index.html).
 function nkHomeStop(){
+  if (NKH.root && typeof nkLadderStop === 'function') nkLadderStop();
   clearInterval(NKH.beat); NKH.beat = 0;
   NKH.timers.forEach(clearTimeout); NKH.timers = [];
   nkhMusicStop();

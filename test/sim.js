@@ -1520,6 +1520,15 @@ run(`apiParentNestArcade(__fc('7788'), '${TALI}', 30)`);
 check('half an hour, and it is in the audit trail', run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.arcadeMin === 30
   && sheets.Audit.rows.some(r => r.join('|').includes('nest arcade minutes') && r.join('|').includes(TALI + ': 30')));
 run(`apiParentNestArcade(__fc('7788'), '${TALI}', 15)`);
+// Chacho's Hebrew guidance (package B, 2026-10-31): auto by default; the parent picks always or off, audited.
+check('the Hebrew guidance is auto by default', d.nest.hebrew === '', JSON.stringify(d.nest.hebrew));
+fails('Hebrew guidance from another family', () => run(`apiParentNestHebrew(__fc('0000'), '${TALI}', 'on')`));
+fails('Hebrew guidance with a made-up value', () => run(`apiParentNestHebrew(__fc('7788'), '${TALI}', 'loud')`));
+run(`apiParentNestHebrew(__fc('7788'), '${TALI}', 'off')`);
+check('the parent turns the Hebrew guidance off, and it is in the audit trail', run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.hebrew === 'off'
+  && sheets.Audit.rows.some(r => r.join('|').includes('nest hebrew guidance') && r.join('|').includes(TALI + ': off')));
+run(`apiParentNestHebrew(__fc('7788'), '${TALI}', '')`);
+check('back to auto', run(`apiDashboard('${TALI}', '${tali.PIN}')`).nest.hebrew === '');
 // The living home and the arcade (specs/nest-home.md, nest.md): on for every Nest kid since 2026-10-29; 'off' closes them.
 check('the living home and the arcade are on for every Nest kid, and the days played count distinct dates', d.nest.home === true && d.nest.arcade === true && d.nest.days === 1, JSON.stringify([d.nest.home, d.nest.arcade, d.nest.days]));
 run("setSetting('NestHome', 'off'); setSetting('NestArcade', 'off')");

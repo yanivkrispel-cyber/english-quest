@@ -25,11 +25,12 @@ NK.lights = {
       hint.innerHTML = t.pic ? nestPic(t.pic) : '';
       hint.className = 'nklo-hint' + (t.pic ? ' on' : '');
       open = false; ok.classList.remove('ready');
-      nestPlay(nkLightKeys(t), () => { if (!nkLive(s)) return; open = true; ok.classList.add('ready'); });
+      nestPlay(nkLightKeys(t), () => { if (!nkLive(s)) return; open = true; ok.classList.add('ready'); nkIdle(s, ok); });
     };
     const next = done => {
       if (!nkLive(s) || !open) return;
       open = false;
+      nkLadderStop();
       if (done) { nkScore(s.tasks[s.ti].w || null, true); nkSfx('pop'); buzz(true); }
       if (s.ti >= s.tasks.length - 1) {
         document.querySelector('.gscreen.nk').classList.remove('nklo-dark');

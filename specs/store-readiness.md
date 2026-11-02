@@ -139,7 +139,9 @@ seconds played on the phone (`eq_nest_arc_<kid>`), and the server keeps one numb
 (`Girls.NestArcadeMin`). The Nest's screen time keeps today's date and seconds on the phone too (`eq_nest_time_<kid>`), and a
 lesson left with the X keeps its place until it is finished (`eq_nest_resume_<kid>`: the date, the day id, the step, the score
 and each word's first try so far). Talking Chacho and No, Chacho! use the microphone as the living home does: in memory for one replay, or
-loudness only; nothing is kept or sent.
+loudness only; nothing is kept or sent. Chacho's Hebrew guidance (package B, 2026-10-31) adds one choice the parent sets on the
+server (`Girls.NestHebrew`: empty = auto, on, off) and, on the phone, how many lessons were started and how many times the
+games shelf was opened (in `eq_nest_seen_<kid>`, with the games' counts); the help ladder only watches for touches and keeps nothing.
 
 ## Known gaps before a store submission
 
