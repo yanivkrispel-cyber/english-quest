@@ -667,6 +667,8 @@ function parentData(list, isAdmin, who, hide) {
       // What she learned this week in one Hebrew sentence, and her level as a track (src/Learned.js).
       d.learned = learnedWeek(k, t);
       d.track = isNest(k) ? null : levelTrack(k.Level);
+      // The Nest's monthly report (src/Learned.js): this month and last month, for the parents only.
+      if (isNest(k)) d.nestMonths = nestMonths(k, t);
       d.email = k.Email;
       d.bought = shopBought(kidRows('Shop', k.Name), 3);
       d.pin = hide ? undefined : String(k.PIN);
