@@ -26,6 +26,27 @@ function levelTrack(level) {
 // "משימה אחת" / "3 משימות": Hebrew counts with the number before the word, one in words.
 function heCount(n, one, many) { return n === 1 ? one : n + ' ' + many; }
 
+// The Nest's monthly report (games plan phase 6): this month and the one before, from the kid's own Log rows (kidRows, the
+// request memo): lessons logged, days played, and the words met for the first time that month. The app turns these and the
+// kid's word stats (nest.known) into the report's can-do lines. Nothing is stored for it.
+function nestMonths(kid, t) {
+  var logs = kidRows('Log', kid.Name).filter(function (l) { return l.Section === 'nest'; }), first = {};
+  logs.forEach(function (l) {
+    var d = String(l.Date);
+    String(l.Detail || '').split(',').forEach(function (x) {
+      var p = x.split(':');
+      if (!p[0] || (p[1] !== '0' && p[1] !== '1')) return;
+      if (!first[p[0]] || d < first[p[0]]) first[p[0]] = d;
+    });
+  });
+  var now = String(t).slice(0, 7), prev = addDays(now + '-01', -1).slice(0, 7);
+  return [now, prev].map(function (m) {
+    var rows = logs.filter(function (l) { return String(l.Date).slice(0, 7) === m; });
+    var days = rows.map(function (l) { return String(l.Date); }).filter(function (d, i, a) { return a.indexOf(d) === i; });
+    return { month: m, lessons: rows.length, days: days.length, fresh: Object.keys(first).filter(function (id) { return first[id].slice(0, 7) === m; }) };
+  });
+}
+
 function nestTitleHe(dayId) {
   var id = String(dayId || '').split('.')[0], u = nestUnits().filter(function (x) { return x[0] === id; })[0];
   return u ? (u[3] || u[1]) : '';
